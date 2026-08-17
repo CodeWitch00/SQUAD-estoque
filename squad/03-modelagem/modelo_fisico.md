@@ -1,404 +1,384 @@
 # Modelo Físico 
 
-> **Para quem é este documento:** desenvolvedores 
-> <br>**Banco de dados:** PostgreSQL 
+> **Para quem é este documento:** desenvolvedores  
+> **Banco de dados:** SQLite 3.x (via Entity Framework Core)  
+> **Plataforma:** ASP.NET Core MVC (.NET 10)  
 
 ---
 
-## 1. Tipos customizados (ENUMs)
+## 1. Mapeamento de Tipos e Representação no SQLite
 
-Os ENUMs são criados antes das tabelas, pois as tabelas dependem deles.
+O SQLite possui um sistema de tipagem dinâmica baseado em classes de armazenamento (*storage classes*): `NULL`, `INTEGER`, `REAL`, `TEXT` e `BLOB`. 
 
-```sql
--- Perfis de acesso do sistema (RF-02, RN-04)
-CREATE TYPE perfil_usuario AS ENUM ('VENDEDOR', 'LOJISTA');
+A persistência do sistema SQUAD no SQLite através do Entity Framework Core adota os seguintes padrões:
 
--- Tipos de movimentação de estoque (RF-10)
-CREATE TYPE tipo_movimentacao AS ENUM ('ENTRADA', 'SAIDA', 'AJUSTE');
-```
+| Conceito Lógico | Tipo SQLite | Representação C# / EF Core | Justificativa |
+| :--- | :--- | :--- | :--- |
+| **Identificadores (UUID/Guid)** | `TEXT` | `System.Guid` | Formato padrão ISO/RFC 4122 (string de 36 caracteres: `XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX`). |
+| **Textos descritivos** (`nome`, `marca`, `categoria`, `cor`, `numeracao`, `email`, `senha_hash`, `motivo`) | `TEXT` | `System.String` | SQLite aloca textos com tamanho variável. Limites máximos são validados na aplicação e por constraints. |
+| **Datas e Horários** (`criado_em`) | `TEXT` | `System.DateTime` (UTC) | Padrão ISO 8601 em UTC (`YYYY-MM-DDTHH:MM:SS.FFFFFFFZ`), compatível com ordenação cronológica textual. |
+| **Valores Booleanos** (`ativo`) | `INTEGER` | `System.Boolean` | `1` para `TRUE`, `0` para `FALSE`. |
+| **Contadores e Saldos** (`saldo_atual`, `quantidade`) | `INTEGER` | `System.Int32` | Valores inteiros com suporte a constraints de validação `CHECK`. |
+| **Tipos Enumerados** (`perfil_usuario`, `tipo_movimentacao`) | `INTEGER` ou `TEXT` | `enum` C# | Mapeamento nativo de Enums via EF Core (armazenamento inteiro simples ou string para legibilidade). |
 
 ---
 
 ## 2. Tabelas
 
-A ordem de criação respeita as dependências entre chaves estrangeiras:
-`USUARIO` → `PRODUTO` → `SKU` → `MOVIMENTACAO` e `RUPTURA`
+A ordem de criação respeita as dependências de chaves estrangeiras:
+`usuario` → `produto` → `sku` → `movimentacao` e `ruptura`.
 
 ---
 
-### 2.1 USUARIO
+### 2.1 Tabela `usuario`
+
+Armazena os usuários autenticados do sistema e seus perfis de acesso (RF-01 a RF-04, RN-04).
 
 ```sql
 CREATE TABLE usuario (
-    id          UUID            PRIMARY KEY DEFAULT gen_random_uuid(),
-    nome        VARCHAR(150)    NOT NULL,
-    email       VARCHAR(255)    NOT NULL,
-    senha_hash  VARCHAR(255)    NOT NULL,
-    perfil      perfil_usuario  NOT NULL,
+    id          TEXT    PRIMARY KEY NOT NULL,
+    nome        TEXT    NOT NULL,
+    email       TEXT    NOT NULL,
+    senha_hash  TEXT    NOT NULL,
+    perfil      INTEGER NOT NULL,
 
-    CONSTRAINT uq_usuario_email UNIQUE (email)
+    CONSTRAINT uq_usuario_email UNIQUE (email),
+    CONSTRAINT chk_usuario_perfil CHECK (perfil IN (0, 1)) -- 0: VENDEDOR, 1: LOJISTA
 );
 ```
 
-**Decisões de tipo:**
-- `UUID` com `gen_random_uuid()` → identificador único sem colisão, sem exposição de sequência
-- `VARCHAR(255)` para email → limite padrão de e-mail conforme RFC 5321
-- `VARCHAR(255)` para senha_hash → bcrypt com custo 12 produz hash de 60 caracteres; 255 dá margem para outros algoritmos futuros
+**Decisões de Modelagem Física:**
+- `id TEXT`: GUID gerado pela aplicação na criação da entidade.
+- `email TEXT UNIQUE`: Garante unicidade de cadastro para login (RF-01).
+- `senha_hash TEXT`: Armazena o hash seguro gerado via bcrypt com custo $\ge 12$ (RF-04, RNF-04).
+- `perfil INTEGER`: Representa o perfil de acesso (`0 = VENDEDOR`, `1 = LOJISTA`) validado por constraint `CHECK`.
 
 ---
 
-### 2.2 PRODUTO
+### 2.2 Tabela `produto`
+
+Representa o modelo comercial de calçado no catálogo (RF-05). Não controla saldo diretamente.
 
 ```sql
 CREATE TABLE produto (
-    id          UUID            PRIMARY KEY DEFAULT gen_random_uuid(),
-    nome        VARCHAR(200)    NOT NULL,
-    marca       VARCHAR(100)    NOT NULL,
-    categoria   VARCHAR(100)    NOT NULL,
-    cor         VARCHAR(80)     NOT NULL,
-    ativo       BOOLEAN         NOT NULL DEFAULT TRUE
+    id          TEXT    PRIMARY KEY NOT NULL,
+    nome        TEXT    NOT NULL,
+    marca       TEXT    NOT NULL,
+    categoria   TEXT    NOT NULL,
+    cor         TEXT    NOT NULL,
+    ativo       INTEGER NOT NULL DEFAULT 1,
+
+    CONSTRAINT chk_produto_ativo CHECK (ativo IN (0, 1))
 );
 ```
 
-**Decisões de tipo:**
-- Todos os campos descritivos como `VARCHAR` com limites razoáveis para nomes comerciais
-- `ativo DEFAULT TRUE` → todo produto criado nasce ativo; só é desativado por ação explícita do lojista
+**Decisões de Modelagem Física:**
+- `id TEXT`: GUID identificador do modelo.
+- `ativo INTEGER DEFAULT 1`: Flag de exclusão/desativação lógica. Quando `0`, o produto não é retornado na busca do vendedor, mas preserva todo o histórico referencial.
 
 ---
 
-### 2.3 SKU
+### 2.3 Tabela `sku`
+
+Representa a menor unidade física de controle de estoque: a combinação de um Produto com uma Numeração específica (RF-06 a RF-08, RN-01, RN-02).
 
 ```sql
 CREATE TABLE sku (
-    id           UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
-    produto_id   UUID        NOT NULL,
-    numeracao    VARCHAR(10) NOT NULL,
-    saldo_atual  INTEGER     NOT NULL DEFAULT 0,
-    ativo        BOOLEAN     NOT NULL DEFAULT TRUE,
+    id           TEXT    PRIMARY KEY NOT NULL,
+    produto_id   TEXT    NOT NULL,
+    numeracao    TEXT    NOT NULL,
+    saldo_atual  INTEGER NOT NULL DEFAULT 0,
+    ativo        INTEGER NOT NULL DEFAULT 1,
 
     CONSTRAINT fk_sku_produto
-        FOREIGN KEY (produto_id) REFERENCES produto(id),
+        FOREIGN KEY (produto_id) REFERENCES produto(id)
+        ON DELETE RESTRICT,
 
     CONSTRAINT uq_sku_produto_numeracao
         UNIQUE (produto_id, numeracao),
 
     CONSTRAINT chk_sku_saldo_nao_negativo
-        CHECK (saldo_atual >= 0)
+        CHECK (saldo_atual >= 0),
+
+    CONSTRAINT chk_sku_ativo
+        CHECK (ativo IN (0, 1))
 );
 ```
 
-**Decisões de tipo:**
-- `VARCHAR(10)` para numeracao → cobre numerações brasileiras (ex: "33", "44", "45/46") com folga
-- `INTEGER` para saldo_atual → saldo de pares de sapato nunca chegará ao limite de INTEGER (2.147.483.647)
-- `DEFAULT 0` → SKU nasce sem estoque; estoque é adicionado via entrada
-- `CHECK (saldo_atual >= 0)` → segunda linha de defesa contra saldo negativo (RN-02). A primeira é a transação atômica.
+**Decisões de Modelagem Física:**
+- `id TEXT`: GUID gerado automaticamente pelo sistema (RF-07).
+- `CONSTRAINT uq_sku_produto_numeracao UNIQUE (produto_id, numeracao)`: Implementa a **RN-01** (unicidade de SKU no banco).
+- `CONSTRAINT chk_sku_saldo_nao_negativo CHECK (saldo_atual >= 0)`: Segunda linha de defesa para a **RN-02** (saldo nunca negativo).
+- `ON DELETE RESTRICT`: Impede a remoção acidental de um produto que contenha SKUs vinculados.
 
 ---
 
-### 2.4 MOVIMENTACAO
+### 2.4 Tabela `movimentacao`
+
+Registra o histórico imutável de todas as alterações físicas de saldo de estoque: entradas, saídas (vendas) e ajustes manuais (RF-09, RF-10, RF-17, RF-23, RN-03, RN-04).
 
 ```sql
 CREATE TABLE movimentacao (
-    id           UUID               PRIMARY KEY DEFAULT gen_random_uuid(),
-    sku_id       UUID               NOT NULL,
-    tipo         tipo_movimentacao  NOT NULL,
-    quantidade   INTEGER            NOT NULL,
-    usuario_id   UUID               NOT NULL,
-    criado_em    TIMESTAMPTZ        NOT NULL DEFAULT NOW(),
-    motivo       TEXT,
+    id           TEXT    PRIMARY KEY NOT NULL,
+    sku_id       TEXT    NOT NULL,
+    tipo         INTEGER NOT NULL,
+    quantidade   INTEGER NOT NULL,
+    usuario_id   TEXT    NOT NULL,
+    criado_em    TEXT    NOT NULL,
+    motivo       TEXT    NULL,
 
     CONSTRAINT fk_movimentacao_sku
-        FOREIGN KEY (sku_id) REFERENCES sku(id),
+        FOREIGN KEY (sku_id) REFERENCES sku(id)
+        ON DELETE RESTRICT,
 
     CONSTRAINT fk_movimentacao_usuario
-        FOREIGN KEY (usuario_id) REFERENCES usuario(id),
+        FOREIGN KEY (usuario_id) REFERENCES usuario(id)
+        ON DELETE RESTRICT,
+
+    CONSTRAINT chk_movimentacao_tipo
+        CHECK (tipo IN (0, 1, 2)), -- 0: ENTRADA, 1: SAIDA, 2: AJUSTE
 
     CONSTRAINT chk_movimentacao_quantidade_positiva
         CHECK (quantidade > 0)
 );
 ```
 
-**Decisões de tipo:**
-- `TIMESTAMPTZ` (timestamp with time zone) → armazena o fuso horário junto; essencial para lojas que possam operar em múltiplos fusos no futuro e para auditoria precisa
-- `TEXT` para motivo → sem limite arbitrário de caracteres; o lojista deve poder descrever o motivo livremente
-- `motivo` sem `NOT NULL` → o banco permite nulo; a aplicação valida e exige preenchimento quando `tipo = AJUSTE`
-- **Sem colunas `updated_at` ou `deleted_at`** → esta tabela é imutável por definição (RN-03)
-
-**Nota sobre imutabilidade (RN-03):** a garantia de imutabilidade é feita na camada de aplicação (sem endpoints de PUT/PATCH/DELETE para esta tabela) e pode ser reforçada com uma rule ou trigger no PostgreSQL se necessário.
+**Decisões de Modelagem Física:**
+- **Imutabilidade (RN-03)**: Esta tabela não possui colunas de atualização ou exclusão. Nenhum comando `UPDATE` ou `DELETE` deve ser executado nesta tabela.
+- `motivo TEXT NULL`: Justificativa da operação. Obrigatória por validação de negócio quando `tipo = 2 (AJUSTE)` (RF-23).
+- `criado_em TEXT`: Timestamp ISO 8601 gerado em UTC no momento da persistência.
 
 ---
 
-### 2.5 RUPTURA
+### 2.5 Tabela `ruptura`
+
+Registra a demanda não atendida quando o vendedor informa explicitamente "Não tinha" durante o atendimento (RF-18, RF-22, RN-05, RN-06).
 
 ```sql
 CREATE TABLE ruptura (
-    id           UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
-    sku_id       UUID        NOT NULL,
-    usuario_id   UUID        NOT NULL,
-    criado_em    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    id           TEXT PRIMARY KEY NOT NULL,
+    sku_id       TEXT NOT NULL,
+    usuario_id   TEXT NOT NULL,
+    criado_em    TEXT NOT NULL,
 
     CONSTRAINT fk_ruptura_sku
-        FOREIGN KEY (sku_id) REFERENCES sku(id),
+        FOREIGN KEY (sku_id) REFERENCES sku(id)
+        ON DELETE RESTRICT,
 
     CONSTRAINT fk_ruptura_usuario
         FOREIGN KEY (usuario_id) REFERENCES usuario(id)
+        ON DELETE RESTRICT
 );
 ```
 
-**Decisões de tipo:**
-- `TIMESTAMPTZ` pelo mesmo motivo que MOVIMENTACAO — rastreabilidade com fuso horário
-- Sem campo de quantidade ou saldo — ruptura não altera estoque (RF-18, RN-05)
+**Decisões de Modelagem Física:**
+- `sku_id NOT NULL`: Cumpre a **RN-06** (toda ruptura é obrigatoriamente vinculada a um SKU específico).
+- Ausência de campo de saldo/quantidade: O registro de ruptura **não altera** o estoque do SKU (RN-05, RF-18).
 
 ---
 
-## 3. Índices
+## 3. Índices de Performance
+
+Os índices são criados para otimizar as consultas críticas de atendimento em chão de loja e painéis do lojista:
 
 ```sql
--- USUARIO
--- Busca por e-mail no login (UC-01, RF-01)
+-- Otimização da busca de usuário no login (RF-01, UC-01)
 CREATE UNIQUE INDEX idx_usuario_email
     ON usuario (email);
 
--- PRODUTO
--- Filtrar produtos ativos na busca do vendedor (D-03)
+-- Otimização do filtro de busca de catálogo por produtos ativos (RF-13, UC-02)
 CREATE INDEX idx_produto_ativo
-    ON produto (ativo)
-    WHERE ativo = TRUE;
+    ON produto (ativo);
 
--- SKU
--- Carregar grade de numerações de um produto (UC-02, UC-03)
+-- Otimização do carregamento da grade de SKUs por modelo (RF-14, UC-03)
 CREATE INDEX idx_sku_produto_id
     ON sku (produto_id);
 
--- Filtrar SKUs ativos na busca (D-03)
+-- Otimização de filtragem de SKUs ativos
 CREATE INDEX idx_sku_ativo
-    ON sku (ativo)
-    WHERE ativo = TRUE;
+    ON sku (ativo);
 
--- Listar SKUs com saldo zerado para o lojista (UC-11, RF-21)
+-- Otimização do painel de produtos/SKUs com estoque zerado do lojista (RF-21, UC-11)
 CREATE INDEX idx_sku_saldo_zerado
     ON sku (saldo_atual)
     WHERE saldo_atual = 0;
 
--- MOVIMENTACAO
--- Histórico de movimentações de um SKU
+-- Otimização do histórico de movimentações por SKU
 CREATE INDEX idx_movimentacao_sku_id
     ON movimentacao (sku_id);
 
--- RUPTURA
--- Histórico e contagem de rupturas por SKU (UC-12, RF-22)
+-- Otimização da contagem e agrupamento de rupturas por SKU (RF-22, UC-12)
 CREATE INDEX idx_ruptura_sku_id
     ON ruptura (sku_id);
 ```
 
-**Nota sobre índices parciais:** os índices `WHERE ativo = TRUE` e `WHERE saldo_atual = 0` são índices parciais do PostgreSQL. Eles indexam apenas as linhas que satisfazem a condição , menores, mais rápidos e mais eficientes para as consultas mais frequentes do sistema.
-
 ---
 
-## 4. Transação Atômica de Saída (RN-07)
+## 4. Transação Atômica de Saída de Estoque (RN-07)
 
-Esta é a operação mais crítica do sistema. Ela garante que dois vendedores não consigam vender o último par simultaneamente.
+A operação de venda (registro de "Vendeu" — UC-04, UC-S2) é a operação concorrencial crítica do sistema. O SQLite assegura atomicidade através de transações de escrita e do `CHECK (saldo_atual >= 0)`.
+
+### 4.1 Fluxo SQL Transacional no SQLite
 
 ```sql
--- Executado pela aplicação ao registrar "Vendeu" (UC-04, UC-S2)
-BEGIN;
+-- Inicia a transação com bloqueio imediato para escrita no SQLite
+BEGIN IMMEDIATE;
 
-    -- 1. Lê o saldo atual travando a linha para outras transações (FOR UPDATE)
-    --    Qualquer outra transação que tente acessar este SKU vai esperar aqui.
-    SELECT saldo_atual
-    FROM sku
-    WHERE id = $1
-    FOR UPDATE;
-
-    -- 2. A aplicação valida: se saldo_atual = 0, faz ROLLBACK e retorna erro ao vendedor
-    --    O SQL abaixo só é executado se saldo_atual > 0
-
-    -- 3. Decrementa o saldo em 1
+    -- 1. Decrementa o saldo do SKU somente se houver saldo disponível (> 0)
     UPDATE sku
     SET saldo_atual = saldo_atual - 1
-    WHERE id = $1;
+    WHERE id = @sku_id AND saldo_atual > 0;
 
-    -- 4. Registra a movimentação de saída
-    INSERT INTO movimentacao (sku_id, tipo, quantidade, usuario_id)
-    VALUES ($1, 'SAIDA', 1, $2);
+    -- 2. Se nenhuma linha foi afetada (saldo era 0), a aplicação executa ROLLBACK e retorna erro (RN-02)
+    --    Se 1 linha foi atualizada, prossegue com o registro da movimentação:
+
+    -- 3. Insere a movimentação de saída
+    INSERT INTO movimentacao (id, sku_id, tipo, quantidade, usuario_id, criado_em, motivo)
+    VALUES (@movimentacao_id, @sku_id, 1, 1, @usuario_id, @timestamp_utc, NULL);
 
 COMMIT;
 ```
 
-**O que acontece com dois vendedores simultâneos:**
-
-```
-Vendedor A                          Vendedor B
-──────────────────────────────────────────────────────
-BEGIN                               BEGIN
-SELECT ... FOR UPDATE (saldo = 1)   SELECT ... FOR UPDATE ← ESPERA
-UPDATE saldo = 0
-INSERT movimentacao
-COMMIT                              ← CONTINUA AQUI
-                                    SELECT retorna saldo = 0
-                                    Aplicação detecta saldo = 0
-                                    ROLLBACK
-                                    Erro exibido ao Vendedor B
-```
-
-O `CHECK (saldo_atual >= 0)` na tabela funciona como segunda linha de defesa , mesmo que a lógica da aplicação falhe, o banco rejeita o UPDATE.
-
 ---
 
-## 5. Consultas Principais
+## 5. Consultas Principais do Sistema
 
-### Busca de produto por nome (UC-02, RF-13)
-
+### 5.1 Busca de Produto por Nome (Vendedor: RF-13, UC-02)
 ```sql
-SELECT
-    p.id,
-    p.nome,
-    p.marca,
-    p.cor
-FROM produto p
-WHERE p.ativo = TRUE
-  AND p.nome ILIKE '%' || $1 || '%'
-ORDER BY p.nome
+SELECT id, nome, marca, categoria, cor
+FROM produto
+WHERE ativo = 1
+  AND UPPER(nome) LIKE '%' || UPPER(@termo_busca) || '%'
+ORDER BY nome
 LIMIT 20;
 ```
 
----
-
-### Grade de numerações com saldos (UC-03, RF-14, RF-15)
-
+### 5.2 Consulta de Grade de Numerações e Saldos (Vendedor: RF-14, RF-15, UC-03)
 ```sql
-SELECT
-    s.id,
-    s.numeracao,
-    s.saldo_atual,
-    CASE
-        WHEN s.saldo_atual = 0 THEN 'INDISPONIVEL'
-        WHEN s.saldo_atual = 1 THEN 'ULTIMO_PAR'
+SELECT 
+    id,
+    numeracao,
+    saldo_atual,
+    CASE 
+        WHEN saldo_atual = 0 THEN 'INDISPONIVEL'
+        WHEN saldo_atual = 1 THEN 'ULTIMO_PAR'
         ELSE 'DISPONIVEL'
-    END AS estado
-FROM sku s
-WHERE s.produto_id = $1
-  AND s.ativo = TRUE
-ORDER BY s.numeracao;
+    END AS estado_derivado
+FROM sku
+WHERE produto_id = @produto_id
+  AND ativo = 1
+ORDER BY numeracao;
 ```
 
----
-
-### SKUs com saldo zerado agrupados por modelo (UC-11, RF-21)
-
+### 5.3 SKUs com Saldo Zerado Agrupados por Modelo (Lojista: RF-21, UC-11)
 ```sql
-SELECT
-    p.nome        AS produto,
+SELECT 
+    p.nome AS produto_nome,
     p.marca,
     p.cor,
-    s.numeracao,
-    s.id          AS sku_id
+    s.id AS sku_id,
+    s.numeracao
 FROM sku s
 JOIN produto p ON p.id = s.produto_id
 WHERE s.saldo_atual = 0
-  AND s.ativo = TRUE
-  AND p.ativo = TRUE
+  AND s.ativo = 1
+  AND p.ativo = 1
 ORDER BY p.nome, s.numeracao;
 ```
 
----
-
-### Histórico de rupturas por SKU com contagem (UC-12, RF-22)
-
+### 5.4 Histórico e Ranking de Rupturas por SKU (Lojista: RF-22, UC-12)
 ```sql
-SELECT
-    p.nome        AS produto,
+SELECT 
+    p.nome AS produto_nome,
     p.marca,
     s.numeracao,
-    COUNT(r.id)   AS total_rupturas,
+    COUNT(r.id) AS total_rupturas,
     MAX(r.criado_em) AS ultima_ruptura
 FROM ruptura r
-JOIN sku s      ON s.id = r.sku_id
-JOIN produto p  ON p.id = s.produto_id
+JOIN sku s ON s.id = r.sku_id
+JOIN produto p ON p.id = s.produto_id
 GROUP BY p.nome, p.marca, s.numeracao
 ORDER BY total_rupturas DESC;
 ```
 
 ---
 
-## 6. Script completo em ordem de execução
+## 6. Script Completo DDL em Ordem de Execução
 
 ```sql
 -- ============================================================
--- SQUAD — Script de criação do banco de dados
--- Banco: PostgreSQL 15+
+-- SQUAD — Script DDL do Banco de Dados SQLite
 -- ============================================================
 
--- 1. ENUMs
-CREATE TYPE perfil_usuario    AS ENUM ('VENDEDOR', 'LOJISTA');
-CREATE TYPE tipo_movimentacao AS ENUM ('ENTRADA', 'SAIDA', 'AJUSTE');
+-- Ativação do suporte a chaves estrangeiras no SQLite
+PRAGMA foreign_keys = ON;
 
--- 2. Tabelas (ordem respeita dependências FK)
-CREATE TABLE usuario (
-    id          UUID            PRIMARY KEY DEFAULT gen_random_uuid(),
-    nome        VARCHAR(150)    NOT NULL,
-    email       VARCHAR(255)    NOT NULL,
-    senha_hash  VARCHAR(255)    NOT NULL,
-    perfil      perfil_usuario  NOT NULL,
-    CONSTRAINT uq_usuario_email UNIQUE (email)
+-- 1. Tabela USUARIO
+CREATE TABLE IF NOT EXISTS usuario (
+    id          TEXT    PRIMARY KEY NOT NULL,
+    nome        TEXT    NOT NULL,
+    email       TEXT    NOT NULL,
+    senha_hash  TEXT    NOT NULL,
+    perfil      INTEGER NOT NULL,
+    CONSTRAINT uq_usuario_email UNIQUE (email),
+    CONSTRAINT chk_usuario_perfil CHECK (perfil IN (0, 1))
 );
 
-CREATE TABLE produto (
-    id          UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
-    nome        VARCHAR(200) NOT NULL,
-    marca       VARCHAR(100) NOT NULL,
-    categoria   VARCHAR(100) NOT NULL,
-    cor         VARCHAR(80)  NOT NULL,
-    ativo       BOOLEAN      NOT NULL DEFAULT TRUE
+-- 2. Tabela PRODUTO
+CREATE TABLE IF NOT EXISTS produto (
+    id          TEXT    PRIMARY KEY NOT NULL,
+    nome        TEXT    NOT NULL,
+    marca       TEXT    NOT NULL,
+    categoria   TEXT    NOT NULL,
+    cor         TEXT    NOT NULL,
+    ativo       INTEGER NOT NULL DEFAULT 1,
+    CONSTRAINT chk_produto_ativo CHECK (ativo IN (0, 1))
 );
 
-CREATE TABLE sku (
-    id           UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
-    produto_id   UUID        NOT NULL,
-    numeracao    VARCHAR(10) NOT NULL,
-    saldo_atual  INTEGER     NOT NULL DEFAULT 0,
-    ativo        BOOLEAN     NOT NULL DEFAULT TRUE,
-    CONSTRAINT fk_sku_produto
-        FOREIGN KEY (produto_id) REFERENCES produto(id),
-    CONSTRAINT uq_sku_produto_numeracao
-        UNIQUE (produto_id, numeracao),
-    CONSTRAINT chk_sku_saldo_nao_negativo
-        CHECK (saldo_atual >= 0)
+-- 3. Tabela SKU
+CREATE TABLE IF NOT EXISTS sku (
+    id           TEXT    PRIMARY KEY NOT NULL,
+    produto_id   TEXT    NOT NULL,
+    numeracao    TEXT    NOT NULL,
+    saldo_atual  INTEGER NOT NULL DEFAULT 0,
+    ativo        INTEGER NOT NULL DEFAULT 1,
+    CONSTRAINT fk_sku_produto FOREIGN KEY (produto_id) REFERENCES produto(id) ON DELETE RESTRICT,
+    CONSTRAINT uq_sku_produto_numeracao UNIQUE (produto_id, numeracao),
+    CONSTRAINT chk_sku_saldo_nao_negativo CHECK (saldo_atual >= 0),
+    CONSTRAINT chk_sku_ativo CHECK (ativo IN (0, 1))
 );
 
-CREATE TABLE movimentacao (
-    id           UUID               PRIMARY KEY DEFAULT gen_random_uuid(),
-    sku_id       UUID               NOT NULL,
-    tipo         tipo_movimentacao  NOT NULL,
-    quantidade   INTEGER            NOT NULL,
-    usuario_id   UUID               NOT NULL,
-    criado_em    TIMESTAMPTZ        NOT NULL DEFAULT NOW(),
-    motivo       TEXT,
-    CONSTRAINT fk_movimentacao_sku
-        FOREIGN KEY (sku_id) REFERENCES sku(id),
-    CONSTRAINT fk_movimentacao_usuario
-        FOREIGN KEY (usuario_id) REFERENCES usuario(id),
-    CONSTRAINT chk_movimentacao_quantidade_positiva
-        CHECK (quantidade > 0)
+-- 4. Tabela MOVIMENTACAO
+CREATE TABLE IF NOT EXISTS movimentacao (
+    id           TEXT    PRIMARY KEY NOT NULL,
+    sku_id       TEXT    NOT NULL,
+    tipo         INTEGER NOT NULL,
+    quantidade   INTEGER NOT NULL,
+    usuario_id   TEXT    NOT NULL,
+    criado_em    TEXT    NOT NULL,
+    motivo       TEXT    NULL,
+    CONSTRAINT fk_movimentacao_sku FOREIGN KEY (sku_id) REFERENCES sku(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_movimentacao_usuario FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE RESTRICT,
+    CONSTRAINT chk_movimentacao_tipo CHECK (tipo IN (0, 1, 2)),
+    CONSTRAINT chk_movimentacao_quantidade_positiva CHECK (quantidade > 0)
 );
 
-CREATE TABLE ruptura (
-    id           UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
-    sku_id       UUID        NOT NULL,
-    usuario_id   UUID        NOT NULL,
-    criado_em    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    CONSTRAINT fk_ruptura_sku
-        FOREIGN KEY (sku_id) REFERENCES sku(id),
-    CONSTRAINT fk_ruptura_usuario
-        FOREIGN KEY (usuario_id) REFERENCES usuario(id)
+-- 5. Tabela RUPTURA
+CREATE TABLE IF NOT EXISTS ruptura (
+    id           TEXT PRIMARY KEY NOT NULL,
+    sku_id       TEXT NOT NULL,
+    usuario_id   TEXT NOT NULL,
+    criado_em    TEXT NOT NULL,
+    CONSTRAINT fk_ruptura_sku FOREIGN KEY (sku_id) REFERENCES sku(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_ruptura_usuario FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE RESTRICT
 );
 
--- 3. Índices
-CREATE UNIQUE INDEX idx_usuario_email       ON usuario      (email);
-CREATE INDEX idx_produto_ativo              ON produto      (ativo)       WHERE ativo = TRUE;
-CREATE INDEX idx_sku_produto_id             ON sku          (produto_id);
-CREATE INDEX idx_sku_ativo                  ON sku          (ativo)       WHERE ativo = TRUE;
-CREATE INDEX idx_sku_saldo_zerado           ON sku          (saldo_atual) WHERE saldo_atual = 0;
-CREATE INDEX idx_movimentacao_sku_id        ON movimentacao (sku_id);
-CREATE INDEX idx_ruptura_sku_id             ON ruptura      (sku_id);
+-- 6. Índices
+CREATE UNIQUE INDEX IF NOT EXISTS idx_usuario_email       ON usuario (email);
+CREATE INDEX IF NOT EXISTS idx_produto_ativo              ON produto (ativo);
+CREATE INDEX IF NOT EXISTS idx_sku_produto_id             ON sku (produto_id);
+CREATE INDEX IF NOT EXISTS idx_sku_ativo                  ON sku (ativo);
+CREATE INDEX IF NOT EXISTS idx_sku_saldo_zerado           ON sku (saldo_atual) WHERE saldo_atual = 0;
+CREATE INDEX IF NOT EXISTS idx_movimentacao_sku_id        ON movimentacao (sku_id);
+CREATE INDEX IF NOT EXISTS idx_ruptura_sku_id             ON ruptura (sku_id);
 ```
