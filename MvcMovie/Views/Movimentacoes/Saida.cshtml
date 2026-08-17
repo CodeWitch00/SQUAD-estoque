@@ -1,0 +1,68 @@
+@model MvcMovie.Models.MovimentacaoCreateViewModel
+
+@{
+    ViewData["Title"] = "Registrar Saída de Estoque";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h3 class="card-title mb-4 text-primary">Registrar Saída de Estoque</h3>
+
+                <form asp-action="Saida" method="post">
+                    <input type="hidden" asp-for="Tipo" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    @if (Model.SkuId != Guid.Empty && !string.IsNullOrEmpty(Model.ProdutoNome))
+                    {
+                        <input type="hidden" asp-for="SkuId" />
+                        <div class="alert alert-light border mb-3">
+                            <div><strong>Modelo:</strong> @Model.ProdutoNome</div>
+                            <div><strong>Numeração:</strong> <span class="badge bg-secondary">@Model.Numeracao</span></div>
+                            <div class="mt-1"><strong>Saldo Disponível:</strong> <span class="fw-bold fs-5 text-primary">@Model.SaldoAtual par(es)</span></div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="mb-3">
+                            <label asp-for="SkuId" class="form-label">Selecione o Produto e Numeração</label>
+                            <select asp-for="SkuId" asp-items="ViewBag.SkusList" class="form-select" autofocus>
+                                <option value="">-- Selecione o item --</option>
+                            </select>
+                            <span asp-validation-for="SkuId" class="text-danger small"></span>
+                        </div>
+                    }
+
+                    <div class="mb-3">
+                        <label asp-for="Quantidade" class="form-label">Quantidade a Retirar (Pares)</label>
+                        <input asp-for="Quantidade" type="number" min="1" class="form-control form-control-lg" />
+                        <span asp-validation-for="Quantidade" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Motivo" class="form-label">Observação / Motivo (Opcional)</label>
+                        <input asp-for="Motivo" class="form-control" placeholder="ex: Venda balcão / Transferência" />
+                        <span asp-validation-for="Motivo" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        @if (User.IsInRole("LOJISTA"))
+                        {
+                            <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+                        }
+                        else
+                        {
+                            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+                        }
+                        <button type="submit" class="btn btn-primary btn-lg">Confirmar Saída</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
