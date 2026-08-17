@@ -4,21 +4,27 @@ Sistema web de controle de estoque para loja de calçados, desenvolvido em **ASP
 
 ---
 
-## 📌 Estado Atual do Projeto
+## 📌 Estado Atual do Produto
 
-| Etapa | Descrição | Status |
-| :--- | :--- | :--- |
-| **Etapa 1** | Models e EstoqueContext | ✅ Concluída no código |
-| **Etapa 2** | Banco SQLite e migration inicial | ✅ Concluída no código |
-| **Etapa 3** | Autenticação e perfis (Lojista / Vendedor) | ✅ Concluída no código |
-| **Etapa 4** | Catálogo de produtos e SKUs | ✅ Concluída no código |
-| **Etapa 5** | Movimentações de estoque (Entrada, Saída, Ajuste) | ✅ Concluída no código |
-| **Etapa 6** | Módulo do vendedor (Consulta rápida e Rupturas) | ⏳ Escopo definido; especificação de implementação e desenvolvimento pendentes |
+### Implementado
+* **Domínio de estoque:** modelos de Produto, SKU, Movimentação, Ruptura e Usuário.
+* **Persistência de dados:** banco de dados SQLite com controle de schema via Migrations do Entity Framework Core.
+* **Autenticação e autorização:** autenticação por cookies nativa do ASP.NET Core com hash seguro de senhas via BCrypt e controle de acesso por perfis (`LOJISTA` e `VENDEDOR`).
+* **Catálogo e grades:** cadastro de produtos, geração e controle de grades de SKUs, edição e alternância de status ativo/inativo.
+* **Movimentações de estoque:** registro de entradas, saídas com validação de saldo em transação atômica, ajustes manuais com justificativa e histórico de movimentações em modelo append-only.
 
-> **Nota sobre validação:**
-> - As Etapas 1 a 5 estão implementadas na base de código conforme documentado.
-> - A compilação (`dotnet build`) e a inicialização da aplicação foram verificadas localmente com sucesso.
-> - O teste manual completo de todos os fluxos de ponta a ponta e a validação de depuração no VS Code permanecem como etapas de homologação a serem realizadas pela equipe.
+### Funcionalidades Pendentes Prioritárias
+* **Módulo operacional do vendedor:**
+  * Consulta rápida de estoque por modelo, marca, categoria ou cor.
+  * Visualização da grade de numerações por produto com saldo atual.
+  * Indicação visual de disponibilidade por numeração (Disponível, Último par, Indisponível).
+  * Venda rápida de 1 par com baixa imediata de estoque.
+  * Registro de ocorrência de ruptura quando o SKU solicitado não possuir saldo.
+
+### Pendente de Validação
+* Teste manual completo e homologação dos fluxos operacionais de ponta a ponta.
+* Validação do fluxo de depuração e execução assistida no VS Code.
+* Definição final e alinhamento do fluxo de telas do módulo do vendedor.
 
 ---
 
@@ -111,9 +117,16 @@ A documentação detalhada do projeto está organizada na pasta `squad/`:
 
 ## ⚠️ Diretrizes de Trabalho da Equipe
 
-1. **Fluxo de Branches:** Recomenda-se como regra de trabalho não realizar alterações diretas na branch `main`. O fluxo de desenvolvimento da equipe deve ocorrer por meio de branches de funcionalidade com revisão via Pull Request (a configuração de regras de proteção no GitHub deve ser feita pela administração do repositório).
-2. **Repositório Remoto e Colaboração:** O compartilhamento do repositório definitivo e o controle de acesso para os colaboradores dependem de configuração e convites na plataforma remota (GitHub).
-3. **Respeito aos Requisitos:** Não implementar funcionalidades sem especificação prévia validada na documentação.
-4. **Domínio Legado:** Não remover o domínio legado `Movie` neste momento; ele permanece isolado e preservado como referência de estrutura.
-5. **Contenção Arquitetural:** Manter o padrão MVC tradicional sem introduzir camadas redundantes (Services, Repositories, DTOs adicionais) sem decisão arquitetural aprovada (consulte `squad/04-arquitetura/arquitetura.md`).
-6. **Papel dos Desenvolvedores:** O agente não implementa funcionalidades de negócio; a implementação e evolução do sistema serão realizadas pela equipe de desenvolvimento.
+O desenvolvimento do projeto segue práticas inspiradas em **Extreme Programming (XP)**. Consulte o arquivo [`CONTRIBUTING.md`](CONTRIBUTING.md) para o guia completo de contribuição.
+
+1. **Princípios de Trabalho:**
+   * Mudanças pequenas e atômicas.
+   * Feedback rápido e validações frequentes.
+   * Revisão contínua por pares via Pull Request.
+   * Integração frequente com a branch principal.
+   * Simplicidade arquitetural e foco no valor de negócio.
+   * Testes manuais e validação de regras antes de solicitar merge.
+2. **Fluxo de Branches:** Como regra de colaboração da equipe, não realize alterações diretamente na branch `main`. Crie branches curtas por funcionalidade ou correção (`feat/...`, `fix/...`) e submeta Pull Requests.
+3. **Respeito aos Requisitos:** Não implemente funcionalidades sem especificação prévia validada na documentação.
+4. **Domínio Legado:** Não remova o domínio legado `Movie` neste momento; ele permanece isolado e preservado como referência estrutural.
+5. **Contenção Arquitetural:** Mantenha o padrão ASP.NET Core MVC tradicional sem introduzir camadas redundantes (Clean Architecture, Services, Repositories ou DTOs adicionais) sem decisão técnica explicitamente aprovada.
