@@ -176,7 +176,7 @@ Para manter o foco e evitar dispersão de esforço, os seguintes itens não deve
 
 Antes de submeter código para revisão, execute o checklist prático de testes manuais:
 
-* Executar dotnet build src/SquadEstoque.Web/SquadEstoque.Web.csproj e certificar que não há erros de compilação.
+* Executar `mise --cd src/SquadEstoque.Web exec -- dotnet build SquadEstoque.Web.csproj` e certificar que não há erros de compilação.
 * Testar a tela de login (/Account/Login) com os usuários padrão (lojista@squad.com e vendedor@squad.com).
 * Testar o controle de acesso e redirecionamento de rotas protegidas para cada perfil.
 * Testar o cadastro, edição e listagem de produtos com grade de numerações (caso a funcionalidade tenha sido alterada).
@@ -192,7 +192,7 @@ Antes de submeter código para revisão, execute o checklist prático de testes 
 
 * [ ] O escopo da branch é pequeno e bem delimitado.
 * [ ] A branch foi criada a partir da main atualizada.
-* [ ] A compilação (dotnet build) executa com sucesso sem erros.
+* [ ] A compilação (`mise --cd src/SquadEstoque.Web exec -- dotnet build SquadEstoque.Web.csproj`) executa com sucesso sem erros.
 * [ ] O fluxo foi testado manualmente nos perfis pertinentes (Lojista / Vendedor).
 * [ ] As regras de negócio e validações foram verificadas.
 * [ ] Não há arquivos de banco local (*.db, *.db-wal, *.db-shm) ou binários (bin/, obj/) incluídos.

@@ -52,7 +52,7 @@ estoque/
 ## 🚀 Como Executar Localmente
 
 ### 1. Pré-requisitos
-* SDK do **.NET 10** instalado (versão `10` fixada em `src/SquadEstoque.Web/mise.toml`).
+* `mise` instalado. A versão `10` do SDK do .NET é definida em `src/SquadEstoque.Web/mise.toml`.
 
 ### 2. Comandos para Execução
 
@@ -63,18 +63,20 @@ estoque/
 
 2. Restaure os pacotes de dependências:
    ```bash
-   dotnet restore src/SquadEstoque.Web/SquadEstoque.Web.csproj
+   mise --cd src/SquadEstoque.Web exec -- dotnet restore SquadEstoque.Web.csproj
    ```
 
 3. Compile a aplicação:
    ```bash
-   dotnet build src/SquadEstoque.Web/SquadEstoque.Web.csproj
+   mise --cd src/SquadEstoque.Web exec -- dotnet build SquadEstoque.Web.csproj
    ```
 
 4. Execute o projeto:
    ```bash
-   dotnet run --project src/SquadEstoque.Web/SquadEstoque.Web.csproj
+   mise --cd src/SquadEstoque.Web exec -- dotnet run --project SquadEstoque.Web.csproj
    ```
+
+Se o SDK do .NET 10 já estiver disponível diretamente no `PATH`, os mesmos comandos também podem ser executados com `dotnet`, sem o prefixo do `mise`.
 
 ---
 
