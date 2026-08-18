@@ -1,134 +1,294 @@
 # SQUAD Estoque
 
-Sistema web de controle de estoque para loja de calçados, desenvolvido em **ASP.NET Core MVC** com **Entity Framework Core** e **SQLite**.
+Sistema web de controle de estoque para lojas de calçados. O produto permite controlar produtos, grades de numeração, saldos por SKU, movimentações e rupturas, com experiências específicas para lojistas e vendedores.
+
+Tecnologias principais: ASP.NET Core MVC, .NET 10, Entity Framework Core, SQLite, Razor Views, Bootstrap, xUnit e GitHub Actions.
 
 ---
 
-## 📌 Estado Atual do Produto
+## 1. Para começar a desenvolver
+
+Siga esta ordem:
+
+1. prepare o Ubuntu ou Windows pelo [Manual de preparação do ambiente](docs/06-operacional/manual-setup-ambiente.md);
+2. leia as regras no [Guia de desenvolvimento e contribuição](CONTRIBUTING.md);
+3. siga o ciclo prático no [Guia do fluxo de desenvolvimento XP](docs/06-operacional/guia-fluxo-desenvolvimento-xp.md);
+4. consulte os [requisitos](docs/02-requisitos/) e a [arquitetura](docs/04-arquitetura/arquitetura.md) antes de alterar o comportamento;
+5. escolha um cartão no Trello, atribua-se e defina a Daily de entrega;
+6. desenvolva em uma branch individual e abra um Pull Request.
+
+Não trabalhe diretamente na `main`.
+
+---
+
+## 2. Estado atual do produto
 
 ### Implementado
-* **Domínio de estoque:** modelos de Produto, SKU, Movimentação, Ruptura e Usuário.
-* **Persistência de dados:** banco de dados SQLite com controle de schema via Migrations do Entity Framework Core.
-* **Autenticação e autorização:** autenticação por cookies nativa do ASP.NET Core com hash seguro de senhas via BCrypt e controle de acesso por perfis (`LOJISTA` e `VENDEDOR`).
-* **Catálogo e grades:** cadastro de produtos, geração e controle de grades de SKUs, edição e alternância de status ativo/inativo.
-* **Movimentações de estoque:** registro de entradas, saídas com validação de saldo em transação atômica, ajustes manuais com justificativa e histórico de movimentações em modelo append-only.
 
-### Funcionalidades Pendentes Prioritárias
-* **Módulo operacional do vendedor:**
-  * Consulta rápida de estoque por modelo, marca, categoria ou cor.
-  * Visualização da grade de numerações por produto com saldo atual.
-  * Indicação visual de disponibilidade por numeração (Disponível, Último par, Indisponível).
-  * Venda rápida de 1 par com baixa imediata de estoque.
-  * Registro de ocorrência de ruptura quando o SKU solicitado não possuir saldo.
+- entidades de Usuário, Produto, SKU, Movimentação e Ruptura;
+- persistência SQLite com Entity Framework Core e migrations;
+- autenticação por cookies e hash BCrypt;
+- autorização pelos perfis `LOJISTA` e `VENDEDOR`;
+- cadastro e manutenção de produtos e grades de SKU;
+- entrada, saída e ajuste manual de estoque;
+- histórico append-only de movimentações;
+- validação contra saldo negativo;
+- testes automatizados de rotas, domínio, persistência, autenticação e autorização;
+- CI com build e testes no GitHub Actions.
 
-### Pendente de Validação
-* Teste manual completo e homologação dos fluxos operacionais de ponta a ponta.
-* Validação do fluxo de depuração e execução assistida no VS Code.
-* Definição final e alinhamento do fluxo de telas do módulo do vendedor.
+### Próximo incremento
+
+O foco atual é o Módulo Operacional do Vendedor:
+
+1. consulta por modelo, marca, categoria ou cor;
+2. grade de numerações com saldo atual;
+3. estados `Disponível`, `Último par` e `Indisponível`;
+4. venda rápida de um par;
+5. registro de ruptura;
+6. fluxo responsivo para smartphone.
+
+### Validações e riscos pendentes
+
+- homologação manual dos fluxos completos;
+- definição final do fluxo de telas do vendedor;
+- teste de concorrência na venda do último par;
+- validação contínua no Ubuntu e Windows;
+- revisão de dependências e avisos de vulnerabilidade;
+- remoção futura e controlada do legado `Movie`.
 
 ---
 
-## 🛠️ Tecnologias Confirmadas
+## 3. Arquitetura
 
-* **Framework Web:** ASP.NET Core MVC (.NET 10 — `net10.0`)
-* **Linguagem:** C#
-* **ORM:** Entity Framework Core (`Microsoft.EntityFrameworkCore.Sqlite` 10.0.11)
-* **Banco de Dados:** SQLite
-* **Camada de Apresentação:** Razor Views (.cshtml)
-* **Client-side / UI:** Bootstrap v5.3.3, jQuery v3.7.1, jQuery Validation v1.21.0
-
----
-
-## 📁 Estrutura Principal do Repositório
+O projeto usa MVC tradicional e simples:
 
 ```text
-estoque/
-├── src/SquadEstoque.Web/   # Aplicação ASP.NET Core MVC (código-fonte, views, controllers, migrations e assets)
-└── docs/      # Documentação de negócio, requisitos, modelagem, arquitetura e diagramas UML
+Browser
+   |
+   v
+Controllers MVC
+   |          \
+   v           v
+EstoqueContext  Razor Views
+   |
+   v
+SQLite
 ```
 
----
+Estrutura principal:
 
-## 🚀 Como Executar Localmente
+```text
+SQUAD-estoque/
+├── .github/workflows/             Pipeline de CI
+├── docs/                          Negócio, requisitos, arquitetura e operação
+├── src/SquadEstoque.Web/          Aplicação ASP.NET Core MVC
+├── tests/SquadEstoque.Web.Tests/  Testes automatizados
+├── README.md                      Entrada do projeto
+└── CONTRIBUTING.md                Regras oficiais de contribuição
+```
 
-### 1. Pré-requisitos
-* `mise` instalado. A versão `10` do SDK do .NET é definida em `src/SquadEstoque.Web/mise.toml`.
+Decisões obrigatórias:
 
-### 2. Comandos para Execução
+- Controllers acessam diretamente o `EstoqueContext`;
+- Models representam entidades;
+- ViewModels atendem necessidades específicas de tela;
+- Razor Views cuidam da apresentação;
+- SQLite é o banco oficial;
+- Cookie Authentication e BCrypt são mantidos;
+- não introduzir Clean Architecture, Repository Pattern, Unit of Work, MediatR ou camadas artificiais.
 
-1. Acesse a pasta do repositório:
-   ```bash
-   cd estoque
-   ```
-
-2. Restaure os pacotes de dependências:
-   ```bash
-   mise --cd src/SquadEstoque.Web exec -- dotnet restore SquadEstoque.Web.csproj
-   ```
-
-3. Compile a aplicação:
-   ```bash
-   mise --cd src/SquadEstoque.Web exec -- dotnet build SquadEstoque.Web.csproj
-   ```
-
-4. Execute o projeto:
-   ```bash
-   mise --cd src/SquadEstoque.Web exec -- dotnet run --project SquadEstoque.Web.csproj
-   ```
-
-Se o SDK do .NET 10 já estiver disponível diretamente no `PATH`, os mesmos comandos também podem ser executados com `dotnet`, sem o prefixo do `mise`.
+Detalhes estão no [Documento de arquitetura](docs/04-arquitetura/arquitetura.md).
 
 ---
 
-## 🌐 Porta e Acesso Local
+## 4. Execução rápida
 
-* **Endereço esperado:** `http://localhost:5186` (conforme configurado em `src/SquadEstoque.Web/Properties/launchSettings.json` e observado em execução local anterior).
+### Pré-requisitos
+
+- Git;
+- SDK .NET 10;
+- navegador atualizado.
+
+O `mise` é opcional. Consulte o [manual completo de ambiente](docs/06-operacional/manual-setup-ambiente.md) para instalação no Ubuntu e Windows.
+
+### Restaurar
+
+Na raiz do repositório:
+
+```bash
+dotnet restore src/SquadEstoque.Web/SquadEstoque.Web.csproj
+dotnet restore tests/SquadEstoque.Web.Tests/SquadEstoque.Web.Tests.csproj
+```
+
+### Compilar
+
+```bash
+dotnet build src/SquadEstoque.Web/SquadEstoque.Web.csproj --no-restore
+dotnet build tests/SquadEstoque.Web.Tests/SquadEstoque.Web.Tests.csproj --no-restore
+```
+
+### Testar
+
+```bash
+dotnet test tests/SquadEstoque.Web.Tests/SquadEstoque.Web.Tests.csproj --no-restore
+```
+
+### Executar
+
+```bash
+dotnet run --project src/SquadEstoque.Web/SquadEstoque.Web.csproj
+```
+
+Endereço esperado:
+
+```text
+http://localhost:5186
+```
+
+Se o terminal apresentar outra porta, use o endereço informado durante a inicialização.
 
 ---
 
-## 👤 Usuários de Desenvolvimento (Seed Automático)
+## 5. Usuários locais de desenvolvimento
 
-Na inicialização em ambiente de desenvolvimento, caso a tabela `Usuario` esteja vazia, a aplicação insere automaticamente os seguintes usuários para testes:
+Quando a tabela de usuários está vazia no ambiente de desenvolvimento, a aplicação cria:
 
-| Perfil | E-mail | Senha | Acesso / Permissões |
-| :--- | :--- | :--- | :--- |
-| **Lojista** | `lojista@squad.com` | `123` | Acesso administrativo: Produtos, Grades de SKUs, Entradas, Saídas, Ajustes Manuais e Histórico. |
-| **Vendedor** | `vendedor@squad.com` | `123` | Acesso operacional: Registro de Saídas (baixa de estoque) e futuras consultas rápidas. |
+| Perfil | E-mail | Senha | Acesso |
+| --- | --- | --- | --- |
+| Lojista | `lojista@squad.com` | `123` | Produtos, grades, entradas, saídas, ajustes e histórico. |
+| Vendedor | `vendedor@squad.com` | `123` | Operações autorizadas para o atendimento. |
 
----
-
-## 🗄️ Observações sobre o Banco de Dados
-
-* O banco local utilizado para desenvolvimento é o **SQLite** (`src/SquadEstoque.Web/Estoque.db`).
-* Os arquivos de banco de dados (`*.db`, `*.db-wal`, `*.db-shm`) são de uso local e estão configurados no `.gitignore` da raiz para não serem versionados pelo Git.
-* A evolução do schema é versionada por meio das Migrations do Entity Framework Core (localizadas em `src/SquadEstoque.Web/Migrations/Estoque/`), em conjunto com a configuração do modelo no código (`src/SquadEstoque.Web/Data/EstoqueContext.cs`).
+Essas credenciais são exclusivamente locais e não devem ser usadas em produção.
 
 ---
 
-## 📚 Documentação Técnica e de Negócio
+## 6. Regras de negócio essenciais
 
-A documentação detalhada do projeto está organizada na pasta `docs/`:
+- Produto representa o modelo comercial do calçado.
+- SKU é a combinação única de Produto e Numeração.
+- O saldo de um SKU nunca pode ser negativo.
+- Movimentações são append-only e não podem ser editadas ou excluídas.
+- Toda alteração de saldo deve possuir movimentação correspondente.
+- Saídas devem validar saldo e ocorrer de forma transacional.
+- Ajustes manuais exigem justificativa.
+- Ruptura registra demanda não atendida e não altera o estoque.
+- `LOJISTA` possui acesso administrativo.
+- `VENDEDOR` possui acesso operacional limitado.
+- Senhas devem permanecer armazenadas com hash BCrypt.
 
-* **`docs/01-negocio/`:** Domínio, regras de negócio, personas e glossário do varejo de calçados (`dominio.md`).
-* **`docs/02-requisitos/`:** SRS (`srs.md`), Casos de Uso (`casos-de-uso.md`) e Histórias de Usuário (`user-stories.md`).
-* **`docs/03-modelagem/`:** Dicionário de dados (`dicionario-de-dados.md`), modelo conceitual, modelo lógico e modelo físico SQLite (`modelo_fisico.md`).
-* **`docs/04-arquitetura/`:** Arquitetura de software, decisões arquiteturais e fluxos de execução (`arquitetura.md`).
-* **`docs/05-uml/`:** Diagramas UML de classes, casos de uso, DERs, fluxos operacionais e diagramas de sequência.
+Consulte o [domínio](docs/01-negocio/dominio.md) e a [especificação de requisitos](docs/02-requisitos/srs.md) antes de modificar essas regras.
 
 ---
 
-## ⚠️ Diretrizes de Trabalho da Equipe
+## 7. Qualidade e testes
 
-O desenvolvimento do projeto segue práticas inspiradas em **Extreme Programming (XP)**. Consulte o arquivo [`CONTRIBUTING.md`](CONTRIBUTING.md) para o guia completo de contribuição.
+O projeto segue a pirâmide de testes:
 
-1. **Princípios de Trabalho:**
-   * Mudanças pequenas e atômicas.
-   * Feedback rápido e validações frequentes.
-   * Revisão contínua por pares via Pull Request.
-   * Integração frequente com a branch principal.
-   * Simplicidade arquitetural e foco no valor de negócio.
-   * Testes manuais e validação de regras antes de solicitar merge.
-2. **Fluxo de Branches:** Como regra de colaboração da equipe, não realize alterações diretamente na branch `main`. Crie branches curtas por funcionalidade ou correção (`feat/...`, `fix/...`) e submeta Pull Requests.
-3. **Respeito aos Requisitos:** Não implemente funcionalidades sem especificação prévia validada na documentação.
-4. **Domínio Legado:** Não remova o domínio legado `Movie` neste momento; ele permanece isolado e preservado como referência estrutural.
-5. **Contenção Arquitetural:** Mantenha o padrão ASP.NET Core MVC tradicional sem introduzir camadas redundantes (Clean Architecture, Services, Repositories ou DTOs adicionais) sem decisão técnica explicitamente aprovada.
+```text
+                 Poucos
+          Testes de ponta a ponta
+        ---------------------------
+          Testes de integração
+      -------------------------------
+       Muitos testes unitários rápidos
+```
+
+- Base: muitos testes unitários para regras isoláveis.
+- Meio: testes de integração para MVC, autenticação, EF Core e persistência.
+- Topo: poucos testes de ponta a ponta para fluxos críticos.
+- Complemento: validação manual de responsividade, identidade visual e usabilidade.
+
+O projeto possui 22 testes automatizados na baseline atual. O número pode crescer; a referência correta é sempre o resultado de `dotnet test` e do GitHub Actions.
+
+Consulte o [guia XP](docs/06-operacional/guia-fluxo-desenvolvimento-xp.md) para a estratégia completa.
+
+---
+
+## 8. Fluxo resumido de contribuição
+
+```text
+Cartão em A Fazer
+  -> responsável e Daily
+  -> branch individual
+  -> baby steps e testes
+  -> Pull Request
+  -> GitHub Actions
+  -> revisão por outro integrante
+  -> merge na main
+  -> validação integrada
+  -> cartão em Feito
+```
+
+Padrão de branch:
+
+```text
+tipo/sprint-categoria-identificador-integrante
+```
+
+Exemplos:
+
+```text
+feat/s1-be-001-felipe
+feat/s1-fe-002-emmy
+test/s1-qa-003-nicolas
+docs/s1-doc-004-rayana
+```
+
+As instruções completas estão no [CONTRIBUTING.md](CONTRIBUTING.md) e no [guia XP](docs/06-operacional/guia-fluxo-desenvolvimento-xp.md).
+
+---
+
+## 9. Banco de dados local
+
+O banco da aplicação é `src/SquadEstoque.Web/Estoque.db` e não deve ser versionado. Também são ignorados:
+
+```text
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+```
+
+O schema é versionado pelas migrations em [Migrations/Estoque](src/SquadEstoque.Web/Migrations/Estoque/) e pelo mapeamento no [EstoqueContext.cs](src/SquadEstoque.Web/Data/EstoqueContext.cs).
+
+Não crie migration sem necessidade real, cartão relacionado e revisão do código gerado.
+
+---
+
+## 10. Mapa da documentação
+
+| Assunto | Documento |
+| --- | --- |
+| Preparação no Ubuntu e Windows | [manual-setup-ambiente.md](docs/06-operacional/manual-setup-ambiente.md) |
+| Regras de contribuição | [CONTRIBUTING.md](CONTRIBUTING.md) |
+| Fluxo XP, Git, PR e conflitos | [guia-fluxo-desenvolvimento-xp.md](docs/06-operacional/guia-fluxo-desenvolvimento-xp.md) |
+| Domínio do estoque | [dominio.md](docs/01-negocio/dominio.md) |
+| Requisitos | [docs/02-requisitos](docs/02-requisitos/) |
+| SRS | [srs.md](docs/02-requisitos/srs.md) |
+| Casos de uso | [casos-de-uso.md](docs/02-requisitos/casos-de-uso.md) |
+| Histórias de usuário | [user-stories.md](docs/02-requisitos/user-stories.md) |
+| Modelagem de dados | [docs/03-modelagem](docs/03-modelagem/) |
+| Arquitetura | [arquitetura.md](docs/04-arquitetura/arquitetura.md) |
+| Diagramas e fluxos | [docs/05-uml](docs/05-uml/) |
+| Baseline técnica | [checklist-baseline.md](docs/06-operacional/checklist-baseline.md) |
+| Código da aplicação | [src/SquadEstoque.Web](src/SquadEstoque.Web/) |
+| Testes | [tests/SquadEstoque.Web.Tests](tests/SquadEstoque.Web.Tests/) |
+| CI | [dotnet.yml](.github/workflows/dotnet.yml) |
+
+---
+
+## 11. Onde pedir alinhamento
+
+Pare antes de codificar quando:
+
+- o requisito estiver ambíguo;
+- cartão e documentação se contradisserem;
+- for necessária mudança de arquitetura ou tecnologia;
+- surgir uma migration não prevista;
+- houver risco de perda de dados;
+- autenticação ou permissões não estiverem claras;
+- o cartão crescer além do escopo combinado;
+- os testes existentes já estiverem falhando.
+
+Registre o impedimento no cartão com contexto, evidência, impacto e decisão necessária.

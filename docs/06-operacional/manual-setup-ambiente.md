@@ -1,4 +1,4 @@
-# Manual de Onboarding e Setup do Ambiente de Desenvolvimento — SQUAD Estoque
+# Manual de Onboarding e Setup do Ambiente de Desenvolvimento : SQUAD Estoque
 
 **Publico-alvo:** Equipe de Desenvolvimento (Rayana, Felipe, Emmy e Nicolas)  
 **Objetivo:** Padronizar o ambiente de desenvolvimento local para que toda a equipe execute exatamente a mesma versao do .NET, instale o SQLite e DB Browser, saiba utilizar o terminal, compile sem erros, execute a suite de testes automatizados e suba a aplicacao com seguranca.
