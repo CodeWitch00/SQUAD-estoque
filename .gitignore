@@ -46,3 +46,9 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 backups/
+
+# Gestão privada local
+gestao-privada/
+
+# Gestão privada local
+gestao_privada/
