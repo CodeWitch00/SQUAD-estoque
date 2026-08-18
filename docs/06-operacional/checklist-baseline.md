@@ -14,6 +14,7 @@
 - Build com `mise`
 - Execução local
 - Rotas GET básicas
+- Validação manual mínima de login e permissões em 17/08/2026
 
 ## Resultados
 
@@ -25,19 +26,29 @@
 - `/Produtos` respondeu `302` para login
 - `/Movimentacoes` respondeu `302` para login
 - `/Movies` respondeu `200` como legado mantido
+- Login do lojista com `lojista@squad.com` funcionou
+- Lojista acessou Produtos
+- Lojista acessou Movimentações
+- Login do vendedor com `vendedor@squad.com` funcionou
+- Vendedor acessou `/Movimentacoes/Saida` com sucesso
+- O comportamento de `/Produtos` com o vendedor foi validado conforme a regra atual observada
+- Não houve erro na tela durante a validação manual
+- Não houve erro no terminal durante a validação manual
 
 ## Observações
 
 - Os arquivos locais de banco `Estoque.db` e `LegacyMovie.db` são ignorados pelo Git
 - O teste manual completo dos fluxos ainda está pendente
-- O login manual com `lojista@squad.com` e `vendedor@squad.com` ainda deve ser validado
 - O legado `Movie` ainda existe e não deve ser removido nesta fase
 
 ## Checklist pendente
 
-- [ ] Validar login manual
-- [ ] Validar Produtos autenticado
-- [ ] Validar Movimentações autenticado
-- [ ] Validar permissões por perfil
+- [x] Validar login manual de lojista e vendedor
+- [x] Validar Produtos autenticado como lojista
+- [x] Validar Movimentações autenticado como lojista
+- [x] Confirmar acesso do vendedor ao fluxo de saída
+- [x] Confirmar comportamento do acesso do vendedor a Produtos
+- [x] Confirmar ausência de erros na tela e no terminal durante o teste manual
+- [x] Validar permissões básicas por perfil
 - [ ] Validar fluxo de entrada, saída e ajuste
 - [ ] Validar debug no VS Code
