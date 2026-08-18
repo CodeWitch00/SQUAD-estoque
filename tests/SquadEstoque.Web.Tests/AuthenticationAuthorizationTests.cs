@@ -89,6 +89,55 @@ public sealed class AuthenticationAuthorizationTests : IClassFixture<SquadEstoqu
             response.Headers.Location?.PathAndQuery);
     }
 
+    [Fact]
+    public async Task Invalid_credentials_do_not_authenticate()
+    {
+        using var client = CreateClient();
+        var loginPage = await client.GetAsync("/Account/Login");
+        var html = await loginPage.Content.ReadAsStringAsync();
+        var token = ExtractAntiforgeryToken(html);
+        using var content = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["Email"] = "usuario.invalido@example.test",
+            ["Senha"] = "senha-incorreta",
+            ["__RequestVerificationToken"] = token
+        });
+
+        var loginResponse = await client.PostAsync("/Account/Login", content);
+        var produtosResponse = await client.GetAsync("/Produtos");
+
+        Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.Found, produtosResponse.StatusCode);
+        Assert.Equal(
+            "/Account/Login?ReturnUrl=%2FProdutos",
+            produtosResponse.Headers.Location?.PathAndQuery);
+    }
+
+    [Fact]
+    public async Task Logout_clears_authentication_session()
+    {
+        using var client = CreateClient();
+        await LoginAsync(client, "lojista@squad.com");
+        var produtosResponse = await client.GetAsync("/Produtos");
+        var html = await produtosResponse.Content.ReadAsStringAsync();
+        var token = ExtractAntiforgeryToken(html);
+        using var content = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["__RequestVerificationToken"] = token
+        });
+
+        var logoutResponse = await client.PostAsync("/Account/Logout", content);
+        var afterLogoutResponse = await client.GetAsync("/Produtos");
+
+        Assert.Equal(HttpStatusCode.OK, produtosResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.Found, logoutResponse.StatusCode);
+        Assert.Equal("/Account/Login", logoutResponse.Headers.Location?.OriginalString);
+        Assert.Equal(HttpStatusCode.Found, afterLogoutResponse.StatusCode);
+        Assert.Equal(
+            "/Account/Login?ReturnUrl=%2FProdutos",
+            afterLogoutResponse.Headers.Location?.PathAndQuery);
+    }
+
     private HttpClient CreateClient()
     {
         return _factory.CreateClient(new WebApplicationFactoryClientOptions
