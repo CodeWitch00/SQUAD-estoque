@@ -1,0 +1,73 @@
+@model IEnumerable<SquadEstoque.Web.Models.Movimentacao>
+
+@{
+    ViewData["Title"] = "Histórico de Movimentações";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Histórico de Movimentações de Estoque</h2>
+    <div>
+        <a asp-action="Entrada" class="btn btn-success me-2">+ Nova Entrada</a>
+        <a asp-action="Saida" class="btn btn-primary me-2">- Nova Saída</a>
+        <a asp-action="Ajuste" class="btn btn-warning">Ajuste Manual</a>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Nenhuma movimentação registrada até o momento.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Data/Hora</th>
+                    <th>Produto</th>
+                    <th>Numeração</th>
+                    <th>Tipo</th>
+                    <th>Quantidade</th>
+                    <th>Responsável</th>
+                    <th>Motivo / Observação</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.CriadoEm.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")</td>
+                        <td class="fw-bold">@item.Sku?.Produto?.Nome</td>
+                        <td><span class="badge bg-light text-dark border">@item.Sku?.Numeracao</span></td>
+                        <td>
+                            @switch (item.Tipo)
+                            {
+                                case SquadEstoque.Web.Models.TipoMovimentacao.ENTRADA:
+                                    <span class="badge bg-success">ENTRADA</span>
+                                    break;
+                                case SquadEstoque.Web.Models.TipoMovimentacao.SAIDA:
+                                    <span class="badge bg-primary">SAÍDA</span>
+                                    break;
+                                case SquadEstoque.Web.Models.TipoMovimentacao.AJUSTE:
+                                    <span class="badge bg-warning text-dark">AJUSTE</span>
+                                    break;
+                            }
+                        </td>
+                        <td class="fw-bold">@item.Quantidade</td>
+                        <td>@item.Usuario?.Nome</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(item.Motivo))
+                            {
+                                <span>@item.Motivo</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted small">—</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

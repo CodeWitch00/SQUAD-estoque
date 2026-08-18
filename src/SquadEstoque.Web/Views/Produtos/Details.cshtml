@@ -1,0 +1,74 @@
+@model SquadEstoque.Web.Models.Produto
+
+@{
+    ViewData["Title"] = "Detalhes do Produto";
+}
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="card-title mb-0">@Model.Nome</h2>
+            <span class="badge @(Model.Ativo ? "bg-success" : "bg-secondary")">@(Model.Ativo ? "Ativo" : "Inativo")</span>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-sm-4"><strong>Marca:</strong> @Model.Marca</div>
+            <div class="col-sm-4"><strong>Categoria:</strong> @Model.Categoria</div>
+            <div class="col-sm-4"><strong>Cor:</strong> @Model.Cor</div>
+        </div>
+
+        <h4 class="mt-4 mb-3">Grade de Numerações</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 20%;">Numeração</th>
+                        <th style="width: 25%;">Saldo Atual</th>
+                        <th style="width: 25%;">Estado</th>
+                        <th style="width: 30%;" class="text-end">Ações de Estoque</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var sku in Model.Skus.OrderBy(s => s.Numeracao))
+                    {
+                        <tr>
+                            <td class="fw-bold fs-5">@sku.Numeracao</td>
+                            <td>@sku.SaldoAtual par(es)</td>
+                            <td>
+                                @if (sku.SaldoAtual > 1)
+                                {
+                                    <span class="badge bg-success">Disponível</span>
+                                }
+                                else if (sku.SaldoAtual == 1)
+                                {
+                                    <span class="badge bg-warning text-dark">Último par</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Indisponível</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                @if (User.IsInRole("LOJISTA"))
+                                {
+                                    <a asp-controller="Movimentacoes" asp-action="Entrada" asp-route-skuId="@sku.Id" class="btn btn-outline-success btn-sm me-1">+ Entrada</a>
+                                    <a asp-controller="Movimentacoes" asp-action="Saida" asp-route-skuId="@sku.Id" class="btn btn-outline-primary btn-sm me-1">- Saída</a>
+                                    <a asp-controller="Movimentacoes" asp-action="Ajuste" asp-route-skuId="@sku.Id" class="btn btn-outline-warning btn-sm">Ajuste</a>
+                                }
+                                else if (User.IsInRole("VENDEDOR"))
+                                {
+                                    <a asp-controller="Movimentacoes" asp-action="Saida" asp-route-skuId="@sku.Id" class="btn btn-outline-primary btn-sm">- Saída</a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-4 d-flex justify-content-between">
+            <a asp-action="Index" class="btn btn-outline-secondary">Voltar ao Catálogo</a>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar Modelo</a>
+        </div>
+    </div>
+</div>

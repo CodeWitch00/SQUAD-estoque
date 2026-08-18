@@ -111,7 +111,7 @@ Não introduzir no projeto sem discussão e decisão explícita prévia:
 
 ## 7. Banco de Dados e Migrations
 
-* O banco de desenvolvimento é o SQLite (MvcMovie/Estoque.db).
+* O banco de desenvolvimento é o SQLite (src/SquadEstoque.Web/Estoque.db).
 * Arquivos de banco de dados (*.db, *.db-wal, *.db-shm) são locais e não devem ser adicionados ao Git.
 * Não criar novas migrations sem necessidade concreta e justificada por alteração nas entidades.
 * Toda criação de migration deve ser revisada no código gerado (Designer.cs e migration principal) antes de abrir PR.
@@ -154,7 +154,7 @@ A ser desenvolvido de forma incremental:
 Antes de iniciar a implementação deste módulo, a equipe deve validar:
 * O fluxo de navegação e layout das telas para telas mobile.
 * As regras de autorização por perfil (vendedor autenticado).
-* Os critérios de aceite de cada caso de uso (consulte squad/02-requisitos/casos-de-uso.md).
+* Os critérios de aceite de cada caso de uso (consulte docs/02-requisitos/casos-de-uso.md).
 * Se o fluxo de ação na tela será unificado (ex: botões diretos de resultado "Vendeu" / "Não tinha") ou estruturado em etapas.
 
 ---
@@ -166,7 +166,7 @@ Para manter o foco e evitar dispersão de esforço, os seguintes itens não deve
 * Dashboards complexos com gráficos e agregações pesadas.
 * Análise estatística de rupturas.
 * Limpeza completa ou exclusão do domínio legado Movie.
-* Renomeação técnica da pasta MvcMovie.
+* Renomeação técnica da pasta SquadEstoque.Web.
 * Alterações ou trocas de arquitetura e framework.
 * Troca do motor de banco de dados SQLite.
 
@@ -176,7 +176,7 @@ Para manter o foco e evitar dispersão de esforço, os seguintes itens não deve
 
 Antes de submeter código para revisão, execute o checklist prático de testes manuais:
 
-* Executar dotnet build MvcMovie/MvcMovie.csproj e certificar que não há erros de compilação.
+* Executar dotnet build src/SquadEstoque.Web/SquadEstoque.Web.csproj e certificar que não há erros de compilação.
 * Testar a tela de login (/Account/Login) com os usuários padrão (lojista@squad.com e vendedor@squad.com).
 * Testar o controle de acesso e redirecionamento de rotas protegidas para cada perfil.
 * Testar o cadastro, edição e listagem de produtos com grade de numerações (caso a funcionalidade tenha sido alterada).
@@ -198,7 +198,7 @@ Antes de submeter código para revisão, execute o checklist prático de testes 
 * [ ] Não há arquivos de banco local (*.db, *.db-wal, *.db-shm) ou binários (bin/, obj/) incluídos.
 * [ ] Não foram incluídas migrações acidentais ou alterações de schema não planejadas.
 * [ ] Não foram introduzidas camadas ou abstrações desnecessárias.
-* [ ] O README.md ou a documentação na pasta squad/ foram atualizados, se aplicável.
+* [ ] O README.md ou a documentação na pasta docs/ foram atualizados, se aplicável.
 
 ---
 

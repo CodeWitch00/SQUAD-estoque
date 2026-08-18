@@ -1,0 +1,34 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/SquadEstoque.Web.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "watch",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "watch",
+        "run",
+        "--project",
+        "${workspaceFolder}/SquadEstoque.Web.csproj"
+      ],
+      "options": {
+        "env": {
+          "DOTNET_USE_POLLING_FILE_WATCHER": "1"
+        }
+      },
+      "problemMatcher": "$msCompile"
+    }
+  ]
+}

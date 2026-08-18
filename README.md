@@ -43,8 +43,8 @@ Sistema web de controle de estoque para loja de calçados, desenvolvido em **ASP
 
 ```text
 estoque/
-├── MvcMovie/   # Aplicação ASP.NET Core MVC (código-fonte, views, controllers, migrations e assets)
-└── squad/      # Documentação de negócio, requisitos, modelagem, arquitetura e diagramas UML
+├── src/SquadEstoque.Web/   # Aplicação ASP.NET Core MVC (código-fonte, views, controllers, migrations e assets)
+└── docs/      # Documentação de negócio, requisitos, modelagem, arquitetura e diagramas UML
 ```
 
 ---
@@ -52,7 +52,7 @@ estoque/
 ## 🚀 Como Executar Localmente
 
 ### 1. Pré-requisitos
-* SDK do **.NET 10** instalado (versão `10` fixada em `MvcMovie/mise.toml`).
+* SDK do **.NET 10** instalado (versão `10` fixada em `src/SquadEstoque.Web/mise.toml`).
 
 ### 2. Comandos para Execução
 
@@ -63,24 +63,24 @@ estoque/
 
 2. Restaure os pacotes de dependências:
    ```bash
-   dotnet restore MvcMovie/MvcMovie.csproj
+   dotnet restore src/SquadEstoque.Web/SquadEstoque.Web.csproj
    ```
 
 3. Compile a aplicação:
    ```bash
-   dotnet build MvcMovie/MvcMovie.csproj
+   dotnet build src/SquadEstoque.Web/SquadEstoque.Web.csproj
    ```
 
 4. Execute o projeto:
    ```bash
-   dotnet run --project MvcMovie/MvcMovie.csproj
+   dotnet run --project src/SquadEstoque.Web/SquadEstoque.Web.csproj
    ```
 
 ---
 
 ## 🌐 Porta e Acesso Local
 
-* **Endereço esperado:** `http://localhost:5186` (conforme configurado em `MvcMovie/Properties/launchSettings.json` e observado em execução local anterior).
+* **Endereço esperado:** `http://localhost:5186` (conforme configurado em `src/SquadEstoque.Web/Properties/launchSettings.json` e observado em execução local anterior).
 
 ---
 
@@ -97,21 +97,21 @@ Na inicialização em ambiente de desenvolvimento, caso a tabela `Usuario` estej
 
 ## 🗄️ Observações sobre o Banco de Dados
 
-* O banco local utilizado para desenvolvimento é o **SQLite** (`MvcMovie/Estoque.db`).
+* O banco local utilizado para desenvolvimento é o **SQLite** (`src/SquadEstoque.Web/Estoque.db`).
 * Os arquivos de banco de dados (`*.db`, `*.db-wal`, `*.db-shm`) são de uso local e estão configurados no `.gitignore` da raiz para não serem versionados pelo Git.
-* A evolução do schema é versionada por meio das Migrations do Entity Framework Core (localizadas em `MvcMovie/Migrations/Estoque/`), em conjunto com a configuração do modelo no código (`MvcMovie/Data/EstoqueContext.cs`).
+* A evolução do schema é versionada por meio das Migrations do Entity Framework Core (localizadas em `src/SquadEstoque.Web/Migrations/Estoque/`), em conjunto com a configuração do modelo no código (`src/SquadEstoque.Web/Data/EstoqueContext.cs`).
 
 ---
 
 ## 📚 Documentação Técnica e de Negócio
 
-A documentação detalhada do projeto está organizada na pasta `squad/`:
+A documentação detalhada do projeto está organizada na pasta `docs/`:
 
-* **`squad/01-negocio/`:** Domínio, regras de negócio, personas e glossário do varejo de calçados (`dominio.md`).
-* **`squad/02-requisitos/`:** SRS (`srs.md`), Casos de Uso (`casos-de-uso.md`) e Histórias de Usuário (`user-stories.md`).
-* **`squad/03-modelagem/`:** Dicionário de dados (`dicionario-de-dados.md`), modelo conceitual, modelo lógico e modelo físico SQLite (`modelo_fisico.md`).
-* **`squad/04-arquitetura/`:** Arquitetura de software, decisões arquiteturais e fluxos de execução (`arquitetura.md`).
-* **`squad/05-uml/`:** Diagramas UML de classes, casos de uso, DERs, fluxos operacionais e diagramas de sequência.
+* **`docs/01-negocio/`:** Domínio, regras de negócio, personas e glossário do varejo de calçados (`dominio.md`).
+* **`docs/02-requisitos/`:** SRS (`srs.md`), Casos de Uso (`casos-de-uso.md`) e Histórias de Usuário (`user-stories.md`).
+* **`docs/03-modelagem/`:** Dicionário de dados (`dicionario-de-dados.md`), modelo conceitual, modelo lógico e modelo físico SQLite (`modelo_fisico.md`).
+* **`docs/04-arquitetura/`:** Arquitetura de software, decisões arquiteturais e fluxos de execução (`arquitetura.md`).
+* **`docs/05-uml/`:** Diagramas UML de classes, casos de uso, DERs, fluxos operacionais e diagramas de sequência.
 
 ---
 
