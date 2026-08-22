@@ -10,9 +10,9 @@ Tecnologias principais: ASP.NET Core MVC, .NET 10, Entity Framework Core, SQLite
 
 Siga esta ordem:
 
-1. prepare o Ubuntu ou Windows pelo [Manual de preparação do ambiente](docs/06-operacional/manual-setup-ambiente.md);
+1. prepare o Ubuntu ou Windows pelo [Manual de preparação do ambiente](docs/07-operacional/manual-setup-ambiente.md);
 2. leia as regras no [Guia de desenvolvimento e contribuição](CONTRIBUTING.md);
-3. siga o ciclo prático no [Guia do fluxo de desenvolvimento XP](docs/06-operacional/guia-fluxo-desenvolvimento-xp.md);
+3. siga o ciclo prático no [Guia do fluxo de desenvolvimento XP](docs/07-operacional/guia-fluxo-desenvolvimento-xp.md);
 4. consulte os [requisitos](docs/02-requisitos/) e a [arquitetura](docs/04-arquitetura/arquitetura.md) antes de alterar o comportamento;
 5. escolha um cartão no Trello, atribua-se e defina a Daily de entrega;
 6. desenvolva em uma branch individual e abra um Pull Request.
@@ -109,7 +109,7 @@ Detalhes estão no [Documento de arquitetura](docs/04-arquitetura/arquitetura.md
 - SDK .NET 10;
 - navegador atualizado.
 
-O `mise` é opcional. Consulte o [manual completo de ambiente](docs/06-operacional/manual-setup-ambiente.md) para instalação no Ubuntu e Windows.
+O `mise` é opcional. Consulte o [manual completo de ambiente](docs/07-operacional/manual-setup-ambiente.md) para instalação no Ubuntu e Windows.
 
 ### Restaurar
 
@@ -200,7 +200,7 @@ O projeto segue a pirâmide de testes:
 
 O projeto possui 22 testes automatizados na baseline atual. O número pode crescer; a referência correta é sempre o resultado de `dotnet test` e do GitHub Actions.
 
-Consulte o [guia XP](docs/06-operacional/guia-fluxo-desenvolvimento-xp.md) para a estratégia completa.
+Consulte o [guia XP](docs/07-operacional/guia-fluxo-desenvolvimento-xp.md) para a estratégia completa.
 
 ---
 
@@ -234,7 +234,7 @@ test/s1-qa-003-nicolas
 docs/s1-doc-004-rayana
 ```
 
-As instruções completas estão no [CONTRIBUTING.md](CONTRIBUTING.md) e no [guia XP](docs/06-operacional/guia-fluxo-desenvolvimento-xp.md).
+As instruções completas estão no [CONTRIBUTING.md](CONTRIBUTING.md) e no [guia XP](docs/07-operacional/guia-fluxo-desenvolvimento-xp.md).
 
 ---
 
@@ -260,9 +260,9 @@ Não crie migration sem necessidade real, cartão relacionado e revisão do cód
 
 | Assunto | Documento |
 | --- | --- |
-| Preparação no Ubuntu e Windows | [manual-setup-ambiente.md](docs/06-operacional/manual-setup-ambiente.md) |
+| Preparação no Ubuntu e Windows | [manual-setup-ambiente.md](docs/07-operacional/manual-setup-ambiente.md) |
 | Regras de contribuição | [CONTRIBUTING.md](CONTRIBUTING.md) |
-| Fluxo XP, Git, PR e conflitos | [guia-fluxo-desenvolvimento-xp.md](docs/06-operacional/guia-fluxo-desenvolvimento-xp.md) |
+| Fluxo XP, Git, PR e conflitos | [guia-fluxo-desenvolvimento-xp.md](docs/07-operacional/guia-fluxo-desenvolvimento-xp.md) |
 | Domínio do estoque | [dominio.md](docs/01-negocio/dominio.md) |
 | Requisitos | [docs/02-requisitos](docs/02-requisitos/) |
 | SRS | [srs.md](docs/02-requisitos/srs.md) |
@@ -270,8 +270,10 @@ Não crie migration sem necessidade real, cartão relacionado e revisão do cód
 | Histórias de usuário | [user-stories.md](docs/02-requisitos/user-stories.md) |
 | Modelagem de dados | [docs/03-modelagem](docs/03-modelagem/) |
 | Arquitetura | [arquitetura.md](docs/04-arquitetura/arquitetura.md) |
-| Diagramas e fluxos | [docs/05-uml](docs/05-uml/) |
-| Baseline técnica | [checklist-baseline.md](docs/06-operacional/checklist-baseline.md) |
+| UX, telas e navegação | [docs/05-ux](docs/05-ux/) |
+| Diagramas UML | [docs/06-uml](docs/06-uml/) |
+| Baseline técnica | [checklist-baseline.md](docs/07-operacional/checklist-baseline.md) |
+| Monografia | [docs/08-monografia](docs/08-monografia/) |
 | Código da aplicação | [src/SquadEstoque.Web](src/SquadEstoque.Web/) |
 | Testes | [tests/SquadEstoque.Web.Tests](tests/SquadEstoque.Web.Tests/) |
 | CI | [dotnet.yml](.github/workflows/dotnet.yml) |

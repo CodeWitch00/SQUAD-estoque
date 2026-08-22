@@ -100,9 +100,9 @@ Mova o cartão para `Feito` somente quando:
 
 ## 4. Preparação do ambiente
 
-Para instalação detalhada das ferramentas, configuração no Ubuntu e no Windows, VS Code e solução de problemas, consulte o [Manual de preparação do ambiente](docs/06-operacional/manual-setup-ambiente.md).
+Para instalação detalhada das ferramentas, configuração no Ubuntu e no Windows, VS Code e solução de problemas, consulte o [Manual de preparação do ambiente](docs/07-operacional/manual-setup-ambiente.md).
 
-Para o passo a passo completo de cartão, branch, commits, Pull Request, revisão e conflitos, consulte o [Guia do fluxo de desenvolvimento XP](docs/06-operacional/guia-fluxo-desenvolvimento-xp.md).
+Para o passo a passo completo de cartão, branch, commits, Pull Request, revisão e conflitos, consulte o [Guia do fluxo de desenvolvimento XP](docs/07-operacional/guia-fluxo-desenvolvimento-xp.md).
 ### 4.1 Pré-requisitos
 
 - Git;
@@ -394,7 +394,7 @@ O projeto segue a pirâmide de testes:
 - mantenha poucos testes de ponta a ponta, reservados aos fluxos críticos;
 - complemente com validação manual de responsividade, identidade visual e usabilidade.
 
-Evite uma pirâmide invertida com muitos testes lentos de interface e pouca cobertura rápida. A estratégia detalhada está no [Guia do fluxo de desenvolvimento XP](docs/06-operacional/guia-fluxo-desenvolvimento-xp.md#6-estratégia-de-testes-em-pirâmide).
+Evite uma pirâmide invertida com muitos testes lentos de interface e pouca cobertura rápida. A estratégia detalhada está no [Guia do fluxo de desenvolvimento XP](docs/07-operacional/guia-fluxo-desenvolvimento-xp.md#6-estratégia-de-testes-em-pirâmide).
 
 ### Exigir teste automatizado quando houver
 
@@ -582,9 +582,10 @@ Registre o impedimento no cartão e leve uma descrição objetiva para a equipe:
 - Requisitos: [docs/02-requisitos](docs/02-requisitos/);
 - Modelagem: [docs/03-modelagem](docs/03-modelagem/);
 - Arquitetura: [arquitetura.md](docs/04-arquitetura/arquitetura.md);
-- Diagramas e fluxos: [docs/05-uml](docs/05-uml/);
-- Baseline operacional: [checklist-baseline.md](docs/06-operacional/checklist-baseline.md);
-- Preparação do ambiente: [manual-setup-ambiente.md](docs/06-operacional/manual-setup-ambiente.md);
+- UX, telas e navegação: [docs/05-ux](docs/05-ux/);
+- Diagramas UML: [docs/06-uml](docs/06-uml/);
+- Baseline operacional: [checklist-baseline.md](docs/07-operacional/checklist-baseline.md);
+- Preparação do ambiente: [manual-setup-ambiente.md](docs/07-operacional/manual-setup-ambiente.md);
 - Aplicação: [src/SquadEstoque.Web](src/SquadEstoque.Web/);
 - Testes: [tests/SquadEstoque.Web.Tests](tests/SquadEstoque.Web.Tests/);
 - Integração contínua: [dotnet.yml](.github/workflows/dotnet.yml).
