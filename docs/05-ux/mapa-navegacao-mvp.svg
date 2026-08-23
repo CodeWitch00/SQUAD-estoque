@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1060" viewBox="0 0 1600 1060" role="img" aria-labelledby="title desc">
+  <title id="title">Mapa de navegação do MVP SQUAD Estoque por perfil</title>
+  <desc id="desc">Fluxos do vendedor e do lojista, diferenciando telas existentes, pendentes e legado fora do fluxo.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#475569"/></marker>
+    <style>
+      .title{font:700 28px Arial,sans-serif;fill:#0f172a}.subtitle{font:400 15px Arial,sans-serif;fill:#475569}
+      .lane{fill:#f8fafc;stroke:#cbd5e1;stroke-width:2}.lane-title{font:700 21px Arial,sans-serif;fill:#0f172a}
+      .node{stroke-width:3;rx:10}.existing{fill:#dcfce7;stroke:#15803d}.pending{fill:#ffedd5;stroke:#c2410c;stroke-dasharray:8 5}.legacy{fill:#e2e8f0;stroke:#64748b}
+      .label{font:700 15px Arial,sans-serif;fill:#0f172a;text-anchor:middle}.small{font:400 13px Arial,sans-serif;fill:#334155;text-anchor:middle}
+      .edge{fill:none;stroke:#475569;stroke-width:2;marker-end:url(#arrow)}.edge-dash{fill:none;stroke:#475569;stroke-width:2;stroke-dasharray:7 5;marker-end:url(#arrow)}
+      .edge-label{font:400 12px Arial,sans-serif;fill:#334155;text-anchor:middle}.legend{font:400 14px Arial,sans-serif;fill:#334155}
+    </style>
+  </defs>
+  <rect width="1600" height="1060" fill="#ffffff"/>
+  <text x="50" y="45" class="title">SQUAD Estoque — mapa de navegação do MVP</text>
+  <text x="50" y="72" class="subtitle">Fluxo-alvo por perfil · baseline a5b0b7e · RF-01–23, UC-01–12 e US-01–13</text>
+
+  <rect x="50" y="95" width="1500" height="110" class="lane" rx="14"/>
+  <text x="75" y="125" class="lane-title">Acesso comum</text>
+  <rect x="615" y="120" width="370" height="62" class="node existing"/>
+  <text x="800" y="147" class="label">AUT-01 · Login</text><text x="800" y="168" class="small">/Account/Login · Público</text>
+
+  <rect x="50" y="225" width="740" height="690" class="lane" rx="14"/>
+  <text x="75" y="260" class="lane-title">VENDEDOR · atendimento mobile</text>
+  <rect x="245" y="285" width="350" height="62" class="node pending"/>
+  <text x="420" y="312" class="label">VEN-01 · Início do vendedor</text><text x="420" y="333" class="small">acesso direto à busca</text>
+  <rect x="245" y="390" width="350" height="70" class="node pending"/>
+  <text x="420" y="418" class="label">VEN-02 · Consulta</text><text x="420" y="440" class="small">modelo / resultados / estado vazio</text>
+  <rect x="245" y="510" width="350" height="75" class="node pending"/>
+  <text x="420" y="538" class="label">VEN-03 · Grade consultada</text><text x="420" y="560" class="small">numerações, saldos e 3 estados</text>
+  <rect x="75" y="655" width="200" height="74" class="node pending"/>
+  <text x="175" y="683" class="label">VEN-04 · Vendeu</text><text x="175" y="705" class="small">−1 e movimentação</text>
+  <rect x="320" y="655" width="200" height="74" class="node pending"/>
+  <text x="420" y="683" class="label">VEN-05 · Não tinha</text><text x="420" y="705" class="small">ruptura; saldo intacto</text>
+  <rect x="565" y="655" width="200" height="74" class="node pending"/>
+  <text x="665" y="683" class="label">VEN-06 · Desistiu</text><text x="665" y="705" class="small">sem persistência</text>
+  <path d="M700 182 C600 215 500 230 455 285" class="edge-dash"/><text x="565" y="238" class="edge-label">perfil VENDEDOR</text>
+  <path d="M420 347 L420 390" class="edge-dash"/><path d="M420 460 L420 510" class="edge-dash"/>
+  <path d="M350 585 C300 610 235 625 190 655" class="edge-dash"/><path d="M420 585 L420 655" class="edge-dash"/><path d="M490 585 C545 610 610 625 650 655" class="edge-dash"/>
+  <path d="M175 729 C175 820 225 850 300 850 L350 850 C395 850 420 820 420 775 L420 730" class="edge-dash"/>
+  <path d="M420 729 L420 775 C420 820 420 835 420 835 C420 835 420 495 420 460" class="edge-dash"/>
+  <path d="M665 729 C665 820 605 850 530 850 L490 850 C445 850 420 820 420 775" class="edge-dash"/>
+  <text x="420" y="880" class="edge-label">confirmar, desistir ou ignorar resultado → nova consulta</text>
+
+  <rect x="810" y="225" width="740" height="690" class="lane" rx="14"/>
+  <text x="835" y="260" class="lane-title">LOJISTA · administração e decisão</text>
+  <rect x="1005" y="285" width="350" height="62" class="node pending"/>
+  <text x="1180" y="312" class="label">LOJ-01 · Início do lojista</text><text x="1180" y="333" class="small">atalhos das quatro áreas</text>
+  <rect x="850" y="400" width="200" height="68" class="node existing"/><text x="950" y="428" class="label">LOJ-02 · Produtos</text><text x="950" y="449" class="small">/Produtos</text>
+  <rect x="1080" y="400" width="220" height="68" class="node existing"/><text x="1190" y="428" class="label">LOJ-09 · Movimentações</text><text x="1190" y="449" class="small">histórico</text>
+  <rect x="1330" y="385" width="190" height="68" class="node pending"/><text x="1425" y="413" class="label">LOJ-10 · Zeros</text><text x="1425" y="434" class="small">por modelo</text>
+  <rect x="1330" y="485" width="190" height="68" class="node pending"/><text x="1425" y="513" class="label">LOJ-11 · Rupturas</text><text x="1425" y="534" class="small">frequência por SKU</text>
+  <rect x="835" y="535" width="200" height="68" class="node existing"/><text x="935" y="563" class="label">LOJ-03 · Cadastro</text><text x="935" y="584" class="small">produto + grade</text>
+  <rect x="1080" y="535" width="220" height="68" class="node existing"/><text x="1190" y="563" class="label">LOJ-04 · Detalhe/grade</text><text x="1190" y="584" class="small">saldo por SKU</text>
+  <rect x="835" y="665" width="190" height="68" class="node existing"/><text x="930" y="693" class="label">LOJ-06 · Entrada</text><text x="930" y="714" class="small">somar saldo</text>
+  <rect x="1070" y="665" width="190" height="68" class="node existing"/><text x="1165" y="693" class="label">LOJ-07 · Saída</text><text x="1165" y="714" class="small">saída administrativa</text>
+  <rect x="1305" y="665" width="190" height="68" class="node existing"/><text x="1400" y="693" class="label">LOJ-08 · Ajuste</text><text x="1400" y="714" class="small">novo saldo + motivo</text>
+  <path d="M900 182 C980 215 1090 230 1145 285" class="edge-dash"/><text x="1040" y="238" class="edge-label">perfil LOJISTA</text>
+  <path d="M1125 347 C1050 365 990 375 955 400" class="edge-dash"/><path d="M1180 347 L1190 400" class="edge-dash"/>
+  <path d="M1235 347 C1320 360 1380 365 1410 385" class="edge-dash"/><path d="M1260 347 C1350 405 1390 445 1415 485" class="edge-dash"/>
+  <path d="M930 468 L935 535" class="edge"/><path d="M1010 468 C1060 495 1110 510 1165 535" class="edge"/>
+  <path d="M1190 603 C1115 625 1000 640 945 665" class="edge"/><path d="M1190 603 L1170 665" class="edge"/><path d="M1250 603 C1310 625 1360 640 1390 665" class="edge"/>
+  <path d="M930 665 C930 630 1010 615 1100 595" class="edge"/><path d="M1165 665 L1180 603" class="edge"/><path d="M1400 665 C1390 625 1320 615 1265 595" class="edge"/>
+
+  <rect x="50" y="940" width="1500" height="85" class="lane" rx="14"/>
+  <rect x="80" y="965" width="42" height="25" class="node existing"/><text x="135" y="983" class="legend">Existente</text>
+  <rect x="250" y="965" width="42" height="25" class="node pending"/><text x="305" y="983" class="legend">Pendente</text>
+  <rect x="420" y="965" width="42" height="25" class="node legacy"/><text x="475" y="983" class="legend">Legado fora do fluxo (não desenhado no caminho principal)</text>
+  <text x="910" y="982" class="legend">Todas as telas administrativas: LOJISTA · Atendimento: VENDEDOR</text>
+</svg>

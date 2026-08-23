@@ -56,7 +56,8 @@ Não pule etapas. Se houver dúvida de requisito, arquitetura, segurança ou ban
 | Valor para cada perfil | [user-stories.md](../02-requisitos/user-stories.md) |
 | Estrutura MVC permitida | [arquitetura.md](../04-arquitetura/arquitetura.md) |
 | Dados e relacionamentos | [dicionario-de-dados.md](../03-modelagem/dicionario-de-dados.md) |
-| Diagramas e fluxos visuais | [docs/05-uml](../05-uml/) |
+| Inventário de telas e fluxos de UX | [docs/05-ux](../05-ux/) |
+| Diagramas UML | [docs/06-uml](../06-uml/) |
 | Estado validado da base | [checklist-baseline.md](checklist-baseline.md) |
 | Código da aplicação | [src/SquadEstoque.Web](../../src/SquadEstoque.Web/) |
 | Exemplos de testes | [tests/SquadEstoque.Web.Tests](../../tests/SquadEstoque.Web.Tests/) |

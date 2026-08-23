@@ -225,8 +225,12 @@ ESTOQUE/
 └── docs/                          # DOCUMENTACAO OFICIAL DO PROJETO
     ├── 01-negocio/                # Regras de negocio e dominio do calcado
     ├── 02-requisitos/             # SRS e Historias de Usuario
-    ├── 06-operacional/            # Manuais e checklists operacionais
-    └── 07-monografia/             # Textos e normas da monografia
+    ├── 03-modelagem/              # Modelos e dicionario de dados
+    ├── 04-arquitetura/            # Arquitetura do sistema
+    ├── 05-ux/                     # Inventario de telas, fluxos e evidencias
+    ├── 06-uml/                    # Diagramas UML
+    ├── 07-operacional/            # Manuais e checklists operacionais
+    └── 08-monografia/             # Textos e normas da monografia
 ```
 
 ---
