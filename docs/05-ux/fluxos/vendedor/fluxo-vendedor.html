@@ -1,0 +1,2004 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Fluxo Vendedor Mobile</title>
+<style>:root{color-scheme:light dark;background:light-dark(rgb(255 255 255), rgb(24 24 24))}html,body{margin:0}body{box-sizing:border-box;padding:1rem;background:inherit}iframe{display:block;width:100%;height:calc(100vh - 2rem);margin:0 auto;border:0}</style>
+</head>
+<body>
+<iframe sandbox="allow-scripts" referrerpolicy="no-referrer" title="Fluxo Vendedor Mobile" srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+&lt;meta name=&quot;referrer&quot; content=&quot;no-referrer&quot;&gt;
+&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; script-src &#x27;unsafe-inline&#x27; &#x27;unsafe-eval&#x27; &#x27;wasm-unsafe-eval&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src &#x27;unsafe-inline&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src &#x27;none&#x27;; object-src &#x27;none&#x27;; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;&quot;&gt;
+&lt;title&gt;Fluxo Vendedor Mobile&lt;/title&gt;
+&lt;style&gt;:root {
+  color-scheme: light dark;
+  background-color: var(
+    --background,
+    var(--color-background-primary, light-dark(rgb(255 255 255), rgb(24 24 24)))
+  ) !important;
+
+  /* Agent-facing contract; keep in sync with SKILL.md. */
+  --background: var(
+    --color-background-primary,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --card: color-mix(in oklab, var(--foreground) 5%, var(--background));
+  --card-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --popover: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255), rgb(45 45 45))
+  );
+  --popover-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --primary: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --primary-foreground: var(
+    --color-text-inverse,
+    light-dark(rgb(255 255 255), rgb(13 13 13))
+  );
+  --secondary: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255 / 96%), rgb(54 54 54 / 96%))
+  );
+  --secondary-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --muted: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --muted-foreground: var(
+    --color-text-secondary,
+    light-dark(rgb(26 28 31 / 49.4%), rgb(255 255 255 / 49.8%))
+  );
+  --accent: var(
+    --color-background-info,
+    light-dark(rgb(229 242 255), rgb(13 39 63))
+  );
+  --accent-foreground: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --destructive: var(
+    --color-text-warning,
+    light-dark(rgb(226 85 7), rgb(255 133 73))
+  );
+  --border: var(
+    --color-border-secondary,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+  --input: var(
+    --color-border-primary,
+    light-dark(
+      rgb(26 28 31 / 11.8%),
+      color-mix(in oklab, rgb(0 0 0) 10%, transparent)
+    )
+  );
+  --ring: var(
+    --color-ring-primary,
+    light-dark(rgb(51 156 255), rgb(131 195 255 / 76%))
+  );
+  --font-size-base: var(--font-text-md-size, 14px);
+  --blue: light-dark(rgb(51 156 255), rgb(51 156 255));
+  --orange: light-dark(rgb(226 85 7), rgb(251 106 34));
+  --green: light-dark(rgb(0 162 64), rgb(64 201 119));
+  --red: light-dark(rgb(224 46 42), rgb(255 103 100));
+  --purple: light-dark(rgb(146 79 247), rgb(173 123 249));
+  --yellow: light-dark(rgb(255 195 0), rgb(255 210 64));
+  --viz-series-1: var(--primary);
+  --viz-series-2: light-dark(rgb(243 136 59), rgb(245 154 86));
+  --viz-series-3: light-dark(rgb(93 201 119), rgb(116 213 139));
+  --viz-series-4: light-dark(rgb(235 119 177), rgb(240 143 192));
+  --viz-series-5: light-dark(rgb(155 121 236), rgb(170 145 239));
+  --viz-series-6: light-dark(rgb(58 185 177), rgb(90 203 194));
+
+  /* Internal implementation variables; not part of the agent contract. */
+  --font-sans: -apple-system, system-ui, &quot;Segoe UI&quot;, sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, &quot;Liberation Mono&quot;,
+    monospace;
+  --font-size-normal: max(11px, var(--font-size-base));
+  --font-size-tooltip: calc(var(--font-size-base) - 1px);
+  --font-size-small: max(11px, calc(var(--font-size-base) - 2px));
+  --font-size-h1: calc(var(--font-size-normal) * 1.7142857143);
+  --font-size-h2: calc(var(--font-size-normal) * 1.4285714286);
+  --font-size-h3: calc(var(--font-size-normal) * 1.2857142857);
+  --font-weight-normal: 430;
+  --font-weight-medium: 500;
+  --line-height-normal: calc(var(--font-size-normal) * 1.5);
+  --line-height-tooltip: calc(var(--font-size-tooltip) * 1.4285714286);
+  --line-height-small: calc(var(--font-size-small) + 4px);
+  --radius: var(--border-radius-lg, 12.5px);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-2xl: calc(var(--radius) * 1.6);
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px -1px rgb(0 0 0 / 8%);
+  --checkmark-image: url(&quot;data:image/svg+xml,%3Csvg xmlns=&#x27;http://www.w3.org/2000/svg&#x27; viewBox=&#x27;0 0 17 17&#x27;%3E%3Cpath d=&#x27;M12.8961 3.64101C13.1297 3.41418 13.4984 3.37523 13.7779 3.56581C14.0571 3.75635 14.1554 4.11331 14.0299 4.41347L13.9615 4.53847L7.71151 13.7045C7.59411 13.8767 7.4063 13.9877 7.19881 14.0072C6.99136 14.0267 6.78564 13.9533 6.63826 13.806L2.88826 10.056L2.79842 9.9457C2.6192 9.67407 2.64927 9.30496 2.88826 9.06581C3.12738 8.82669 3.49647 8.79676 3.76815 8.97597L3.8785 9.06581L7.03084 12.2182L12.8053 3.74941L12.8961 3.64101Z&#x27;/%3E%3C/svg%3E&quot;);
+
+  /* Legacy aliases; not part of the current agent contract. */
+  --viz-bg: transparent;
+  --viz-panel: var(--card);
+  --viz-border: var(--border);
+  --viz-text: var(--foreground);
+  --viz-muted: var(--muted-foreground);
+  --viz-accent: var(--primary);
+  --viz-accent-text: var(--primary-foreground);
+  --viz-accent-bg: var(--accent);
+  --viz-font-size: var(--font-size-base);
+  --viz-warning: var(--destructive);
+}
+
+:root[data-theme=&quot;light&quot;] {
+  color-scheme: light;
+}
+
+:root[data-theme=&quot;dark&quot;] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html &gt; body {
+  /* Preserve MCP aliases for older inline renderers without creating :root cycles. */
+  --color-background-primary: var(
+    --background,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --color-text-primary: var(
+    --foreground,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --color-border-secondary: var(
+    --border,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+
+  margin: 0;
+  padding: 5px;
+  color: var(--foreground);
+  background: transparent !important;
+  font-family: var(--font-sans) !important;
+  font-size: var(--font-size-normal);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+}
+
+a {
+  color: color-mix(in srgb, var(--viz-accent) 80%, var(--viz-text) 20%);
+  cursor: pointer;
+  font-weight: var(--font-weight-medium, 500);
+  text-decoration: none;
+  text-underline-offset: 2px;
+}
+
+a:is(:hover, :focus-visible) {
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 0.5px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin-block: 0;
+}
+
+h1 {
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.3;
+}
+
+b,
+strong,
+th {
+  font-weight: var(--font-weight-medium);
+}
+
+code:not(pre code) {
+  display: inline;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  corner-shape: superellipse(1.5);
+  background: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  word-break: break-word;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+}
+
+.table :is(th, td) {
+  padding-block: 10px;
+  padding-inline: 0 24px;
+  overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--border);
+  text-align: start;
+  vertical-align: top;
+}
+
+.table-responsive &gt; .table :is(th, td) {
+  overflow-wrap: break-word;
+}
+
+.table :is(th, td):last-child {
+  padding-inline-end: 0;
+}
+
+.table :is(caption, thead th) {
+  font-weight: 600;
+}
+
+.table thead th {
+  padding-block: 8px;
+  border-bottom-color: color-mix(in srgb, var(--foreground) 16%, transparent);
+}
+
+.table tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+
+.table.table-sm :is(th, td) {
+  padding-block: 6px;
+}
+
+.table.table-sm :is(th, td):not(:last-child) {
+  padding-inline-end: 16px;
+}
+
+.table :is(.text-end, [align=&quot;right&quot;]) {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.table :is(.text-center, [align=&quot;center&quot;]) {
+  text-align: center;
+}
+
+.table .text-nowrap {
+  white-space: nowrap;
+}
+
+#widget {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  background: transparent !important;
+}
+
+.card {
+  min-width: 0;
+  padding: 12px;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  border-radius: var(--radius-2xl);
+  corner-shape: superellipse(1.5);
+  color: var(--card-foreground);
+  background: var(--card);
+}
+
+#widget &gt; :not(.card, .progress) {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  width: max-content;
+  max-width: min(
+    20rem,
+    var(--tooltip-available-width, calc(100vw - 10px)),
+    calc(100vw - 10px)
+  );
+  max-height: min(
+    var(--tooltip-available-height, calc(100vh - 10px)),
+    calc(100vh - 10px)
+  );
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--popover-foreground);
+  background: var(--popover);
+  box-shadow: none;
+  font-size: var(--font-size-tooltip);
+  line-height: var(--line-height-tooltip);
+  overflow-wrap: break-word;
+  white-space: normal;
+  pointer-events: none;
+  user-select: none;
+}
+
+.viz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(max(180px, 24%), 1fr));
+  gap: 10px;
+}
+
+.viz-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.viz-stat-value {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+.viz-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress {
+  display: flex;
+  height: 6px;
+  margin-block: calc((var(--line-height-normal, 1.5em) - 6px) / 2);
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+}
+
+.progress-bar {
+  height: 100%;
+  flex-shrink: 0;
+  border: 0;
+  background: var(--viz-series-1);
+}
+
+.viz-badge {
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  color: var(--accent-foreground);
+  background: var(--accent);
+  font-weight: var(--font-weight-medium);
+}
+
+small,
+.text-small,
+.viz-badge {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.viz-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.viz-controls &gt; .form-label {
+  display: grid;
+  min-width: min(100%, 260px);
+  flex: 1 1 280px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 2px 12px;
+  margin-bottom: 0;
+}
+
+.viz-controls &gt; .form-label &gt; :is(.form-control, .form-range, .form-select) {
+  grid-column: 1 / -1;
+}
+
+.btn,
+.form-check-input,
+.form-control,
+.form-range,
+.form-select {
+  font: inherit;
+}
+
+.btn {
+  appearance: button;
+  display: inline-flex;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0 8px;
+  -webkit-app-region: no-drag;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: var(--cursor-interaction, pointer);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.btn:is(.btn-block, .viz-tile) {
+  inline-size: 100%;
+}
+
+.btn.viz-tile {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+a.btn {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn-primary {
+  border-color: transparent;
+  color: var(--primary-foreground);
+  background: var(--foreground);
+  background-clip: padding-box;
+}
+
+.btn-primary .text-muted {
+  color: color-mix(in srgb, var(--primary-foreground) 50%, transparent);
+}
+
+.btn-primary:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 80%, transparent);
+  background-clip: padding-box;
+}
+
+.btn-ghost {
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.btn-ghost:not(:disabled):hover {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+[data-lucide] {
+  stroke-width: 1.6;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--foreground);
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  padding: 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--foreground);
+  background: var(--secondary);
+}
+
+.form-control::placeholder {
+  color: var(--muted-foreground);
+}
+
+.form-control[type=&quot;file&quot;] {
+  padding: 0;
+  overflow: hidden;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control[type=&quot;file&quot;]::file-selector-button {
+  min-height: 26px;
+  margin-right: 8px;
+  padding: 0 8px;
+  border: 0;
+  border-right: 1px solid var(--input);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: inherit;
+  font: inherit;
+}
+
+.form-control[type=&quot;file&quot;]:not(:disabled):hover::file-selector-button {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-control-color[type=&quot;color&quot;] {
+  width: 40px;
+  height: 28px;
+  padding: 3px;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control-color[type=&quot;color&quot;]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.form-control-color[type=&quot;color&quot;]::-webkit-color-swatch {
+  border: 0;
+  border-radius: calc(var(--radius-lg) - 4px);
+  corner-shape: superellipse(1.5);
+}
+
+textarea.form-control {
+  height: auto;
+  min-height: 72px;
+  padding: 8px 10px;
+  resize: vertical;
+}
+
+.form-control:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.form-select {
+  appearance: none;
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  margin: 0;
+  padding: 0 32px 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--foreground);
+  background-color: var(--secondary);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted-foreground) 50%),
+    linear-gradient(135deg, var(--muted-foreground) 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) 50%,
+    calc(100% - 10px) 50%;
+  background-repeat: no-repeat;
+  background-size: 4px 4px;
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-select:not(:disabled):hover {
+  background-color: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-select:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-check {
+  display: flex;
+  min-height: 20px;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-check-input {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  margin: 0;
+  border: 1px solid var(--input);
+  color: var(--primary-foreground);
+  background-color: transparent;
+  cursor: var(--cursor-interaction, default);
+  transition:
+    background-color 150ms,
+    border-color 150ms,
+    box-shadow 150ms;
+}
+
+.form-check:not(.form-switch) .form-check-input[type=&quot;checkbox&quot;] {
+  border-color: var(--input);
+  border-radius: var(--radius-sm);
+  corner-shape: superellipse(1.5);
+  background-color: var(--secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input:not(:disabled):not(:checked):hover {
+  background-color: var(--card);
+}
+
+.form-check:not(.form-switch) .form-check-input[type=&quot;checkbox&quot;]:checked {
+  border-color: var(--primary);
+  background-color: var(--primary);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input[type=&quot;checkbox&quot;]:checked::before {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-foreground);
+  content: &quot;&quot;;
+  mask: var(--checkmark-image) center / 12px 12px no-repeat;
+}
+
+.form-check-input[type=&quot;radio&quot;] {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-full);
+}
+
+.form-check-input[type=&quot;radio&quot;]:checked {
+  border: 2px solid var(--primary);
+  background:
+    radial-gradient(circle, var(--primary-foreground) 0 2.5px, transparent 3px),
+    var(--primary);
+}
+
+.form-check:not(.form-switch) .form-check-input:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+}
+
+.form-switch .form-check-input:disabled,
+.form-switch .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.form-check-label {
+  color: var(--foreground);
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-switch .form-check-input {
+  position: relative;
+  width: 32px;
+  height: 20px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+  box-shadow: none;
+  transition: background-color 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input::before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 1px solid light-dark(var(--primary-foreground), var(--foreground));
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+  box-shadow: var(--shadow-sm);
+  content: &quot;&quot;;
+  transform: translate(2px, -50%);
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input:checked {
+  background: var(--primary);
+}
+
+.form-switch .form-check-input:checked::before {
+  transform: translate(14px, -50%);
+}
+
+.form-switch .form-check-input:focus-visible {
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.form-range {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 28px;
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  border: 0;
+  accent-color: var(--primary);
+  background: linear-gradient(
+      color-mix(in srgb, var(--foreground) 7%, transparent),
+      color-mix(in srgb, var(--foreground) 7%, transparent)
+    )
+    center / 100% 2px no-repeat;
+}
+
+.form-range::-webkit-slider-runnable-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-webkit-slider-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range::-moz-range-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-moz-range-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.btn:not(.btn-primary, .viz-tile):is(
+  [aria-pressed=&quot;true&quot;],
+  [aria-selected=&quot;true&quot;],
+  .is-selected
+) {
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+
+.btn.viz-tile:is([aria-pressed=&quot;true&quot;], [aria-selected=&quot;true&quot;], .is-selected) {
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+#widget &gt; svg {
+  width: 100%;
+}
+
+/* Model-authored chart rules can otherwise stretch icons after these styles load. */
+svg.lucide {
+  display: block;
+  width: 16px !important;
+  height: 16px !important;
+  flex: none;
+  margin: 0 !important;
+  stroke-width: 1.6;
+}
+
+.text-warning,
+.text-destructive {
+  color: var(--destructive);
+}
+
+html&gt;body{padding:0}&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;squad-s1-ux-002&quot;&gt;
+  &lt;style&gt;
+    #squad-s1-ux-002 {
+      --sq-canvas: light-dark(#eef3f6, #0d1319);
+      --sq-phone: light-dark(#ffffff, #151d25);
+      --sq-surface: light-dark(#f4f7f9, #202a34);
+      --sq-surface-strong: light-dark(#e7eef2, #2a3641);
+      --sq-text: light-dark(#17212b, #f4f7f9);
+      --sq-muted: light-dark(#607080, #aebbc6);
+      --sq-border: light-dark(#d6e0e6, #364551);
+      --sq-brand: light-dark(#155d78, #58b6d5);
+      --sq-brand-strong: light-dark(#0f4d65, #76cce8);
+      --sq-on-brand: light-dark(#ffffff, #08232d);
+      --sq-positive: light-dark(#176b4b, #5dd6a2);
+      --sq-positive-soft: light-dark(#e1f4eb, #163b30);
+      --sq-warning: light-dark(#8a5200, #ffbd66);
+      --sq-warning-soft: light-dark(#fff1d8, #46351d);
+      --sq-danger: light-dark(#a23632, #ff8e89);
+      --sq-danger-soft: light-dark(#fde9e8, #472625);
+      --sq-shadow: light-dark(rgba(20, 40, 55, 0.18), rgba(0, 0, 0, 0.44));
+      color-scheme: light dark;
+      color: var(--sq-text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;
+      width: 100%;
+      display: grid;
+      justify-items: center;
+      gap: 14px;
+      background: transparent;
+    }
+
+    #squad-s1-ux-002 * { box-sizing: border-box; }
+
+    #squad-s1-ux-002 button,
+    #squad-s1-ux-002 input {
+      font: inherit;
+      color: inherit;
+    }
+
+    #squad-s1-ux-002 button { cursor: pointer; }
+
+    #squad-s1-ux-002 .sq-demo-nav {
+      width: min(390px, 100%);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    #squad-s1-ux-002 .sq-demo-label {
+      width: 100%;
+      text-align: center;
+      color: var(--sq-muted);
+      font-size: 0.82rem;
+    }
+
+    #squad-s1-ux-002 .sq-scenario {
+      min-height: 38px;
+      padding: 7px 13px;
+      border: 1px solid var(--sq-border);
+      border-radius: 999px;
+      background: var(--sq-phone);
+    }
+
+    #squad-s1-ux-002 .sq-scenario[aria-pressed=&quot;true&quot;] {
+      border-color: var(--sq-brand);
+      background: var(--sq-surface-strong);
+      color: var(--sq-brand-strong);
+    }
+
+    #squad-s1-ux-002 .sq-phone {
+      width: min(390px, 100%);
+      min-height: 700px;
+      overflow: hidden;
+      border: 1px solid var(--sq-border);
+      border-radius: 30px;
+      background: var(--sq-phone);
+      box-shadow: 0 20px 50px var(--sq-shadow);
+      display: flex;
+      flex-direction: column;
+    }
+
+    #squad-s1-ux-002 .sq-status-bar {
+      min-height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 18px 0;
+      color: var(--sq-muted);
+      font-size: 0.75rem;
+    }
+
+    #squad-s1-ux-002 .sq-status-icons {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    #squad-s1-ux-002 .sq-status-icons svg { width: 14px; height: 14px; }
+
+    #squad-s1-ux-002 .sq-screen {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 18px;
+    }
+
+    #squad-s1-ux-002 .sq-appbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 44px;
+      margin-bottom: 18px;
+    }
+
+    #squad-s1-ux-002 .sq-appbar-text { min-width: 0; flex: 1; }
+
+    #squad-s1-ux-002 .sq-eyebrow,
+    #squad-s1-ux-002 .sq-helper,
+    #squad-s1-ux-002 .sq-caption {
+      color: var(--sq-muted);
+      font-size: 0.82rem;
+    }
+
+    #squad-s1-ux-002 h1,
+    #squad-s1-ux-002 h2,
+    #squad-s1-ux-002 h3,
+    #squad-s1-ux-002 p { margin: 0; }
+
+    #squad-s1-ux-002 h1 { font-size: 1.65rem; font-weight: 500; line-height: 1.18; }
+    #squad-s1-ux-002 h2 { font-size: 1.28rem; font-weight: 500; line-height: 1.25; }
+    #squad-s1-ux-002 h3 { font-size: 1rem; font-weight: 500; line-height: 1.3; }
+
+    #squad-s1-ux-002 .sq-brand-mark {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: var(--sq-brand);
+      color: var(--sq-on-brand);
+      flex: 0 0 auto;
+    }
+
+    #squad-s1-ux-002 .sq-brand-mark svg { width: 24px; height: 24px; }
+
+    #squad-s1-ux-002 .sq-icon-button {
+      min-width: 44px;
+      height: 44px;
+      border: 1px solid var(--sq-border);
+      border-radius: 13px;
+      background: var(--sq-phone);
+      display: inline-grid;
+      place-items: center;
+      padding: 0;
+      flex: 0 0 auto;
+    }
+
+    #squad-s1-ux-002 .sq-form {
+      display: grid;
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    #squad-s1-ux-002 .sq-field { display: grid; gap: 7px; }
+
+    #squad-s1-ux-002 .sq-field label { font-weight: 500; }
+
+    #squad-s1-ux-002 .sq-input-wrap { position: relative; }
+
+    #squad-s1-ux-002 .sq-input-wrap &gt; svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--sq-muted);
+      pointer-events: none;
+    }
+
+    #squad-s1-ux-002 .sq-input {
+      width: 100%;
+      min-height: 50px;
+      border: 1px solid var(--sq-border);
+      border-radius: 13px;
+      background: var(--sq-surface);
+      padding: 12px 14px;
+    }
+
+    #squad-s1-ux-002 .sq-input-with-icon { padding-left: 44px; }
+
+    #squad-s1-ux-002 .sq-button {
+      width: 100%;
+      min-height: 50px;
+      border: 1px solid var(--sq-border);
+      border-radius: 14px;
+      background: var(--sq-surface);
+      padding: 12px 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    #squad-s1-ux-002 .sq-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+
+    #squad-s1-ux-002 .sq-button-primary {
+      border-color: var(--sq-brand);
+      background: var(--sq-brand);
+      color: var(--sq-on-brand);
+    }
+
+    #squad-s1-ux-002 .sq-button-ghost {
+      border-color: transparent;
+      background: transparent;
+      color: var(--sq-brand-strong);
+    }
+
+    #squad-s1-ux-002 .sq-button-positive {
+      border-color: var(--sq-positive);
+      background: var(--sq-positive-soft);
+      color: var(--sq-positive);
+    }
+
+    #squad-s1-ux-002 .sq-button-warning {
+      border-color: var(--sq-warning);
+      background: var(--sq-warning-soft);
+      color: var(--sq-warning);
+    }
+
+    #squad-s1-ux-002 .sq-button-neutral {
+      background: var(--sq-surface-strong);
+    }
+
+    #squad-s1-ux-002 .sq-spacer { flex: 1; min-height: 22px; }
+
+    #squad-s1-ux-002 .sq-login-hero {
+      display: grid;
+      justify-items: start;
+      gap: 16px;
+      padding-top: 24px;
+    }
+
+    #squad-s1-ux-002 .sq-login-note {
+      margin-top: 18px;
+      color: var(--sq-muted);
+      text-align: center;
+      font-size: 0.82rem;
+    }
+
+    #squad-s1-ux-002 .sq-welcome {
+      display: grid;
+      gap: 5px;
+      margin-bottom: 20px;
+    }
+
+    #squad-s1-ux-002 .sq-banner {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 18px;
+      padding: 12px;
+      border-radius: 13px;
+      background: var(--sq-positive-soft);
+      color: var(--sq-positive);
+      font-size: 0.88rem;
+    }
+
+    #squad-s1-ux-002 .sq-banner svg { flex: 0 0 auto; margin-top: 1px; }
+
+    #squad-s1-ux-002 .sq-search-panel {
+      display: grid;
+      gap: 12px;
+      padding: 17px;
+      border-radius: 18px;
+      background: var(--sq-surface);
+    }
+
+    #squad-s1-ux-002 .sq-tip {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--sq-muted);
+      font-size: 0.82rem;
+    }
+
+    #squad-s1-ux-002 .sq-error-text {
+      min-height: 18px;
+      color: var(--sq-danger);
+      font-size: 0.82rem;
+    }
+
+    #squad-s1-ux-002 .sq-results-meta {
+      margin: -8px 0 14px;
+      color: var(--sq-muted);
+      font-size: 0.86rem;
+    }
+
+    #squad-s1-ux-002 .sq-result-list { display: grid; gap: 11px; }
+
+    #squad-s1-ux-002 .sq-product-row {
+      width: 100%;
+      border: 1px solid var(--sq-border);
+      border-radius: 16px;
+      background: var(--sq-surface);
+      padding: 14px;
+      display: grid;
+      grid-template-columns: 48px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+    }
+
+    #squad-s1-ux-002 .sq-product-thumb {
+      width: 48px;
+      height: 48px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      background: var(--sq-surface-strong);
+      color: var(--sq-brand-strong);
+    }
+
+    #squad-s1-ux-002 .sq-product-copy { min-width: 0; display: grid; gap: 3px; }
+
+    #squad-s1-ux-002 .sq-product-copy .sq-caption {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    #squad-s1-ux-002 .sq-summary {
+      display: grid;
+      gap: 5px;
+      padding: 14px;
+      border-radius: 16px;
+      background: var(--sq-surface);
+      margin-bottom: 18px;
+    }
+
+    #squad-s1-ux-002 .sq-size-title { margin-bottom: 11px; }
+
+    #squad-s1-ux-002 .sq-size-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
+    }
+
+    #squad-s1-ux-002 .sq-size {
+      min-height: 76px;
+      border: 1px solid var(--sq-border);
+      border-radius: 14px;
+      background: var(--sq-phone);
+      padding: 9px 6px;
+      display: grid;
+      justify-items: center;
+      align-content: center;
+      gap: 3px;
+    }
+
+    #squad-s1-ux-002 .sq-size[aria-pressed=&quot;true&quot;] {
+      border-color: var(--sq-brand);
+      background: var(--sq-surface-strong);
+      box-shadow: inset 0 0 0 1px var(--sq-brand);
+    }
+
+    #squad-s1-ux-002 .sq-size:disabled {
+      cursor: not-allowed;
+      opacity: 0.48;
+    }
+
+    #squad-s1-ux-002 .sq-size-number { font-size: 1.15rem; font-weight: 500; }
+    #squad-s1-ux-002 .sq-size-state { color: var(--sq-muted); font-size: 0.72rem; }
+
+    #squad-s1-ux-002 .sq-selection-live {
+      min-height: 24px;
+      margin: 11px 0;
+      color: var(--sq-brand-strong);
+      font-size: 0.84rem;
+      text-align: center;
+    }
+
+    #squad-s1-ux-002 .sq-outcomes { display: grid; gap: 11px; margin-top: 18px; }
+
+    #squad-s1-ux-002 .sq-outcome-help {
+      margin-top: 13px;
+      color: var(--sq-muted);
+      text-align: center;
+      font-size: 0.8rem;
+    }
+
+    #squad-s1-ux-002 .sq-state-center {
+      flex: 1;
+      display: grid;
+      place-items: center;
+      text-align: center;
+    }
+
+    #squad-s1-ux-002 .sq-state-content {
+      width: 100%;
+      display: grid;
+      justify-items: center;
+      gap: 13px;
+    }
+
+    #squad-s1-ux-002 .sq-state-icon {
+      width: 76px;
+      height: 76px;
+      border-radius: 24px;
+      display: grid;
+      place-items: center;
+      background: var(--sq-surface-strong);
+      color: var(--sq-brand-strong);
+    }
+
+    #squad-s1-ux-002 .sq-state-icon svg { width: 34px; height: 34px; }
+
+    #squad-s1-ux-002 .sq-state-icon-success {
+      background: var(--sq-positive-soft);
+      color: var(--sq-positive);
+    }
+
+    #squad-s1-ux-002 .sq-state-icon-error {
+      background: var(--sq-danger-soft);
+      color: var(--sq-danger);
+    }
+
+    #squad-s1-ux-002 .sq-state-copy { max-width: 290px; display: grid; gap: 8px; }
+
+    #squad-s1-ux-002 .sq-state-copy p { color: var(--sq-muted); }
+
+    #squad-s1-ux-002 .sq-state-actions {
+      width: 100%;
+      display: grid;
+      gap: 9px;
+      margin-top: 10px;
+    }
+
+    #squad-s1-ux-002 .sq-sku-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 32px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--sq-surface-strong);
+      color: var(--sq-muted);
+      font-size: 0.78rem;
+    }
+
+    @media (max-width: 420px) {
+      #squad-s1-ux-002 .sq-phone { border-radius: 22px; min-height: 660px; }
+      #squad-s1-ux-002 .sq-screen { padding: 15px; }
+    }
+  &lt;/style&gt;
+
+  &lt;div class=&quot;sq-demo-nav&quot; aria-label=&quot;Cenários do protótipo&quot;&gt;
+    &lt;span class=&quot;sq-demo-label&quot;&gt;Protótipo navegável · dados demonstrativos&lt;/span&gt;
+    &lt;button class=&quot;sq-scenario&quot; type=&quot;button&quot; data-scenario=&quot;flow&quot; aria-pressed=&quot;true&quot;&gt;Fluxo principal&lt;/button&gt;
+    &lt;button class=&quot;sq-scenario&quot; type=&quot;button&quot; data-scenario=&quot;empty&quot; aria-pressed=&quot;false&quot;&gt;Estado vazio&lt;/button&gt;
+    &lt;button class=&quot;sq-scenario&quot; type=&quot;button&quot; data-scenario=&quot;error&quot; aria-pressed=&quot;false&quot;&gt;Estado de erro&lt;/button&gt;
+  &lt;/div&gt;
+
+  &lt;section class=&quot;sq-phone&quot; aria-label=&quot;Protótipo mobile do fluxo do vendedor&quot;&gt;
+    &lt;div class=&quot;sq-status-bar&quot; aria-hidden=&quot;true&quot;&gt;
+      &lt;span&gt;09:41&lt;/span&gt;
+      &lt;span class=&quot;sq-status-icons&quot;&gt;&lt;i data-lucide=&quot;signal&quot;&gt;&lt;/i&gt;&lt;i data-lucide=&quot;wifi&quot;&gt;&lt;/i&gt;&lt;i data-lucide=&quot;battery-medium&quot;&gt;&lt;/i&gt;&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div id=&quot;sq-mobile-screen&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;script&gt;
+    (() =&gt; {
+      const root = document.getElementById(&#x27;squad-s1-ux-002&#x27;);
+      const screen = root.querySelector(&#x27;#sq-mobile-screen&#x27;);
+      const state = {
+        view: &#x27;login&#x27;,
+        query: &#x27;&#x27;,
+        product: null,
+        size: null,
+        outcome: &#x27;&#x27;,
+        notice: &#x27;&#x27;
+      };
+
+      const products = [
+        {
+          id: &#x27;urbano&#x27;,
+          name: &#x27;Tênis Urbano&#x27;,
+          detail: &#x27;Preto · Unissex&#x27;,
+          baseSku: &#x27;TNU-PRE&#x27;,
+          sizes: [
+            { number: &#x27;35&#x27;, label: &#x27;Disponível&#x27;, quantity: 2 },
+            { number: &#x27;36&#x27;, label: &#x27;Último par&#x27;, quantity: 1 },
+            { number: &#x27;37&#x27;, label: &#x27;Indisponível&#x27;, quantity: 0 },
+            { number: &#x27;38&#x27;, label: &#x27;Disponível&#x27;, quantity: 3 },
+            { number: &#x27;39&#x27;, label: &#x27;Último par&#x27;, quantity: 1 },
+            { number: &#x27;40&#x27;, label: &#x27;Disponível&#x27;, quantity: 2 }
+          ]
+        },
+        {
+          id: &#x27;casual&#x27;,
+          name: &#x27;Tênis Casual&#x27;,
+          detail: &#x27;Branco · Unissex&#x27;,
+          baseSku: &#x27;TNC-BRA&#x27;,
+          sizes: [
+            { number: &#x27;35&#x27;, label: &#x27;Último par&#x27;, quantity: 1 },
+            { number: &#x27;36&#x27;, label: &#x27;Disponível&#x27;, quantity: 2 },
+            { number: &#x27;37&#x27;, label: &#x27;Disponível&#x27;, quantity: 4 },
+            { number: &#x27;38&#x27;, label: &#x27;Indisponível&#x27;, quantity: 0 },
+            { number: &#x27;39&#x27;, label: &#x27;Disponível&#x27;, quantity: 2 },
+            { number: &#x27;40&#x27;, label: &#x27;Último par&#x27;, quantity: 1 }
+          ]
+        }
+      ];
+
+      function safe(value) {
+        return String(value).replace(/[&amp;&lt;&gt;&#x27;&quot;]/g, char =&gt; ({
+          &#x27;&amp;&#x27;: &#x27;&amp;amp;&#x27;, &#x27;&lt;&#x27;: &#x27;&amp;lt;&#x27;, &#x27;&gt;&#x27;: &#x27;&amp;gt;&#x27;, &quot;&#x27;&quot;: &#x27;&amp;#39;&#x27;, &#x27;&quot;&#x27;: &#x27;&amp;quot;&#x27;
+        })[char]);
+      }
+
+      function icons() {
+        if (window.lucide) {
+          window.lucide.createIcons({ attrs: { width: 16, height: 16 } });
+        }
+      }
+
+      function appbar(title, eyebrow, backAction) {
+        const back = backAction
+          ? `&lt;button class=&quot;sq-icon-button&quot; type=&quot;button&quot; data-action=&quot;${backAction}&quot; aria-label=&quot;Voltar&quot;&gt;&lt;i data-lucide=&quot;arrow-left&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/button&gt;`
+          : &#x27;&lt;div class=&quot;sq-brand-mark&quot;&gt;&lt;i data-lucide=&quot;package-search&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/div&gt;&#x27;;
+        return `
+          &lt;header class=&quot;sq-appbar&quot;&gt;
+            ${back}
+            &lt;div class=&quot;sq-appbar-text&quot;&gt;
+              &lt;div class=&quot;sq-eyebrow&quot;&gt;${safe(eyebrow)}&lt;/div&gt;
+              &lt;h2&gt;${safe(title)}&lt;/h2&gt;
+            &lt;/div&gt;
+          &lt;/header&gt;`;
+      }
+
+      function render() {
+        const views = {
+          login: renderLogin,
+          search: renderSearch,
+          results: renderResults,
+          product: renderProduct,
+          outcome: renderOutcome,
+          success: renderSuccess,
+          empty: renderEmpty,
+          error: renderError
+        };
+        screen.innerHTML = views[state.view]();
+        root.querySelectorAll(&#x27;.sq-scenario&#x27;).forEach(button =&gt; {
+          const selected = button.dataset.scenario === (state.view === &#x27;empty&#x27; ? &#x27;empty&#x27; : state.view === &#x27;error&#x27; ? &#x27;error&#x27; : &#x27;flow&#x27;);
+          button.setAttribute(&#x27;aria-pressed&#x27;, selected ? &#x27;true&#x27; : &#x27;false&#x27;);
+        });
+        icons();
+      }
+
+      function renderLogin() {
+        return `
+          &lt;main class=&quot;sq-screen&quot;&gt;
+            &lt;div class=&quot;sq-login-hero&quot;&gt;
+              &lt;div class=&quot;sq-brand-mark&quot;&gt;&lt;i data-lucide=&quot;package-search&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/div&gt;
+              &lt;div&gt;
+                &lt;div class=&quot;sq-eyebrow&quot;&gt;SQUAD Estoque&lt;/div&gt;
+                &lt;h1&gt;Acesse o atendimento&lt;/h1&gt;
+              &lt;/div&gt;
+              &lt;p class=&quot;sq-helper&quot;&gt;Consulte produtos e registre o resultado diretamente no balcão.&lt;/p&gt;
+            &lt;/div&gt;
+            &lt;form class=&quot;sq-form&quot; data-form=&quot;login&quot;&gt;
+              &lt;div class=&quot;sq-field&quot;&gt;
+                &lt;label for=&quot;sq-user&quot;&gt;Usuário&lt;/label&gt;
+                &lt;input class=&quot;sq-input&quot; id=&quot;sq-user&quot; name=&quot;user&quot; autocomplete=&quot;username&quot; placeholder=&quot;Digite seu usuário&quot;&gt;
+              &lt;/div&gt;
+              &lt;div class=&quot;sq-field&quot;&gt;
+                &lt;label for=&quot;sq-password&quot;&gt;Senha&lt;/label&gt;
+                &lt;input class=&quot;sq-input&quot; id=&quot;sq-password&quot; name=&quot;password&quot; type=&quot;password&quot; autocomplete=&quot;current-password&quot; placeholder=&quot;Digite sua senha&quot;&gt;
+              &lt;/div&gt;
+              &lt;button class=&quot;sq-button sq-button-primary&quot; type=&quot;button&quot; data-action=&quot;login&quot;&gt;Entrar &lt;i data-lucide=&quot;arrow-right&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/button&gt;
+            &lt;/form&gt;
+            &lt;div class=&quot;sq-spacer&quot;&gt;&lt;/div&gt;
+            &lt;p class=&quot;sq-login-note&quot;&gt;Demonstração: qualquer usuário e senha avançam.&lt;/p&gt;
+          &lt;/main&gt;`;
+      }
+
+      function renderSearch() {
+        const banner = state.notice
+          ? `&lt;div class=&quot;sq-banner&quot;&gt;&lt;i data-lucide=&quot;check-circle-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span&gt;${safe(state.notice)}&lt;/span&gt;&lt;/div&gt;`
+          : &#x27;&#x27;;
+        return `
+          &lt;main class=&quot;sq-screen&quot;&gt;
+            ${appbar(&#x27;Consulta rápida&#x27;, &#x27;Olá, vendedor&#x27;, &#x27;&#x27;)}
+            ${banner}
+            &lt;div class=&quot;sq-welcome&quot;&gt;
+              &lt;h1&gt;O que o cliente procura?&lt;/h1&gt;
+              &lt;p class=&quot;sq-helper&quot;&gt;Busque por nome, referência ou código do produto.&lt;/p&gt;
+            &lt;/div&gt;
+            &lt;form class=&quot;sq-search-panel&quot; data-form=&quot;search&quot;&gt;
+              &lt;div class=&quot;sq-field&quot;&gt;
+                &lt;label for=&quot;sq-query&quot;&gt;Produto ou código&lt;/label&gt;
+                &lt;div class=&quot;sq-input-wrap&quot;&gt;
+                  &lt;i data-lucide=&quot;search&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+                  &lt;input class=&quot;sq-input sq-input-with-icon&quot; id=&quot;sq-query&quot; name=&quot;query&quot; value=&quot;${safe(state.query)}&quot; placeholder=&quot;Ex.: Tênis Urbano&quot; autocomplete=&quot;off&quot;&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;sq-error-text&quot; id=&quot;sq-query-error&quot; role=&quot;alert&quot;&gt;&lt;/div&gt;
+              &lt;/div&gt;
+              &lt;button class=&quot;sq-button sq-button-primary&quot; type=&quot;button&quot; data-action=&quot;search&quot;&gt;Buscar estoque &lt;i data-lucide=&quot;arrow-right&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/button&gt;
+              &lt;div class=&quot;sq-tip&quot;&gt;&lt;i data-lucide=&quot;hand-pointer&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span&gt;Campo + Buscar: primeira consulta em dois toques.&lt;/span&gt;&lt;/div&gt;
+            &lt;/form&gt;
+            &lt;div class=&quot;sq-spacer&quot;&gt;&lt;/div&gt;
+            &lt;button class=&quot;sq-button sq-button-ghost&quot; type=&quot;button&quot; data-action=&quot;logout&quot;&gt;&lt;i data-lucide=&quot;log-out&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Sair&lt;/button&gt;
+          &lt;/main&gt;`;
+      }
+
+      function renderResults() {
+        return `
+          &lt;main class=&quot;sq-screen&quot;&gt;
+            ${appbar(&#x27;Resultados&#x27;, `Busca: ${state.query || &#x27;Tênis&#x27;}`, &#x27;back-search&#x27;)}
+            &lt;p class=&quot;sq-results-meta&quot;&gt;2 produtos encontrados&lt;/p&gt;
+            &lt;div class=&quot;sq-result-list&quot;&gt;
+              ${products.map(product =&gt; `
+                &lt;button class=&quot;sq-product-row&quot; type=&quot;button&quot; data-action=&quot;select-product&quot; data-product=&quot;${product.id}&quot;&gt;
+                  &lt;span class=&quot;sq-product-thumb&quot;&gt;&lt;i data-lucide=&quot;footprints&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/span&gt;
+                  &lt;span class=&quot;sq-product-copy&quot;&gt;
+                    &lt;h3&gt;${safe(product.name)}&lt;/h3&gt;
+                    &lt;span class=&quot;sq-caption&quot;&gt;${safe(product.detail)}&lt;/span&gt;
+                  &lt;/span&gt;
+                  &lt;i data-lucide=&quot;chevron-right&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+                &lt;/button&gt;`).join(&#x27;&#x27;)}
+            &lt;/div&gt;
+            &lt;div class=&quot;sq-spacer&quot;&gt;&lt;/div&gt;
+            &lt;button class=&quot;sq-button&quot; type=&quot;button&quot; data-action=&quot;back-search&quot;&gt;&lt;i data-lucide=&quot;search&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Fazer outra busca&lt;/button&gt;
+          &lt;/main&gt;`;
+      }
+
+      function renderProduct() {
+        const product = state.product || products[0];
+        const selected = product.sizes.find(size =&gt; size.number === state.size);
+        return `
+          &lt;main class=&quot;sq-screen&quot;&gt;
+            ${appbar(&#x27;Grade disponível&#x27;, &#x27;Selecionar SKU&#x27;, &#x27;back-results&#x27;)}
+            &lt;div class=&quot;sq-summary&quot;&gt;
+              &lt;h3&gt;${safe(product.name)}&lt;/h3&gt;
+              &lt;span class=&quot;sq-caption&quot;&gt;${safe(product.detail)} · Ref. ${safe(product.baseSku)}&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;h3 class=&quot;sq-size-title&quot;&gt;Escolha a numeração&lt;/h3&gt;
+            &lt;div class=&quot;sq-size-grid&quot; role=&quot;group&quot; aria-label=&quot;Numerações disponíveis&quot;&gt;
+              ${product.sizes.map(size =&gt; `
+                &lt;button class=&quot;sq-size&quot; type=&quot;button&quot; data-action=&quot;select-size&quot; data-size=&quot;${size.number}&quot; aria-pressed=&quot;${state.size === size.number ? &#x27;true&#x27; : &#x27;false&#x27;}&quot; ${size.quantity === 0 ? &#x27;disabled&#x27; : &#x27;&#x27;} aria-label=&quot;Tamanho ${size.number}, ${size.label}&quot;&gt;
+                  &lt;span class=&quot;sq-size-number&quot;&gt;${size.number}&lt;/span&gt;
+                  &lt;span class=&quot;sq-size-state&quot;&gt;${safe(size.label)}&lt;/span&gt;
+                &lt;/button&gt;`).join(&#x27;&#x27;)}
+            &lt;/div&gt;
+            &lt;div class=&quot;sq-selection-live&quot; aria-live=&quot;polite&quot;&gt;${selected ? `Selecionado: ${safe(product.baseSku)}-${selected.number} · ${safe(selected.label)}` : &#x27;Selecione um tamanho disponível&#x27;}&lt;/div&gt;
+            &lt;div class=&quot;sq-spacer&quot;&gt;&lt;/div&gt;
+            &lt;button class=&quot;sq-button sq-button-primary&quot; type=&quot;button&quot; data-action=&quot;continue-size&quot; ${selected ? &#x27;&#x27; : &#x27;disabled&#x27;}&gt;Continuar &lt;i data-lucide=&quot;arrow-right&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/button&gt;
+          &lt;/main&gt;`;
+      }
+
+      function renderOutcome() {
+        const product = state.product || products[0];
+        return `
+          &lt;main class=&quot;sq-screen&quot;&gt;
+            ${appbar(&#x27;Resultado do atendimento&#x27;, &#x27;SKU selecionado&#x27;, &#x27;back-product&#x27;)}
+            &lt;div class=&quot;sq-summary&quot;&gt;
+              &lt;h3&gt;${safe(product.name)} · tamanho ${safe(state.size)}&lt;/h3&gt;
+              &lt;span class=&quot;sq-caption&quot;&gt;SKU ${safe(product.baseSku)}-${safe(state.size)}&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;h1&gt;Como terminou o atendimento?&lt;/h1&gt;
+            &lt;p class=&quot;sq-helper&quot;&gt;Escolha uma opção para registrar o resultado.&lt;/p&gt;
+            &lt;div class=&quot;sq-outcomes&quot;&gt;
+              &lt;button class=&quot;sq-button sq-button-positive&quot; type=&quot;button&quot; data-action=&quot;record&quot; data-outcome=&quot;Vendeu&quot;&gt;&lt;i data-lucide=&quot;badge-check&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Vendeu&lt;/button&gt;
+              &lt;button class=&quot;sq-button sq-button-warning&quot; type=&quot;button&quot; data-action=&quot;record&quot; data-outcome=&quot;Não tinha&quot;&gt;&lt;i data-lucide=&quot;package-x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Não tinha&lt;/button&gt;
+              &lt;button class=&quot;sq-button sq-button-neutral&quot; type=&quot;button&quot; data-action=&quot;record&quot; data-outcome=&quot;Desistiu&quot;&gt;&lt;i data-lucide=&quot;user-round-x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Desistiu&lt;/button&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;sq-spacer&quot;&gt;&lt;/div&gt;
+            &lt;button class=&quot;sq-button sq-button-ghost&quot; type=&quot;button&quot; data-action=&quot;skip&quot;&gt;&lt;i data-lucide=&quot;skip-forward&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Pular registro e fazer nova consulta&lt;/button&gt;
+            &lt;p class=&quot;sq-outcome-help&quot;&gt;Pular não salva um resultado para este atendimento.&lt;/p&gt;
+          &lt;/main&gt;`;
+      }
+
+      function renderSuccess() {
+        const product = state.product || products[0];
+        return `
+          &lt;main class=&quot;sq-screen&quot;&gt;
+            &lt;div class=&quot;sq-state-center&quot;&gt;
+              &lt;div class=&quot;sq-state-content&quot;&gt;
+                &lt;div class=&quot;sq-state-icon sq-state-icon-success&quot;&gt;&lt;i data-lucide=&quot;check&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/div&gt;
+                &lt;div class=&quot;sq-state-copy&quot;&gt;
+                  &lt;div class=&quot;sq-eyebrow&quot;&gt;${safe(state.outcome)}&lt;/div&gt;
+                  &lt;h1&gt;Atendimento registrado&lt;/h1&gt;
+                  &lt;p&gt;O resultado foi salvo e você já pode atender o próximo cliente.&lt;/p&gt;
+                &lt;/div&gt;
+                &lt;span class=&quot;sq-sku-chip&quot;&gt;${safe(product.baseSku)}-${safe(state.size)}&lt;/span&gt;
+                &lt;div class=&quot;sq-state-actions&quot;&gt;
+                  &lt;button class=&quot;sq-button sq-button-primary&quot; type=&quot;button&quot; data-action=&quot;new-search&quot;&gt;&lt;i data-lucide=&quot;search&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Nova consulta&lt;/button&gt;
+                  &lt;button class=&quot;sq-button sq-button-ghost&quot; type=&quot;button&quot; data-action=&quot;view-outcome&quot;&gt;&lt;i data-lucide=&quot;arrow-left&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Voltar ao resultado&lt;/button&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/main&gt;`;
+      }
+
+      function renderEmpty() {
+        return `
+          &lt;main class=&quot;sq-screen&quot;&gt;
+            ${appbar(&#x27;Resultados&#x27;, &#x27;Busca concluída&#x27;, &#x27;back-search&#x27;)}
+            &lt;div class=&quot;sq-state-center&quot;&gt;
+              &lt;div class=&quot;sq-state-content&quot;&gt;
+                &lt;div class=&quot;sq-state-icon&quot;&gt;&lt;i data-lucide=&quot;search-x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/div&gt;
+                &lt;div class=&quot;sq-state-copy&quot;&gt;
+                  &lt;h1&gt;Nenhum produto encontrado&lt;/h1&gt;
+                  &lt;p&gt;Confira o nome ou o código informado e faça uma nova busca.&lt;/p&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;sq-state-actions&quot;&gt;
+                  &lt;button class=&quot;sq-button sq-button-primary&quot; type=&quot;button&quot; data-action=&quot;back-search&quot;&gt;&lt;i data-lucide=&quot;search&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Alterar consulta&lt;/button&gt;
+                  &lt;button class=&quot;sq-button&quot; type=&quot;button&quot; data-action=&quot;clear-search&quot;&gt;Iniciar nova consulta&lt;/button&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/main&gt;`;
+      }
+
+      function renderError() {
+        return `
+          &lt;main class=&quot;sq-screen&quot;&gt;
+            ${appbar(&#x27;Consulta rápida&#x27;, &#x27;Falha na consulta&#x27;, &#x27;back-search&#x27;)}
+            &lt;div class=&quot;sq-state-center&quot;&gt;
+              &lt;div class=&quot;sq-state-content&quot;&gt;
+                &lt;div class=&quot;sq-state-icon sq-state-icon-error&quot;&gt;&lt;i data-lucide=&quot;wifi-off&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/div&gt;
+                &lt;div class=&quot;sq-state-copy&quot;&gt;
+                  &lt;h1&gt;Não foi possível consultar agora&lt;/h1&gt;
+                  &lt;p&gt;Verifique a conexão e tente novamente. Sua busca foi preservada.&lt;/p&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;sq-state-actions&quot;&gt;
+                  &lt;button class=&quot;sq-button sq-button-primary&quot; type=&quot;button&quot; data-action=&quot;retry&quot;&gt;&lt;i data-lucide=&quot;refresh-cw&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Tentar novamente&lt;/button&gt;
+                  &lt;button class=&quot;sq-button&quot; type=&quot;button&quot; data-action=&quot;clear-search&quot;&gt;Nova consulta&lt;/button&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/main&gt;`;
+      }
+
+      root.addEventListener(&#x27;submit&#x27;, event =&gt; {
+        event.preventDefault();
+        if (event.target.dataset.form === &#x27;login&#x27;) {
+          state.notice = &#x27;&#x27;;
+          state.view = &#x27;search&#x27;;
+          render();
+          return;
+        }
+        if (event.target.dataset.form === &#x27;search&#x27;) {
+          const query = new FormData(event.target).get(&#x27;query&#x27;).trim();
+          const error = root.querySelector(&#x27;#sq-query-error&#x27;);
+          if (!query) {
+            error.textContent = &#x27;Digite um produto ou código para buscar.&#x27;;
+            root.querySelector(&#x27;#sq-query&#x27;).focus();
+            return;
+          }
+          state.query = query;
+          state.notice = &#x27;&#x27;;
+          if (/vazio|nada|xyz/i.test(query)) state.view = &#x27;empty&#x27;;
+          else if (/erro|offline/i.test(query)) state.view = &#x27;error&#x27;;
+          else state.view = &#x27;results&#x27;;
+          render();
+        }
+      });
+
+      root.addEventListener(&#x27;click&#x27;, event =&gt; {
+        const scenario = event.target.closest(&#x27;[data-scenario]&#x27;);
+        if (scenario) {
+          const choice = scenario.dataset.scenario;
+          state.view = choice === &#x27;flow&#x27; ? &#x27;login&#x27; : choice;
+          state.query = choice === &#x27;empty&#x27; ? &#x27;Produto inexistente&#x27; : choice === &#x27;error&#x27; ? &#x27;Tênis Urbano&#x27; : &#x27;&#x27;;
+          state.product = null;
+          state.size = null;
+          state.outcome = &#x27;&#x27;;
+          state.notice = &#x27;&#x27;;
+          render();
+          return;
+        }
+
+        const control = event.target.closest(&#x27;[data-action]&#x27;);
+        if (!control || control.disabled) return;
+        const action = control.dataset.action;
+
+        if (action === &#x27;login&#x27;) {
+          state.notice = &#x27;&#x27;;
+          state.view = &#x27;search&#x27;;
+        }
+        if (action === &#x27;search&#x27;) {
+          const queryInput = root.querySelector(&#x27;#sq-query&#x27;);
+          const query = (queryInput ? queryInput.value : state.query).trim();
+          const error = root.querySelector(&#x27;#sq-query-error&#x27;);
+          if (!query) {
+            error.textContent = &#x27;Digite um produto ou código para buscar.&#x27;;
+            queryInput.focus();
+            return;
+          }
+          state.query = query;
+          state.notice = &#x27;&#x27;;
+          if (/vazio|nada|xyz/i.test(query)) state.view = &#x27;empty&#x27;;
+          else if (/erro|offline/i.test(query)) state.view = &#x27;error&#x27;;
+          else state.view = &#x27;results&#x27;;
+        }
+        if (action === &#x27;logout&#x27;) state.view = &#x27;login&#x27;;
+        if (action === &#x27;back-search&#x27;) state.view = &#x27;search&#x27;;
+        if (action === &#x27;back-results&#x27;) state.view = &#x27;results&#x27;;
+        if (action === &#x27;back-product&#x27;) state.view = &#x27;product&#x27;;
+        if (action === &#x27;view-outcome&#x27;) state.view = &#x27;outcome&#x27;;
+        if (action === &#x27;select-product&#x27;) {
+          state.product = products.find(product =&gt; product.id === control.dataset.product);
+          state.size = null;
+          state.view = &#x27;product&#x27;;
+        }
+        if (action === &#x27;select-size&#x27;) {
+          state.size = control.dataset.size;
+        }
+        if (action === &#x27;continue-size&#x27;) state.view = &#x27;outcome&#x27;;
+        if (action === &#x27;record&#x27;) {
+          state.outcome = control.dataset.outcome;
+          state.view = &#x27;success&#x27;;
+        }
+        if (action === &#x27;skip&#x27;) {
+          state.query = &#x27;&#x27;;
+          state.product = null;
+          state.size = null;
+          state.notice = &#x27;Registro ignorado. Pronto para uma nova consulta.&#x27;;
+          state.view = &#x27;search&#x27;;
+        }
+        if (action === &#x27;new-search&#x27; || action === &#x27;clear-search&#x27;) {
+          state.query = &#x27;&#x27;;
+          state.product = null;
+          state.size = null;
+          state.outcome = &#x27;&#x27;;
+          state.notice = action === &#x27;new-search&#x27; ? &#x27;Atendimento concluído. Inicie uma nova consulta.&#x27; : &#x27;&#x27;;
+          state.view = &#x27;search&#x27;;
+        }
+        if (action === &#x27;retry&#x27;) state.view = &#x27;results&#x27;;
+        render();
+      });
+
+      render();
+    })();
+  &lt;/script&gt;
+&lt;/div&gt;
+
+&lt;script src=&quot;https://unpkg.com/@floating-ui/core@1.7.3/dist/floating-ui.core.umd.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;https://unpkg.com/@floating-ui/dom@1.7.4/dist/floating-ui.dom.umd.min.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+(() =&gt; {
+  if (window.FloatingUIDOM == null) {
+    return;
+  }
+  const { autoUpdate, computePosition, flip, offset, shift, size } =
+    window.FloatingUIDOM;
+  const tooltipPlacements = new Set([&quot;top&quot;, &quot;right&quot;, &quot;bottom&quot;, &quot;left&quot;]);
+  const tooltipId = `codex-visualization-tooltip-${
+    window.crypto?.randomUUID?.() ?? Date.now().toString(36)
+  }`;
+  const tooltipGap = 5;
+  const hoverDelay = 700;
+  const skipDelay = 300;
+  let activeTrigger = null;
+  let pendingTrigger = null;
+  let tooltip = null;
+  let openTimeout = null;
+  let autoUpdateCleanup = null;
+  let positionRequest = 0;
+  let skipDelayUntil = 0;
+
+  const getTrigger = (target) =&gt;
+    target?.nodeType === Node.ELEMENT_NODE
+      ? target.closest(&quot;[data-tooltip]&quot;)
+      : null;
+  const containsTarget = (trigger, target) =&gt;
+    target?.nodeType != null &amp;&amp; trigger.contains(target);
+  const getContent = (trigger) =&gt;
+    trigger.getAttribute(&quot;data-tooltip&quot;)?.trim() ?? &quot;&quot;;
+  const getPlacement = (trigger) =&gt; {
+    const placement = trigger.getAttribute(&quot;data-tooltip-placement&quot;);
+    return tooltipPlacements.has(placement) ? placement : &quot;top&quot;;
+  };
+  const getTooltip = () =&gt; {
+    if (tooltip == null) {
+      tooltip = document.createElement(&quot;div&quot;);
+      tooltip.id = tooltipId;
+      tooltip.className = &quot;tooltip&quot;;
+      tooltip.setAttribute(&quot;role&quot;, &quot;tooltip&quot;);
+    }
+    return tooltip;
+  };
+  const setDescribedBy = (trigger, described) =&gt; {
+    const ids = new Set(
+      (trigger.getAttribute(&quot;aria-describedby&quot;) ?? &quot;&quot;)
+        .split(/\s+/)
+        .filter(Boolean),
+    );
+    if (described) {
+      ids.add(tooltipId);
+    } else {
+      ids.delete(tooltipId);
+    }
+    if (ids.size === 0) {
+      trigger.removeAttribute(&quot;aria-describedby&quot;);
+    } else {
+      trigger.setAttribute(&quot;aria-describedby&quot;, [...ids].join(&quot; &quot;));
+    }
+  };
+  const clearOpenTimeout = () =&gt; {
+    if (openTimeout != null) {
+      window.clearTimeout(openTimeout);
+      openTimeout = null;
+    }
+    pendingTrigger = null;
+  };
+  const closeTooltip = (activateSkipDelay = true) =&gt; {
+    clearOpenTimeout();
+    positionRequest += 1;
+    autoUpdateCleanup?.();
+    autoUpdateCleanup = null;
+    if (activeTrigger == null) {
+      return;
+    }
+    setDescribedBy(activeTrigger, false);
+    activeTrigger = null;
+    tooltip?.remove();
+    if (activateSkipDelay) {
+      skipDelayUntil = Date.now() + skipDelay;
+    }
+  };
+  const updatePosition = (trigger, floating) =&gt; {
+    const request = ++positionRequest;
+    void computePosition(trigger, floating, {
+      middleware: [
+        offset(tooltipGap),
+        flip({ padding: tooltipGap }),
+        shift({ padding: tooltipGap }),
+        size({
+          padding: tooltipGap,
+          apply({ availableHeight, availableWidth, elements }) {
+            elements.floating.style.setProperty(
+              &quot;--tooltip-available-width&quot;,
+              `${Math.max(0, availableWidth)}px`,
+            );
+            elements.floating.style.setProperty(
+              &quot;--tooltip-available-height&quot;,
+              `${Math.max(0, availableHeight)}px`,
+            );
+          },
+        }),
+      ],
+      placement: getPlacement(trigger),
+      strategy: &quot;fixed&quot;,
+    })
+      .then(({ x, y }) =&gt; {
+        if (activeTrigger !== trigger || request !== positionRequest) {
+          return;
+        }
+        const scale = window.devicePixelRatio || 1;
+        floating.style.transform = `translate(${Math.round(x * scale) / scale}px, ${Math.round(y * scale) / scale}px)`;
+        floating.style.visibility = &quot;visible&quot;;
+      })
+      .catch(() =&gt; {
+        if (activeTrigger === trigger &amp;&amp; request === positionRequest) {
+          closeTooltip(false);
+        }
+      });
+  };
+  const openTooltip = (trigger) =&gt; {
+    const content = getContent(trigger);
+    if (!trigger.isConnected || content.length === 0) {
+      return;
+    }
+    clearOpenTimeout();
+    if (activeTrigger === trigger) {
+      return;
+    }
+    closeTooltip();
+    const floating = getTooltip();
+    floating.textContent = content;
+    floating.style.visibility = &quot;hidden&quot;;
+    floating.style.transform = &quot;translate(0, 0)&quot;;
+    document.body.appendChild(floating);
+    activeTrigger = trigger;
+    setDescribedBy(trigger, true);
+    autoUpdateCleanup = autoUpdate(trigger, floating, () =&gt; {
+      updatePosition(trigger, floating);
+    });
+  };
+  const requestOpen = (trigger, immediate = false) =&gt; {
+    if (
+      getContent(trigger).length === 0 ||
+      activeTrigger === trigger ||
+      pendingTrigger === trigger
+    ) {
+      return;
+    }
+    clearOpenTimeout();
+    pendingTrigger = trigger;
+    const delay =
+      immediate || activeTrigger != null || Date.now() &lt; skipDelayUntil
+        ? 0
+        : hoverDelay;
+    if (delay === 0) {
+      openTooltip(trigger);
+      return;
+    }
+    openTimeout = window.setTimeout(() =&gt; {
+      openTimeout = null;
+      pendingTrigger = null;
+      openTooltip(trigger);
+    }, delay);
+  };
+  const handlePointerOpen = (event) =&gt; {
+    if (event.pointerType === &quot;touch&quot;) {
+      return;
+    }
+    const trigger = getTrigger(event.target);
+    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
+      return;
+    }
+    requestOpen(trigger);
+  };
+  const handleLeave = (event) =&gt; {
+    const trigger = getTrigger(event.target);
+    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
+      return;
+    }
+    if (activeTrigger === trigger || pendingTrigger === trigger) {
+      closeTooltip();
+    }
+  };
+  const handleFocusIn = (event) =&gt; {
+    const trigger = getTrigger(event.target);
+    if (trigger?.matches(&quot;:focus-visible&quot;)) {
+      requestOpen(trigger, true);
+    }
+  };
+  const handleKeyDown = (event) =&gt; {
+    if (event.key === &quot;Escape&quot;) {
+      closeTooltip();
+    }
+  };
+  const handleContextMenu = (event) =&gt; {
+    const trigger = getTrigger(event.target);
+    if (activeTrigger === trigger || pendingTrigger === trigger) {
+      closeTooltip();
+    }
+  };
+  const destroy = () =&gt; {
+    closeTooltip(false);
+    document.removeEventListener(&quot;pointerover&quot;, handlePointerOpen);
+    document.removeEventListener(&quot;pointerout&quot;, handleLeave);
+    document.removeEventListener(&quot;focusin&quot;, handleFocusIn);
+    document.removeEventListener(&quot;focusout&quot;, handleLeave);
+    document.removeEventListener(&quot;keydown&quot;, handleKeyDown);
+    document.removeEventListener(&quot;contextmenu&quot;, handleContextMenu);
+    tooltip = null;
+  };
+
+  document.addEventListener(&quot;pointerover&quot;, handlePointerOpen);
+  document.addEventListener(&quot;pointerout&quot;, handleLeave);
+  document.addEventListener(&quot;focusin&quot;, handleFocusIn);
+  document.addEventListener(&quot;focusout&quot;, handleLeave);
+  document.addEventListener(&quot;keydown&quot;, handleKeyDown);
+  document.addEventListener(&quot;contextmenu&quot;, handleContextMenu);
+  window.addEventListener(&quot;pagehide&quot;, destroy, { once: true });
+})();
+&lt;/script&gt;
+&lt;script id=&quot;codex-visualization-lucide&quot; async src=&quot;https://unpkg.com/lucide@1.17.0/dist/umd/lucide.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+(() =&gt; {
+  const initialize = () =&gt; {
+    globalThis.lucide?.createIcons({ attrs: { width: 16, height: 16 } });
+  };
+  if (globalThis.lucide != null) {
+    initialize();
+    return;
+  }
+  document
+    .getElementById(&quot;codex-visualization-lucide&quot;)
+    ?.addEventListener(&quot;load&quot;, initialize, { once: true });
+})();
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+"></iframe>
+</body>
+</html>
