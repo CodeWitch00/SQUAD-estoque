@@ -534,22 +534,3 @@ Decisão necessária:
 ```
 
 ---
-
-## 16. Checklist final do desenvolvedor
-
-- [ ] Cartão atribuído e com Daily definida.
-- [ ] Requisito consultado.
-- [ ] Branch no padrão oficial.
-- [ ] Escopo pequeno e respeitado.
-- [ ] Código simples e aderente ao MVC atual.
-- [ ] Regras de negócio preservadas.
-- [ ] Testes escritos conforme a pirâmide.
-- [ ] Build e testes locais aprovados.
-- [ ] Validação manual registrada quando aplicável.
-- [ ] Commits semânticos e pequenos.
-- [ ] Pull Request completo.
-- [ ] Revisão por outro integrante.
-- [ ] GitHub Actions verde.
-- [ ] Merge concluído e validado na `main`.
-- [ ] Evidências anexadas ao cartão.
-- [ ] Cartão movido para `Feito`.

@@ -200,7 +200,7 @@ O projeto segue a pirâmide de testes:
 
 O projeto possui 22 testes automatizados na baseline atual. O número pode crescer; a referência correta é sempre o resultado de `dotnet test` e do GitHub Actions.
 
-Consulte o [guia XP](docs/07-operacional/guia-fluxo-desenvolvimento-xp.md) para a estratégia completa.
+Consulte o [plano mestre de testes](docs/07-operacional/plano-mestre-de-testes.md) para a cobertura completa em pirâmide e o [guia XP](docs/07-operacional/guia-fluxo-desenvolvimento-xp.md) para o fluxo de trabalho.
 
 ---
 
