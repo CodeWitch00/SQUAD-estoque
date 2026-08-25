@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,7 +10,7 @@
 </head>
 <body>
 <iframe sandbox="allow-scripts" referrerpolicy="no-referrer" title="Fluxo Vendedor Mobile" srcdoc="&lt;!doctype html&gt;
-&lt;html lang=&quot;en&quot;&gt;
+&lt;html lang=&quot;pt-BR&quot;&gt;
 &lt;head&gt;
 &lt;meta charset=&quot;utf-8&quot;&gt;
 &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
@@ -1482,8 +1482,8 @@ html&gt;body{padding:0}&lt;/style&gt;
             &lt;/div&gt;
             &lt;form class=&quot;sq-form&quot; data-form=&quot;login&quot;&gt;
               &lt;div class=&quot;sq-field&quot;&gt;
-                &lt;label for=&quot;sq-user&quot;&gt;Usuário&lt;/label&gt;
-                &lt;input class=&quot;sq-input&quot; id=&quot;sq-user&quot; name=&quot;user&quot; autocomplete=&quot;username&quot; placeholder=&quot;Digite seu usuário&quot;&gt;
+                &lt;label for=&quot;sq-user&quot;&gt;E-mail&lt;/label&gt;
+                &lt;input class=&quot;sq-input&quot; id=&quot;sq-user&quot; name=&quot;email&quot; type=&quot;email&quot; autocomplete=&quot;username&quot; placeholder=&quot;seu.email@loja.com&quot;&gt;
               &lt;/div&gt;
               &lt;div class=&quot;sq-field&quot;&gt;
                 &lt;label for=&quot;sq-password&quot;&gt;Senha&lt;/label&gt;
@@ -1506,14 +1506,14 @@ html&gt;body{padding:0}&lt;/style&gt;
             ${banner}
             &lt;div class=&quot;sq-welcome&quot;&gt;
               &lt;h1&gt;O que o cliente procura?&lt;/h1&gt;
-              &lt;p class=&quot;sq-helper&quot;&gt;Busque por nome, referência ou código do produto.&lt;/p&gt;
+              &lt;p class=&quot;sq-helper&quot;&gt;Busque pelo nome do modelo.&lt;/p&gt;
             &lt;/div&gt;
             &lt;form class=&quot;sq-search-panel&quot; data-form=&quot;search&quot;&gt;
               &lt;div class=&quot;sq-field&quot;&gt;
-                &lt;label for=&quot;sq-query&quot;&gt;Produto ou código&lt;/label&gt;
+                &lt;label for=&quot;sq-query&quot;&gt;Nome do modelo&lt;/label&gt;
                 &lt;div class=&quot;sq-input-wrap&quot;&gt;
                   &lt;i data-lucide=&quot;search&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
-                  &lt;input class=&quot;sq-input sq-input-with-icon&quot; id=&quot;sq-query&quot; name=&quot;query&quot; value=&quot;${safe(state.query)}&quot; placeholder=&quot;Ex.: Tênis Urbano&quot; autocomplete=&quot;off&quot;&gt;
+                  &lt;input class=&quot;sq-input sq-input-with-icon&quot; id=&quot;sq-query&quot; name=&quot;query&quot; value=&quot;${safe(state.query)}&quot; placeholder=&quot;Ex.: Tênis Urbano&quot; autocomplete=&quot;off&quot; minlength=&quot;2&quot; autofocus&gt;
                 &lt;/div&gt;
                 &lt;div class=&quot;sq-error-text&quot; id=&quot;sq-query-error&quot; role=&quot;alert&quot;&gt;&lt;/div&gt;
               &lt;/div&gt;
@@ -1557,14 +1557,14 @@ html&gt;body{padding:0}&lt;/style&gt;
               &lt;span class=&quot;sq-caption&quot;&gt;${safe(product.detail)} · Ref. ${safe(product.baseSku)}&lt;/span&gt;
             &lt;/div&gt;
             &lt;h3 class=&quot;sq-size-title&quot;&gt;Escolha a numeração&lt;/h3&gt;
-            &lt;div class=&quot;sq-size-grid&quot; role=&quot;group&quot; aria-label=&quot;Numerações disponíveis&quot;&gt;
+            &lt;div class=&quot;sq-size-grid&quot; role=&quot;group&quot; aria-label=&quot;Grade completa de numerações&quot;&gt;
               ${product.sizes.map(size =&gt; `
-                &lt;button class=&quot;sq-size&quot; type=&quot;button&quot; data-action=&quot;select-size&quot; data-size=&quot;${size.number}&quot; aria-pressed=&quot;${state.size === size.number ? &#x27;true&#x27; : &#x27;false&#x27;}&quot; ${size.quantity === 0 ? &#x27;disabled&#x27; : &#x27;&#x27;} aria-label=&quot;Tamanho ${size.number}, ${size.label}&quot;&gt;
+                &lt;button class=&quot;sq-size&quot; type=&quot;button&quot; data-action=&quot;select-size&quot; data-size=&quot;${size.number}&quot; aria-pressed=&quot;${state.size === size.number ? &#x27;true&#x27; : &#x27;false&#x27;}&quot; aria-label=&quot;Tamanho ${size.number}, saldo ${size.quantity}, ${size.label}&quot;&gt;
                   &lt;span class=&quot;sq-size-number&quot;&gt;${size.number}&lt;/span&gt;
-                  &lt;span class=&quot;sq-size-state&quot;&gt;${safe(size.label)}&lt;/span&gt;
+                  &lt;span class=&quot;sq-size-state&quot;&gt;${size.quantity} ${size.quantity === 1 ? &#x27;par&#x27; : &#x27;pares&#x27;} · ${safe(size.label)}&lt;/span&gt;
                 &lt;/button&gt;`).join(&#x27;&#x27;)}
             &lt;/div&gt;
-            &lt;div class=&quot;sq-selection-live&quot; aria-live=&quot;polite&quot;&gt;${selected ? `Selecionado: ${safe(product.baseSku)}-${selected.number} · ${safe(selected.label)}` : &#x27;Selecione um tamanho disponível&#x27;}&lt;/div&gt;
+            &lt;div class=&quot;sq-selection-live&quot; aria-live=&quot;polite&quot;&gt;${selected ? `Selecionado: ${safe(product.baseSku)}-${selected.number} · saldo ${selected.quantity} · ${safe(selected.label)}` : &#x27;Selecione uma numeração da grade&#x27;}&lt;/div&gt;
             &lt;div class=&quot;sq-spacer&quot;&gt;&lt;/div&gt;
             &lt;button class=&quot;sq-button sq-button-primary&quot; type=&quot;button&quot; data-action=&quot;continue-size&quot; ${selected ? &#x27;&#x27; : &#x27;disabled&#x27;}&gt;Continuar &lt;i data-lucide=&quot;arrow-right&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/button&gt;
           &lt;/main&gt;`;
@@ -1572,6 +1572,8 @@ html&gt;body{padding:0}&lt;/style&gt;
 
       function renderOutcome() {
         const product = state.product || products[0];
+        const selected = product.sizes.find(size =&gt; size.number === state.size);
+        const unavailable = !selected || selected.quantity === 0;
         return `
           &lt;main class=&quot;sq-screen&quot;&gt;
             ${appbar(&#x27;Resultado do atendimento&#x27;, &#x27;SKU selecionado&#x27;, &#x27;back-product&#x27;)}
@@ -1582,10 +1584,11 @@ html&gt;body{padding:0}&lt;/style&gt;
             &lt;h1&gt;Como terminou o atendimento?&lt;/h1&gt;
             &lt;p class=&quot;sq-helper&quot;&gt;Escolha uma opção para registrar o resultado.&lt;/p&gt;
             &lt;div class=&quot;sq-outcomes&quot;&gt;
-              &lt;button class=&quot;sq-button sq-button-positive&quot; type=&quot;button&quot; data-action=&quot;record&quot; data-outcome=&quot;Vendeu&quot;&gt;&lt;i data-lucide=&quot;badge-check&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Vendeu&lt;/button&gt;
+              &lt;button class=&quot;sq-button sq-button-positive&quot; type=&quot;button&quot; data-action=&quot;record&quot; data-outcome=&quot;Vendeu&quot; ${unavailable ? &#x27;disabled&#x27; : &#x27;&#x27;}&gt;&lt;i data-lucide=&quot;badge-check&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Vendeu&lt;/button&gt;
               &lt;button class=&quot;sq-button sq-button-warning&quot; type=&quot;button&quot; data-action=&quot;record&quot; data-outcome=&quot;Não tinha&quot;&gt;&lt;i data-lucide=&quot;package-x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Não tinha&lt;/button&gt;
               &lt;button class=&quot;sq-button sq-button-neutral&quot; type=&quot;button&quot; data-action=&quot;record&quot; data-outcome=&quot;Desistiu&quot;&gt;&lt;i data-lucide=&quot;user-round-x&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Desistiu&lt;/button&gt;
             &lt;/div&gt;
+            ${unavailable ? &#x27;&lt;p class=&quot;sq-outcome-help&quot;&gt;Este SKU está indisponível. “Vendeu” não pode ser registrado, mas você pode informar “Não tinha”.&lt;/p&gt;&#x27; : &#x27;&#x27;}
             &lt;div class=&quot;sq-spacer&quot;&gt;&lt;/div&gt;
             &lt;button class=&quot;sq-button sq-button-ghost&quot; type=&quot;button&quot; data-action=&quot;skip&quot;&gt;&lt;i data-lucide=&quot;skip-forward&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Pular registro e fazer nova consulta&lt;/button&gt;
             &lt;p class=&quot;sq-outcome-help&quot;&gt;Pular não salva um resultado para este atendimento.&lt;/p&gt;
@@ -1594,6 +1597,17 @@ html&gt;body{padding:0}&lt;/style&gt;
 
       function renderSuccess() {
         const product = state.product || products[0];
+        const selected = product.sizes.find(size =&gt; size.number === state.size);
+        const messages = {
+          &#x27;Vendeu&#x27;: `Venda registrada. O saldo foi reduzido em 1 e agora é ${selected ? Math.max(0, selected.quantity - 1) : 0}.`,
+          &#x27;Não tinha&#x27;: &#x27;Ruptura registrada para este SKU. O saldo do estoque não foi alterado.&#x27;,
+          &#x27;Desistiu&#x27;: &#x27;Atendimento encerrado sem movimentação de estoque e sem registro de ruptura.&#x27;
+        };
+        const titles = {
+          &#x27;Vendeu&#x27;: &#x27;Venda registrada&#x27;,
+          &#x27;Não tinha&#x27;: &#x27;Ruptura registrada&#x27;,
+          &#x27;Desistiu&#x27;: &#x27;Atendimento encerrado&#x27;
+        };
         return `
           &lt;main class=&quot;sq-screen&quot;&gt;
             &lt;div class=&quot;sq-state-center&quot;&gt;
@@ -1601,13 +1615,12 @@ html&gt;body{padding:0}&lt;/style&gt;
                 &lt;div class=&quot;sq-state-icon sq-state-icon-success&quot;&gt;&lt;i data-lucide=&quot;check&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/div&gt;
                 &lt;div class=&quot;sq-state-copy&quot;&gt;
                   &lt;div class=&quot;sq-eyebrow&quot;&gt;${safe(state.outcome)}&lt;/div&gt;
-                  &lt;h1&gt;Atendimento registrado&lt;/h1&gt;
-                  &lt;p&gt;O resultado foi salvo e você já pode atender o próximo cliente.&lt;/p&gt;
+                  &lt;h1&gt;${safe(titles[state.outcome] || &#x27;Atendimento concluído&#x27;)}&lt;/h1&gt;
+                  &lt;p&gt;${safe(messages[state.outcome] || &#x27;Atendimento concluído.&#x27;)}&lt;/p&gt;
                 &lt;/div&gt;
                 &lt;span class=&quot;sq-sku-chip&quot;&gt;${safe(product.baseSku)}-${safe(state.size)}&lt;/span&gt;
                 &lt;div class=&quot;sq-state-actions&quot;&gt;
                   &lt;button class=&quot;sq-button sq-button-primary&quot; type=&quot;button&quot; data-action=&quot;new-search&quot;&gt;&lt;i data-lucide=&quot;search&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Nova consulta&lt;/button&gt;
-                  &lt;button class=&quot;sq-button sq-button-ghost&quot; type=&quot;button&quot; data-action=&quot;view-outcome&quot;&gt;&lt;i data-lucide=&quot;arrow-left&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Voltar ao resultado&lt;/button&gt;
                 &lt;/div&gt;
               &lt;/div&gt;
             &lt;/div&gt;
@@ -1665,8 +1678,8 @@ html&gt;body{padding:0}&lt;/style&gt;
         if (event.target.dataset.form === &#x27;search&#x27;) {
           const query = new FormData(event.target).get(&#x27;query&#x27;).trim();
           const error = root.querySelector(&#x27;#sq-query-error&#x27;);
-          if (!query) {
-            error.textContent = &#x27;Digite um produto ou código para buscar.&#x27;;
+          if (query.length &lt; 2) {
+            error.textContent = &#x27;Digite pelo menos 2 caracteres do nome do modelo.&#x27;;
             root.querySelector(&#x27;#sq-query&#x27;).focus();
             return;
           }
@@ -1705,8 +1718,8 @@ html&gt;body{padding:0}&lt;/style&gt;
           const queryInput = root.querySelector(&#x27;#sq-query&#x27;);
           const query = (queryInput ? queryInput.value : state.query).trim();
           const error = root.querySelector(&#x27;#sq-query-error&#x27;);
-          if (!query) {
-            error.textContent = &#x27;Digite um produto ou código para buscar.&#x27;;
+          if (query.length &lt; 2) {
+            error.textContent = &#x27;Digite pelo menos 2 caracteres do nome do modelo.&#x27;;
             queryInput.focus();
             return;
           }
@@ -1720,7 +1733,6 @@ html&gt;body{padding:0}&lt;/style&gt;
         if (action === &#x27;back-search&#x27;) state.view = &#x27;search&#x27;;
         if (action === &#x27;back-results&#x27;) state.view = &#x27;results&#x27;;
         if (action === &#x27;back-product&#x27;) state.view = &#x27;product&#x27;;
-        if (action === &#x27;view-outcome&#x27;) state.view = &#x27;outcome&#x27;;
         if (action === &#x27;select-product&#x27;) {
           state.product = products.find(product =&gt; product.id === control.dataset.product);
           state.size = null;
