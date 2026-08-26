@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: squad-estoque-demo
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_FORWARDEDHEADERS_ENABLED
+        value: "true"
+      - key: Demo__SeedUsers
+        value: "true"
+      - key: ConnectionStrings__LegacyMovieContext
+        value: Data Source=/tmp/LegacyMovie.db
+      - key: ConnectionStrings__EstoqueContext
+        value: Data Source=/tmp/Estoque.db

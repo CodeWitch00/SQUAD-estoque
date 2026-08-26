@@ -1,0 +1,15 @@
+.git
+.github
+.agents
+.codex
+.vscode
+docs
+tests
+**/bin
+**/obj
+**/*.db
+**/*.db-shm
+**/*.db-wal
+**/*.sqlite
+**/*.sqlite3
+**/TestResults

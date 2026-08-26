@@ -25,6 +25,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 // Add services to the container.
 var mvcBuilder = builder.Services.AddControllersWithViews();
+builder.Services.AddHealthChecks();
 
 if (builder.Environment.IsDevelopment())
 {
@@ -38,12 +39,17 @@ if (!app.Environment.IsEnvironment("Testing"))
     using var scope = app.Services.CreateScope();
     var services = scope.ServiceProvider;
 
-    // Mantém o seed legado de filmes
+    // Garante que um ambiente novo possua o schema antes de consultar ou popular dados.
+    var legacyMovieContext = services.GetRequiredService<LegacyMovieContext>();
+    legacyMovieContext.Database.Migrate();
     SeedData.Initialize(services);
 
-    // Seed exclusivo de teste para validação da autenticação do Estoque
     var estoqueContext = services.GetRequiredService<EstoqueContext>();
-    if (!estoqueContext.Usuario.Any())
+    estoqueContext.Database.Migrate();
+
+    // Usuários conhecidos só são criados em ambientes explicitamente demonstrativos.
+    var seedDemoUsers = builder.Configuration.GetValue<bool>("Demo:SeedUsers");
+    if (seedDemoUsers && !estoqueContext.Usuario.Any())
     {
         estoqueContext.Usuario.AddRange(
             new Usuario
@@ -82,6 +88,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
+app.MapHealthChecks("/health");
 
 app.MapControllerRoute(
     name: "default",
