@@ -15,10 +15,10 @@
 
 Especificar entradas, ações e resultados esperados dos fluxos administrativos já implementados, mantendo rastreabilidade com:
 
-- [SRS](02-requisitos/srs.md): RF-05 a RF-11 e RF-23;
-- [casos de uso](02-requisitos/casos-de-uso.md): UC-07 a UC-10 e UC-S1, UC-S4 e UC-S5;
-- [regras do domínio](01-negocio/dominio.md): RN-01 a RN-04;
-- [plano de testes](07-operacional/plano-de-testes.md): UT-01 a UT-05, UT-11, UT-12, IT-01 a IT-18 e E2E-02/E2E-06;
+- [SRS](../02-requisitos/srs.md): RF-05 a RF-11 e RF-23;
+- [casos de uso](../02-requisitos/casos-de-uso.md): UC-07 a UC-10 e UC-S1, UC-S4 e UC-S5;
+- [regras do domínio](../01-negocio/dominio.md): RN-01 a RN-04;
+- [plano de testes](plano-de-testes.md): UT-01 a UT-05, UT-11, UT-12, IT-01 a IT-18 e E2E-02/E2E-06;
 - implementação MVC e testes automatizados existentes em `tests/SquadEstoque.Web.Tests`.
 
 Esta é uma especificação de comportamento, não uma duplicação dos testes xUnit.

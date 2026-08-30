@@ -5,6 +5,8 @@
 | Campo | Valor |
 |---|---|
 | Projeto | SQUAD Estoque |
+| Versão do documento | 1.1 |
+| Status | Revisado |
 | Tipo | Aplicação web ASP.NET Core MVC |
 | Estratégia | Pirâmide de testes |
 | Perfis | `LOJISTA` e `VENDEDOR` |
@@ -16,7 +18,9 @@ Este é o plano geral de qualidade do projeto e reúne também os casos de auten
 
 ## 2. Objetivo
 
-Definir como planejar, escrever, executar e registrar os testes do SQUAD Estoque, garantindo rastreabilidade entre requisitos, riscos, casos de uso e evidências.
+Criar e manter a estrutura oficial para planejar, escrever, executar e registrar os testes do SQUAD Estoque, garantindo rastreabilidade entre requisitos, cenários, pré-condições, passos, entradas, resultados esperados, resultados obtidos e evidências.
+
+O documento atende ao critério da P1 de plano de testes estruturado, com casos, entradas, saídas esperadas e cenários, e acrescenta controles de execução e revisão para evitar resultados presumidos.
 
 O plano procura responder:
 
@@ -34,8 +38,8 @@ O plano procura responder:
 - [Regras do domínio](../01-negocio/dominio.md)
 - [Arquitetura](../04-arquitetura/arquitetura.md)
 - [Inventário de telas e navegação](../05-ux/inventario-telas-e-mapa-navegacao.md)
-- [Guia do fluxo XP](guia-fluxo-desenvolvimento-xp.md)
-- [Manual de ambiente](manual-setup-ambiente.md)
+- [Guia do fluxo XP](../07-operacional/guia-fluxo-desenvolvimento-xp.md)
+- [Manual de ambiente](../07-operacional/manual-setup-ambiente.md)
 - [Testes automatizados](../../tests/SquadEstoque.Web.Tests/)
 
 ## 4. Escopo
@@ -125,6 +129,18 @@ E2E não deve ser usado para enumerar todas as validações de campo. Essas comb
 
 Desempenho, disponibilidade, compatibilidade, segurança e usabilidade complementam a pirâmide. Eles possuem ferramentas e cadências próprias e não devem ser apresentados como testes unitários.
 
+### 5.5 Separação por forma de execução
+
+Nível de teste e forma de execução são classificações diferentes. Um teste de integração, por exemplo, pode ser automatizado. O catálogo e o relatório devem informar as duas classificações sem misturá-las.
+
+| Grupo oficial | Identificação no caso | Escopo | Registro esperado |
+|---|---|---|---|
+| Testes automatizados | Forma `Automatizado`; níveis `Unitário`, `Integração` ou `E2E` | Código executável localmente e na CI, incluindo UT, CT e IT já implementados | Nome do teste, comando/job, commit e artefato do runner |
+| Testes de integração | Nível `Integração`; forma `Automatizado` ou `Manual assistido` | MVC, HTTP, autenticação, persistência, banco e colaboração entre componentes | Resposta, efeitos persistidos e ausência de alteração parcial em falhas |
+| Validações manuais | Forma `Manual`; níveis `E2E`, `Aceite` ou `Não funcional` | Usabilidade, inspeção visual, responsividade, compatibilidade e smoke de publicação | Executor, ambiente, passos, observado e evidência anexada |
+
+Os casos unitários estão no catálogo UT; os casos de integração, nos catálogos CT, IT e ADM; as jornadas E2E, na seção 11; e as validações manuais e não funcionais, na seção 12 e na [especificação de testes não funcionais](especificacao-testes-nao-funcionais.md). A existência de automação não dispensa uma validação manual quando o critério depender de percepção visual, dispositivo real ou ambiente publicado.
+
 ## 6. Ferramentas
 
 | Finalidade | Ferramenta adotada ou indicada | Situação |
@@ -168,7 +184,47 @@ Não adicionar uma ferramenta nova quando a infraestrutura atual já consegue pr
 
 Senhas de teste só podem existir no seed de desenvolvimento/teste. Logs e evidências não devem exibir senha, hash ou cookie completo.
 
-## 8. Padrão para escrever casos automatizados
+## 8. Modelo oficial dos casos de teste
+
+Todo caso novo ou detalhado deve usar os campos abaixo. Os catálogos resumidos podem apresentar apenas as colunas necessárias para planejamento, desde que apontem para um caso detalhado ou preservem ID, requisito, cenário, entrada, resultado esperado e situação de cobertura.
+
+| Campo obrigatório | Como preencher |
+|---|---|
+| Identificador | Código único e estável, como `UT-01`, `IT-18` ou `NFT-MOB-03` |
+| Requisito | RF, RNF, RN, caso de uso e/ou risco rastreado |
+| Cenário | Título objetivo, indicando comportamento positivo, negativo ou transversal |
+| Forma de execução | `Automatizado`, `Manual` ou `Manual assistido` |
+| Nível | `Unitário`, `Integração`, `E2E`, `Aceite` ou `Não funcional` |
+| Pré-condição | Estado, perfil, massa, ambiente e dependências necessários |
+| Passos | Sequência numerada e reproduzível de ações |
+| Entrada | Valores, arquivos, requisições e variações usadas |
+| Saída esperada | Resposta visível, código, estado persistido e efeitos que não devem ocorrer |
+| Resultado obtido | Comportamento realmente observado; deixar `Não executado` durante o planejamento |
+| Status de execução | Um dos estados definidos na seção 8.3 |
+| Evidência | Link para job, log, relatório ou captura; usar `Não gerada` antes da execução |
+
+### 8.1 Template reutilizável
+
+```markdown
+### <ID> — <cenário>
+
+- **Requisito:** <RF/RNF/RN/UC/risco>
+- **Forma de execução:** <Automatizado | Manual | Manual assistido>
+- **Nível:** <Unitário | Integração | E2E | Aceite | Não funcional>
+- **Pré-condição:** <estado inicial, perfil, massa e ambiente>
+- **Passos:**
+  1. <ação reproduzível>
+  2. <ação reproduzível>
+- **Entrada:** <dados e variações>
+- **Saída esperada:** <resposta e efeitos esperados>
+- **Resultado obtido:** Não executado
+- **Status de execução:** Não executado
+- **Evidência:** Não gerada
+```
+
+Planejar ou implementar um teste não significa executá-lo. Ao criar o caso, `Resultado obtido`, `Status de execução` e `Evidência` devem permanecer, respectivamente, `Não executado`, `Não executado` e `Não gerada`. Esses campos só podem ser alterados com base em uma execução real identificada por data, commit, ambiente e executor.
+
+### 8.2 Padrão para automação
 
 Usar Arrange, Act, Assert:
 
@@ -189,13 +245,38 @@ Convenções:
 - em falhas, confirmar também que nenhum registro parcial foi salvo;
 - todo bug reproduzível corrigido deve receber teste de regressão no nível adequado.
 
+### 8.3 Estados de especificação, cobertura e execução
+
+O plano mantém três informações independentes para evitar a declaração indevida de execução:
+
+| Dimensão | Valores permitidos | Significado |
+|---|---|---|
+| Situação de especificação | `Planejado`, `Parcial`, `Dependente`, `Especificado` | Maturidade documental do caso |
+| Situação de automação | `Não automatizado`, `Parcial`, `Existente` | Existência e abrangência do código de teste |
+| Status de execução | `Não executado`, `Em execução`, `Aprovado`, `Reprovado`, `Bloqueado`, `Não aplicável` | Resultado de uma execução concreta |
+
+`Existente` nos catálogos significa que há código automatizado na baseline; não significa que ele foi executado no commit atual. Somente `Aprovado` ou `Reprovado` representa resultado, e esses estados exigem evidência da execução real. `Bloqueado` exige causa e condição de retomada; `Não aplicável` exige justificativa.
+
+### 8.4 Cobertura obrigatória de cenários
+
+| Categoria | Casos iniciais de referência |
+|---|---|
+| Positivos | UT-02, IT-01, IT-07, IT-10, E2E-01 a E2E-07 |
+| Negativos e limites | UT-01, UT-03 a UT-05, CT-AUT-04 a CT-AUT-06, IT-02, IT-08, IT-11, IT-12 e IT-17 |
+| Permissão e segurança | CT-AUT-09 a CT-AUT-15, IT-03, NFT-04 e NFT-05 |
+| Responsividade e compatibilidade | NFT-01, NFT-07 e NFT-MOB-01 a NFT-MOB-04 |
+| Desempenho | NFT-02 e NFT-PERF-01 a NFT-PERF-03 |
+| Concorrência | IT-18 e ADM-SAI-04 |
+
+Cada requisito deve possuir os cenários aplicáveis ao seu risco. Quando uma categoria não se aplicar, a decisão deve ser registrada na matriz ou no caso, sem criar teste artificial apenas para preencher a classificação.
+
 ## 9. Catálogo de testes da base da pirâmide
 
 Legenda:
 
-- **Existente:** há teste automatizado na baseline;
-- **Planejado:** pode ser criado sobre funcionalidade existente;
-- **Dependente:** aguarda a implementação do requisito correspondente.
+- **Existente:** há teste automatizado na baseline, sem afirmar execução no commit atual;
+- **Planejado:** pode ser criado sobre funcionalidade existente e ainda está `Não executado`;
+- **Dependente:** aguarda a implementação do requisito correspondente e ainda está `Não executado`.
 
 | ID | Requisitos | Unidade/cenário | Entradas | Resultado esperado | Situação |
 |---|---|---|---|---|---|
@@ -504,14 +585,22 @@ Modelo resumido:
 
 | Campo | Exemplo |
 |---|---|
+| Data/hora | 2026-08-30 14:00 BRT |
 | Commit | hash curto do commit testado |
 | Ambiente | CI / homologação Chrome mobile |
+| Executor | integrante ou agente responsável pela execução |
 | Caso | IT-18 |
-| Resultado | Falhou |
-| Esperado | saldo 0 e uma única saída |
-| Observado | duas saídas concorrentes |
+| Requisito | RN-07, UC-S2 |
+| Pré-condição | SKU com saldo 1 e duas sessões autenticadas |
+| Passos | disparar simultaneamente duas saídas de uma unidade |
+| Entrada | duas confirmações concorrentes para o mesmo SKU |
+| Saída esperada | saldo 0 e uma única saída |
+| Resultado obtido | duas saídas concorrentes |
+| Status de execução | Reprovado |
 | Evidência | link do job ou artefato protegido |
 | Defeito | BUG-123, severidade P0 |
+
+O registro acima é apenas um exemplo de preenchimento. Não representa uma execução real do IT-18.
 
 ## 19. Manutenção do plano
 
@@ -521,3 +610,13 @@ Modelo resumido:
 - quantidade de testes no texto é apenas uma baseline datada; o resultado do runner é a fonte operacional;
 - divergências entre SRS, UX e implementação devem ser resolvidas, não escondidas alterando a expectativa do teste;
 - este plano deve ser revisado no planejamento de cada sprint e antes de cada release.
+
+## 20. Registro de revisões
+
+| Versão | Data | Tipo | Revisor | Resultado registrado |
+|---|---|---|---|---|
+| 1.0 | 2026-08-25 | Criação | Equipe do projeto | Estratégia, catálogos e matriz inicial versionados no Git |
+| 1.1 | 2026-08-30 | Técnica | Codex, em revisão assistida solicitada pela equipe | Incluídos modelo obrigatório, separação por execução, estados controlados e cobertura transversal; rastreabilidade e referências conferidas |
+| 1.1 | 2026-08-30 | Textual | Codex, em revisão assistida solicitada pela equipe | Terminologia de situação, execução, resultado e evidência uniformizada; regra contra execução presumida explicitada |
+
+Revisões assistidas não substituem o aceite do responsável de QA ou do produto quando esse aceite for exigido para release. A próxima alteração funcional ou de requisito deve gerar uma nova linha, com versão, data, tipo, revisor e resultado.
