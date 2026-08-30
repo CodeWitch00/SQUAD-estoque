@@ -325,3 +325,9 @@ Não duplicar os testes abaixo; ampliar suas asserções quando a cobertura for 
 - Nenhum cenário rejeitado pode deixar saldo ou histórico parcialmente alterado.
 - A saída genérica de `VENDEDOR` permanece registrada como divergência até a autorização ser alinhada ao fluxo-alvo; não declarar cobertura de `Vendeu` por essa rota.
 - A especificação deve ser revista quando controllers, rotas ou requisitos mudarem.
+
+## 14. Execuções registradas
+
+| Data | Commit | Escopo | Resultado | Evidência |
+|---|---|---|---|---|
+| 2026-08-30 | `fbd95e1` | Baseline administrativa: login, produto/grade, entrada, saída, ajuste, histórico e perfis | **Reprovado com impedimento IMP-ADM-001** | [Relatório](relatorio-homologacao-baseline-administrativa-2026-08-30.md) e [roteiro executado](roteiro-executado-baseline-administrativa-2026-08-30.md) |

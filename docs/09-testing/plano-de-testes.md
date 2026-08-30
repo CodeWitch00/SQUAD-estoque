@@ -5,7 +5,7 @@
 | Campo | Valor |
 |---|---|
 | Projeto | SQUAD Estoque |
-| Versão do documento | 1.1 |
+| Versão do documento | 1.2 |
 | Status | Revisado |
 | Tipo | Aplicação web ASP.NET Core MVC |
 | Estratégia | Pirâmide de testes |
@@ -40,6 +40,7 @@ O plano procura responder:
 - [Inventário de telas e navegação](../05-ux/inventario-telas-e-mapa-navegacao.md)
 - [Guia do fluxo XP](../07-operacional/guia-fluxo-desenvolvimento-xp.md)
 - [Manual de ambiente](../07-operacional/manual-setup-ambiente.md)
+- [Especificação dos testes do vendedor](especificacao-testes-vendedor.md)
 - [Testes automatizados](../../tests/SquadEstoque.Web.Tests/)
 
 ## 4. Escopo
@@ -357,6 +358,8 @@ O destino pós-login ainda possui uma divergência: o UC-01 exige uma tela inici
 
 ### 10.4 Consulta e atendimento do vendedor
 
+Os casos detalhados, incluindo pré-condições, passos e campos de execução, estão na [especificação dos testes do vendedor](especificacao-testes-vendedor.md).
+
 | ID | Requisitos | Cenário | Entradas/ações | Resultado esperado | Situação |
 |---|---|---|---|---|---|
 | IT-19 | RF-13, UC-02 | Busca parcial | termo existente com pelo menos 2 caracteres | Produtos correspondentes retornados | Dependente do módulo do vendedor |
@@ -618,5 +621,6 @@ O registro acima é apenas um exemplo de preenchimento. Não representa uma exec
 | 1.0 | 2026-08-25 | Criação | Equipe do projeto | Estratégia, catálogos e matriz inicial versionados no Git |
 | 1.1 | 2026-08-30 | Técnica | Codex, em revisão assistida solicitada pela equipe | Incluídos modelo obrigatório, separação por execução, estados controlados e cobertura transversal; rastreabilidade e referências conferidas |
 | 1.1 | 2026-08-30 | Textual | Codex, em revisão assistida solicitada pela equipe | Terminologia de situação, execução, resultado e evidência uniformizada; regra contra execução presumida explicitada |
+| 1.2 | 2026-08-30 | Integração documental | Codex, em revisão assistida solicitada pela equipe | Especificação detalhada de consulta, venda e ruptura do vendedor vinculada ao catálogo IT-18 a IT-29 |
 
 Revisões assistidas não substituem o aceite do responsável de QA ou do produto quando esse aceite for exigido para release. A próxima alteração funcional ou de requisito deve gerar uma nova linha, com versão, data, tipo, revisor e resultado.
