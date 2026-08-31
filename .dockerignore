@@ -3,8 +3,14 @@
 .agents
 .codex
 .vscode
+.env
+.env.*
+!.env.example
+gestao-privada
+gestao_privada
 docs
 tests
+compose.override.yaml
 **/bin
 **/obj
 **/*.db

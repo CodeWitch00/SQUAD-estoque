@@ -8,6 +8,7 @@ public class ConsultaEstoqueViewModel
     public string Termo { get; set; } = string.Empty;
     public List<ProdutoConsultaResultadoViewModel> Resultados { get; set; } = new();
     public string? MensagemEstado { get; set; }
+    public Guid? ProdutoSelecionadoId { get; set; }
 }
 
 public class ProdutoConsultaResultadoViewModel

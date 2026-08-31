@@ -1,0 +1,22 @@
+services:
+  squad-estoque:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: squad-estoque:local
+    init: true
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      Demo__SeedUsers: "true"
+      DataProtection__KeysPath: /app/data/keys
+      ConnectionStrings__LegacyMovieContext: Data Source=/app/data/LegacyMovie.db
+      ConnectionStrings__EstoqueContext: Data Source=/app/data/Estoque.db
+    volumes:
+      - squad-estoque-data:/app/data
+
+volumes:
+  squad-estoque-data:
+    name: squad-estoque-data

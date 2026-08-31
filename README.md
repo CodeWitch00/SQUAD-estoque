@@ -147,6 +147,19 @@ http://localhost:5186
 
 Se o terminal apresentar outra porta, use o endereço informado durante a inicialização.
 
+### Executar com Docker
+
+Para executar a aplicação e preservar os bancos SQLite em um volume Docker:
+
+```bash
+docker compose up --build -d
+```
+
+O endereço padrão do container é `http://localhost:8080`. Consulte o
+[guia de execução com Docker](docs/07-operacional/docker.md) para entender a
+imagem, o container, o volume persistente, os backups e os requisitos de uma
+publicação futura.
+
 ---
 
 ## 5. Usuários locais de desenvolvimento

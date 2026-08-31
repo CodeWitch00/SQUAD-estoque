@@ -1,0 +1,102 @@
+@model ConsultaEstoqueViewModel
+
+@{
+    ViewData["Title"] = "Consulta rápida";
+    var buscaExecutada = !string.IsNullOrWhiteSpace(Model.Termo) && ViewData.ModelState.IsValid;
+    var produtoSelecionado = Model.Resultados.FirstOrDefault(produto => produto.Id == Model.ProdutoSelecionadoId);
+}
+
+<div class="consulta-vendedor mx-auto">
+    <header class="consulta-cabecalho mb-4">
+        <p class="consulta-saudacao mb-1">Olá, @User.Identity?.Name</p>
+        <h1 class="h2 mb-2">Consulta rápida</h1>
+        <p class="text-body-secondary mb-0">Encontre o produto enquanto atende o cliente.</p>
+    </header>
+
+    <section class="consulta-painel mb-4" aria-labelledby="titulo-busca">
+        <div class="mb-3">
+            <h2 id="titulo-busca" class="h4 mb-1">O que o cliente procura?</h2>
+            <p id="ajuda-busca" class="text-body-secondary small mb-0">
+                Busque por modelo, marca, categoria ou cor.
+            </p>
+        </div>
+
+        <form asp-controller="Estoque" asp-action="Consulta" method="get" role="search" novalidate>
+            <div class="mb-3">
+                <label asp-for="Termo" class="form-label fw-semibold">Produto</label>
+                <input asp-for="Termo"
+                       class="form-control form-control-lg consulta-campo"
+                       type="search"
+                       minlength="2"
+                       maxlength="100"
+                       autocomplete="off"
+                       enterkeyhint="search"
+                       aria-describedby="ajuda-busca erro-busca"
+                       placeholder="Ex.: Tênis Urbano"
+                       autofocus />
+                <span asp-validation-for="Termo" id="erro-busca" class="text-danger small d-block mt-2" role="alert"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg consulta-botao">
+                Buscar estoque
+            </button>
+        </form>
+    </section>
+
+    @if (produtoSelecionado is not null)
+    {
+        <div class="alert alert-success consulta-aviso" role="status" aria-live="polite">
+            <strong>@produtoSelecionado.Nome selecionado.</strong>
+            <span class="d-block small">Produto pronto para continuar o atendimento.</span>
+        </div>
+    }
+
+    @if (!buscaExecutada)
+    {
+        <section class="consulta-estado" aria-labelledby="titulo-estado-inicial">
+            <div class="consulta-estado-icone" aria-hidden="true">⌕</div>
+            <h2 id="titulo-estado-inicial" class="h5">Pronto para consultar</h2>
+            <p class="text-body-secondary mb-0">Digite ao menos dois caracteres para começar.</p>
+        </section>
+    }
+    else if (Model.Resultados.Count == 0)
+    {
+        <section class="consulta-estado" aria-labelledby="titulo-sem-resultado" aria-live="polite">
+            <div class="consulta-estado-icone" aria-hidden="true">!</div>
+            <h2 id="titulo-sem-resultado" class="h5">@Model.MensagemEstado</h2>
+            <p class="text-body-secondary mb-0">Revise o termo ou faça uma nova busca.</p>
+        </section>
+    }
+    else
+    {
+        <section aria-labelledby="titulo-resultados">
+            <div class="d-flex flex-wrap align-items-baseline justify-content-between gap-2 mb-3">
+                <h2 id="titulo-resultados" class="h4 mb-0">Resultados</h2>
+                <p class="text-body-secondary small mb-0" aria-live="polite">
+                    @Model.Resultados.Count @(Model.Resultados.Count == 1 ? "produto encontrado" : "produtos encontrados")
+                </p>
+            </div>
+
+            <div class="consulta-resultados">
+                @foreach (var produto in Model.Resultados)
+                {
+                    var selecionado = produto.Id == Model.ProdutoSelecionadoId;
+                    <a asp-controller="Estoque"
+                       asp-action="Consulta"
+                       asp-route-termo="@Model.Termo"
+                       asp-route-produtoId="@produto.Id"
+                       class="consulta-resultado @(selecionado ? "consulta-resultado-selecionado" : string.Empty)"
+                       aria-current="@(selecionado ? "true" : null)">
+                        <span class="consulta-produto-icone" aria-hidden="true">⌕</span>
+                        <span class="consulta-produto-texto">
+                            <strong>@produto.Nome</strong>
+                            <span>@produto.Marca · @produto.Categoria · @produto.Cor</span>
+                        </span>
+                        <span class="consulta-seta" aria-hidden="true">›</span>
+                        <span class="visually-hidden">Selecionar @produto.Nome</span>
+                    </a>
+                }
+            </div>
+        </section>
+    }
+</div>

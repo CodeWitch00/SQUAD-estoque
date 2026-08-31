@@ -1,11 +1,21 @@
 using System;
+using System.IO;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SquadEstoque.Web.Data;
 using SquadEstoque.Web.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var dataProtectionKeysPath = builder.Configuration["DataProtection:KeysPath"];
+if (!string.IsNullOrWhiteSpace(dataProtectionKeysPath))
+{
+    Directory.CreateDirectory(dataProtectionKeysPath);
+    builder.Services.AddDataProtection()
+        .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionKeysPath));
+}
 
 builder.Services.AddDbContext<LegacyMovieContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("LegacyMovieContext") ?? throw new InvalidOperationException("Connection string 'LegacyMovieContext' not found.")));

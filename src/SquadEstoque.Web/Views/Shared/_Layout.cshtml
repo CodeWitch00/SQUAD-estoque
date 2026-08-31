@@ -35,6 +35,12 @@
                                 <a class="nav-link text-dark fw-bold" asp-controller="Movimentacoes" asp-action="Index">Movimentações</a>
                             </li>
                         }
+                        @if (User.IsInRole("VENDEDOR"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark fw-bold" asp-controller="Estoque" asp-action="Consulta">Consulta</a>
+                            </li>
+                        }
                     </ul>
                     <ul class="navbar-nav">
                         @if (User.Identity?.IsAuthenticated == true)

@@ -12,7 +12,12 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/publish .
 
-ENV ASPNETCORE_URLS=http://+:10000
-EXPOSE 10000
+RUN mkdir -p /app/data \
+    && chown -R "$APP_UID:$APP_UID" /app
+
+ENV ASPNETCORE_HTTP_PORTS=8080
+EXPOSE 8080
+
+USER $APP_UID
 
 ENTRYPOINT ["dotnet", "SquadEstoque.Web.dll"]
