@@ -53,10 +53,10 @@ Selecionar SKU
 Vendeu / Não tinha
 ```
 
-O fluxo de `Desistiu` pode ser iniciado sem seleção de SKU:
+O fluxo de `Desistiu` pode ser iniciado após a exibição da grade, sem seleção de SKU:
 
 ```text
-Tela de consulta
+Grade consultada
   ↓
 Desistiu
   ↓
@@ -83,7 +83,7 @@ O requisito de primeira consulta em até dois toques a partir do login é atendi
 
 O vendedor toca no campo de busca disponível na tela operacional.
 
-Em seguida, digita pelo menos dois caracteres do nome ou parte do nome do modelo.
+Em seguida, digita pelo menos dois caracteres do nome ou parte do nome do modelo. A busca é executada automaticamente, após um pequeno intervalo sem digitação (*debounce*), sem exigir um toque adicional.
 
 ### Toque 2
 
@@ -93,7 +93,7 @@ A grade do modelo é então apresentada.
 
 A seleção da numeração e o registro de `Vendeu` ou `Não tinha` ocorrem após a primeira consulta e não fazem parte da contagem dos dois toques necessários para chegar ao resultado da consulta.
 
-O teclado virtual deve permitir a execução da busca por `Enter`/`Pesquisar`, evitando que um botão adicional seja obrigatório para concluir a consulta.
+O teclado virtual deve permitir a execução da busca por `Enter`/`Pesquisar` para antecipar a consulta automática. Essa ação é opcional e não deve ser necessária para que os resultados sejam apresentados.
 
 ---
 
@@ -147,7 +147,8 @@ Espaços isolados não devem ser considerados uma busca válida.
 
 * O campo deve receber foco facilmente ao entrar na tela de consulta.
 * O teclado virtual deve disponibilizar uma ação de pesquisa.
-* `Enter` deve executar a busca quando houver pelo menos dois caracteres válidos.
+* Ao atingir pelo menos dois caracteres válidos, a busca deve ser executada automaticamente após um pequeno intervalo sem digitação (*debounce*).
+* `Enter` deve executar imediatamente a busca válida, antecipando o intervalo automático.
 * O foco deve permanecer visualmente identificado.
 * O indicador de foco não deve ser removido.
 * O botão de limpar, quando utilizado, deve possuir identificação acessível.
@@ -207,14 +208,14 @@ RESULTADOS
 ┌─────────────────────────────────────┐
 │ Tênis Runner Pro                    │
 │ Nike • Esportivo • Preto            │
-│ Grade: 35–40                        │
+│ Numerações: 35, 36, 37, 40          │
 │                         Ver grade → │
 └─────────────────────────────────────┘
 
 ┌─────────────────────────────────────┐
 │ Tênis Street Flex                   │
 │ Adidas • Casual • Branco            │
-│ Grade: 37–42                        │
+│ Numerações: 37, 38, 40, 42          │
 │                         Ver grade → │
 └─────────────────────────────────────┘
 ```
@@ -225,6 +226,7 @@ O resultado deve apresentar:
 
 * nome do modelo;
 * informações complementares disponíveis, como marca, categoria e cor;
+* numerações efetivamente cadastradas, quando exibidas no resultado;
 * indicação de que a grade pode ser consultada.
 
 Marca, categoria e cor são informações de apresentação e não critérios de busca.
@@ -347,7 +349,7 @@ SKU selecionado: Nº 36
 
 `Vendeu` e `Não tinha` exigem SKU selecionado.
 
-`Desistiu` pode ser executado independentemente da seleção de SKU.
+`Desistiu` fica disponível após a exibição da grade e pode ser executado independentemente da seleção de SKU.
 
 ---
 
@@ -702,6 +704,8 @@ Exemplo:
 
 No mobile, os componentes devem ser organizados verticalmente e ocupar a largura disponível.
 
+Para a grade de SKUs, recomenda-se utilizar `col-6`, apresentando duas células por linha no smartphone.
+
 ## 19.2 Desktop/tablet
 
 Em telas maiores, os resultados e a grade podem ocupar áreas distintas.
@@ -727,7 +731,7 @@ Em telas maiores, os resultados e a grade podem ocupar áreas distintas.
 └──────────────────────────┴─────────────────────────────────┘
 ```
 
-Em tablet e desktop, a grade pode utilizar o espaço horizontal disponível. Em telas menores, os componentes devem ser empilhados.
+Em tablet e desktop, a grade pode utilizar o espaço horizontal disponível. Recomenda-se `col-md-4` para três células por linha em tablets e `col-lg-3` para quatro células por linha em desktops. Em telas menores, os demais componentes devem ser empilhados.
 
 ---
 
@@ -911,16 +915,16 @@ A tela `/Produtos/Details` pertence ao fluxo administrativo do lojista e não de
 | RNF-07         | Interface responsiva                                                                                    |
 | US-02          | Busca de modelo com mínimo de caracteres                                                                |
 | US-03          | Visualização da grade e disponibilidade                                                                 |
-| US-04          | Seleção de SKU                                                                                          |
-| US-05          | Registro de Vendeu                                                                                      |
-| US-06          | Registro de Não tinha                                                                                   |
-| US-07          | Registro de Desistiu                                                                                    |
-| VEN-01         | Consulta de estoque pelo vendedor                                                                       |
-| VEN-02         | Continuidade do atendimento                                                                             |
+| US-04          | Registro de Vendeu sobre o SKU selecionado                                                              |
+| US-05          | Registro de Não tinha sobre o SKU selecionado                                                          |
+| US-06          | Registro de Desistiu                                                                                    |
+| US-07          | Resultado opcional e continuidade sem registro                                                         |
+| VEN-01         | Início do vendedor com acesso imediato à consulta                                                       |
+| VEN-02         | Busca de modelos e apresentação dos resultados                                                         |
 | VEN-03         | Visualização do saldo e última atualização                                                              |
-| VEN-04         | Atualização do saldo vigente                                                                            |
-| VEN-05         | Registro explícito de ruptura                                                                           |
-| VEN-06         | Ações do vendedor conforme o fluxo definido                                                             |
+| VEN-04         | Resultado Vendeu, com decremento e atualização do saldo                                                 |
+| VEN-05         | Resultado Não tinha, com registro explícito de ruptura                                                  |
+| VEN-06         | Resultado Desistiu e retorno à consulta                                                                 |
 | UC-02          | Consultar Estoque                                                                                       |
 | UC-03          | Visualizar Grade                                                                                        |
 | UC-04          | Registrar Vendeu                                                                                        |
