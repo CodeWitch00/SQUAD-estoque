@@ -4,9 +4,9 @@ Esta pasta receberá capturas reais dos fluxos HTML após revisão. Não devem s
 
 | Arquivo esperado | Origem | Viewport mínimo | Estado |
 | --- | --- | --- | --- |
-| `lojista-desktop.png` | `../fluxos/lojista/fluxo-lojista.html` | 1440 × 900 | Pendente de captura e revisão |
-| `lojista-tablet.png` | `../fluxos/lojista/fluxo-lojista.html` | 768 × 1024 | Pendente de captura e revisão |
-| `vendedor-mobile.png` | `../fluxos/vendedor/fluxo-vendedor.html` | 390 × 844 | Pendente de captura e revisão |
+| `lojista-desktop.png` | `../prototipos/lojista/prototipo-lojista.html` | 1440 × 900 | Pendente de captura e revisão |
+| `lojista-tablet.png` | `../prototipos/lojista/prototipo-lojista.html` | 768 × 1024 | Pendente de captura e revisão |
+| `vendedor-mobile.png` | `../prototipos/vendedor/prototipo-vendedor.html` | 390 × 844 | Pendente de captura e revisão |
 
 ## Procedimento
 
