@@ -1,76 +1,205 @@
 # S1-UX-010 — Especificação de componentes mobile: grade e ações do vendedor
 
-**Sprint:** Sprint 1  
-**Área:** UX / Frontend  
-**Escopo:** busca de produtos, resultados, grade de numerações, saldos, estados de estoque e ações do vendedor.  
-**Base visual:** Bootstrap existente, sem introdução de novo framework frontend.
-
 ## 1. Objetivo
 
-Definir os componentes responsivos usados pelo vendedor para localizar rapidamente um produto, consultar sua grade de numerações e identificar a disponibilidade de cada SKU durante o atendimento.
+Especificar os componentes responsivos utilizados pelo vendedor para realizar a busca de modelos, visualizar a grade de numerações, consultar o saldo de cada SKU, selecionar uma numeração e registrar o resultado do atendimento.
 
-A solução prioriza **velocidade, clareza visual, poucos toques e leitura imediata**, considerando que o vendedor utiliza principalmente um smartphone, com o cliente aguardando atendimento.
+A especificação prioriza rapidez, clareza das informações, poucos toques e facilidade de uso em dispositivos móveis, mantendo compatibilidade com desktop e tablet.
 
-## 2. Premissas de UX
-
-- A primeira consulta deve ser possível em até **2 interações**, conforme o objetivo do sistema.
-- A consulta deve funcionar integralmente no navegador mobile.
-- A informação principal é: **qual numeração existe e qual é o saldo**.
-- A grade deve apresentar todas as numerações cadastradas para o produto, inclusive as indisponíveis.
-- Os estados não devem depender somente de cor: texto, ícone ou rótulo também deve identificar a situação.
-- Os componentes devem ser utilizáveis com toque, teclado e leitor de tela.
-- O registro do resultado do atendimento é opcional e não deve bloquear a consulta.
-- Não criar funcionalidades fora do escopo do cartão.
-
-## 3. Componentes
-
-### 3.1 Campo de busca
-
-**Função:** localizar produtos pelo nome do modelo.
-
-**Componente Bootstrap sugerido:**
-- `input-group`
-- `form-control`
-- `btn`
-
-**Estrutura:**
-
-```text
-┌─────────────────────────────────────┐
-│ 🔎 Buscar produto ou modelo...      │
-└─────────────────────────────────────┘
-```
-
-**Comportamento:**
-- Placeholder: `Buscar produto ou modelo...`
-- Campo deve receber foco facilmente ao abrir a tela.
-- Aceitar entrada pelo teclado físico/virtual.
-- Pressionar `Enter` deve executar a busca.
-- Botão de busca deve ter rótulo acessível.
-- Permitir limpar o conteúdo sem precisar apagar caractere por caractere.
-- Não exigir filtros adicionais para a consulta principal.
-
-**Dimensões/uso:**
-- Altura confortável para toque, preferencialmente próxima ao padrão `form-control` do Bootstrap.
-- Área clicável do botão de busca de pelo menos **44 × 44 px**.
-- O campo deve ocupar a largura disponível no mobile.
-
-**Foco:**
-- Exibir foco visível e consistente.
-- Não remover o `outline` de acessibilidade.
-
-**Validação:**
-- Busca vazia: não realizar consulta desnecessária; informar de forma breve que o vendedor deve digitar um produto/modelo.
-- Nenhum resultado: `Nenhum produto encontrado. Tente outro nome ou modelo.`
-- Erro de comunicação: `Não foi possível consultar os produtos. Tente novamente.`
+A unidade operacional das ações de estoque é o **SKU**, correspondente à combinação entre produto e numeração. As ações de estoque devem sempre ser executadas sobre o SKU selecionado.
 
 ---
 
-### 3.2 Lista de resultados
+## 2. Premissas de UX
 
-Cada resultado deve ser uma área claramente selecionável.
+* O fluxo deve priorizar o uso em smartphone.
+* A primeira consulta deve ser realizada em até **2 toques a partir do login**.
+* A busca deve ser realizada pelo nome ou parte do nome do modelo.
+* Buscas com menos de 2 caracteres não devem gerar requisição ao servidor.
+* A grade deve apresentar todas as numerações cadastradas para o modelo.
+* Cada SKU deve apresentar numeração, saldo, estado de disponibilidade e última atualização do saldo.
+* Uma numeração deve ser selecionada antes da execução de `Vendeu` ou `Não tinha`.
+* `Vendeu` e `Não tinha` devem permanecer indisponíveis enquanto nenhum SKU estiver selecionado.
+* `Desistiu` não exige seleção de SKU.
+* O resultado do atendimento é opcional.
+* O vendedor deve conseguir iniciar uma nova consulta sem registrar um resultado.
+* Os estados de estoque não devem depender exclusivamente de cores.
+* Os componentes devem possuir foco visível e áreas de toque confortáveis.
+* A implementação deve utilizar Bootstrap, já existente no projeto.
+* Não deve ser introduzido novo framework frontend.
+* O fluxo operacional do vendedor é independente da tela administrativa de `/Produtos/Details`.
 
-**Exemplo mobile:**
+---
+
+# 3. Fluxo de consulta
+
+O fluxo principal do vendedor é:
+
+```text
+Login
+  ↓
+Tela de consulta
+  ↓
+Buscar modelo
+  ↓
+Resultado da busca
+  ↓
+Selecionar modelo
+  ↓
+Visualizar grade
+  ↓
+Selecionar SKU
+  ↓
+Vendeu / Não tinha
+```
+
+O fluxo de `Desistiu` pode ser iniciado sem seleção de SKU:
+
+```text
+Tela de consulta
+  ↓
+Desistiu
+  ↓
+Retorno à consulta
+```
+
+Também é possível consultar a grade sem registrar nenhum resultado:
+
+```text
+Grade
+  ↓
+Nova consulta
+  ↓
+Tela de consulta
+```
+
+---
+
+# 4. Atendimento ao requisito de dois toques
+
+O requisito de primeira consulta em até dois toques a partir do login é atendido da seguinte maneira:
+
+### Toque 1
+
+O vendedor toca no campo de busca disponível na tela operacional.
+
+Em seguida, digita pelo menos dois caracteres do nome ou parte do nome do modelo.
+
+### Toque 2
+
+O vendedor toca no resultado correspondente ao modelo desejado.
+
+A grade do modelo é então apresentada.
+
+A seleção da numeração e o registro de `Vendeu` ou `Não tinha` ocorrem após a primeira consulta e não fazem parte da contagem dos dois toques necessários para chegar ao resultado da consulta.
+
+O teclado virtual deve permitir a execução da busca por `Enter`/`Pesquisar`, evitando que um botão adicional seja obrigatório para concluir a consulta.
+
+---
+
+# 5. Campo de busca
+
+## 5.1 Função
+
+O campo permite localizar modelos pelo nome ou por parte do nome.
+
+### Placeholder
+
+```text
+Buscar modelo...
+```
+
+Marca, categoria e cor podem ser exibidas como informações complementares no resultado, mas não constituem critérios de busca definidos nesta especificação.
+
+## 5.2 Componente
+
+A implementação deve utilizar componentes Bootstrap, como:
+
+* `input-group`;
+* `form-control`;
+* `btn`, quando necessário.
+
+Exemplo:
+
+```text
+┌─────────────────────────────────────┐
+│ 🔎 Buscar modelo...                 │
+└─────────────────────────────────────┘
+```
+
+## 5.3 Validação mínima
+
+A busca exige no mínimo **2 caracteres**.
+
+Enquanto o campo possuir menos de dois caracteres:
+
+* nenhuma requisição deve ser enviada ao servidor;
+* a busca não deve ser executada;
+* deve ser exibida a mensagem:
+
+```text
+Digite pelo menos 2 caracteres para buscar.
+```
+
+Espaços isolados não devem ser considerados uma busca válida.
+
+## 5.4 Teclado e foco
+
+* O campo deve receber foco facilmente ao entrar na tela de consulta.
+* O teclado virtual deve disponibilizar uma ação de pesquisa.
+* `Enter` deve executar a busca quando houver pelo menos dois caracteres válidos.
+* O foco deve permanecer visualmente identificado.
+* O indicador de foco não deve ser removido.
+* O botão de limpar, quando utilizado, deve possuir identificação acessível.
+
+## 5.5 Estados
+
+### Campo vazio
+
+```text
+Digite o nome de um modelo para consultar o estoque.
+```
+
+### Menos de dois caracteres
+
+```text
+Digite pelo menos 2 caracteres para buscar.
+```
+
+### Nenhum resultado
+
+```text
+Nenhum modelo encontrado. Tente outro nome.
+```
+
+### Erro
+
+```text
+Não foi possível consultar os modelos. Tente novamente.
+```
+
+### Carregamento
+
+Durante a consulta, deve ser apresentado um indicador de carregamento no espaço destinado aos resultados.
+
+---
+
+# 6. Desempenho da consulta
+
+A consulta deve respeitar os seguintes critérios:
+
+* resposta da aplicação abaixo de **500 ms em P95**;
+* resultado visível ao usuário em até **3 segundos**, considerando as condições de rede.
+
+O estado de carregamento deve ser apresentado enquanto a consulta estiver sendo processada.
+
+---
+
+# 7. Lista de resultados
+
+Cada resultado representa um modelo encontrado pela busca.
+
+Exemplo mobile:
 
 ```text
 RESULTADOS
@@ -90,97 +219,149 @@ RESULTADOS
 └─────────────────────────────────────┘
 ```
 
-**Componente Bootstrap sugerido:**
-- `card`
-- `list-group`
-- `btn btn-link` ou área clicável semanticamente equivalente.
+## 7.1 Informações
 
-**Regras:**
-- Nome do produto/modelo deve ter maior destaque.
-- Informações secundárias podem apresentar marca, categoria e cor quando existirem no cadastro.
-- Evitar excesso de informação.
-- Toda a área do resultado pode ser clicável, desde que mantenha comportamento acessível.
-- O resultado selecionado deve levar diretamente à grade.
+O resultado deve apresentar:
 
-**Estado sem resultados:**
+* nome do modelo;
+* informações complementares disponíveis, como marca, categoria e cor;
+* indicação de que a grade pode ser consultada.
 
-```text
-┌─────────────────────────────────────┐
-│ Nenhum produto encontrado.          │
-│ Tente outro nome ou modelo.         │
-└─────────────────────────────────────┘
-```
+Marca, categoria e cor são informações de apresentação e não critérios de busca.
+
+## 7.2 Interação
+
+O resultado deve possuir área de toque confortável.
+
+Ao selecionar um resultado, o sistema deve apresentar a grade de numerações correspondente ao modelo selecionado.
 
 ---
 
-## 4. Grade de numerações
+# 8. Grade de numerações
 
-A grade representa as combinações de **produto + numeração**, sendo cada combinação um SKU.
+A grade representa os SKUs disponíveis para o modelo selecionado.
 
-Ao selecionar o produto, apresentar a grade completa e o saldo atualizado de cada numeração.
+Cada combinação de produto e numeração corresponde a um SKU.
 
-### 4.1 Estrutura mobile recomendada
+A grade deve apresentar todas as numerações cadastradas, independentemente de possuírem saldo ou não.
 
-No mobile, usar cartões compactos ou uma grade flexível de células. Cada célula deve conter:
+## 8.1 Informações da célula
 
-```text
-┌───────────┐
-│ Nº 37     │
-│ 5 pares   │
-│ Disponível│
-└───────────┘
-```
+Cada célula deve apresentar:
+
+1. Numeração;
+2. Saldo atual;
+3. Estado de disponibilidade;
+4. Data e hora da última atualização do saldo.
 
 Exemplo:
 
 ```text
-GRADE — TÊNIS RUNNER PRO
-
-┌─────────┬─────────┐
-│ Nº 35   │ Nº 36   │
-│ 3 pares │ 2 pares │
-│ Dispon. │ Dispon. │
-├─────────┼─────────┤
-│ Nº 37   │ Nº 38   │
-│ 1 par   │ 0 pares │
-│ Último  │ Indisp. │
-├─────────┼─────────┤
-│ Nº 39   │ Nº 40   │
-│ 4 pares │ 0 pares │
-│ Dispon. │ Indisp. │
-└─────────┴─────────┘
+┌───────────────┐
+│ Nº 36         │
+│ 4 pares       │
+│ DISPONÍVEL    │
+│ Atualizado:   │
+│ 26/08 14:32   │
+└───────────────┘
 ```
 
-**Recomendação Bootstrap:**
-- `row`
-- `col-6` no mobile para duas células por linha.
-- `col-md-3` ou equivalente em desktop para quatro células por linha, conforme a largura disponível.
-- `card` ou elemento semântico equivalente para cada SKU.
-
-### 4.2 Informação obrigatória por célula
-
-Cada célula deve exibir:
-1. Numeração.
-2. Saldo em pares/unidades.
-3. Estado: Disponível, Último par ou Indisponível.
-
-O saldo deve permanecer explícito mesmo quando o estado já estiver indicado.
+A interface apresenta a última atualização do saldo, sem definir a forma de persistência dessa informação.
 
 ---
 
-## 5. Estados de estoque
+# 9. Seleção do SKU
 
-A classificação segue o requisito RF-15:
+A seleção da numeração é obrigatória para as ações `Vendeu` e `Não tinha`.
 
-| Saldo | Estado | Apresentação |
-|---|---|---|
-| Maior que 1 | Disponível | `Disponível — X pares` |
-| Igual a 1 | Último par | `Último par — 1 par` |
-| Igual a 0 | Indisponível | `Indisponível — 0 pares` |
+## 9.1 Estado normal
 
-### 5.1 Disponível
+No estado normal, a célula apresenta as informações do SKU sem destaque de seleção.
 
-Exemplo:
+```text
+┌───────────────┐
+│ Nº 36         │
+│ 4 pares       │
+│ DISPONÍVEL    │
+│ Atualizado:   │
+│ 26/08 14:32   │
+└───────────────┘
+```
+
+A célula pode ser tocada ou selecionada pelo teclado.
+
+## 9.2 Estado selecionado
+
+Após a seleção:
+
+```text
+┌═══════════════┐
+║ ✓ Nº 36       ║
+║ 4 pares       ║
+║ DISPONÍVEL    ║
+║ Atualizado:   ║
+║ 26/08 14:32   ║
+└═══════════════┘
+
+SKU selecionado: Nº 36
+```
+
+O estado selecionado deve:
+
+* possuir destaque visual evidente;
+* apresentar indicador de seleção;
+* manter a numeração visível;
+* manter o saldo visível;
+* permitir identificar claramente qual SKU será utilizado na ação;
+* permitir a seleção de outra numeração;
+* manter apenas um SKU selecionado por vez.
+
+As ações devem ser enviadas para o **SKU selecionado**, nunca apenas para o produto.
+
+---
+
+# 10. Disponibilidade das ações
+
+Enquanto nenhum SKU estiver selecionado:
+
+```text
+RESULTADO DO ATENDIMENTO
+
+[ Vendeu ]       Desabilitado
+[ Não tinha ]    Desabilitado
+[ Desistiu ]     Disponível
+
+Selecione uma numeração para registrar
+Vendeu ou Não tinha.
+```
+
+Após a seleção:
+
+```text
+SKU selecionado: Nº 36
+
+[ ✓ Vendeu ]
+[ ! Não tinha ]
+[ × Desistiu ]
+```
+
+`Vendeu` e `Não tinha` exigem SKU selecionado.
+
+`Desistiu` pode ser executado independentemente da seleção de SKU.
+
+---
+
+# 11. Estados de estoque
+
+A classificação dos SKUs é:
+
+| Saldo       | Estado       |
+| ----------- | ------------ |
+| Maior que 1 | Disponível   |
+| Igual a 1   | Último par   |
+| Igual a 0   | Indisponível |
+
+## 11.1 Disponível
 
 ```text
 ┌───────────────┐
@@ -190,11 +371,9 @@ Exemplo:
 └───────────────┘
 ```
 
-**Uso:** indica que há mais de uma unidade disponível.
+Representa saldo superior a uma unidade.
 
-### 5.2 Último par
-
-Exemplo:
+## 11.2 Último par
 
 ```text
 ┌───────────────┐
@@ -204,11 +383,9 @@ Exemplo:
 └───────────────┘
 ```
 
-**Uso:** deve chamar atenção para a necessidade de reposição sem confundir o vendedor: o produto está disponível, mas resta apenas uma unidade.
+Representa saldo igual a uma unidade.
 
-### 5.3 Indisponível
-
-Exemplo:
+## 11.3 Indisponível
 
 ```text
 ┌───────────────┐
@@ -218,115 +395,282 @@ Exemplo:
 └───────────────┘
 ```
 
-**Uso:** deixa claro que não há saldo registrado para aquele SKU.
+Representa saldo igual a zero.
 
-**Acessibilidade:** não usar somente verde/amarelo/vermelho. O texto do estado deve estar presente na própria célula.
+A identificação do estado deve utilizar texto e/ou ícone além de qualquer diferenciação visual por cor.
 
 ---
 
-## 6. Ações do vendedor
+# 12. Ação — Vendeu
 
-Após visualizar a grade, o vendedor pode registrar o resultado do atendimento:
+## 12.1 Pré-condição
 
-- **Vendeu**
-- **Não tinha**
-- **Desistiu**
+Um SKU deve estar selecionado.
 
-Essas ações correspondem ao fluxo operacional do vendedor e devem permanecer simples.
+## 12.2 Comportamento
 
-### 6.1 Mobile
+Ao selecionar `Vendeu`:
 
-As ações devem ficar próximas da grade e possuir áreas de toque confortáveis.
+1. A ação é vinculada ao SKU selecionado.
+2. O sistema deve decrementar exatamente **1 unidade** do saldo atual.
+3. O saldo não pode se tornar negativo.
+4. Deve ser registrada uma movimentação de saída.
+5. A movimentação deve identificar o usuário responsável e a data/hora.
+6. A interface deve confirmar o sucesso da operação.
+7. A grade deve apresentar o saldo atualizado.
+8. O vendedor deve conseguir iniciar uma nova consulta.
+
+Mensagem de sucesso:
 
 ```text
-RESULTADO DO ATENDIMENTO
-
-┌─────────────────────────────────────┐
-│ ✓ Vendeu                            │
-└─────────────────────────────────────┘
-
-┌─────────────────────────────────────┐
-│ ! Não tinha                         │
-└─────────────────────────────────────┘
-
-┌─────────────────────────────────────┐
-│ × Desistiu                          │
-└─────────────────────────────────────┘
+Venda registrada. Saldo atualizado.
 ```
 
-**Regra importante:** o registro do resultado é opcional. O vendedor pode consultar a grade e continuar o fluxo sem registrar uma dessas opções.
+## 12.3 Saldo igual a zero
 
-### 6.2 Comportamento das ações
+Quando o saldo atual do SKU for zero:
 
-**Vendeu**
-- Decrementa automaticamente uma unidade do SKU consultado.
-- A operação não pode resultar em saldo negativo.
-- Deve registrar a movimentação correspondente.
-- Após sucesso, atualizar a informação de saldo exibida.
+* a venda deve ser rejeitada;
+* o saldo não deve ser alterado;
+* nenhuma saída deve ser registrada;
+* a grade deve continuar apresentando o saldo vigente.
 
-**Não tinha**
-- Cria o registro de ruptura associado ao SKU.
-- Não altera o saldo registrado.
-- Deve confirmar o registro de forma breve, sem retirar o vendedor do fluxo.
+Mensagem:
 
-**Desistiu**
-- Não altera estoque.
-- Não cria movimentação de estoque.
-- Não cria registro de ruptura.
+```text
+Não foi possível registrar a venda: saldo indisponível.
+```
 
-## 7. Mensagens e feedback
+## 12.4 Concorrência ou saldo insuficiente
 
-As mensagens devem ser curtas e aparecer próximas à ação realizada.
+Quando outra operação alterar o saldo antes da conclusão da venda, o sistema deve considerar o saldo vigente.
 
-**Sucesso — venda:**
-`Venda registrada. Saldo atualizado.`
+A interface deve:
 
-**Sucesso — ruptura:**
-`Ruptura registrada.`
+1. rejeitar a operação caso o saldo não permita a saída;
+2. atualizar a célula do SKU;
+3. apresentar o saldo vigente;
+4. atualizar o estado de disponibilidade;
+5. informar o vendedor sobre a atualização.
 
-**Desistência:**
-`Atendimento encerrado sem alteração no estoque.`
+Exemplo:
 
-**Saldo insuficiente:**
-`Não foi possível registrar a venda: saldo insuficiente.`
+```text
+Venda não registrada.
+O saldo do SKU foi atualizado.
 
-**Erro genérico:**
-`Não foi possível concluir a ação. Tente novamente.`
+Nº 37
+0 pares
+INDISPONÍVEL
+Atualizado: 26/08/2026 14:36
+```
 
-Evitar modais para mensagens simples. Usar componentes Bootstrap como `alert`, `toast` ou feedback inline conforme o padrão já existente no projeto.
+---
 
-## 8. Teclado e foco
+# 13. Ação — Não tinha
 
-Embora o principal dispositivo seja o smartphone, a interface também deve funcionar em desktop/tablet.
+## 13.1 Pré-condição
 
-- Ordem de foco: busca → resultados → grade → ações.
-- O foco deve ser sempre visível.
-- `Tab` deve percorrer os elementos interativos em ordem lógica.
-- `Enter`/`Space` devem ativar controles acionáveis.
-- Botões não devem ser representados apenas por ícones.
-- Ícones devem possuir texto visível ou nome acessível.
-- Após uma ação, o foco não deve ser perdido de maneira inesperada.
+Um SKU deve estar selecionado.
 
-## 9. Alvos de toque
+## 13.2 Comportamento
 
-Para o uso no chão de loja:
+Ao selecionar `Não tinha`:
 
-- Botões e controles principais: alvo de aproximadamente **44 × 44 px ou maior**.
-- Espaçamento suficiente entre ações para evitar toques acidentais.
-- Não concentrar três ações em pequenos ícones lado a lado.
-- A grade pode ser compacta, mas cada célula que seja interativa deve manter área de toque confortável.
-- Não exigir gestos complexos como arrastar ou deslizar para consultar o estoque.
+1. A ação é vinculada ao SKU selecionado.
+2. É criada uma ruptura associada ao SKU.
+3. A ruptura é associada ao vendedor responsável pelo atendimento.
+4. É registrada a data e hora do atendimento.
+5. O saldo do SKU não é alterado.
+6. Nenhuma movimentação de estoque é criada.
+7. A ruptura não é criada automaticamente somente porque o saldo está zero.
+8. O sistema confirma o registro.
+9. O vendedor pode iniciar uma nova consulta.
 
-## 10. Responsividade
+Mensagem:
 
-### Mobile
+```text
+Ruptura registrada.
+```
 
-Prioridade:
-1. Busca.
-2. Resultados.
-3. Produto selecionado.
-4. Grade.
-5. Ações do vendedor.
+---
+
+# 14. Ação — Desistiu
+
+A ação `Desistiu` não exige seleção de SKU.
+
+Ao selecionar `Desistiu`:
+
+* o estoque não é alterado;
+* nenhuma movimentação é criada;
+* nenhuma ruptura é criada;
+* o atendimento atual é encerrado;
+* o vendedor retorna para a tela de consulta;
+* uma nova consulta pode ser iniciada imediatamente.
+
+Mensagem:
+
+```text
+Atendimento encerrado. Faça uma nova consulta.
+```
+
+---
+
+# 15. Continuidade do atendimento
+
+O fluxo deve permitir a continuidade do atendimento após qualquer resultado.
+
+## 15.1 Após Vendeu
+
+```text
+Venda registrada. Saldo atualizado.
+
+[ Nova consulta ]
+```
+
+## 15.2 Após Não tinha
+
+```text
+Ruptura registrada.
+
+[ Nova consulta ]
+```
+
+## 15.3 Após Desistiu
+
+O sistema retorna diretamente para:
+
+```text
+Buscar modelo...
+```
+
+## 15.4 Sem registrar resultado
+
+O vendedor pode sair da consulta atual e iniciar outra sem registrar `Vendeu`, `Não tinha` ou `Desistiu`.
+
+```text
+[ Nova consulta ]
+```
+
+Essa ação não altera estoque, não registra movimentação e não cria ruptura.
+
+---
+
+# 16. Mensagens e feedback
+
+As mensagens devem ser curtas, claras e próximas ao contexto da ação.
+
+### Busca inválida
+
+```text
+Digite pelo menos 2 caracteres para buscar.
+```
+
+### Nenhum modelo encontrado
+
+```text
+Nenhum modelo encontrado. Tente outro nome.
+```
+
+### Venda realizada
+
+```text
+Venda registrada. Saldo atualizado.
+```
+
+### Venda rejeitada
+
+```text
+Não foi possível registrar a venda: saldo indisponível.
+```
+
+### Saldo atualizado por concorrência
+
+```text
+Venda não registrada.
+O saldo do SKU foi atualizado.
+```
+
+### Ruptura registrada
+
+```text
+Ruptura registrada.
+```
+
+### Desistência
+
+```text
+Atendimento encerrado. Faça uma nova consulta.
+```
+
+### Erro
+
+```text
+Não foi possível concluir a ação. Consulte novamente o saldo do SKU.
+```
+
+Os componentes Bootstrap `alert`, `toast` ou feedback inline podem ser utilizados conforme o padrão visual existente no projeto.
+
+---
+
+# 17. Teclado, foco e acessibilidade
+
+A interface deve permitir navegação por teclado e manter foco visível.
+
+Ordem lógica:
+
+```text
+Busca
+  ↓
+Resultados
+  ↓
+Grade
+  ↓
+SKU selecionado
+  ↓
+Ações
+  ↓
+Nova consulta
+```
+
+Regras:
+
+* `Tab` deve percorrer os elementos interativos em ordem lógica.
+* `Enter` e `Space` devem ativar controles acionáveis quando aplicável.
+* O foco deve permanecer visível.
+* Células selecionáveis devem possuir identificação acessível.
+* O estado selecionado deve ser perceptível visual e semanticamente.
+* Botões não devem depender exclusivamente de ícones.
+* Ícones devem possuir texto visível ou identificação acessível.
+* O foco não deve ser perdido de forma inesperada após uma ação.
+
+---
+
+# 18. Alvos de toque
+
+Para uso em smartphone:
+
+* controles principais devem possuir alvo de aproximadamente **44 × 44 px ou maior**;
+* deve existir espaçamento suficiente entre ações;
+* ações não devem depender de pequenos ícones;
+* células de SKU interativas devem possuir área de toque confortável;
+* não devem ser exigidos gestos complexos para consultar o estoque.
+
+---
+
+# 19. Responsividade
+
+## 19.1 Mobile
+
+A prioridade visual deve ser:
+
+1. Busca;
+2. Resultados;
+3. Modelo selecionado;
+4. Grade;
+5. SKU selecionado;
+6. Ações;
+7. Nova consulta.
 
 Exemplo:
 
@@ -334,160 +678,319 @@ Exemplo:
 ┌───────────────────────────┐
 │ SQUAD                     │
 ├───────────────────────────┤
-│ 🔎 Buscar produto...      │
+│ 🔎 Buscar modelo...       │
 ├───────────────────────────┤
 │ Tênis Runner Pro          │
 │ Grade de numerações       │
 │                           │
 │ ┌───────┐ ┌───────┐       │
-│ │ 35    │ │ 36    │       │
+│ │ 35    │ │ 36 ✓  │       │
 │ │ 3     │ │ 2     │       │
 │ │ DISP. │ │ DISP. │       │
-│ └───────┘ └───────┘       │
-│ ┌───────┐ ┌───────┐       │
-│ │ 37    │ │ 38    │       │
-│ │ 1     │ │ 0     │       │
-│ │ ÚLT.  │ │ INDIS.│       │
+│ │ Atual.│ │ Atual.│       │
 │ └───────┘ └───────┘       │
 │                           │
-│ RESULTADO DO ATENDIMENTO  │
+│ SKU selecionado: Nº 36   │
+│                           │
 │ [✓ Vendeu]                │
 │ [! Não tinha]             │
 │ [× Desistiu]              │
+│                           │
+│ [Nova consulta]           │
 └───────────────────────────┘
 ```
 
-### Desktop/tablet
+No mobile, os componentes devem ser organizados verticalmente e ocupar a largura disponível.
 
-Em telas maiores, aproveitar o espaço horizontal sem transformar a consulta em dashboard.
+## 19.2 Desktop/tablet
+
+Em telas maiores, os resultados e a grade podem ocupar áreas distintas.
 
 ```text
 ┌────────────────────────────────────────────────────────────┐
 │ SQUAD                                      Vendedor         │
 ├────────────────────────────────────────────────────────────┤
-│ 🔎 Buscar produto ou modelo...                 [Buscar]    │
-├────────────────────────────────────────────────────────────┤
-│ Resultados                                                  │
-│ ┌────────────────────────┐  ┌───────────────────────────┐  │
-│ │ Tênis Runner Pro       │  │ Grade — Runner Pro        │  │
-│ │ Nike • Preto           │  │                           │  │
-│ │ [Ver grade]            │  │ 35   36   37   38         │  │
-│ │                        │  │ 3    2    1    0          │  │
-│ └────────────────────────┘  │ DISP DISP ÚLT INDIS       │  │
-│                             │                           │  │
-│                             │ 39   40                    │  │
-│                             │ 4    0                     │  │
-│                             │ DISP INDIS                 │  │
-│                             └───────────────────────────┘  │
-│                                                            │
-│ Resultado: [Vendeu] [Não tinha] [Desistiu]                 │
-└────────────────────────────────────────────────────────────┘
+│ 🔎 Buscar modelo...                            [Buscar]    │
+├──────────────────────────┬─────────────────────────────────┤
+│ Resultados               │ Grade — Runner Pro              │
+│                          │                                 │
+│ ┌──────────────────────┐ │ 35       36       37       38  │
+│ │ Tênis Runner Pro     │ │ 3        2        1        0   │
+│ │ Nike • Preto         │ │ DISP.    DISP.    ÚLT.     INDIS│
+│ └──────────────────────┘ │ Atual.   Atual.   Atual.   Atual│
+│                          │                                 │
+│                          │ SKU selecionado: Nº 36         │
+│                          │                                 │
+│                          │ [Vendeu] [Não tinha] [Desistiu]│
+│                          │                                 │
+│                          │ [Nova consulta]                │
+└──────────────────────────┴─────────────────────────────────┘
 ```
 
-No desktop, a lista de resultados pode ocupar uma coluna e a grade a área principal. No mobile, as áreas devem ser empilhadas.
+Em tablet e desktop, a grade pode utilizar o espaço horizontal disponível. Em telas menores, os componentes devem ser empilhados.
 
-## 11. Estados gerais da interface
+---
 
-### Carregando
-- Exibir indicador de carregamento no local do conteúdo.
-- Evitar apresentar dados antigos como se fossem atuais.
-- Manter o contexto da busca.
+# 20. Estados gerais da interface
 
-### Sem busca
+## 20.1 Carregando
+
+Exibir indicador de carregamento no local do conteúdo.
+
+O contexto da busca deve permanecer identificável.
+
+## 20.2 Sem busca
+
 ```text
-Digite o nome de um produto ou modelo para consultar o estoque.
+Digite o nome de um modelo para consultar o estoque.
 ```
 
-### Sem resultados
+## 20.3 Menos de dois caracteres
+
 ```text
-Nenhum produto encontrado.
-Tente outro nome ou modelo.
+Digite pelo menos 2 caracteres para buscar.
 ```
 
-### Produto sem SKUs/grade
+Nenhuma requisição deve ser enviada ao servidor.
+
+## 20.4 Sem resultados
+
 ```text
-Este produto ainda não possui numerações cadastradas.
+Nenhum modelo encontrado. Tente outro nome.
 ```
 
-### Erro de consulta
+## 20.5 Modelo sem grade
+
 ```text
-Não foi possível consultar o estoque.
-Tente novamente.
+Este modelo ainda não possui numerações cadastradas.
 ```
 
-### Erro ao registrar ação
+## 20.6 Erro de consulta
+
 ```text
-Não foi possível concluir a ação.
-O estoque pode ter sido atualizado por outro atendimento. Consulte novamente.
+Não foi possível consultar o estoque. Tente novamente.
 ```
 
-## 12. Atualização do saldo
+## 20.7 Erro de ação
 
-O saldo exibido deve representar a informação atualizada do SKU.
+```text
+Não foi possível concluir a ação. Consulte novamente o saldo do SKU.
+```
 
-Quando `Vendeu` for concluído:
-- saldo 2 → saldo 1: estado muda de **Disponível** para **Último par**;
-- saldo 1 → saldo 0: estado muda de **Último par** para **Indisponível**.
+---
 
-Nunca permitir que a interface apresente ou confirme um saldo negativo.
+# 21. Atualização do saldo
 
-## 13. Bootstrap e implementação
+A grade deve apresentar sempre o saldo vigente conhecido para cada SKU.
 
-A especificação deve ser implementada usando os recursos já disponíveis no projeto, especialmente:
+Após uma venda:
 
-- sistema de grid responsivo (`container`, `row`, `col-*`);
-- `form-control`;
-- `input-group`;
-- `btn`;
-- `card`;
-- `alert`/`toast` para feedback;
-- utilitários de espaçamento e responsividade.
+```text
+Saldo 2
+   ↓
+Vendeu
+   ↓
+Saldo 1
+   ↓
+Último par
+```
 
-**Não introduzir React, Vue, Angular, Tailwind ou outro framework frontend.**
+Após uma segunda venda:
 
-A implementação deve respeitar a estrutura atual do `SquadEstoque.Web` e reutilizar componentes/estilos já existentes quando houver equivalentes.
+```text
+Saldo 1
+   ↓
+Vendeu
+   ↓
+Saldo 0
+   ↓
+Indisponível
+```
 
-## 14. Critérios de revisão
+Uma tentativa de venda com saldo zero deve ser rejeitada.
 
-Antes de considerar o artefato concluído, verificar:
+Em situações de concorrência, a célula correspondente deve ser atualizada com o saldo vigente retornado pelo sistema.
 
-- [x] Campo de busca definido.
-- [x] Lista de resultados definida.
-- [x] Grade completa de numerações definida.
-- [x] Saldo definido por SKU.
-- [x] Estados Disponível, Último par e Indisponível definidos.
-- [x] Ações Vendeu, Não tinha e Desistiu definidas.
-- [x] Estados de carregamento, vazio, erro e ausência de resultados previstos.
-- [x] Teclado e foco especificados.
-- [x] Alvos de toque confortáveis previstos.
-- [x] Mobile e desktop exemplificados.
-- [x] Bootstrap mantido como base.
-- [x] Nenhum framework frontend novo proposto.
-- [x] Especificação alinhada ao fluxo real do vendedor.
+A última atualização deve ser apresentada no formato de data e hora, sem definir nesta especificação a estratégia de persistência desse dado.
 
-## 15. Rastreabilidade
+---
 
-| Item | Relação com a especificação |
-|---|---|
-| RF-13 | Busca de produtos pelo nome do modelo |
-| RF-14 | Grade completa com saldo por numeração |
-| RF-15 | Estados Disponível, Último par e Indisponível |
-| RF-16 | Registro do resultado do atendimento |
-| RF-17 | Baixa automática ao registrar Vendeu |
-| RF-18 | Registro de ruptura ao selecionar Não tinha |
-| RF-19 | Desistiu sem alteração de estoque |
-| RF-20 | Registro do resultado é opcional |
-| RNF-01 | Operação via browser mobile |
-| RNF-07 | Interface responsiva |
-| UC-02 | Consultar Estoque |
-| UC-03 | Visualizar Grade |
-| UC-04 | Registrar: Vendeu |
-| UC-05 | Registrar: Não tinha |
-| UC-06 | Registrar: Desistiu |
+# 22. Implementação MVC
 
-## 16. Fontes internas do projeto
+A implementação deve seguir a arquitetura **ASP.NET Core MVC** existente no projeto.
 
-- **Documento de Requisitos / SRS:** RF-13 a RF-20 e requisitos de responsividade.
-- **Documento de Visão e Domínio:** persona Vendedor, contexto mobile, consulta rápida e objetivo de até 2 toques.
-- **Monografia Final — Squad:** fluxos UC-02 a UC-06 e comportamento das ações do vendedor.
-- **Escopo MVP:** consulta de estoque, grade, estados de disponibilidade e registro de resultado.
+## 22.1 Controllers
+
+Os Controllers devem:
+
+* receber as requisições;
+* tratar as operações da tela;
+* acessar o `EstoqueContext` conforme a estrutura existente;
+* processar as operações de consulta e atendimento;
+* retornar os dados necessários para as Views.
+
+## 22.2 ViewModels
+
+Os ViewModels devem representar os dados específicos da tela, incluindo:
+
+* resultado da busca;
+* modelo selecionado;
+* lista de SKUs;
+* numeração;
+* saldo;
+* estado de disponibilidade;
+* última atualização;
+* SKU selecionado;
+* mensagens e estados da interface quando necessários.
+
+## 22.3 Razor Views
+
+As Razor Views devem cuidar da apresentação:
+
+* campo de busca;
+* lista de resultados;
+* grade;
+* estados de estoque;
+* seleção do SKU;
+* ações do vendedor;
+* mensagens;
+* estados de carregamento;
+* continuidade para nova consulta.
+
+## 22.4 Bootstrap
+
+Bootstrap deve fornecer os componentes responsivos e utilitários necessários, incluindo:
+
+* `container`;
+* `row`;
+* `col-*`;
+* `form-control`;
+* `input-group`;
+* `btn`;
+* `card`;
+* `alert`;
+* `toast`;
+* utilitários de espaçamento e responsividade.
+
+Não devem ser introduzidos:
+
+* React;
+* Vue;
+* Angular;
+* Tailwind;
+* SPA;
+* Repository Pattern;
+* MediatR;
+* novas camadas arquiteturais.
+
+A tela `/Produtos/Details` pertence ao fluxo administrativo do lojista e não deve ser utilizada como fluxo operacional do vendedor.
+
+---
+
+# 23. Rastreabilidade
+
+| Requisito/Item | Relação com a especificação                                                                             |
+| -------------- | ------------------------------------------------------------------------------------------------------- |
+| RF-10          | Registro de movimentação de saída com usuário e data/hora                                               |
+| RF-11          | Impedimento de saldo negativo                                                                           |
+| RF-12          | Exibição da última atualização do saldo                                                                 |
+| RF-13          | Busca por nome ou parte do nome do modelo                                                               |
+| RF-14          | Exibição da grade completa e saldo por numeração                                                        |
+| RF-15          | Estados Disponível, Último par e Indisponível                                                           |
+| RF-16          | Registro dos resultados Vendeu, Não tinha e Desistiu                                                    |
+| RF-17          | Decremento de exatamente uma unidade em Vendeu                                                          |
+| RF-18          | Registro de ruptura vinculada ao SKU selecionado                                                        |
+| RF-19          | Desistiu sem alteração de estoque                                                                       |
+| RF-20          | Resultado opcional e possibilidade de nova consulta                                                     |
+| RN-02          | Saldo não pode ser negativo                                                                             |
+| RN-05          | Ruptura depende de declaração explícita do vendedor                                                     |
+| RN-06          | Ruptura vinculada ao SKU e ao vendedor                                                                  |
+| RN-07          | Controle da operação de saída em cenário de concorrência                                                |
+| RNF-02         | Resposta da aplicação abaixo de 500 ms em P95 e resultado visível em até 3 segundos considerando a rede |
+| RNF-06         | Primeira consulta em até dois toques a partir do login                                                  |
+| RNF-07         | Interface responsiva                                                                                    |
+| US-02          | Busca de modelo com mínimo de caracteres                                                                |
+| US-03          | Visualização da grade e disponibilidade                                                                 |
+| US-04          | Seleção de SKU                                                                                          |
+| US-05          | Registro de Vendeu                                                                                      |
+| US-06          | Registro de Não tinha                                                                                   |
+| US-07          | Registro de Desistiu                                                                                    |
+| VEN-01         | Consulta de estoque pelo vendedor                                                                       |
+| VEN-02         | Continuidade do atendimento                                                                             |
+| VEN-03         | Visualização do saldo e última atualização                                                              |
+| VEN-04         | Atualização do saldo vigente                                                                            |
+| VEN-05         | Registro explícito de ruptura                                                                           |
+| VEN-06         | Ações do vendedor conforme o fluxo definido                                                             |
+| UC-02          | Consultar Estoque                                                                                       |
+| UC-03          | Visualizar Grade                                                                                        |
+| UC-04          | Registrar Vendeu                                                                                        |
+| UC-05          | Registrar Não tinha                                                                                     |
+| UC-06          | Registrar Desistiu                                                                                      |
+
+---
+
+# 24. Critérios de revisão
+
+* [x] Campo de busca definido.
+* [x] Busca restrita ao nome ou parte do nome do modelo.
+* [x] Placeholder definido como `Buscar modelo...`.
+* [x] Mínimo de 2 caracteres definido.
+* [x] Nenhuma chamada ao servidor antes de 2 caracteres.
+* [x] Lista de resultados definida.
+* [x] Grade completa de numerações definida.
+* [x] Saldo por SKU definido.
+* [x] Última atualização do saldo definida.
+* [x] Estado normal da célula definido.
+* [x] Estado selecionado da célula definido.
+* [x] Seleção explícita do SKU definida.
+* [x] SKU selecionado identificado claramente.
+* [x] `Vendeu` bloqueado sem SKU selecionado.
+* [x] `Não tinha` bloqueado sem SKU selecionado.
+* [x] `Desistiu` disponível sem seleção de SKU.
+* [x] Ações vinculadas ao SKU selecionado.
+* [x] Estados Disponível, Último par e Indisponível definidos.
+* [x] Teclado e foco definidos.
+* [x] Alvos de toque definidos.
+* [x] Mensagens de validação, sucesso e erro definidas.
+* [x] Fluxo de dois toques explicado.
+* [x] Comportamento de Vendeu definido.
+* [x] Decremento de exatamente uma unidade definido.
+* [x] Registro de movimentação definido.
+* [x] Usuário e data/hora da movimentação definidos.
+* [x] Rejeição de venda com saldo zero definida.
+* [x] Tratamento de concorrência e atualização do saldo vigente definido.
+* [x] Comportamento de Não tinha definido.
+* [x] Ruptura vinculada ao SKU e vendedor definida.
+* [x] Data/hora da ruptura definida.
+* [x] Saldo não alterado em Não tinha.
+* [x] Saldo zero não gera ruptura automaticamente.
+* [x] Comportamento de Desistiu definido.
+* [x] Retorno à consulta após Desistiu definido.
+* [x] Continuidade após Vendeu definida.
+* [x] Continuidade após Não tinha definida.
+* [x] Nova consulta sem registrar resultado definida.
+* [x] RNF-02 incluído.
+* [x] RNF-06 incluído e explicado.
+* [x] Rastreabilidade completa.
+* [x] ASP.NET Core MVC definido como arquitetura.
+* [x] Controllers, ViewModels e Razor Views definidos.
+* [x] Bootstrap definido como base visual.
+* [x] Novos frameworks frontend não utilizados.
+* [x] Fluxo administrativo de `/Produtos/Details` separado do fluxo operacional do vendedor.
+* [x] Exemplos mobile e desktop apresentados.
+
+---
+
+## 25. Fontes internas
+
+- [SRS / Documento de Requisitos](../02-requisitos/srs.md) — requisitos funcionais, regras de negócio e requisitos não funcionais relacionados à consulta, estoque, grade, movimentações e rupturas.
+
+- [Casos de Uso](../02-requisitos/casos-de-uso.md) — fluxos UC-02, UC-03, UC-04, UC-05 e UC-06 relacionados à consulta, visualização da grade e ações do vendedor.
+
+- [User Stories](../02-requisitos/user-stories.md) — histórias US-02 a US-07 relacionadas à busca, visualização da grade e ações do vendedor.
+
+- [Arquitetura](../04-arquitetura/arquitetura.md) — definição da arquitetura ASP.NET Core MVC, Controllers, ViewModels, Razor Views e Bootstrap.
+
+- [Inventário de Telas e Mapa de Navegação](inventario-telas-e-mapa-navegacao.md) — telas, fluxos de navegação e comportamentos previstos para o módulo do vendedor.
+
+- [Mapa de Navegação MVP](mapa-navegacao-mvp.svg) — representação visual dos fluxos de navegação do MVP.
