@@ -1,4 +1,4 @@
-# S1-UX-010 — Especificação de componentes mobile: grade e ações do vendedor
+Especificação de componentes mobile: grade e ações do vendedor
 
 ## 1. Objetivo
 
