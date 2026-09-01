@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SQUAD : Protótipo Lojista</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1f3a5c; --navy-ink:#16283f; --navy-soft:#2c4a71;
+  --bg:#f5f6f8; --surface:#ffffff; --border:#dde2e9;
+  --text:#17202a; --muted:#64748b;
+  --success-bg:#e8f5ec; --success-bd:#b9dfc2; --success-tx:#1e7b3d;
+  --error-bg:#fdeaea;   --error-bd:#efb8b8;   --error-tx:#b3261e;
+  --warning-bg:#fff4d6; --warning-bd:#ecd18b; --warning-tx:#8a6516;
+  --info-bg:#eaf2ff;    --info-bd:#bbd3f7;    --info-tx:#1d4e89;
+  --planned-bd:#c9a646;
+  --radius:12px; --radius-sm:8px;
+  --font:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--font);background:var(--bg);color:var(--text);font-size:14.5px;line-height:1.5}
+header{background:var(--navy);color:#fff;padding:16px 24px;border-bottom:3px solid var(--navy-ink)}
+.head{max-width:1360px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{font-size:20px;font-weight:800;letter-spacing:.2px}
+.sub{font-size:12.5px;opacity:.8;margin-top:2px}
+.wrap{max-width:1360px;margin:22px auto;padding:0 16px}
+.banner{background:var(--warning-bg);border:1px solid var(--warning-bd);border-radius:var(--radius);padding:13px 16px;margin-bottom:18px;font-size:13px;color:#5c4813}
+.banner b{display:block;margin-bottom:3px;color:var(--warning-tx)}
+.layout{display:grid;grid-template-columns:220px 1fr;gap:20px;align-items:start}
+nav{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:8px;position:sticky;top:14px}
+nav button{display:block;width:100%;border:0;background:none;text-align:left;padding:10px 12px;border-radius:var(--radius-sm);cursor:pointer;font:inherit;font-size:13.5px;color:var(--text);margin-bottom:2px}
+nav button.active{background:var(--navy);color:#fff;font-weight:600}
+nav button:not(.active):hover{background:#eef2f6}
+nav button:focus-visible,.btn:focus-visible,.pill:focus-visible,.subtab:focus-visible{outline:3px solid #7fb0ff;outline-offset:2px}
+.screen{display:none}
+.screen.active{display:block}
+.sh{display:flex;justify-content:space-between;gap:12px;margin-bottom:16px;align-items:flex-start}
+h1{font-size:23px;margin:0 0 4px;font-weight:700;letter-spacing:-.2px}
+h2{font-size:16px;margin:0 0 10px;font-weight:600}
+h3{font-size:14.5px;margin:0 0 4px;font-weight:600}
+.desc{color:var(--muted);margin:0;font-size:13.5px}
+.status{font-size:10.5px;font-weight:700;padding:5px 10px;border-radius:20px;white-space:nowrap;height:max-content;letter-spacing:.02em}
+.status.pending{background:var(--warning-bg);border:1px solid var(--warning-bd);color:var(--warning-tx)}
+.status.ref{background:var(--info-bg);border:1px solid var(--info-bd);color:var(--info-tx)}
+.status.open{background:#f1e9fb;border:1px solid #cbb3ea;color:#5b3a8a}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.metric{border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px}
+.metric b{font-size:26px;display:block;font-weight:700}
+.metric span,.note{font-size:12px;color:var(--muted)}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+input,select,textarea{border:1px solid #c7ced9;border-radius:var(--radius-sm);padding:10px 11px;font:inherit;font-size:13.5px;background:#fff;color:var(--text)}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--navy-soft);outline-offset:1px;border-color:var(--navy-soft)}
+.toolbar input{flex:1;min-width:180px}
+.btn{border:1px solid #b7c0cd;background:#fff;padding:9px 14px;border-radius:var(--radius-sm);font-weight:600;font-size:13px;cursor:pointer;color:var(--text)}
+.btn:hover{background:#f2f4f7}
+.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+.primary:hover{background:var(--navy-soft)}
+.table-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:10px;border-bottom:1px solid var(--border);white-space:nowrap}
+th{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+tbody tr:hover{background:#f8fafb}
+.badge{display:inline-block;padding:4px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.ok{background:var(--success-bg);color:var(--success-tx)}
+.last{background:var(--warning-bg);color:var(--warning-tx)}
+.zero{background:var(--error-bg);color:var(--error-tx)}
+.info{background:var(--info-bg);color:var(--info-tx)}
+.mono{font-family:var(--mono);font-size:12px}
+.empty{text-align:center;padding:38px 20px;color:var(--muted)}
+.empty b{display:block;color:var(--text);margin-bottom:5px;font-size:14.5px}
+.alert{padding:12px 14px;border-radius:9px;margin:0 0 10px;font-size:13px}
+.alert:last-child{margin-bottom:0}
+.alert b{font-weight:700}
+.error{background:var(--error-bg);border:1px solid var(--error-bd);color:#7a1f19}
+.success{background:var(--success-bg);border:1px solid var(--success-bd);color:#155225}
+.warning{background:var(--warning-bg);border:1px solid var(--warning-bd);color:#5c4813}
+.planned{border:1px dashed var(--planned-bd);background:#fffaf0;padding:12px 14px;border-radius:9px;font-size:12.5px;color:#5c4813}
+.open-note{border:1px solid #cbb3ea;background:#f6f1fb;padding:13px 15px;border-radius:9px;font-size:13px;color:#4b2e78;margin-bottom:14px}
+.open-note b{display:block;color:#3d2463;margin-bottom:3px}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{display:flex;flex-direction:column;gap:6px}
+.full{grid-column:1/-1}
+.field label{font-size:12px;font-weight:600}
+.field .hint{font-size:11.5px;color:var(--muted);font-weight:400}
+.trace{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.trace span{background:#eef2f6;border:1px solid var(--border);border-radius:6px;padding:4px 7px;font-size:11px;font-family:var(--mono)}
+.model-group{border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);margin-bottom:14px;overflow:hidden}
+.model-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;background:#f8fafc;border-bottom:1px solid var(--border)}
+.model-head h2{margin:0}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.state-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.pill{border:1px solid var(--border);background:#fff;padding:7px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;color:var(--muted)}
+.pill-active{background:var(--navy);border-color:var(--navy);color:#fff}
+.subtabs{display:flex;gap:4px;margin-bottom:14px;border-bottom:1px solid var(--border)}
+.subtab{border:0;background:none;padding:10px 4px;margin-right:18px;font:inherit;font-size:13.5px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent}
+.subtab.active{color:var(--navy);border-color:var(--navy)}
+.subpanel{display:none}
+.subpanel.active{display:block}
+.skeleton{background:linear-gradient(90deg,#eef1f4 25%,#e3e7ec 37%,#eef1f4 63%);background-size:400% 100%;animation:shimmer 1.4s ease infinite;border-radius:6px}
+.skeleton-row{height:14px;margin:10px 0}
+@keyframes shimmer{0%{background-position:100% 0}100%{background-position:0 0}}
+@media(prefers-reduced-motion:reduce){.skeleton{animation:none;background:#eef1f4}}
+.addrow-table td,.addrow-table th{white-space:normal}
+.footer{font-size:11px;color:var(--muted);margin-top:20px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}nav{position:static;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}nav button{width:auto;text-align:center;padding:9px 6px}.grid3{grid-template-columns:1fr 1fr}}
+@media(max-width:720px){nav{display:flex;overflow-x:auto}nav button{white-space:nowrap;text-align:left}}
+@media(max-width:620px){.grid3,.form{grid-template-columns:1fr}.full{grid-column:auto}.table-scroll table{min-width:760px}.sh{display:block}.status{display:inline-block;margin-top:8px}}
+</style>
+</head>
+<body>
+<header><div class="head">
+  <div><div class="logo">SQUAD</div><div class="sub">Protótipo lojista · desktop/tablet </div></div>
+  <div aria-label="Usuário autenticado"><strong>Lojista Teste</strong>  <button type="button" class="btn">Sair</button></div>
+</div></header>
+<div class="wrap">
+
+
+<div class="layout">
+<nav aria-label="Áreas do lojista">
+  <button type="button" class="active" aria-current="page" onclick="go('inicio',this)">Início</button>
+  <button type="button" onclick="go('produtos',this)">Produtos</button>
+  <button type="button" onclick="go('mov',this)">Movimentações</button>
+  <button type="button" onclick="go('zero',this)">Saldos zerados</button>
+  <button type="button" onclick="go('rupt',this)">Rupturas</button>
+</nav>
+<main>
+
+<!-- ============ INÍCIO ============ -->
+<section id="inicio" class="screen active">
+<div class="sh"><div><h1>Início do lojista</h1><p class="desc">Resumo operacional.</p></div><span class="status pending">PROTÓTIPO · PENDENTE</span></div>
+
+<div class="grid3">
+  <div class="metric"><b>12</b><span>Produtos cadastrados</span></div>
+  <div class="metric"><b>48</b><span>SKUs cadastrados</span></div>
+  <div class="metric"><b>7</b><span>SKUs com saldo zero</span></div>
+</div>
+<div class="card"><h3>Acessos principais</h3>
+  <div class="toolbar">
+    <button class="btn primary" onclick="go('produtos')">Produtos</button>
+    <button class="btn primary" onclick="go('mov')">Movimentações</button>
+    <button class="btn primary" onclick="go('zero')">Saldos zerados</button>
+    <button class="btn primary" onclick="go('rupt')">Rupturas</button>
+  </div>
+</div>
+<div class="card"><div class="empty"><b>Nenhuma movimentação recente</b>As movimentações aparecerão aqui quando houver operações.</div></div>
+<div class="trace" aria-label="Rastreabilidade"><span>LOJ-01</span><span>RF-02</span><span>UC-01</span><span>US-08–US-13</span></div>
+</section>
+
+<!-- ============ PRODUTOS ============ -->
+<section id="produtos" class="screen">
+<div class="sh"><div><h1>Produtos</h1><p class="desc">No fluxo atual, produto e grade são cadastrados juntos.</p></div><span class="status ref">EXISTENTE · REFERÊNCIA</span></div>
+
+<div class="subtabs">
+  <button class="subtab active" onclick="subtab(this,'produtos-lista')">Listagem</button>
+  <button class="subtab" onclick="subtab(this,'produtos-cadastro')">Novo produto + grade</button>
+  <button class="subtab" onclick="subtab(this,'produtos-edicao')">Editar produto</button>
+</div>
+
+<div id="produtos-lista" class="subpanel active">
+  <div class="toolbar"><input placeholder="Buscar por nome do modelo"><button class="btn primary" onclick="subtab(document.querySelector('#produtos .subtab:nth-child(2)'),'produtos-cadastro')">+ Novo produto + grade</button></div>
+  <div class="state-row" data-target="st-produtos-lista">
+    <button class="pill pill-active" onclick="st(this,'dados')">Com dados</button>
+    <button class="pill" onclick="st(this,'vazio')">Vazio</button>
+    <button class="pill" onclick="st(this,'carregando')">Carregando</button>
+  </div>
+  <div id="st-produtos-lista">
+    <div class="state-panel" data-state="dados">
+      <div class="table-scroll"><table>
+        <thead><tr><th>Modelo</th><th>Marca</th><th>Categoria</th><th>Cor</th><th>Numerações existentes</th><th>Status</th><th>Ações</th></tr></thead><tbody>
+        <tr><td>Runner Flex</td><td>SQUAD</td><td>Tênis</td><td>Preto</td><td>36, 37, 38</td><td><span class="badge ok">Ativo</span></td><td><button type="button" class="btn" onclick="go('grade')">Ver grade</button></td></tr>
+        <tr><td>Urban Street</td><td>SQUAD</td><td>Tênis</td><td>Branco</td><td>34, 36, 38, 39, 42</td><td><span class="badge ok">Ativo</span></td><td><button type="button" class="btn" onclick="subtab(document.querySelector('#produtos .subtab:nth-child(3)'),'produtos-edicao')">Editar</button></td></tr></tbody>
+      </table></div>
+      <p class="note" style="margin-top:8px">As numerações mostram apenas os tamanhos realmente cadastrados para o produto, e não um intervalo, já que podem existir numerações não cadastradas dentro dele.</p>
+    </div>
+    <div class="state-panel" data-state="vazio" style="display:none"><div class="empty"><b>Nenhum produto cadastrado</b>Cadastre o produto e sua grade para começar.</div></div>
+    <div class="state-panel" data-state="carregando" style="display:none"><div class="skeleton skeleton-row" style="width:100%"></div><div class="skeleton skeleton-row" style="width:100%"></div><div class="skeleton skeleton-row" style="width:60%"></div></div>
+  </div>
+</div>
+
+<div id="produtos-cadastro" class="subpanel">
+  <div class="state-row" data-target="st-produtos-cadastro">
+    <button class="pill pill-active" onclick="st(this,'formulario')">Formulário</button>
+    <button class="pill" onclick="st(this,'erro')">Erro de validação</button>
+    <button class="pill" onclick="st(this,'sucesso')">Sucesso</button>
+  </div>
+  <div id="st-produtos-cadastro">
+    <div class="state-panel" data-state="formulario">
+      <div class="card">
+        <div class="form">
+          <div class="field"><label>Nome do modelo</label><input placeholder="Ex.: Runner Flex"></div>
+          <div class="field"><label>Marca</label><input placeholder="Ex.: SQUAD"></div>
+          <div class="field"><label>Categoria</label><select><option>Tênis</option><option>Sandália</option><option>Bota</option></select></div>
+          <div class="field"><label>Cor</label><input placeholder="Ex.: Preto"></div>
+        </div>
+        <h3 style="margin-top:16px">Numerações e quantidade inicial</h3>
+        <p class="note" style="margin-bottom:8px">Produto e grade são cadastrados na mesma operação — adicione cada numeração existente com sua quantidade inicial.</p>
+        <div class="table-scroll addrow-table"><table id="cadastro-rows-table">
+          <tr><th>Numeração</th><th>Quantidade inicial</th><th></th></tr>
+          <tr id="cadastro-rows"><td><input type="number" min="1" max="50" value="36" style="width:90px"></td><td><input type="number" min="0" value="4" style="width:90px"></td><td><button class="btn" onclick="this.closest('tr').remove()">Remover</button></td></tr>
+        </table></div>
+        <button class="btn" onclick="addCadastroRow()">+ Adicionar numeração</button>
+        <div style="margin-top:16px"><button class="btn primary">Salvar produto e grade</button></div>
+      </div>
+    </div>
+    <div class="state-panel" data-state="erro" style="display:none">
+      <div class="alert error"><b>Não foi possível salvar.</b> Preencha os dados obrigatórios do produto e de ao menos uma numeração.</div>
+      <div class="alert warning">A combinação produto + numeração já existe para este modelo.</div>
+    </div>
+    <div class="state-panel" data-state="sucesso" style="display:none">
+      <div class="alert success"><b>Produto cadastrado.</b> Runner Flex · Preto foi criado com 3 numerações e já está disponível na listagem.</div>
+    </div>
+  </div>
+</div>
+<div id="produtos-edicao" class="subpanel">
+  <div class="card"><div class="form">
+    <div class="field"><label for="editar-modelo">Nome do modelo</label><input id="editar-modelo" value="Urban Street"></div>
+    <div class="field"><label for="editar-marca">Marca</label><input id="editar-marca" value="SQUAD"></div>
+    <div class="field"><label for="editar-categoria">Categoria</label><select id="editar-categoria"><option>Tênis</option></select></div>
+    <div class="field"><label for="editar-cor">Cor</label><input id="editar-cor" value="Branco"></div>
+  </div><p class="note" style="margin-top:12px">A edição mantém a grade existente; SKUs não são recriados automaticamente.</p><div class="toolbar"><button type="button" class="btn primary">Salvar alterações</button><button type="button" class="btn" onclick="subtab(document.querySelector('#produtos .subtab:first-child'),'produtos-lista')">Cancelar</button></div></div>
+</div>
+<div class="trace" aria-label="Rastreabilidade"><span>LOJ-02/03/05</span><span>RF-05–RF-09</span><span>UC-07/08</span><span>US-08/09</span></div>
+</section>
+
+<!-- ============ GRADE ============ -->
+<section id="grade" class="screen">
+<div class="sh"><div><h1>Grade de numerações</h1><p class="desc">Visualização da grade associada a um produto já cadastrado.</p></div><span class="status ref">EXISTENTE · REFERÊNCIA</span></div>
+
+<div class="state-row" data-target="st-grade">
+  <button class="pill pill-active" onclick="st(this,'dados')">Com dados</button>
+  <button class="pill" onclick="st(this,'vazio')">Vazio</button>
+  <button class="pill" onclick="st(this,'erro')">Erro de cadastro</button>
+</div>
+
+<div id="st-grade">
+  <div class="state-panel" data-state="dados">
+    <div class="card"><h3>Runner Flex · Preto</h3><p class="note">No fluxo atual, produto e grade são cadastrados juntos.</p>
+      <div class="table-scroll"><table><thead><tr><th>Numeração</th><th>SKU</th><th>Saldo</th><th>Estado</th></tr></thead><tbody>
+        <tr><td>36</td><td class="mono">automático</td><td>4</td><td><span class="badge ok">Disponível</span></td></tr>
+        <tr><td>37</td><td class="mono">automático</td><td>1</td><td><span class="badge last">Último par</span></td></tr>
+        <tr><td>38</td><td class="mono">automático</td><td>0</td><td><span class="badge zero">Indisponível</span></td></tr>
+      </tbody></table></div>
+    </div>
+    <div class="planned"><b>PLANEJADO · RF-12:</b> exibir data/hora da última atualização de cada SKU. Esse campo foi retirado do fluxo atual para não sugerir uma função existente.</div>
+  </div>
+  <div class="state-panel" data-state="vazio" style="display:none"><div class="empty"><b>Produto sem numerações</b>Este produto foi cadastrado sem itens na grade.</div></div>
+  <div class="state-panel" data-state="erro" style="display:none"><div class="alert error"><b>Erro de cadastro:</b> esta numeração já está vinculada ao produto.</div></div>
+</div>
+<div class="toolbar"><button type="button" class="btn primary" onclick="go('entrada')">Registrar entrada</button><button type="button" class="btn" onclick="go('saida')">Registrar saída</button><button type="button" class="btn" onclick="go('ajuste')">Ajustar saldo</button><button type="button" class="btn" onclick="go('produtos')">Voltar aos produtos</button></div>
+<div class="trace" aria-label="Rastreabilidade"><span>LOJ-04</span><span>RF-12/14/15</span><span>UC-08–10</span><span>US-09–11</span></div>
+</section>
+
+<!-- ============ ENTRADA ============ -->
+<section id="entrada" class="screen">
+<div class="sh"><div><h1>Entrada de estoque</h1><p class="desc">Uma operação pode registrar quantidade para várias numerações do mesmo produto.</p></div><span class="status ref">EXISTENTE · EVOLUÇÃO PROPOSTA</span></div>
+<div class="planned"><b>BASELINE + FLUXO-ALVO:</b> a entrada de um SKU já existe; esta proposta amplia a operação para múltiplas numerações do mesmo produto, de forma transacional.</div>
+
+<div class="state-row" data-target="st-entrada">
+  <button class="pill pill-active" onclick="st(this,'formulario')">Formulário</button>
+  <button class="pill" onclick="st(this,'carregando')">Carregando</button>
+  <button class="pill" onclick="st(this,'erro-validacao')">Erro de validação</button>
+  <button class="pill" onclick="st(this,'sucesso')">Sucesso</button>
+  <button class="pill" onclick="st(this,'erro-operacao')">Erro da operação</button>
+</div>
+
+<div id="st-entrada">
+  <div class="state-panel" data-state="formulario">
+    <div class="card">
+      <div class="field" style="max-width:360px;margin-bottom:14px"><label>Produto</label><select><option>Runner Flex · Preto</option><option>Urban Street · Branco</option></select></div>
+      <h3>Numerações e quantidades desta entrada</h3>
+      <div class="table-scroll addrow-table"><table>
+        <tr><th>Numeração / SKU</th><th>Quantidade</th><th></th></tr>
+        <tbody id="entrada-rows">
+        <tr><td><select><option>36 · automático</option><option>37 · automático</option><option>38 · automático</option></select></td><td><input type="number" min="1" value="10" style="width:90px"></td><td><button class="btn" onclick="this.closest('tr').remove()">Remover</button></td></tr>
+        <tr><td><select><option selected>37 · automático</option><option>36 · automático</option><option>38 · automático</option></select></td><td><input type="number" min="1" value="5" style="width:90px"></td><td><button class="btn" onclick="this.closest('tr').remove()">Remover</button></td></tr>
+        </tbody>
+      </table></div>
+      <button class="btn" onclick="addEntradaRow()">+ Adicionar numeração à entrada</button>
+      <div class="field full" style="margin-top:14px"><label>Observação</label><textarea rows="3" placeholder="Ex.: reposição do fornecedor"></textarea></div>
+      <div style="margin-top:14px"><button class="btn primary">Registrar entrada</button></div>
+    </div>
+  </div>
+  <div class="state-panel" data-state="carregando" style="display:none"><div class="card"><div class="skeleton skeleton-row" style="width:50%"></div><div class="skeleton skeleton-row" style="width:100%"></div><div class="skeleton skeleton-row" style="width:100%"></div><div class="skeleton skeleton-row" style="width:30%"></div></div></div>
+  <div class="state-panel" data-state="erro-validacao" style="display:none"><div class="alert error"><b>Validação:</b> informe uma quantidade maior que zero para cada numeração adicionada.</div></div>
+  <div class="state-panel" data-state="sucesso" style="display:none"><div class="alert success"><b>Sucesso:</b> entrada registrada para 2 numerações. As movimentações correspondentes foram criadas.</div></div>
+  <div class="state-panel" data-state="erro-operacao" style="display:none"><div class="alert error"><b>Não foi possível concluir a entrada.</b> Tente novamente; nenhuma numeração desta operação foi alterada.</div></div>
+</div>
+<div class="toolbar"><button type="button" class="btn" onclick="go('grade')">Cancelar e voltar à grade</button></div>
+<div class="trace" aria-label="Rastreabilidade"><span>LOJ-06</span><span>RF-09/10</span><span>UC-09</span><span>US-10</span></div>
+</section>
+
+<!-- ============ SAÍDA ADMINISTRATIVA ============ -->
+<section id="saida" class="screen">
+<div class="sh"><div><h1>Saída administrativa</h1><p class="desc">Baixa de quantidade variável, exclusiva do lojista. Esta operação não substitui “Vendeu”.</p></div><span class="status ref">EXISTENTE · DIVERGÊNCIA DE PERMISSÃO</span></div>
+<div class="state-row" data-target="st-saida">
+  <button type="button" class="pill pill-active" aria-pressed="true" onclick="st(this,'formulario')">Formulário</button>
+  <button type="button" class="pill" aria-pressed="false" onclick="st(this,'erro')">Saldo insuficiente</button>
+  <button type="button" class="pill" aria-pressed="false" onclick="st(this,'sucesso')">Sucesso</button>
+</div>
+<div id="st-saida">
+  <div class="state-panel" data-state="formulario"><div class="card"><div class="form">
+    <div class="field"><label for="saida-produto">Produto</label><select id="saida-produto"><option>Runner Flex · Preto</option></select></div>
+    <div class="field"><label for="saida-sku">Numeração / SKU</label><select id="saida-sku"><option>37 · saldo atual 5</option></select></div>
+    <div class="field"><label for="saida-qtd">Quantidade de saída</label><input id="saida-qtd" type="number" min="1" max="5" value="1"></div>
+    <div class="field"><label for="saida-motivo">Motivo <span class="hint">(opcional)</span></label><input id="saida-motivo" placeholder="Ex.: avaria ou transferência"></div>
+  </div><div style="margin-top:14px"><button type="button" class="btn primary">Confirmar saída</button></div></div></div>
+  <div class="state-panel" data-state="erro" style="display:none"><div class="alert error" role="alert"><b>Saída rejeitada — saldo insuficiente.</b> A operação deixaria o saldo abaixo de zero. O estoque permanece inalterado.</div></div>
+  <div class="state-panel" data-state="sucesso" style="display:none"><div class="alert success" role="status"><b>Saída registrada.</b> O saldo e o histórico foram atualizados.</div></div>
+</div>
+<div class="toolbar"><button type="button" class="btn" onclick="go('grade')">Cancelar e voltar à grade</button></div>
+<div class="trace" aria-label="Rastreabilidade"><span>LOJ-07</span><span>RF-10/11</span><span>RN-02/07</span><span>DI-05/07</span></div>
+</section>
+
+<!-- ============ AJUSTE ============ -->
+<section id="ajuste" class="screen">
+<div class="sh"><div><h1>Ajuste manual de saldo</h1><p class="desc">Operação exclusiva do lojista, com motivo obrigatório.</p></div><span class="status ref">EXISTENTE · REFERÊNCIA</span></div>
+
+<div class="open-note"><b>Contrato adotado na baseline</b>O lojista informa o novo saldo contado. O sistema calcula a diferença e grava uma nova movimentação imutável. A divergência documental com a regra de ajuste por delta deve continuar registrada para decisão da equipe.</div>
+
+<div class="state-row" data-target="st-ajuste">
+  <button class="pill pill-active" onclick="st(this,'formulario')">Formulário</button>
+  <button class="pill" onclick="st(this,'erro-permissao')">Erro de permissão</button>
+  <button class="pill" onclick="st(this,'erro-validacao')">Erro de validação</button>
+  <button class="pill" onclick="st(this,'sucesso')">Sucesso</button>
+</div>
+
+<div id="st-ajuste">
+  <div class="state-panel" data-state="formulario">
+    <div class="card">
+      <div class="form">
+        <div class="field"><label>Produto</label><select><option>Runner Flex · Preto</option></select></div>
+        <div class="field"><label>Numeração / SKU</label><select><option>37 · saldo atual 1</option></select></div>
+        <div class="field"><label for="ajuste-novo-saldo">Novo saldo contado</label><input id="ajuste-novo-saldo" type="number" min="0" value="2"></div>
+        <div class="field"><label for="ajuste-diferenca">Diferença calculada</label><input id="ajuste-diferenca" value="+1" readonly aria-readonly="true"></div>
+        <div class="field full"><label for="ajuste-motivo">Motivo obrigatório</label><textarea id="ajuste-motivo" rows="3" placeholder="Ex.: contagem física"></textarea></div>
+      </div>
+      <div style="margin-top:14px"><button class="btn primary">Confirmar ajuste</button></div>
+    </div>
+  </div>
+  <div class="state-panel" data-state="erro-permissao" style="display:none"><div class="alert error"><b>Permissão negada:</b> operação exclusiva do LOJISTA.</div></div>
+  <div class="state-panel" data-state="erro-validacao" style="display:none"><div class="alert error"><b>Validação:</b> motivo obrigatório.</div><div class="alert error"><b>Saldo inválido:</b> não pode ser negativo.</div></div>
+  <div class="state-panel" data-state="sucesso" style="display:none"><div class="alert success"><b>Sucesso:</b> ajuste registrado.</div></div>
+</div>
+<div class="toolbar"><button type="button" class="btn" onclick="go('grade')">Cancelar e voltar à grade</button></div>
+<div class="trace" aria-label="Rastreabilidade"><span>LOJ-08</span><span>RF-10/11/23</span><span>RN-03/04</span><span>UC-10</span><span>US-11</span></div>
+</section>
+
+<!-- ============ MOVIMENTAÇÕES ============ -->
+<section id="mov" class="screen">
+<div class="sh"><div><h1>Movimentações</h1><p class="desc">Histórico imutável de entradas, saídas e ajustes.</p></div><span class="status ref">EXISTENTE · REFERÊNCIA</span></div>
+
+<div class="toolbar"><button type="button" class="btn primary" onclick="go('entrada')">Registrar entrada</button><button type="button" class="btn" onclick="go('saida')">Registrar saída</button><button type="button" class="btn" onclick="go('ajuste')">Ajustar saldo</button></div>
+
+<div class="toolbar"><select><option>Todos os tipos</option><option>Entrada</option><option>Saída</option><option>Ajuste</option></select><input placeholder="Filtrar por produto ou SKU"><button class="btn">Aplicar</button></div>
+
+<div class="state-row" data-target="st-mov">
+  <button class="pill pill-active" onclick="st(this,'dados')">Com dados</button>
+  <button class="pill" onclick="st(this,'vazio')">Vazio</button>
+  <button class="pill" onclick="st(this,'carregando')">Carregando</button>
+  <button class="pill" onclick="st(this,'erro-saida')">Erro — saída rejeitada</button>
+</div>
+
+<div id="st-mov">
+  <div class="state-panel" data-state="dados">
+    <div class="table-scroll"><table><thead><tr><th>Data/hora</th><th>Tipo</th><th>Produto</th><th>Num.</th><th>Qtd.</th><th>Usuário</th><th>Motivo</th></tr></thead><tbody>
+      <tr><td>24/08 09:12</td><td><span class="badge info">Entrada</span></td><td>Runner Flex</td><td>37</td><td>10</td><td>Lojista</td><td>Reposição</td></tr>
+      <tr><td>24/08 10:03</td><td><span class="badge zero">Saída</span></td><td>Runner Flex</td><td>37</td><td>1</td><td>Vendedor</td><td>Venda</td></tr>
+    </tbody></table></div>
+  </div>
+  <div class="state-panel" data-state="vazio" style="display:none"><div class="empty"><b>Nenhuma movimentação encontrada</b>Ajuste os filtros ou registre uma nova movimentação.</div></div>
+  <div class="state-panel" data-state="carregando" style="display:none"><div class="skeleton skeleton-row" style="width:100%"></div><div class="skeleton skeleton-row" style="width:100%"></div><div class="skeleton skeleton-row" style="width:70%"></div></div>
+  <div class="state-panel" data-state="erro-saida" style="display:none">
+    <div class="alert error"><b>Saída rejeitada — saldo insuficiente.</b> A operação não pode ser concluída porque deixaria o saldo abaixo de zero. O estoque permanece inalterado.</div>
+    <div class="trace"><span>RF-10</span><span>RF-11</span><span>RN-02</span></div>
+  </div>
+</div>
+<div class="trace" aria-label="Rastreabilidade"><span>LOJ-09</span><span>RF-10</span><span>RN-03</span><span>US-10/11</span></div>
+</section>
+
+<!-- ============ SALDOS ZERADOS ============ -->
+<section id="zero" class="screen">
+<div class="sh"><div><h1>Saldos zerados</h1><p class="desc">SKUs indisponíveis, agrupados por modelo.</p></div><span class="status pending">PROTÓTIPO · PENDENTE</span></div>
+
+<div class="state-row" data-target="st-zero">
+  <button class="pill pill-active" onclick="st(this,'dados')">Com dados</button>
+  <button class="pill" onclick="st(this,'vazio')">Vazio</button>
+  <button class="pill" onclick="st(this,'carregando')">Carregando</button>
+</div>
+
+<div id="st-zero">
+  <div class="state-panel" data-state="dados">
+    <section class="model-group"><div class="model-head"><h2>Runner Flex · Preto</h2><span class="badge zero">1 numeração</span></div><div class="table-scroll"><table><thead><tr><th>Numeração</th><th>SKU</th><th>Última atualização</th><th>Ação</th></tr></thead><tbody><tr><td>38</td><td class="mono">automático</td><td><span class="planned">PLANEJADO · RF-12</span></td><td><button type="button" class="btn" onclick="go('entrada')">Registrar entrada</button></td></tr></tbody></table></div></section>
+    <section class="model-group"><div class="model-head"><h2>Urban Street · Branco</h2><span class="badge zero">1 numeração</span></div><div class="table-scroll"><table><thead><tr><th>Numeração</th><th>SKU</th><th>Última atualização</th><th>Ação</th></tr></thead><tbody><tr><td>42</td><td class="mono">automático</td><td><span class="planned">PLANEJADO · RF-12</span></td><td><button type="button" class="btn" onclick="go('entrada')">Registrar entrada</button></td></tr></tbody></table></div></section>
+  </div>
+  <div class="state-panel" data-state="vazio" style="display:none"><div class="empty"><b>Nenhum SKU com saldo zero</b>Todos os SKUs possuem saldo disponível.</div></div>
+  <div class="state-panel" data-state="carregando" style="display:none"><div class="skeleton skeleton-row" style="width:100%"></div><div class="skeleton skeleton-row" style="width:70%"></div></div>
+</div>
+<div class="trace" aria-label="Rastreabilidade"><span>LOJ-10</span><span>RF-21</span><span>UC-11</span><span>US-12</span></div>
+</section>
+
+<!-- ============ RUPTURAS ============ -->
+<section id="rupt" class="screen">
+<div class="sh"><div><h1>Histórico de rupturas</h1><p class="desc">Demandas não atendidas, registradas por SKU.</p></div><span class="status pending">PROTÓTIPO · PENDENTE</span></div>
+
+<div class="toolbar"><input placeholder="Buscar produto ou numeração"><select><option>Todos os períodos</option></select><button class="btn">Filtrar</button></div>
+
+<div class="state-row" data-target="st-rupt">
+  <button class="pill pill-active" onclick="st(this,'dados')">Com dados</button>
+  <button class="pill" onclick="st(this,'vazio')">Vazio</button>
+  <button class="pill" onclick="st(this,'carregando')">Carregando</button>
+</div>
+
+<div id="st-rupt">
+  <div class="state-panel" data-state="dados">
+    <div class="table-scroll"><table><thead><tr><th>Modelo</th><th>Numeração</th><th>Ocorrências</th><th>Última ocorrência</th></tr></thead><tbody>
+      <tr><td>Runner Flex</td><td>38</td><td>4</td><td>24/08/2026 11:05</td></tr>
+      <tr><td>Urban Street</td><td>42</td><td>2</td><td>23/08/2026 15:30</td></tr>
+    </tbody></table></div>
+  </div>
+  <div class="state-panel" data-state="vazio" style="display:none"><div class="empty"><b>Nenhuma ruptura registrada</b>Quando "Não tinha" for registrado pelo vendedor, o item aparecerá aqui.</div></div>
+  <div class="state-panel" data-state="carregando" style="display:none"><div class="skeleton skeleton-row" style="width:100%"></div><div class="skeleton skeleton-row" style="width:70%"></div></div>
+</div>
+
+<div class="alert warning" style="margin-top:14px"><b>Regra:</b> saldo zero sozinho não cria ruptura. Ela só é registrada quando o vendedor seleciona "Não tinha" para um SKU.</div>
+<div class="trace" aria-label="Rastreabilidade"><span>LOJ-11</span><span>RF-18/22</span><span>RN-05/06</span><span>UC-12</span><span>US-13</span></div>
+</section>
+
+</main></div></div>
+<div class="wrap"><div class="footer">Tabelas usam rolagem horizontal em telas estreitas para preservar a leitura.</div></div>
+
+<script>
+function go(id, btn){
+  document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('nav button').forEach(b=>{b.classList.remove('active');b.removeAttribute('aria-current')});
+  const parent={grade:'produtos',entrada:'mov',saida:'mov',ajuste:'mov'}[id]||id;
+  const activeBtn=btn||[...document.querySelectorAll('nav button')].find(b=>b.getAttribute('onclick')?.includes("'"+parent+"'"));
+  if(activeBtn){activeBtn.classList.add('active');activeBtn.setAttribute('aria-current','page')}
+  window.scrollTo(0,0);
+  const title=document.querySelector('#'+id+' h1');
+  if(title){title.setAttribute('tabindex','-1');title.focus({preventScroll:true})}
+}
+function st(btn, state){
+  const row = btn.parentElement;
+  const target = document.getElementById(row.dataset.target);
+  target.querySelectorAll('.state-panel').forEach(p=>p.style.display = p.dataset.state===state?'block':'none');
+  row.querySelectorAll('.pill').forEach(b=>{b.classList.remove('pill-active');b.setAttribute('aria-pressed','false')});
+  btn.classList.add('pill-active');
+  btn.setAttribute('aria-pressed','true');
+}
+function subtab(btn, id){
+  const section = btn.closest('.screen');
+  section.querySelectorAll('.subpanel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  section.querySelectorAll('.subtab').forEach(b=>b.classList.remove('active'));
+  section.querySelectorAll('.subtab').forEach(b=>b.setAttribute('aria-selected','false'));
+  btn.classList.add('active');
+  btn.setAttribute('aria-selected','true');
+}
+function addCadastroRow(){
+  const tbody = document.getElementById('cadastro-rows-table');
+  const tr = document.createElement('tr');
+  tr.innerHTML = '<td><input type="number" min="1" max="50" value="39" style="width:90px"></td><td><input type="number" min="0" value="1" style="width:90px"></td><td><button class="btn" onclick="this.closest(\'tr\').remove()">Remover</button></td>';
+  tbody.appendChild(tr);
+}
+function addEntradaRow(){
+  const tbody = document.getElementById('entrada-rows');
+  const tr = document.createElement('tr');
+  tr.innerHTML = '<td><select><option>36 · automático</option><option>37 · automático</option><option>38 · automático</option></select></td><td><input type="number" min="1" value="1" style="width:90px"></td><td><button class="btn" onclick="this.closest(\'tr\').remove()">Remover</button></td>';
+  tbody.appendChild(tr);
+}
+document.querySelectorAll('button:not([type])').forEach(button=>button.type='button');
+document.querySelectorAll('.state-row .pill').forEach(button=>button.setAttribute('aria-pressed',button.classList.contains('pill-active')?'true':'false'));
+document.querySelectorAll('.subtabs').forEach(tabs=>{tabs.setAttribute('role','tablist');tabs.querySelectorAll('.subtab').forEach(tab=>{tab.setAttribute('role','tab');tab.setAttribute('aria-selected',tab.classList.contains('active')?'true':'false')})});
+document.querySelectorAll('.alert.success').forEach(alert=>alert.setAttribute('role','status'));
+document.querySelectorAll('.alert.error').forEach(alert=>alert.setAttribute('role','alert'));
+let fieldId=0;
+document.querySelectorAll('.field label:not([for])').forEach(label=>{const field=label.parentElement.querySelector('input,select,textarea');if(field){if(!field.id)field.id='prototype-field-'+(++fieldId);label.htmlFor=field.id}});
+</script>
+</body></html>
