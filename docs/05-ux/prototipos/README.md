@@ -2,10 +2,14 @@
 
 Esta pasta reúne as referências visuais e navegáveis das interfaces do MVP, separadas por perfil de usuário.
 
+## Visualização rápida (sem publicar o site)
+https://html-preview.github.io/
+
+
 ## Arquivos
 
 - [Protótipo do vendedor](vendedor/prototipo-vendedor.html): experiência mobile de busca, consulta da grade e registro do resultado do atendimento.
-- [Protótipo do lojista](lojista/prototipo-lojista.html): experiência desktop/tablet para gestão de produtos, estoque e rupturas.
+- [Protótipo do lojista](lojista/prototipo_lojista.html): experiência desktop/tablet para gestão de produtos, estoque e rupturas.
 
 ## Convenções
 
