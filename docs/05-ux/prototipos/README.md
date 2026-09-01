@@ -5,9 +5,8 @@ Esta pasta reúne as referências visuais e navegáveis das interfaces do MVP, s
 ## Visualização rápida (sem publicar o site)
 https://html-preview.github.io/
 
-- Preview direto do protótipo do lojista:
-  `https://html-preview.github.io/?url=https://raw.githubusercontent.com/CodeWitch00/SQUAD-estoque/main/docs/05-ux/prototipos/lojista/prototipo_lojista.html`
-
+### Lojista :
+https://raw.githubusercontent.com/CodeWitch00/SQUAD-estoque/refs/heads/main/docs/05-ux/prototipos/lojista/prototipo_lojista.html?token=GHSAT0AAAAAAEDRKEUQYZSNSJJ3QKWRP2MS2UXMTUA
 
 ## Arquivos
 
