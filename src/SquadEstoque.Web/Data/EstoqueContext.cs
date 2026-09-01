@@ -38,6 +38,13 @@ public class EstoqueContext : DbContext
         modelBuilder.Entity<Movimentacao>()
             .ToTable(t => t.HasCheckConstraint("chk_movimentacao_quantidade_positiva", "Quantidade > 0"));
 
+        // SQLite armazena enums como inteiros. Os CHECKs rejeitam valores fora do domínio.
+        modelBuilder.Entity<Usuario>()
+            .ToTable(t => t.HasCheckConstraint("chk_usuario_perfil", "Perfil IN (0, 1)"));
+
+        modelBuilder.Entity<Movimentacao>()
+            .ToTable(t => t.HasCheckConstraint("chk_movimentacao_tipo", "Tipo IN (0, 1, 2)"));
+
         // Relacionamentos e chaves estrangeiras com deleção restritiva para preservar histórico (RN-03, RN-06)
         modelBuilder.Entity<Sku>()
             .HasOne(s => s.Produto)

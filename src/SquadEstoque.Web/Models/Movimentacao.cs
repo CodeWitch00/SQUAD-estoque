@@ -5,9 +5,9 @@ namespace SquadEstoque.Web.Models;
 
 public enum TipoMovimentacao
 {
-    ENTRADA,
-    SAIDA,
-    AJUSTE
+    ENTRADA = 0,
+    SAIDA = 1,
+    AJUSTE = 2
 }
 
 public class Movimentacao

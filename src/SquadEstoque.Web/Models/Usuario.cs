@@ -5,8 +5,8 @@ namespace SquadEstoque.Web.Models;
 
 public enum PerfilUsuario
 {
-    VENDEDOR,
-    LOJISTA
+    VENDEDOR = 0,
+    LOJISTA = 1
 }
 
 public class Usuario

@@ -24,10 +24,10 @@ Seu objetivo é servir como referência para:
 
 Define os perfis de acesso do sistema.
 
-| Valor    |
-| -------- |
-| VENDEDOR |
-| LOJISTA  |
+| Valor no banco | Nome     |
+| -------------- | -------- |
+| 0              | VENDEDOR |
+| 1              | LOJISTA  |
 
 ---
 
@@ -35,11 +35,17 @@ Define os perfis de acesso do sistema.
 
 Define os tipos de movimentação de estoque.
 
-| Valor   |
-| ------- |
-| ENTRADA |
-| SAIDA   |
-| AJUSTE  |
+| Valor no banco | Nome    |
+| -------------- | ------- |
+| 0              | ENTRADA |
+| 1              | SAIDA   |
+| 2              | AJUSTE  |
+
+Como o banco SQLite não possui um tipo `ENUM` nativo, esses domínios são
+armazenados como `INTEGER` e protegidos por restrições `CHECK`.
+
+Ruptura não possui enum de situação no MVP. Cada registro representa a
+ocorrência histórica e imutável de uma demanda não atendida ("Não tinha").
 
 ---
 
