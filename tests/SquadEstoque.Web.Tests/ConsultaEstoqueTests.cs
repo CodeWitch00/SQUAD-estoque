@@ -136,6 +136,38 @@ public sealed class ConsultaEstoqueTests : IClassFixture<SquadEstoqueWebApplicat
         Assert.Contains("aria-current=\"true\"", html);
     }
 
+    [Fact]
+    public async Task Selected_product_shows_ordered_grade_with_balance_and_text_status()
+    {
+        var marker = Guid.NewGuid().ToString("N")[..10];
+        var product = CreateProduct("Grade " + marker);
+        product.Skus.Add(CreateSku(product.Id, "40", 0));
+        product.Skus.Add(CreateSku(product.Id, "36", 3));
+        product.Skus.Add(CreateSku(product.Id, "38", 1));
+        product.Skus.Add(CreateSku(product.Id, "42", 5, ativo: false));
+        await AddProductsAsync(product);
+        using var client = CreateClient();
+        await LoginAsync(client, "vendedor@squad.com");
+
+        var response = await client.GetAsync(
+            $"/Estoque/Consulta?termo={marker}&produtoId={product.Id}");
+        var html = WebUtility.HtmlDecode(await response.Content.ReadAsStringAsync());
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("Grade disponível", html);
+        Assert.Contains("Grade completa de numerações", html);
+        Assert.Contains("Tamanho 36, saldo 3, Disponível", html);
+        Assert.Contains("Tamanho 38, saldo 1, Último par", html);
+        Assert.Contains("Tamanho 40, saldo 0, Indisponível", html);
+        Assert.DoesNotContain("Tamanho 42", html);
+        Assert.True(html.IndexOf("Tamanho 36", StringComparison.Ordinal) <
+                    html.IndexOf("Tamanho 38", StringComparison.Ordinal));
+        Assert.True(html.IndexOf("Tamanho 38", StringComparison.Ordinal) <
+                    html.IndexOf("Tamanho 40", StringComparison.Ordinal));
+        Assert.DoesNotContain(">Vendeu<", html, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(">Não tinha<", html, StringComparison.OrdinalIgnoreCase);
+    }
+
     private HttpClient CreateClient()
     {
         return _factory.CreateClient(new WebApplicationFactoryClientOptions
@@ -167,6 +199,18 @@ public sealed class ConsultaEstoqueTests : IClassFixture<SquadEstoqueWebApplicat
             Marca = marca,
             Categoria = categoria,
             Cor = cor,
+            Ativo = ativo
+        };
+    }
+
+    private static Sku CreateSku(Guid productId, string numeracao, int saldo, bool ativo = true)
+    {
+        return new Sku
+        {
+            Id = Guid.NewGuid(),
+            ProdutoId = productId,
+            Numeracao = numeracao,
+            SaldoAtual = saldo,
             Ativo = ativo
         };
     }

@@ -45,10 +45,52 @@
 
     @if (produtoSelecionado is not null)
     {
-        <div class="alert alert-success consulta-aviso" role="status" aria-live="polite">
-            <strong>@produtoSelecionado.Nome selecionado.</strong>
-            <span class="d-block small">Produto pronto para continuar o atendimento.</span>
-        </div>
+        <section class="consulta-grade mb-4" aria-labelledby="titulo-grade">
+            <header class="consulta-grade-cabecalho">
+                <div>
+                    <p class="consulta-grade-etapa mb-1">Grade disponível</p>
+                    <h2 id="titulo-grade" class="h4 mb-1">@produtoSelecionado.Nome</h2>
+                    <p class="visually-hidden" role="status" aria-live="polite">
+                        @produtoSelecionado.Nome selecionado.
+                    </p>
+                    <p class="text-body-secondary small mb-0">
+                        @produtoSelecionado.Marca · @produtoSelecionado.Categoria · @produtoSelecionado.Cor
+                    </p>
+                </div>
+                <span class="consulta-grade-contagem">
+                    @produtoSelecionado.Skus.Count @(produtoSelecionado.Skus.Count == 1 ? "numeração" : "numerações")
+                </span>
+            </header>
+
+            @if (produtoSelecionado.Skus.Count == 0)
+            {
+                <p class="consulta-grade-vazia mb-0" role="status">
+                    Nenhuma numeração ativa cadastrada para este produto.
+                </p>
+            }
+            else
+            {
+                <ul class="consulta-grade-lista" aria-label="Grade completa de numerações">
+                    @foreach (var sku in produtoSelecionado.Skus)
+                    {
+                        <li class="consulta-grade-item consulta-grade-item--@sku.ClasseDisponibilidade"
+                            aria-label="Tamanho @sku.Numeracao, saldo @sku.SaldoAtual, @sku.EstadoDisponibilidade">
+                            <span class="consulta-grade-numero">
+                                <span class="consulta-grade-prefixo">Nº</span>
+                                @sku.Numeracao
+                            </span>
+                            <span class="consulta-grade-saldo">
+                                @sku.SaldoAtual @(sku.SaldoAtual == 1 ? "par" : "pares")
+                            </span>
+                            <strong class="consulta-grade-estado">
+                                <span class="consulta-grade-marcador" aria-hidden="true"></span>
+                                @sku.EstadoDisponibilidade
+                            </strong>
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
     }
 
     @if (!buscaExecutada)
