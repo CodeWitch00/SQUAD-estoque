@@ -2,38 +2,72 @@
 
 @{
     ViewData["Title"] = "Login";
+    Layout = null;
 }
 
-<div class="row justify-content-center mt-5">
-    <div class="col-12 col-sm-8 col-md-6 col-lg-4">
-        <div class="card shadow-sm border-0">
-            <div class="card-body p-4">
-                <h2 class="card-title text-center mb-4">SQUAD Estoque</h2>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Acesso ao sistema SQUAD Controle de Estoque" />
+    <title>@ViewData["Title"] - SQUAD Estoque</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+</head>
+<body class="login-page">
+    <main class="login-layout">
+        <section class="login-brand" aria-label="SQUAD Controle de Estoque">
+            <img src="~/images/logo-squad.png" class="login-logo" alt="SQUAD — Controle de Estoque" />
+        </section>
 
-                <form asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <section class="login-content" aria-labelledby="login-title">
+            <div class="login-panel">
+                <h1 id="login-title">Acesse sua conta</h1>
+                <p class="login-subtitle">Informe seu e-mail e sua senha para continuar.</p>
 
-                    <div class="mb-3">
-                        <label asp-for="Email" class="form-label">E-mail</label>
-                        <input asp-for="Email" class="form-control form-control-lg" placeholder="seu.email@loja.com" autofocus />
-                        <span asp-validation-for="Email" class="text-danger small"></span>
+                <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" novalidate>
+                    <div asp-validation-summary="ModelOnly" class="login-alert" role="alert"></div>
+
+                    <div class="login-field">
+                        <label asp-for="Email">E-mail</label>
+                        <input asp-for="Email" type="email" autocomplete="username" placeholder="nome@loja.com.br" autofocus />
+                        <span asp-validation-for="Email" class="login-validation"></span>
                     </div>
 
-                    <div class="mb-4">
-                        <label asp-for="Senha" class="form-label">Senha</label>
-                        <input asp-for="Senha" class="form-control form-control-lg" placeholder="••••••••" />
-                        <span asp-validation-for="Senha" class="text-danger small"></span>
+                    <div class="login-field">
+                        <label asp-for="Senha">Senha</label>
+                        <div class="login-password">
+                            <input asp-for="Senha" autocomplete="current-password" placeholder="Digite sua senha" />
+                            <button id="toggle-password" class="login-password-toggle" type="button" aria-controls="Senha" aria-pressed="false">Mostrar</button>
+                        </div>
+                        <span asp-validation-for="Senha" class="login-validation"></span>
                     </div>
 
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary btn-lg">Entrar</button>
-                    </div>
+                    <button class="login-submit" type="submit">Entrar</button>
                 </form>
             </div>
-        </div>
-    </div>
-</div>
+        </section>
+    </main>
 
-@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <partial name="_ValidationScriptsPartial" />
-}
+    <script>
+        (() => {
+            const password = document.getElementById("Senha");
+            const toggle = document.getElementById("toggle-password");
+
+            if (!password || !toggle) return;
+
+            toggle.addEventListener("click", () => {
+                const isVisible = password.type === "text";
+                password.type = isVisible ? "password" : "text";
+                toggle.textContent = isVisible ? "Mostrar" : "Ocultar";
+                toggle.setAttribute("aria-pressed", String(!isVisible));
+            });
+        })();
+    </script>
+</body>
+</html>
