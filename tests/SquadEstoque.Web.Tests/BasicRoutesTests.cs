@@ -22,13 +22,14 @@ public sealed class BasicRoutesTests : IClassFixture<SquadEstoqueWebApplicationF
     }
 
     [Fact]
-    public async Task Home_returns_ok()
+    public async Task Home_without_authentication_redirects_to_login()
     {
         using var client = CreateClient();
 
         var response = await client.GetAsync("/");
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Found, response.StatusCode);
+        Assert.Equal("/Account/Login?ReturnUrl=%2F", response.Headers.Location?.PathAndQuery);
     }
 
     [Fact]

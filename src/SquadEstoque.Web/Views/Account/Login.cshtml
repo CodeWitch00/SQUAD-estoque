@@ -1,7 +1,7 @@
 @model SquadEstoque.Web.Models.LoginViewModel
 
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Entrar";
     Layout = null;
 }
 
@@ -11,43 +11,100 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Acesso ao sistema SQUAD Controle de Estoque" />
-    <title>@ViewData["Title"] - SQUAD Estoque</title>
+    <title>SQUAD · Controle de Estoque — Entrar</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
 </head>
-<body class="login-page">
-    <main class="login-layout">
-        <section class="login-brand" aria-label="SQUAD Controle de Estoque">
-            <img src="~/images/logo-squad.png" class="login-logo" alt="SQUAD — Controle de Estoque" />
+<body>
+    <main class="login-app">
+        <section class="brand-panel" aria-labelledby="brand-headline">
+            <div class="brand-top">
+                <svg class="brand-mark" viewBox="0 0 100 116" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M50 2 L96 20 V56 C96 84 76 104 50 114 C24 104 4 84 4 56 V20 Z" stroke="#4C86D6" stroke-width="4" fill="#0A1730" />
+                    <rect x="30" y="66" width="11" height="30" rx="1.5" fill="#B9C9E0" />
+                    <rect x="46" y="52" width="11" height="44" rx="1.5" fill="#D7E1EF" />
+                    <rect x="62" y="34" width="11" height="62" rx="1.5" fill="#EFF4FB" />
+                </svg>
+                <div class="brand-word">SQU<span>A</span>D</div>
+            </div>
+
+            <div class="brand-middle">
+                <p class="brand-kicker">Controle de estoque</p>
+                <h1 id="brand-headline">Precisão operacional para o seu estoque.</h1>
+                <p class="brand-description">Uma plataforma única para organizar, monitorar e controlar o fluxo de mercadorias da sua operação.</p>
+
+                <div class="performance-chart" aria-hidden="true">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+            </div>
+
+            <p class="brand-footer">© 2026 SQUAD Controle de Estoque. Todos os direitos reservados.</p>
         </section>
 
-        <section class="login-content" aria-labelledby="login-title">
-            <div class="login-panel">
-                <h1 id="login-title">Acesse sua conta</h1>
-                <p class="login-subtitle">Informe seu e-mail e sua senha para continuar.</p>
+        <section class="login-panel" aria-labelledby="login-title">
+            <div class="login-card">
+                <div class="card-logo" aria-hidden="true">
+                    <div class="logo-plate">
+                        <svg viewBox="150 30 380 250" xmlns="http://www.w3.org/2000/svg">
+                            <g transform="translate(340,105)">
+                                <path d="M0 -55 L48 -38 L48 5 C48 40 24 62 0 70 C-24 62 -48 40 -48 5 L-48 -38 Z" fill="#0C2A4A" />
+                                <rect x="-22" y="0" width="12" height="28" rx="2" fill="#E6F1FB" />
+                                <rect x="-6" y="-14" width="12" height="42" rx="2" fill="#E6F1FB" />
+                                <rect x="10" y="-26" width="12" height="54" rx="2" fill="#E6F1FB" />
+                            </g>
+                            <text x="340" y="230" text-anchor="middle" font-family="Sora, sans-serif" font-size="64" font-weight="500" fill="#0C2A4A" letter-spacing="6">SQUAD</text>
+                            <text x="340" y="260" text-anchor="middle" font-family="Inter, sans-serif" font-size="16" fill="#5F5E5A" letter-spacing="4">CONTROLE DE ESTOQUE</text>
+                            <line x1="230" y1="272" x2="450" y2="272" stroke="#0C2A4A" stroke-width="1.5" />
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="card-heading">
+                    <h2 id="login-title">Acesse sua conta</h2>
+                </div>
 
                 <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" novalidate>
                     <div asp-validation-summary="ModelOnly" class="login-alert" role="alert"></div>
 
-                    <div class="login-field">
-                        <label asp-for="Email">E-mail</label>
-                        <input asp-for="Email" type="email" autocomplete="username" placeholder="nome@loja.com.br" autofocus />
-                        <span asp-validation-for="Email" class="login-validation"></span>
-                    </div>
-
-                    <div class="login-field">
-                        <label asp-for="Senha">Senha</label>
-                        <div class="login-password">
-                            <input asp-for="Senha" autocomplete="current-password" placeholder="Digite sua senha" />
-                            <button id="toggle-password" class="login-password-toggle" type="button" aria-controls="Senha" aria-pressed="false">Mostrar</button>
+                    <div class="field">
+                        <label asp-for="Email">E-mail corporativo</label>
+                        <div class="field-input">
+                            <input asp-for="Email" type="email" placeholder="voce@empresa.com.br" autocomplete="username" autofocus />
                         </div>
-                        <span asp-validation-for="Senha" class="login-validation"></span>
+                        <span asp-validation-for="Email" class="field-validation"></span>
                     </div>
 
-                    <button class="login-submit" type="submit">Entrar</button>
+                    <div class="field">
+                        <label asp-for="Senha">Senha</label>
+                        <div class="field-input">
+                            <input asp-for="Senha" placeholder="Digite sua senha" autocomplete="current-password" />
+                            <button type="button" class="toggle-visibility" id="toggle-password" aria-controls="Senha" aria-label="Mostrar senha" aria-pressed="false">
+                                <svg id="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7Z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                            </button>
+                        </div>
+                        <span asp-validation-for="Senha" class="field-validation"></span>
+                    </div>
+
+                    <label class="remember">
+                        <input asp-for="LembrarMe" type="checkbox" />
+                        Lembrar de mim
+                    </label>
+
+                    <button type="submit" class="login-button">Entrar</button>
                 </form>
+
+                <p class="card-footer">Não tem uma conta? <span>Fale com o administrador do sistema</span></p>
             </div>
         </section>
     </main>
@@ -56,16 +113,20 @@
     <partial name="_ValidationScriptsPartial" />
     <script>
         (() => {
+            const button = document.getElementById("toggle-password");
             const password = document.getElementById("Senha");
-            const toggle = document.getElementById("toggle-password");
+            const icon = document.getElementById("eye-icon");
+            if (!button || !password || !icon) return;
 
-            if (!password || !toggle) return;
+            const eyeOpen = '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7Z"></path><circle cx="12" cy="12" r="3"></circle>';
+            const eyeClosed = '<path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a21.6 21.6 0 0 1 5.06-6.06M9.9 4.24A10.6 10.6 0 0 1 12 4c7 0 11 7 11 7a21.6 21.6 0 0 1-2.61 3.66M14.12 14.12a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
 
-            toggle.addEventListener("click", () => {
-                const isVisible = password.type === "text";
-                password.type = isVisible ? "password" : "text";
-                toggle.textContent = isVisible ? "Mostrar" : "Ocultar";
-                toggle.setAttribute("aria-pressed", String(!isVisible));
+            button.addEventListener("click", () => {
+                const willShow = password.type === "password";
+                password.type = willShow ? "text" : "password";
+                icon.innerHTML = willShow ? eyeClosed : eyeOpen;
+                button.setAttribute("aria-label", willShow ? "Ocultar senha" : "Mostrar senha");
+                button.setAttribute("aria-pressed", String(willShow));
             });
         })();
     </script>

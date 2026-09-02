@@ -5,7 +5,7 @@ Esta pasta reúne as referências visuais e navegáveis das interfaces do MVP, s
 ## Demonstração
 
 - [Abrir fluxo pelo login compartilhado](login.html)
-- [Abrir no GitHub Pages](https://codewitch00.github.io/SQUAD-estoque/docs/05-ux/prototipos/login.html)
+- [Abrir no GitHub Pages](https://codewitch00.github.io/SQUAD-estoque/)
 - [Visualizar sem GitHub Pages](https://html-preview.github.io/?url=https://raw.githubusercontent.com/CodeWitch00/SQUAD-estoque/main/docs/05-ux/prototipos/login.html)
 
 Para navegar pelo protótipo, use `vendedor@squad.com` ou `lojista@squad.com` com qualquer senha preenchida.
@@ -21,10 +21,10 @@ Para navegar pelo protótipo, use `vendedor@squad.com` ou `lojista@squad.com` co
 1. Envie estes arquivos para a branch `main` do repositório no GitHub.
 2. No repositório, abra **Settings → Pages**.
 3. Em **Build and deployment**, selecione **Deploy from a branch**.
-4. Selecione a branch **main**, a pasta **/(root)** e clique em **Save**.
+4. Selecione a branch **main**, a pasta **/docs** e clique em **Save**.
 5. Aguarde a publicação e abra o link do GitHub Pages indicado acima.
 
-Os caminhos entre as páginas são relativos. Por isso, o login continuará funcionando mesmo que o protótipo do vendedor seja atualizado, desde que seu nome e sua pasta permaneçam `vendedor/prototipo-vendedor.html`.
+O arquivo `docs/index.html` abre automaticamente o login compartilhado. Os caminhos entre as páginas são relativos. Por isso, o fluxo continuará funcionando mesmo que o conteúdo do protótipo do vendedor seja atualizado, desde que seu nome e sua pasta permaneçam `vendedor/prototipo-vendedor.html`.
 
 ## Convenções
 

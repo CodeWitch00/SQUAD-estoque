@@ -25,7 +25,7 @@ public class AccountController : Controller
     {
         if (User.Identity?.IsAuthenticated == true)
         {
-            return RedirectToAction("Index", "Home");
+            return RedirectAuthenticatedUser();
         }
 
         ViewData["ReturnUrl"] = returnUrl;
@@ -64,7 +64,7 @@ public class AccountController : Controller
 
         var authProperties = new AuthenticationProperties
         {
-            IsPersistent = true,
+            IsPersistent = model.LembrarMe,
             ExpiresUtc = DateTimeOffset.UtcNow.AddHours(12)
         };
 
@@ -78,7 +78,12 @@ public class AccountController : Controller
             return Redirect(returnUrl);
         }
 
-        return RedirectToAction("Index", "Home");
+        return usuario.Perfil switch
+        {
+            PerfilUsuario.VENDEDOR => RedirectToAction("Consulta", "Estoque"),
+            PerfilUsuario.LOJISTA => RedirectToAction("Index", "Produtos"),
+            _ => RedirectToAction("AccessDenied", "Account")
+        };
     }
 
     [HttpPost]
@@ -93,5 +98,20 @@ public class AccountController : Controller
     public IActionResult AccessDenied()
     {
         return View();
+    }
+
+    private IActionResult RedirectAuthenticatedUser()
+    {
+        if (User.IsInRole("VENDEDOR"))
+        {
+            return RedirectToAction("Consulta", "Estoque");
+        }
+
+        if (User.IsInRole("LOJISTA"))
+        {
+            return RedirectToAction("Index", "Produtos");
+        }
+
+        return RedirectToAction("AccessDenied", "Account");
     }
 }

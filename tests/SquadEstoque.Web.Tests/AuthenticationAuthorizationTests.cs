@@ -61,7 +61,7 @@ public sealed class AuthenticationAuthorizationTests : IClassFixture<SquadEstoqu
         var response = await client.GetAsync("/Account/Login");
 
         Assert.Equal(HttpStatusCode.Found, response.StatusCode);
-        Assert.Equal("/", response.Headers.Location?.OriginalString);
+        Assert.Equal("/Estoque/Consulta", response.Headers.Location?.OriginalString);
     }
 
     [Fact]
@@ -163,7 +163,10 @@ public sealed class AuthenticationAuthorizationTests : IClassFixture<SquadEstoqu
         var response = await client.PostAsync("/Account/Login", content);
 
         Assert.Equal(HttpStatusCode.Found, response.StatusCode);
-        Assert.Equal("/", response.Headers.Location?.OriginalString);
+        var expectedDestination = email == "vendedor@squad.com"
+            ? "/Estoque/Consulta"
+            : "/Produtos";
+        Assert.Equal(expectedDestination, response.Headers.Location?.OriginalString);
     }
 
     private static string ExtractAntiforgeryToken(string html)
