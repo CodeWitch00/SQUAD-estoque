@@ -1,6 +1,6 @@
 # Protótipos de interface
 
-Esta pasta reúne as referências visuais e navegáveis das interfaces do MVP, separadas por perfil de usuário.
+Referências visuais e navegáveis das interfaces do MVP.
 
 ## Demonstração
 
@@ -12,31 +12,19 @@ Para navegar pelo protótipo, use `vendedor@squad.com` ou `lojista@squad.com` co
 
 ## Arquivos
 
-- [Login compartilhado](login.html): autenticação e encaminhamento para o perfil identificado.
-- [Protótipo do vendedor](vendedor/prototipo-vendedor.html): experiência mobile de busca, consulta da grade e registro do resultado do atendimento.
-- [Protótipo do lojista](lojista/prototipo-lojista.html): experiência desktop/tablet para gestão de produtos, estoque e rupturas.
+- [Login compartilhado](login.html)
+- [Protótipo do vendedor](vendedor/prototipo-vendedor.html)
+- [Protótipo do lojista](lojista/prototipo-lojista.html)
 
-## Publicação no GitHub Pages
+O arquivo `docs/index.html` abre automaticamente o login compartilhado.
 
-1. Envie estes arquivos para a branch `main` do repositório no GitHub.
-2. No repositório, abra **Settings → Pages**.
-3. Em **Build and deployment**, selecione **Deploy from a branch**.
-4. Selecione a branch **main**, a pasta **/docs** e clique em **Save**.
-5. Aguarde a publicação e abra o link do GitHub Pages indicado acima.
+## Observações
 
-O arquivo `docs/index.html` abre automaticamente o login compartilhado. Os caminhos entre as páginas são relativos. Por isso, o fluxo continuará funcionando mesmo que o conteúdo do protótipo do vendedor seja atualizado, desde que seu nome e sua pasta permaneçam `vendedor/prototipo-vendedor.html`.
+- O fluxo depende dos caminhos relativos entre as páginas.
+- O protótipo do vendedor deve permanecer em `vendedor/prototipo-vendedor.html`.
+- Evidências e capturas ficam em [../evidencias/README.md](../evidencias/README.md).
 
-## Convenções
+## Referências
 
-- Os protótipos devem representar a interface proposta para a implementação.
-- Estados normal, vazio, carregando, sucesso e erro devem ser apresentados separadamente.
-- Os dois perfis devem compartilhar identidade visual, componentes e padrões de interação.
-- Requisitos e regras de negócio permanecem nos documentos oficiais; os protótipos não os substituem.
-- Evidências de revisão e capturas ficam em [`../evidencias`](../evidencias/README.md).
-
-## Fontes relacionadas
-
-- [Especificação dos componentes mobile](../S1-UX-010-especificacao-componentes-mobile.md)
 - [Inventário de telas e mapa de navegação](../inventario-telas-e-mapa-navegacao.md)
-- [Mapa de navegação do MVP](../mapa-navegacao-mvp.svg)
 - [Decisões de interface](../decisoes/decisoes-de-interface.md)

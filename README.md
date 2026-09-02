@@ -6,6 +6,13 @@ Tecnologias principais: ASP.NET Core MVC, .NET 10, Entity Framework Core, SQLite
 
 ---
 
+## Demonstração
+
+- Protótipo navegável: https://codewitch00.github.io/SQUAD-estoque/
+- Fluxos e arquivos de interface: [docs/05-ux/prototipos/README.md](docs/05-ux/prototipos/README.md)
+
+---
+
 ## 1. Para começar a desenvolver
 
 Siga esta ordem:
