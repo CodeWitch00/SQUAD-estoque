@@ -65,7 +65,17 @@ public class EstoqueController : Controller
                 Nome = produto.Nome,
                 Marca = produto.Marca,
                 Categoria = produto.Categoria,
-                Cor = produto.Cor
+                Cor = produto.Cor,
+                Skus = produto.Skus
+                    .Where(sku => sku.Ativo)
+                    .OrderBy(sku => sku.Numeracao)
+                    .Select(sku => new SkuConsultaResultadoViewModel
+                    {
+                        Id = sku.Id,
+                        Numeracao = sku.Numeracao,
+                        SaldoAtual = sku.SaldoAtual
+                    })
+                    .ToList()
             })
             .ToListAsync();
 
