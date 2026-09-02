@@ -30,7 +30,7 @@ Compilar, testar e revisar o próprio diff
 Abrir Pull Request
         |
         v
-GitHub Actions + revisão por outro integrante
+GitHub Actions + revisão e aprovação
         |
         v
 Corrigir, aprovar e fazer merge
@@ -107,7 +107,7 @@ Se o cartão estiver grande, divida-o antes de implementar. Não use um cartão 
 
 ---
 
-## 4. Atualizar a main e criar a branch
+## 4. Atualizar a main e usar a branch individual
 
 Execute a partir da raiz do repositório:
 
@@ -117,54 +117,19 @@ git switch main
 git pull --ff-only
 ```
 
-O primeiro comando deve estar limpo. Se houver alterações locais, não as descarte. Identifique a origem antes de trocar de branch.
+O primeiro comando deve estar limpo. Se houver alterações locais, não as descarte. Identifique a origem antes de trocar de branch. Cada integrante trabalha em sua branch individual: `dev/rayana`, `dev/felipe`, `dev/emmy` ou `dev/nicolas`. Separe pequenas atividades em commits e Pull Requests próprios e sincronize essa branch com a `main` depois de cada merge.
 
-### Padrão obrigatório
-
-```text
-tipo/sprint-categoria-identificador-integrante
-```
-
-Exemplos:
-
-```text
-feat/s1-be-001-felipe
-feat/s1-fe-002-emmy
-test/s1-qa-003-nicolas
-docs/s1-doc-004-rayana
-fix/s2-be-017-felipe
-```
-
-Tipos permitidos:
-
-| Tipo | Uso |
-| --- | --- |
-| `feat` | Funcionalidade nova. |
-| `fix` | Correção de comportamento. |
-| `test` | Teste ou melhoria de cobertura. |
-| `docs` | Documentação. |
-| `refactor` | Melhoria interna sem mudar comportamento. |
-| `chore` | Configuração ou manutenção técnica. |
-
-Categorias recomendadas:
-
-| Categoria | Uso |
-| --- | --- |
-| `be` | Backend, Controller, regra ou persistência. |
-| `fe` | Razor View, CSS, responsividade ou interação. |
-| `qa` | Testes e validações. |
-| `doc` | Documentação técnica ou acadêmica. |
-| `db` | Entidade, mapeamento ou migration aprovada. |
-| `ci` | Pipeline e automação. |
-| `ux` | Fluxo e usabilidade. |
-
-Criação da branch:
+Primeiro uso da branch individual, caso ela ainda não exista:
 
 ```bash
-git switch -c feat/s1-be-001-felipe
+git switch -c dev/felipe
 ```
 
-Use sempre letras minúsculas, números e hífens. O identificador deve corresponder ao cartão do Trello.
+Nos usos seguintes:
+
+```bash
+git switch dev/felipe
+```
 
 ---
 
@@ -437,7 +402,7 @@ Resultado entregue.
 
 ## 12. GitHub Actions
 
-O pipeline [dotnet.yml](../../.github/workflows/dotnet.yml) executa restore, build e testes em Pull Requests para a `main`.
+O pipeline [dotnet.yml](../../.github/workflows/dotnet.yml) executa restore, build e testes nos pushes das branches de atividade e nos Pull Requests para a `main`. Sua permissão é somente de leitura: o pipeline não envia commits e não realiza merge.
 
 Se o CI falhar:
 
@@ -482,7 +447,7 @@ O revisor deve verificar:
 
 Comentários devem ser objetivos e explicar o impacto. Diferencie bloqueio obrigatório de sugestão opcional.
 
-O autor deve responder, corrigir e solicitar nova revisão. O autor não aprova a própria entrega.
+O autor deve responder, corrigir e solicitar nova revisão. A integração ocorre somente após revisão e aprovação.
 
 ---
 
@@ -490,7 +455,7 @@ O autor deve responder, corrigir e solicitar nova revisão. O autor não aprova 
 
 Depois de aprovação e CI verde:
 
-1. faça o merge pelo GitHub;
+1. faça o merge pelo GitHub após revisão e aprovação;
 2. apague a branch remota quando o trabalho estiver integrado;
 3. atualize a `main` local;
 4. valide o resultado integrado;

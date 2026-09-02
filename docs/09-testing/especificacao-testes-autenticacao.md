@@ -51,7 +51,7 @@ indica comportamento especificado que ainda requer teste automatizado ou manual;
 | AUT-01 | RF-01, UC-01 | Usuário **anônimo** envia `GET /Account/Login`. | Resposta `200 OK`; formulário contém campos e-mail e senha, submissão `POST` e token antiforgery. | Existente |
 | AUT-02 | RF-01, UC-01 | `POST /Account/Login` com USR-LOJ-01 e token válido. | Credenciais são aceitas; é emitida sessão autenticada com perfil `LOJISTA`; resposta redireciona para `/`. | Existente |
 | AUT-03 | RF-01, RF-02, UC-01 | `POST /Account/Login` com USR-VEN-01 e token válido. | Credenciais são aceitas; é emitida sessão autenticada com perfil `VENDEDOR`; resposta redireciona para `/`. | Existente |
-| AUT-04 | RF-01, UC-01 | `POST /Account/Login` com USR-INV-01 e token válido. | Login é recusado; a página é reapresentada com mensagem genérica de credenciais inválidas; nenhuma sessão autenticada é criada e `/Produtos` continua redirecionando ao login. | Parcial — falta afirmar a mensagem e a limpeza do campo de senha. |
+| AUT-04 | RF-01, UC-01 | `POST /Account/Login` com USR-INV-01 e token válido. | Login é recusado; a página é reapresentada com mensagem genérica de credenciais inválidas; nenhuma sessão autenticada é criada e `/Produtos` continua redirecionando ao login. | Existente — inclui mensagem, ausência de sessão e senha não renderizada novamente. |
 | AUT-05 | RF-01, UC-01 | `POST /Account/Login` com `lojista@squad.com` e `senha-incorreta`. | Login é recusado sem informar se o e-mail existe; não é criada sessão autenticada. Conforme UC-01, o campo senha deve ser limpo. | Planejado |
 | AUT-06 | RF-01, UC-01 | `POST /Account/Login` com e-mail e senha vazios, com token válido. | O formulário apresenta os erros de obrigatoriedade; nenhuma sessão autenticada é criada. A validação de cliente pode impedir o envio, mas o servidor também deve rejeitar a entrada. | Planejado |
 | AUT-07 | RF-01, UC-01 | Usuário já autenticado requisita `GET /Account/Login`. | Redirecionamento para `/`; a página de login não é exibida novamente. | Existente |
@@ -60,13 +60,13 @@ indica comportamento especificado que ainda requer teste automatizado ou manual;
 | AUT-10 | RF-02 | `LOJISTA` autenticado solicita `GET /Produtos` e `GET /Movimentacoes`. | As duas rotas respondem `200 OK`, pois pertencem ao perfil `LOJISTA`. | Existente |
 | AUT-11 | RF-02 | `VENDEDOR` autenticado solicita `GET /Movimentacoes/Saida`. | Resposta `200 OK`, pois a rota permite `VENDEDOR` e `LOJISTA`. | Existente |
 | AUT-12 | RF-02 | `VENDEDOR` autenticado tenta acessar a rota proibida `GET /Produtos` diretamente. | Resposta `302` para `/Account/AccessDenied?ReturnUrl=%2FProdutos`; não retorna dados de produtos. | Existente |
-| AUT-13 | RF-02 | `VENDEDOR` autenticado tenta acessar `GET /Movimentacoes/Ajuste` e enviar um `POST /Movimentacoes/Ajuste` válido. | Ambos são negados. No `POST`, saldo e histórico de movimentações permanecem inalterados. | Planejado |
+| AUT-13 | RF-02 | `VENDEDOR` autenticado tenta acessar `GET /Movimentacoes/Ajuste` e enviar um `POST /Movimentacoes/Ajuste` válido. | Ambos são negados. No `POST`, saldo e histórico de movimentações permanecem inalterados. | Parcial — o POST é negado por `Vendedor_cannot_execute_administrative_post_endpoints`; falta afirmar GET e banco inalterado no mesmo caso. |
 | AUT-14 | RF-03 | Com o mesmo cliente HTTP e cookie, `VENDEDOR` autenticado solicita repetidamente `/Movimentacoes/Saida`. | Todas as requisições autorizadas respondem sem novo login; o perfil permanece `VENDEDOR` durante a sessão. | Parcial — a autorização de uma requisição está coberta; falta a sequência de requisições. |
 | AUT-15 | RF-03 | Com o mesmo cliente HTTP e cookie, `LOJISTA` autenticado navega por `/Produtos`, `/Movimentacoes` e `/Movimentacoes/Saida`. | As rotas permitidas respondem sem novo login; o perfil permanece `LOJISTA` durante a sessão. | Parcial — as rotas individuais estão cobertas; falta a jornada contínua. |
 | AUT-16 | RF-03 | `LOJISTA` autenticado envia `POST /Account/Logout` com token antiforgery e depois solicita `GET /Produtos`. | Logout redireciona para `/Account/Login`; a sessão anterior deixa de autenticar o cliente e `/Produtos` volta a redirecionar ao login. | Existente |
 | AUT-17 | RF-03 | Com relógio controlado, utilizar cookie após mais de 12 horas de validade. | A sessão expirada é recusada e uma rota protegida redireciona para login. | Planejado |
-| AUT-18 | RF-04, RNF-04 | Inspecionar `SenhaHash` persistido para USR-LOJ-01 e USR-VEN-01. | Nenhum valor é a senha em claro; cada valor é um hash bcrypt válido com fator de custo igual ou superior a 12. | Planejado |
-| AUT-19 | RF-04, RNF-04 | Validar a senha `123` e a senha `senha-incorreta` contra o hash armazenado. | A senha correta é validada; a incorreta é rejeitada; a tentativa não altera o hash persistido. | Planejado |
+| AUT-18 | RF-04, RNF-04 | Inspecionar `SenhaHash` persistido para USR-LOJ-01 e USR-VEN-01. | Nenhum valor é a senha em claro; cada valor é um hash bcrypt válido com fator de custo igual ou superior a 12. | Existente |
+| AUT-19 | RF-04, RNF-04 | Validar a senha `123` e a senha `senha-incorreta` contra o hash armazenado. | A senha correta é validada; a incorreta é rejeitada; a tentativa não altera o hash persistido. | Existente |
 
 ## 4. Referência aos testes automatizados existentes
 
@@ -83,13 +83,17 @@ planejados devem ampliar a suíte sem copiar os mesmos fluxos.
 | `AuthenticationAuthorizationTests.cs` | `Vendedor_can_access_saida` | AUT-11 |
 | `AuthenticationAuthorizationTests.cs` | `Vendedor_is_redirected_to_access_denied_for_produtos` | AUT-12 |
 | `AuthenticationAuthorizationTests.cs` | `Invalid_credentials_do_not_authenticate` | AUT-04 e parte de AUT-09 |
+| `AuthenticationAuthorizationTests.cs` | `Invalid_login_does_not_render_submitted_password` | AUT-04 |
+| `AuthenticationAuthorizationTests.cs` | `Seeded_users_use_bcrypt_with_work_factor_12` | AUT-18 e AUT-19 |
 | `AuthenticationAuthorizationTests.cs` | `Logout_clears_authentication_session` | AUT-16 |
+| `AdministrativeHttpTests.cs` | `Vendedor_cannot_execute_administrative_post_endpoints` | Parte de AUT-13 e autorização de todos os POSTs administrativos |
+| `AdministrativeHttpTests.cs` | `Anonymous_user_cannot_execute_protected_post_endpoints` | Proteção anônima dos POSTs de produto e movimentação |
 
 ## 5. Critérios de aceite e observações
 
 - Todos os casos **Existente** devem continuar verdes na integração contínua.
 - Casos **Planejado** são necessários para declarar cobertura completa dos requisitos
-  indicados; em especial AUT-05, AUT-06, AUT-13 e AUT-18.
+  indicados; em especial AUT-05, AUT-06 e a parte restante de AUT-13.
 - O UC-01 prevê uma tela inicial correspondente a cada perfil. A implementação atual
   redireciona tanto `LOJISTA` quanto `VENDEDOR` para `/`; por isso, AUT-02 e AUT-03
   registram o comportamento atual, e não uma tela exclusiva por perfil. A definição

@@ -233,26 +233,22 @@ Cartão em A Fazer
   -> baby steps e testes
   -> Pull Request
   -> GitHub Actions
-  -> revisão por outro integrante
+  -> revisão e aprovação
   -> merge na main
   -> validação integrada
   -> cartão em Feito
 ```
 
-Padrão de branch:
+Branches individuais:
 
 ```text
-tipo/sprint-categoria-identificador-integrante
+dev/rayana
+dev/felipe
+dev/emmy
+dev/nicolas
 ```
 
-Exemplos:
-
-```text
-feat/s1-be-001-felipe
-feat/s1-fe-002-emmy
-test/s1-qa-003-nicolas
-docs/s1-doc-004-rayana
-```
+Cada pequena atividade deve ser enviada em commit e Pull Request separados. A integração na `main` ocorre somente após revisão e aprovação.
 
 As instruções completas estão no [CONTRIBUTING.md](CONTRIBUTING.md) e no [guia XP](docs/07-operacional/guia-fluxo-desenvolvimento-xp.md).
 
