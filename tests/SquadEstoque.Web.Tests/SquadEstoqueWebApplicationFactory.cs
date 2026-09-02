@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,9 @@ public sealed class SquadEstoqueWebApplicationFactory : WebApplicationFactory<Pr
 
         builder.ConfigureServices(services =>
         {
+            services.AddDataProtection()
+                .UseEphemeralDataProtectionProvider();
+
             services.RemoveAll<DbContextOptions<EstoqueContext>>();
             services.RemoveAll<EstoqueContext>();
             services.RemoveAll<DbContextOptions<LegacyMovieContext>>();
