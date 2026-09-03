@@ -21,6 +21,104 @@ body {
   margin-bottom: 60px;
 }
 
+.seller-layout {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  color: #17202a;
+  background: #f5f6f8;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.seller-navbar {
+  position: sticky;
+  z-index: 10;
+  top: 0;
+  min-height: 68px;
+  border-bottom: 1px solid #d9dee7;
+  background: #fff;
+}
+
+.seller-navbar-inner {
+  width: min(100%, 960px);
+  min-height: 68px;
+  margin: 0 auto;
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.seller-brand,
+.seller-navbar-actions {
+  display: flex;
+  align-items: center;
+}
+
+.seller-brand {
+  min-width: 0;
+  gap: 10px;
+  color: #172b4d;
+  font-size: 0.9375rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.seller-brand:hover {
+  color: #172b4d;
+}
+
+.seller-brand-mark {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  color: #fff;
+  background: #243b53;
+  font-size: 0.75rem;
+}
+
+.seller-navbar-actions {
+  gap: 8px;
+}
+
+.seller-navbar-actions form {
+  margin: 0;
+}
+
+.seller-nav-link,
+.seller-logout {
+  min-height: 44px;
+  padding: 10px 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.seller-nav-link {
+  color: #243b53;
+  background: #eef2f6;
+  text-decoration: none;
+}
+
+.seller-logout {
+  border: 1px solid #b7c0cc;
+  color: #344054;
+  background: #fff;
+}
+
+.seller-main {
+  width: min(100%, 800px);
+  margin: 0 auto;
+  padding: 30px 18px 48px;
+}
+
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
   color: var(--bs-secondary-color);
   text-align: end;
@@ -36,26 +134,74 @@ body {
   padding-bottom: 2rem;
 }
 
+.consulta-cabecalho {
+  margin-bottom: 24px;
+}
+
 .consulta-saudacao {
-  color: #607080;
+  margin: 0 0 5px;
+  color: #243b53;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.consulta-cabecalho h1 {
+  margin: 0;
+  color: #17202a;
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.consulta-cabecalho > p:last-child {
+  margin: 8px 0 0;
+  color: #667085;
   font-size: 0.875rem;
+  line-height: 1.5;
 }
 
 .consulta-painel {
-  padding: clamp(1rem, 3vw, 1.5rem);
-  border: 1px solid #d6e0e6;
-  border-radius: 1.125rem;
-  background: #f4f7f9;
+  padding: 18px;
+  border: 1px solid #d9dee7;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.consulta-painel h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.consulta-ajuda {
+  margin: 4px 0 0;
+  color: #667085;
+  font-size: 0.75rem;
 }
 
 .consulta-campo,
 .consulta-botao {
   min-height: 50px;
-  border-radius: 0.8125rem;
+  border-radius: 8px;
 }
 
 .consulta-botao {
   width: 100%;
+  border: 1px solid #243b53;
+  color: #fff;
+  background: #243b53;
+  font-size: 0.875rem;
+  font-weight: 750;
+}
+
+.consulta-botao:hover,
+.consulta-botao:focus {
+  border-color: #172b4d;
+  color: #fff;
+  background: #172b4d;
 }
 
 .consulta-aviso {
@@ -66,9 +212,9 @@ body {
 .consulta-grade {
   padding: clamp(1rem, 3vw, 1.5rem);
   border: 1px solid #c9d8e0;
-  border-radius: 1.125rem;
+  border-radius: 8px;
   background: #fff;
-  box-shadow: 0 0.5rem 1.5rem rgba(15, 45, 61, 0.08);
+  box-shadow: none;
 }
 
 .consulta-grade-cabecalho {
@@ -80,17 +226,17 @@ body {
 }
 
 .consulta-grade-etapa {
-  color: #155d78;
+  color: #243b53;
   font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
 .consulta-grade-contagem {
   flex: 0 0 auto;
   padding: 0.375rem 0.625rem;
-  border-radius: 999px;
+  border-radius: 8px;
   color: #334c5a;
   background: #eaf0f3;
   font-size: 0.75rem;
@@ -111,7 +257,7 @@ body {
   min-height: 142px;
   padding: 0.875rem;
   border: 2px solid #80909a;
-  border-radius: 0.875rem;
+  border-radius: 8px;
   display: grid;
   grid-template-rows: auto 1fr auto;
   gap: 0.375rem;
@@ -144,7 +290,7 @@ body {
   gap: 0.4375rem;
   color: #263842;
   font-size: 0.75rem;
-  letter-spacing: 0.025em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
@@ -194,6 +340,24 @@ body {
   text-align: center;
 }
 
+.consulta-grade-cabecalho h2,
+.consulta-estado h2,
+#titulo-resultados {
+  margin: 0;
+  color: #17202a;
+  font-size: 1.125rem;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.consulta-produto-meta,
+.consulta-estado p,
+.consulta-resultados-contagem {
+  margin: 4px 0 0;
+  color: #667085;
+  font-size: 0.8125rem;
+}
+
 .consulta-estado {
   min-height: 220px;
   padding: 2rem 1rem;
@@ -230,7 +394,7 @@ body {
   min-height: 76px;
   padding: 0.875rem;
   border: 1px solid #d6e0e6;
-  border-radius: 1rem;
+  border-radius: 8px;
   display: grid;
   grid-template-columns: 48px minmax(0, 1fr) auto;
   align-items: center;
@@ -306,6 +470,19 @@ body {
 }
 
 @media (max-width: 420px) {
+  .seller-navbar-inner {
+    padding-inline: 14px;
+  }
+
+  .seller-brand > span:last-child,
+  .seller-nav-link {
+    display: none;
+  }
+
+  .seller-main {
+    padding: 24px 14px 40px;
+  }
+
   .consulta-vendedor {
     width: 100%;
   }
