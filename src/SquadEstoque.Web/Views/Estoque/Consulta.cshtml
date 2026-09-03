@@ -7,17 +7,17 @@
 }
 
 <div class="consulta-vendedor mx-auto">
-    <header class="consulta-cabecalho mb-4">
-        <p class="consulta-saudacao mb-1">Olá, @User.Identity?.Name</p>
-        <h1 class="h2 mb-2">Consulta rápida</h1>
-        <p class="text-body-secondary mb-0">Encontre o produto enquanto atende o cliente.</p>
+    <header class="consulta-cabecalho">
+        <p class="consulta-saudacao">Consulta rápida</p>
+        <h1>Qual modelo o cliente procura?</h1>
+        <p>Digite o nome ou parte do nome para consultar o estoque.</p>
     </header>
 
     <section class="consulta-painel mb-4" aria-labelledby="titulo-busca">
         <div class="mb-3">
-            <h2 id="titulo-busca" class="h4 mb-1">O que o cliente procura?</h2>
-            <p id="ajuda-busca" class="text-body-secondary small mb-0">
-                Busque por modelo, marca, categoria ou cor.
+            <h2 id="titulo-busca">Buscar modelo</h2>
+            <p id="ajuda-busca" class="consulta-ajuda">
+                A busca exige pelo menos dois caracteres.
             </p>
         </div>
 
@@ -32,47 +32,89 @@
                        autocomplete="off"
                        enterkeyhint="search"
                        aria-describedby="ajuda-busca erro-busca"
-                       placeholder="Ex.: Tênis Urbano"
+                       placeholder="Buscar modelo..."
                        autofocus />
                 <span asp-validation-for="Termo" id="erro-busca" class="text-danger small d-block mt-2" role="alert"></span>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-lg consulta-botao">
-                Buscar estoque
+            <button type="submit" class="btn consulta-botao">
+                Buscar
             </button>
         </form>
     </section>
 
     @if (produtoSelecionado is not null)
     {
-        <div class="alert alert-success consulta-aviso" role="status" aria-live="polite">
-            <strong>@produtoSelecionado.Nome selecionado.</strong>
-            <span class="d-block small">Produto pronto para continuar o atendimento.</span>
-        </div>
+        <section class="consulta-grade mb-4" aria-labelledby="titulo-grade">
+            <header class="consulta-grade-cabecalho">
+                <div>
+                    <p class="consulta-grade-etapa mb-1">Grade disponível</p>
+                    <h2 id="titulo-grade">@produtoSelecionado.Nome</h2>
+                    <p class="visually-hidden" role="status" aria-live="polite">
+                        @produtoSelecionado.Nome selecionado.
+                    </p>
+                    <p class="consulta-produto-meta">
+                        @produtoSelecionado.Marca · @produtoSelecionado.Categoria · @produtoSelecionado.Cor
+                    </p>
+                </div>
+                <span class="consulta-grade-contagem">
+                    @produtoSelecionado.Skus.Count @(produtoSelecionado.Skus.Count == 1 ? "numeração" : "numerações")
+                </span>
+            </header>
+
+            @if (produtoSelecionado.Skus.Count == 0)
+            {
+                <p class="consulta-grade-vazia mb-0" role="status">
+                    Nenhuma numeração ativa cadastrada para este produto.
+                </p>
+            }
+            else
+            {
+                <ul class="consulta-grade-lista" aria-label="Grade completa de numerações">
+                    @foreach (var sku in produtoSelecionado.Skus)
+                    {
+                        <li class="consulta-grade-item consulta-grade-item--@sku.ClasseDisponibilidade"
+                            aria-label="Tamanho @sku.Numeracao, saldo @sku.SaldoAtual, @sku.EstadoDisponibilidade">
+                            <span class="consulta-grade-numero">
+                                <span class="consulta-grade-prefixo">Nº</span>
+                                @sku.Numeracao
+                            </span>
+                            <span class="consulta-grade-saldo">
+                                @sku.SaldoAtual @(sku.SaldoAtual == 1 ? "par" : "pares")
+                            </span>
+                            <strong class="consulta-grade-estado">
+                                <span class="consulta-grade-marcador" aria-hidden="true"></span>
+                                @sku.EstadoDisponibilidade
+                            </strong>
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
     }
 
     @if (!buscaExecutada)
     {
         <section class="consulta-estado" aria-labelledby="titulo-estado-inicial">
             <div class="consulta-estado-icone" aria-hidden="true">⌕</div>
-            <h2 id="titulo-estado-inicial" class="h5">Pronto para consultar</h2>
-            <p class="text-body-secondary mb-0">Digite ao menos dois caracteres para começar.</p>
+            <h2 id="titulo-estado-inicial">Pronto para consultar</h2>
+            <p>Digite ao menos dois caracteres para começar.</p>
         </section>
     }
     else if (Model.Resultados.Count == 0)
     {
         <section class="consulta-estado" aria-labelledby="titulo-sem-resultado" aria-live="polite">
             <div class="consulta-estado-icone" aria-hidden="true">!</div>
-            <h2 id="titulo-sem-resultado" class="h5">@Model.MensagemEstado</h2>
-            <p class="text-body-secondary mb-0">Revise o termo ou faça uma nova busca.</p>
+            <h2 id="titulo-sem-resultado">@Model.MensagemEstado</h2>
+            <p>Revise o termo ou faça uma nova busca.</p>
         </section>
     }
     else
     {
         <section aria-labelledby="titulo-resultados">
             <div class="d-flex flex-wrap align-items-baseline justify-content-between gap-2 mb-3">
-                <h2 id="titulo-resultados" class="h4 mb-0">Resultados</h2>
-                <p class="text-body-secondary small mb-0" aria-live="polite">
+                <h2 id="titulo-resultados">Resultados</h2>
+                <p class="consulta-resultados-contagem" aria-live="polite">
                     @Model.Resultados.Count @(Model.Resultados.Count == 1 ? "produto encontrado" : "produtos encontrados")
                 </p>
             </div>

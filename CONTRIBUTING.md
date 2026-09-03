@@ -16,8 +16,8 @@ Antes de desenvolver:
 7. implemente em pequenos passos;
 8. compile, teste e revise a alteração;
 9. abra um Pull Request;
-10. aguarde CI verde e revisão por outro integrante;
-11. faça o merge somente depois da aprovação;
+10. aguarde CI verde e revisão;
+11. aguarde o merge após a aprovação;
 12. atualize o cartão e suas evidências.
 
 Não implemente funcionalidades sem cartão compreendido e requisito verificável. Em caso de dúvida ou conflito entre cartão, documentação e código, pare e registre a divergência antes de continuar.
@@ -27,7 +27,7 @@ Não implemente funcionalidades sem cartão compreendido e requisito verificáve
 ## 2. Regras essenciais
 
 - Não trabalhar diretamente na `main`.
-- Não fazer merge de código sem Pull Request e revisão de outro integrante.
+- Não fazer push ou merge direto na `main`; toda integração deve ocorrer por Pull Request revisado e aprovado.
 - Não misturar funcionalidades independentes na mesma branch.
 - Não ampliar o escopo do cartão durante a implementação sem alinhamento.
 - Não introduzir arquitetura, dependência ou tecnologia nova sem decisão da equipe.
@@ -214,36 +214,20 @@ git pull --ff-only
 
 Não inicie uma tarefa a partir de uma branch antiga ou de outra funcionalidade.
 
-### 5.2 Criar uma branch
+### 5.2 Usar a branch individual
 
 ```bash
-git switch -c feat/s1-be-001-felipe
+git switch dev/felipe
 ```
 
-Padrão obrigatório:
+Cada integrante trabalha em sua branch individual e envia pequenas atividades em commits e Pull Requests separados:
 
-```text
-tipo/sprint-categoria-identificador-integrante
-```
+- `dev/rayana`;
+- `dev/felipe`;
+- `dev/emmy`;
+- `dev/nicolas`.
 
-Prefixos permitidos:
-
-| Prefixo | Uso |
-| --- | --- |
-| `feat/` | Nova funcionalidade. |
-| `fix/` | Correção de comportamento. |
-| `test/` | Inclusão ou melhoria de testes. |
-| `docs/` | Alteração somente documental. |
-| `refactor/` | Melhoria interna sem mudar comportamento. |
-| `chore/` | Manutenção, configuração ou governança técnica. |
-
-Use letras minúsculas, números e hífens. O identificador deve corresponder ao cartão do Trello. Exemplos:
-
-- `feat/s1-be-001-felipe`;
-- `feat/s1-fe-002-emmy`;
-- `test/s1-qa-003-nicolas`;
-- `docs/s1-doc-004-rayana`;
-- `fix/s2-be-017-felipe`.
+Depois de cada merge, sincronize a branch individual com a `main` antes de iniciar a próxima atividade. Não acumule cartões independentes no mesmo Pull Request.
 
 ### 5.3 Commits
 
@@ -462,7 +446,7 @@ Se `dotnet ef` não estiver disponível, registre o impedimento e alinhe a insta
 
 ---
 
-## 12. Pull Request e revisão por pares
+## 12. Pull Request, revisão e merge
 
 Todo Pull Request deve informar:
 
@@ -493,7 +477,7 @@ Todo Pull Request deve informar:
 - solicitar correções de maneira clara;
 - aprovar somente quando a entrega estiver pronta.
 
-O autor não deve ser o único revisor da própria entrega.
+O autor revisa o próprio diff antes de abrir o Pull Request e aguarda a revisão e a integração da entrega.
 
 ---
 
@@ -526,7 +510,7 @@ Uma entrega está concluída quando:
 - [ ] a validação manual aplicável foi registrada;
 - [ ] não há segredos, bancos ou artefatos locais no diff;
 - [ ] documentação e requisitos foram atualizados, quando necessário;
-- [ ] o Pull Request foi revisado por outro integrante;
+- [ ] o Pull Request foi revisado e aprovado;
 - [ ] o GitHub Actions está verde;
 - [ ] o merge foi feito na `main`;
 - [ ] a entrega foi conferida após o merge;

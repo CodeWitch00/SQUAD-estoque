@@ -71,7 +71,7 @@ equivalem a uma auditoria completa ou teste de invasão.
 
 | ID | Requisitos | Entradas e procedimento | Resultado esperado | Situação |
 |---|---|---|---|---|
-| NFT-SEG-01 | RF-04, RNF-04 | Inspecionar `SenhaHash` dos usuários de teste e validar a senha correta e uma incorreta usando BCrypt. | A senha não aparece em texto plano; o hash é bcrypt válido; o fator de custo é ≥ 12; somente a senha correta é aceita. | Planejado — a massa de teste já cria hashes com custo 12, mas ainda não há asserção específica. |
+| NFT-SEG-01 | RF-04, RNF-04 | Inspecionar `SenhaHash` dos usuários de teste e validar a senha correta e uma incorreta usando BCrypt. | A senha não aparece em texto plano; o hash é bcrypt válido; o fator de custo é ≥ 12; somente a senha correta é aceita. | Existente — `Seeded_users_use_bcrypt_with_work_factor_12`. |
 | NFT-SEG-02 | RF-01, RF-02 | Enviar credenciais inválidas, depois solicitar uma rota protegida; executar também tentativa de `VENDEDOR` em `/Produtos`. | Credenciais inválidas não criam sessão; anônimo é redirecionado ao login; `VENDEDOR` é redirecionado a acesso negado e não recebe dados protegidos. | Existente — consultar `AuthenticationAuthorizationTests.cs`; detalhamento em `AUT-04`, `AUT-09` e `AUT-12`. |
 | NFT-SEG-03 | RF-01, RF-03 | Enviar `POST /Account/Login` e `POST /Account/Logout` sem token antiforgery ou com token inválido. | A operação é rejeitada; não autentica nem encerra uma sessão válida por requisição forjada. | Planejado |
 | NFT-SEG-04 | RF-01 | Autenticar com `ReturnUrl` local (`/Produtos`) e, em execução separada, com URL externa (`https://exemplo.test`). | O destino local é aceito; URL externa é ignorada e o usuário segue ao destino padrão. | Planejado |
@@ -83,8 +83,8 @@ equivalem a uma auditoria completa ou teste de invasão.
 O arquivo
 [`AuthenticationAuthorizationTests.cs`](../../tests/SquadEstoque.Web.Tests/AuthenticationAuthorizationTests.cs)
 já cobre o formulário de login, credenciais inválidas, autorização de `LOJISTA` e
-`VENDEDOR`, rota proibida e logout. Ele é referência para NFT-SEG-02 e parte de
-NFT-SEG-06, sem duplicar seus cenários.
+`VENDEDOR`, rota proibida, política BCrypt e logout. Ele é referência para
+NFT-SEG-01, NFT-SEG-02 e parte de NFT-SEG-06, sem duplicar seus cenários.
 
 Para liberar uma versão que altere essas áreas:
 
