@@ -6,9 +6,10 @@ using SquadEstoque.Web.Models;
 
 namespace SquadEstoque.Web.Controllers;
 
-[Authorize(Roles = "LOJISTA,VENDEDOR")]
+[Authorize(Roles = "VENDEDOR")]
 public sealed class EstoqueController : Controller
 {
+    private const int MinimumSearchLength = 2;
     private readonly EstoqueContext _context;
 
     public EstoqueController(EstoqueContext context)
@@ -21,26 +22,38 @@ public sealed class EstoqueController : Controller
     {
         var model = new ConsultaEstoqueViewModel { Termo = termo?.Trim() ?? string.Empty };
 
-        if (!string.IsNullOrWhiteSpace(model.Termo))
+        if (string.IsNullOrWhiteSpace(model.Termo))
         {
-            model.Resultados = await _context.Produto
-                .AsNoTracking()
-                .Where(p => p.Ativo && p.Nome.Contains(model.Termo))
-                .OrderBy(p => p.Nome)
-                .Select(p => new ProdutoConsultaResultadoViewModel
-                {
-                    Id = p.Id,
-                    Nome = p.Nome,
-                    Marca = p.Marca,
-                    Categoria = p.Categoria,
-                    Cor = p.Cor
-                })
-                .ToListAsync();
+            return View(model);
+        }
 
-            if (model.Resultados.Count == 0)
+        if (model.Termo.Length < MinimumSearchLength)
+        {
+            model.MensagemEstado = "Informe ao menos 2 caracteres para consultar.";
+            return View(model);
+        }
+
+        model.Resultados = await _context.Produto
+            .AsNoTracking()
+            .Where(p => p.Ativo &&
+                (p.Nome.Contains(model.Termo) ||
+                 p.Marca.Contains(model.Termo) ||
+                 p.Categoria.Contains(model.Termo) ||
+                 p.Cor.Contains(model.Termo)))
+            .OrderBy(p => p.Nome)
+            .Select(p => new ProdutoConsultaResultadoViewModel
             {
-                model.MensagemEstado = "Nenhum produto ativo foi encontrado.";
-            }
+                Id = p.Id,
+                Nome = p.Nome,
+                Marca = p.Marca,
+                Categoria = p.Categoria,
+                Cor = p.Cor
+            })
+            .ToListAsync();
+
+        if (model.Resultados.Count == 0)
+        {
+            model.MensagemEstado = "Produto não encontrado.";
         }
 
         return View(model);
