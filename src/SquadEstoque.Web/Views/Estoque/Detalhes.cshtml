@@ -1,0 +1,35 @@
+@model SquadEstoque.Web.Models.EstoqueProdutoDetalhesViewModel
+
+@{
+    ViewData["Title"] = "Grade do produto";
+}
+
+<div class="container py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <span class="text-muted small">Consulta operacional</span>
+            <h1 class="h3 mb-0">@Model.Nome</h1>
+        </div>
+        <a asp-action="Consulta" class="btn btn-outline-secondary">Nova consulta</a>
+    </div>
+
+    @if (Model.Skus.Count == 0)
+    {
+        <div class="alert alert-info" role="status">Este modelo ainda não possui numerações cadastradas.</div>
+    }
+    else
+    {
+        <div class="row row-cols-2 row-cols-md-4 g-3" aria-label="Grade de numerações">
+            @foreach (var sku in Model.Skus)
+            {
+                var estado = sku.SaldoAtual > 1 ? "Disponível" : sku.SaldoAtual == 1 ? "Último par" : "Indisponível";
+                var classeEstado = sku.SaldoAtual > 1 ? "text-bg-success" : sku.SaldoAtual == 1 ? "text-bg-warning" : "text-bg-secondary";
+                <div class="col"><div class="card h-100 shadow-sm"><div class="card-body">
+                    <h2 class="h5 mb-2">Nº @sku.Numeracao</h2>
+                    <p class="mb-2"><strong>@sku.SaldoAtual</strong> @(sku.SaldoAtual == 1 ? "par" : "pares")</p>
+                    <span class="badge @classeEstado">@estado</span>
+                </div></div></div>
+            }
+        </div>
+    }
+</div>
