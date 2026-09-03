@@ -49,12 +49,13 @@ indica comportamento especificado que ainda requer teste automatizado ou manual;
 | ID | Requisitos | Cenário e entradas | Resultado esperado | Situação |
 |---|---|---|---|---|
 | AUT-01 | RF-01, UC-01 | Usuário **anônimo** envia `GET /Account/Login`. | Resposta `200 OK`; formulário contém campos e-mail e senha, submissão `POST` e token antiforgery. | Existente |
-| AUT-02 | RF-01, UC-01 | `POST /Account/Login` com USR-LOJ-01 e token válido. | Credenciais são aceitas; é emitida sessão autenticada com perfil `LOJISTA`; resposta redireciona para `/`. | Existente |
-| AUT-03 | RF-01, RF-02, UC-01 | `POST /Account/Login` com USR-VEN-01 e token válido. | Credenciais são aceitas; é emitida sessão autenticada com perfil `VENDEDOR`; resposta redireciona para `/`. | Existente |
+| AUT-02 | RF-01, RF-02, UC-01 | `POST /Account/Login` com USR-LOJ-01 e token válido. | Credenciais são aceitas; é emitida sessão autenticada com perfil `LOJISTA`; resposta redireciona para `/Produtos`. | Existente |
+| AUT-03 | RF-01, RF-02, RNF-06, UC-01 | `POST /Account/Login` com USR-VEN-01 e token válido. | Credenciais são aceitas; é emitida sessão autenticada com perfil `VENDEDOR`; resposta redireciona diretamente para `/Estoque/Consulta`. | Existente |
 | AUT-04 | RF-01, UC-01 | `POST /Account/Login` com USR-INV-01 e token válido. | Login é recusado; a página é reapresentada com mensagem genérica de credenciais inválidas; nenhuma sessão autenticada é criada e `/Produtos` continua redirecionando ao login. | Existente — inclui mensagem, ausência de sessão e senha não renderizada novamente. |
 | AUT-05 | RF-01, UC-01 | `POST /Account/Login` com `lojista@squad.com` e `senha-incorreta`. | Login é recusado sem informar se o e-mail existe; não é criada sessão autenticada. Conforme UC-01, o campo senha deve ser limpo. | Planejado |
 | AUT-06 | RF-01, UC-01 | `POST /Account/Login` com e-mail e senha vazios, com token válido. | O formulário apresenta os erros de obrigatoriedade; nenhuma sessão autenticada é criada. A validação de cliente pode impedir o envio, mas o servidor também deve rejeitar a entrada. | Planejado |
-| AUT-07 | RF-01, UC-01 | Usuário já autenticado requisita `GET /Account/Login`. | Redirecionamento para `/`; a página de login não é exibida novamente. | Existente |
+| AUT-07 | RF-01, RF-02, UC-01 | Usuário já autenticado requisita `GET /Account/Login`. | Redirecionamento para a entrada do perfil (`/Estoque/Consulta` ou `/Produtos`); a página de login não é exibida novamente. | Existente |
+| AUT-20 | RF-02, RNF-06, UC-01 | Usuário autenticado visualiza a navegação global. | `VENDEDOR` vê somente Consulta e logout; `LOJISTA` vê Produtos, Movimentações e logout. A marca retorna à entrada do próprio perfil. | Existente |
 | AUT-08 | RF-01, UC-01 | `LOJISTA` anônimo solicita `/Produtos`, autentica-se com USR-LOJ-01 e informa `ReturnUrl=/Produtos`. | Após autenticar, o usuário é redirecionado para `/Produtos`. Um `ReturnUrl` externo não pode ser aceito. | Planejado |
 | AUT-09 | RF-02 | Usuário **anônimo** solicita `GET /Produtos` e, em execução separada, `GET /Movimentacoes`. | Em ambos os casos, resposta `302` para `/Account/Login` com `ReturnUrl`; nenhum conteúdo protegido é retornado. | Existente |
 | AUT-10 | RF-02 | `LOJISTA` autenticado solicita `GET /Produtos` e `GET /Movimentacoes`. | As duas rotas respondem `200 OK`, pois pertencem ao perfil `LOJISTA`. | Existente |
@@ -86,6 +87,8 @@ planejados devem ampliar a suíte sem copiar os mesmos fluxos.
 | `AuthenticationAuthorizationTests.cs` | `Invalid_login_does_not_render_submitted_password` | AUT-04 |
 | `AuthenticationAuthorizationTests.cs` | `Seeded_users_use_bcrypt_with_work_factor_12` | AUT-18 e AUT-19 |
 | `AuthenticationAuthorizationTests.cs` | `Logout_clears_authentication_session` | AUT-16 |
+| `AuthenticationAuthorizationTests.cs` | `Vendedor_navigation_contains_only_operational_commands_and_logout` | AUT-20 |
+| `AuthenticationAuthorizationTests.cs` | `Lojista_navigation_contains_only_administrative_commands_and_logout` | AUT-20 |
 | `AdministrativeHttpTests.cs` | `Vendedor_cannot_execute_administrative_post_endpoints` | Parte de AUT-13 e autorização de todos os POSTs administrativos |
 | `AdministrativeHttpTests.cs` | `Anonymous_user_cannot_execute_protected_post_endpoints` | Proteção anônima dos POSTs de produto e movimentação |
 
@@ -94,9 +97,8 @@ planejados devem ampliar a suíte sem copiar os mesmos fluxos.
 - Todos os casos **Existente** devem continuar verdes na integração contínua.
 - Casos **Planejado** são necessários para declarar cobertura completa dos requisitos
   indicados; em especial AUT-05, AUT-06 e a parte restante de AUT-13.
-- O UC-01 prevê uma tela inicial correspondente a cada perfil. A implementação atual
-  redireciona tanto `LOJISTA` quanto `VENDEDOR` para `/`; por isso, AUT-02 e AUT-03
-  registram o comportamento atual, e não uma tela exclusiva por perfil. A definição
-  das rotas de destino deve ser alinhada com Produto/UX antes de alterar esse aceite.
+- O UC-01 prevê uma entrada correspondente a cada perfil. A implementação direciona
+  `VENDEDOR` para `/Estoque/Consulta` e `LOJISTA` para `/Produtos`, sem depender da
+  Home provisória no fluxo pós-login.
 - O UC-01 usa a grafia `LOGISTA` em seu fluxo, enquanto o requisito, o modelo e a
   implementação usam `LOJISTA`. Nesta especificação, `LOJISTA` é o termo adotado.

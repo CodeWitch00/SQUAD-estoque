@@ -68,6 +68,38 @@ public sealed class AuthenticationAuthorizationTests : IClassFixture<SquadEstoqu
     }
 
     [Fact]
+    public async Task Vendedor_navigation_contains_only_operational_commands_and_logout()
+    {
+        using var client = CreateClient();
+        await LoginAsync(client, "vendedor@squad.com");
+
+        var response = await client.GetAsync("/Estoque/Consulta");
+        var html = WebUtility.HtmlDecode(await response.Content.ReadAsStringAsync());
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("href=\"/Estoque/Consulta\"", html);
+        Assert.DoesNotContain("href=\"/Produtos\"", html);
+        Assert.DoesNotContain("href=\"/Movimentacoes\"", html);
+        Assert.Contains("action=\"/Account/Logout\"", html);
+    }
+
+    [Fact]
+    public async Task Lojista_navigation_contains_only_administrative_commands_and_logout()
+    {
+        using var client = CreateClient();
+        await LoginAsync(client, "lojista@squad.com");
+
+        var response = await client.GetAsync("/Produtos");
+        var html = WebUtility.HtmlDecode(await response.Content.ReadAsStringAsync());
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("href=\"/Produtos\"", html);
+        Assert.Contains("href=\"/Movimentacoes\"", html);
+        Assert.DoesNotContain("href=\"/Estoque/Consulta\"", html);
+        Assert.Contains("action=\"/Account/Logout\"", html);
+    }
+
+    [Fact]
     public async Task Vendedor_can_access_saida()
     {
         using var client = CreateClient();
