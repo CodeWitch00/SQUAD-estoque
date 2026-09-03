@@ -1,12 +1,11 @@
-# Relatório curto de evidências — Sprint 1
-
-**Data da consolidação:** 03/09/2026  
-**Sprint:** 05/08/2026 a 09/09/2026  
-**Branch consolidada:** `main`  
-**Commit de referência:** `459a154`  
-**Escopo:** protótipos, plano de testes, incremento MVC, validações e pendências reais da Sprint 1.
+# Relatório curto de evidências : Sprint 1
 
 Este relatório consolida evidências já versionadas para avaliação, dailies e futura atualização da monografia. Ele não reescreve capítulos da monografia e não registra credenciais, banco local, cookies, tokens ou capturas com dados sensíveis.
+
+## Demonstração
+Protótipo navegável: https://codewitch00.github.io/SQUAD-estoque/
+Fluxos e arquivos de interface: docs/05-ux/prototipos/README.md
+Repositório Github: https://github.com/CodeWitch00/SQUAD-estoque.git 
 
 ## Resumo executivo
 
@@ -66,7 +65,7 @@ Este relatório consolida evidências já versionadas para avaliação, dailies 
 | S1-UX-009 | Nicolas | Concluído. Diretrizes de identidade visual adicionadas. | [decisões de interface](../05-ux/decisoes/decisoes-de-interface.md), commit `8b33fff` |
 | S1-UX-010 | Emmy; revisão Rayana | Concluído. Componentes mobile de busca, resultados e grade especificados. | [especificação mobile](../05-ux/especificacao-componentes-mobile.md), commits `0a8425f`, `7f17175`, `f39b1b1` |
 | S1-DOC-011 | Felipe; evidência versionada por pz69766-blip | Concluído. Padrão de evidências registrado. | [README de evidências](../05-ux/evidencias/README.md), commit `ee84a1b` |
-| S1-QA-012 | Rayana/Codex | Concluído com impedimento registrado. Homologação administrativa executada; 13 cenários aprovados e 1 reprovado por autorização. | [relatório de homologação](relatorio-homologacao-baseline-administrativa-2026-08-30.md), [roteiro executado](roteiro-executado-baseline-administrativa-2026-08-30.md), commit `3566ba9` |
+| S1-QA-012 | Rayana | Concluído com impedimento registrado. Homologação administrativa executada; 13 cenários aprovados e 1 reprovado por autorização. | [relatório de homologação](relatorio-homologacao-baseline-administrativa-2026-08-30.md), [roteiro executado](roteiro-executado-baseline-administrativa-2026-08-30.md), commit `3566ba9` |
 | S1-BE-013 | Rayana | Concluído. ViewModel da consulta criado. | [ConsultaEstoqueViewModel.cs](../../src/SquadEstoque.Web/Models/ConsultaEstoqueViewModel.cs), commit `ec2c901` |
 | S1-BE-014 | Rayana | Concluído. Entrada protegida da consulta operacional criada. | [EstoqueController.cs](../../src/SquadEstoque.Web/Controllers/EstoqueController.cs), commits `61648a9`, `4b1164b` |
 | S1-BE-015 | Rayana | Concluído. Busca por produto ativo com termo mínimo e ordenação implementada. | [EstoqueController.cs](../../src/SquadEstoque.Web/Controllers/EstoqueController.cs), [ConsultaEstoqueTests.cs](../../tests/SquadEstoque.Web.Tests/ConsultaEstoqueTests.cs), commit `61648a9` |
@@ -78,7 +77,7 @@ Este relatório consolida evidências já versionadas para avaliação, dailies 
 | S1-FE-021 | Rayana | Concluído. Navegação por perfil e entrada direta do vendedor implementadas. | [validação de navegação](validacao-navegacao-por-perfil-2026-09-03.md), [AccountController.cs](../../src/SquadEstoque.Web/Controllers/AccountController.cs), commit `4b1164b` |
 | S1-QA-022 | Emmy; fortalecimento Rayana | Concluído. Testes da grade operacional cobrem ordenação, estados visíveis, ausência de venda/ruptura e saldos inalterados. | [ConsultaOperacionalHttpTests.cs](../../tests/SquadEstoque.Web.Tests/ConsultaOperacionalHttpTests.cs), commits `e7ad14a`, `459a154` |
 | S1-QA-023 | Rayana | Parcial. Validação responsiva da busca registrada; conferência manual final da grade em navegador gráfico deve seguir para Sprint 2. | [validação consulta vendedor](validacao-consulta-vendedor-2026-08-31.md), testes automatizados em 03/09/2026 |
-| S1-DOC-024 | Rayana/Codex | Concluído por este relatório. Evidências da Sprint 1 consolidadas e pendências separadas. | Este arquivo, commit a gerar após revisão |
+| S1-DOC-024 | Rayana | Concluído por este relatório. Evidências da Sprint 1 consolidadas e pendências separadas. | Este arquivo, commit a gerar após revisão |
 
 Todos os 24 cartões possuem responsável registrado, resultado declarado e pelo menos uma evidência associada. Quando o resultado é parcial ou reprovado, isso foi indicado explicitamente.
 
