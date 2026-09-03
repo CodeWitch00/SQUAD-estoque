@@ -101,33 +101,4 @@ public sealed class EstoqueController : Controller
             .Replace("_", "\\_", StringComparison.Ordinal);
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Detalhes(Guid? id)
-    {
-        if (id is null)
-        {
-            return NotFound();
-        }
-
-        var produto = await _context.Produto
-            .AsNoTracking()
-            .Where(p => p.Id == id && p.Ativo)
-            .Select(p => new EstoqueProdutoDetalhesViewModel
-            {
-                ProdutoId = p.Id,
-                Nome = p.Nome,
-                Skus = p.Skus
-                    .Where(s => s.Ativo)
-                    .OrderBy(s => s.Numeracao)
-                    .Select(s => new EstoqueSkuDetalhesViewModel
-                    {
-                        Numeracao = s.Numeracao,
-                        SaldoAtual = s.SaldoAtual
-                    })
-                    .ToList()
-            })
-            .SingleOrDefaultAsync();
-
-        return produto is null ? NotFound() : View(produto);
-    }
 }
