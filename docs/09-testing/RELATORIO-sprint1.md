@@ -4,8 +4,14 @@ Este relatório consolida evidências já versionadas para avaliação, dailies 
 
 ## Demonstração
 Protótipo navegável: https://codewitch00.github.io/SQUAD-estoque/
-Fluxos e arquivos de interface: docs/05-ux/prototipos/README.md
 Repositório Github: https://github.com/CodeWitch00/SQUAD-estoque.git 
+
+## Acesso login
+| Perfil | Login | Senha |
+|---|---|---|
+| VENDEDOR |   vendedor@squad.com |	123 |
+| LOJISTA | lojista@squad.com	| 123 |
+
 
 ## Resumo executivo
 
