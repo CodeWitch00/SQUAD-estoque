@@ -65,17 +65,7 @@ public sealed class EstoqueController : Controller
                 Nome = produto.Nome,
                 Marca = produto.Marca,
                 Categoria = produto.Categoria,
-                Cor = produto.Cor,
-                Skus = produto.Skus
-                    .Where(sku => sku.Ativo)
-                    .OrderBy(sku => sku.Numeracao)
-                    .Select(sku => new SkuConsultaResultadoViewModel
-                    {
-                        Id = sku.Id,
-                        Numeracao = sku.Numeracao,
-                        SaldoAtual = sku.SaldoAtual
-                    })
-                    .ToList()
+                Cor = produto.Cor
             })
             .ToListAsync();
 
@@ -85,9 +75,24 @@ public sealed class EstoqueController : Controller
             return View(viewModel);
         }
 
-        if (produtoId.HasValue && viewModel.Resultados.Any(produto => produto.Id == produtoId.Value))
+        var produtoSelecionado = produtoId.HasValue
+            ? viewModel.Resultados.FirstOrDefault(produto => produto.Id == produtoId.Value)
+            : null;
+
+        if (produtoSelecionado is not null)
         {
             viewModel.ProdutoSelecionadoId = produtoId;
+            produtoSelecionado.Skus = await _context.Sku
+                .AsNoTracking()
+                .Where(sku => sku.ProdutoId == produtoSelecionado.Id && sku.Ativo)
+                .OrderBy(sku => sku.Numeracao)
+                .Select(sku => new SkuConsultaResultadoViewModel
+                {
+                    Id = sku.Id,
+                    Numeracao = sku.Numeracao,
+                    SaldoAtual = sku.SaldoAtual
+                })
+                .ToListAsync();
         }
 
         return View(viewModel);
