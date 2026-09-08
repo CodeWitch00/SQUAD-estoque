@@ -1,7 +1,3 @@
-Aqui está o conteúdo do documento **Definição da Identidade Visual (SQUAD Estoque)** formatado e organizado em Markdown, incluindo todas as seções, tabelas e códigos corrigidos:
-
----
-
 # SQUAD ESTOQUE
 
 **Guia Visual, Identidade e Código de Referência de Interface Cartão [S1-UX-009]**
