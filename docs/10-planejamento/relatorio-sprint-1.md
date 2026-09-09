@@ -1,12 +1,11 @@
-# Relatório curto da Sprint 1 — evidências consolidadas
+# Relatório  da Sprint 1
 
 **Projeto:** SQUAD Estoque  
 **Período da Sprint 1:** 05/08/2026 a 09/09/2026  
-**Atualização deste registro:** 08/09/2026  
-**Finalidade:** apoiar a avaliação da Sprint 1, as dailies e a futura atualização da monografia.
+**Demonstração:** Protótipo navegável( https://codewitch00.github.io/SQUAD-estoque/ )
 
-Este documento é um índice de resultados e evidências. Não substitui nem reescreve capítulos da monografia e não contém credenciais, cookies, tokens, hashes ou dados pessoais.
 
+Este documento é um índice de resultados e evidências. 
 ## Resultado consolidado
 
 | Frente | Resultado observado | Situação |
@@ -80,7 +79,7 @@ Para as dailies, este relatório pode ser usado no formato “feito, evidência,
 - **Evidência:** links das seções anteriores e resultado local da suíte.
 - **Pendências de conferência:** execução remota mais recente da CI e validação visual final em navegador/dispositivo gráfico.
 
-O calendário e a organização das reuniões estão em [Dailies da Sprint](Dailies-Sprint.md).
+O calendário e a organização das reuniões estão em [Dailies da Sprint](criterios-obrigatorios/Dailies-Sprint.md).
 
 ## Referência para futura atualização da monografia
 
