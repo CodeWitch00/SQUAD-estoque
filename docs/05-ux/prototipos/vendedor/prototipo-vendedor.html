@@ -17,7 +17,7 @@
     body{min-width:320px;min-height:100vh;margin:0;color:var(--ink);background:var(--canvas);font-family:Arial,Helvetica,sans-serif}
     button,input{font:inherit}button:focus-visible,input:focus-visible{outline:3px solid #275dad57;outline-offset:2px}
     .review-header{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:18px max(24px,calc((100vw - 1220px)/2));color:#fff;background:var(--navy)}
-    .review-brand{display:flex;align-items:center;gap:12px}.review-mark,.brand-mark{display:grid;place-items:center;width:38px;height:38px;border-radius:9px;color:#fff;background:var(--navy);font-weight:800;letter-spacing:-.04em}.ui-icon{display:inline-grid;place-items:center;min-width:1em;min-height:1em;font-family:Arial,Helvetica,sans-serif;font-size:1.2em;font-style:normal;font-weight:800;line-height:1}
+    .review-brand{display:flex;align-items:center;gap:12px}.review-mark,.brand-mark{display:grid;place-items:center;width:38px;height:38px;border-radius:9px;color:#fff;background:var(--navy);font-weight:800;letter-spacing:-.04em}
     .review-mark{border:1px solid #ffffff52;background:#ffffff12}
     .review-header h1{margin:0;font-size:18px;font-weight:750}.review-header p{margin:3px 0 0;color:#cbd5e1;font-size:13px}
     .review-status{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border:1px solid #ffffff2e;border-radius:999px;color:#dce8fb;background:#ffffff12;font-size:12px;font-weight:700}
@@ -102,6 +102,7 @@
       <div class="review-note"><p class="review-note-copy" id="review-state-copy"></p><hr><ul><li>Busca automática a partir de 2 caracteres.</li><li>Grade e ações na mesma tela.</li><li>Estados demonstrados separadamente.</li><li>Componentes e padrões Bootstrap.</li></ul></div>
     </aside>
   </main>
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
   <script>
   (function(){
     "use strict";
@@ -121,25 +122,25 @@
       empty:["Nenhum resultado encontrado","A mensagem orienta nova tentativa apenas pelo nome do modelo."],
       error:["Erro de consulta","A busca é preservada e pode ser tentada novamente."],
       "no-grid":["Modelo sem grade","O modelo existe, mas ainda não possui numerações cadastradas."],
-      grid:["Grade sem SKU selecionado","Selecione uma numeração para habilitar os três resultados do atendimento."],
-      "grid-selected":["Grade com SKU selecionado","A seleção evidencia o SKU e habilita Vendeu, Não tinha e Desistiu para este produto e numeração."],
+      grid:["Grade sem SKU selecionado","Vendeu e Não tinha ficam desabilitados; Desistiu permanece disponível."],
+      "grid-selected":["Grade com SKU selecionado","A seleção evidencia o SKU e habilita as ações dependentes de numeração."],
       "stock-error":["Saldo indisponível","A tentativa de venda é rejeitada e o saldo vigente permanece visível."],
       sale:["Venda realizada","Confirmação de venda com saldo atualizado e continuidade do atendimento."],
       rupture:["Ruptura registrada","Confirmação de Não tinha sem alteração do saldo do SKU."],
-      abandoned:["Desistência","O atendimento é encerrado no contexto do SKU selecionado e a nova consulta fica disponível imediatamente."],
+      abandoned:["Desistência","O atendimento é encerrado e o vendedor retorna à busca."],
       concurrency:["Erro de saldo/concorrência","A venda é rejeitada e a grade passa a mostrar o saldo vigente."],
       "new-search":["Nova consulta sem registrar resultado","O vendedor volta à busca sem gerar movimentação ou ruptura."]
     };
     function esc(v){return String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
-    function icon(name,cls){var symbols={"arrow-left":"←",search:"⌕",x:"×",zap:"↯","circle-check":"✓","search-x":"×","wifi-off":"!","refresh-cw":"↻","chevron-right":"›","package-check":"✓",check:"✓","triangle-alert":"!","badge-check":"✓","package-x":"!","user-round-x":"×"};return '<i class="ui-icon '+(cls||"")+'" aria-hidden="true">'+(symbols[name]||"•")+'</i>'}
-    function icons(){}
+    function icon(name,cls){return '<i data-lucide="'+name+'" class="'+(cls||"")+'" aria-hidden="true"></i>'}
+    function icons(){if(window.lucide&&window.lucide.createIcons)window.lucide.createIcons({attrs:{"stroke-width":2}})}
     function appbar(title,subtitle,back){var left=back?'<button class="icon-btn" type="button" data-action="'+back+'" aria-label="Voltar">'+icon("arrow-left")+'</button>':'<span class="brand-mark" aria-hidden="true">SQ</span>';return '<header class="appbar">'+left+'<div class="appbar-copy"><strong class="appbar-title">'+esc(title)+'</strong><span class="appbar-subtitle">'+esc(subtitle)+'</span></div></header>'}
     function stock(q){if(q===0)return{label:"Indisponível",cls:"unavailable"};if(q===1)return{label:"Último par",cls:"last"};return{label:"Disponível",cls:"available"}}
     function product(){return state.product||products[0]}
     function setView(view){clearTimeout(debounceTimer);clearTimeout(searchTimer);state.view=view;render()}
     function review(){var note=notes[state.view]||notes.search;reviewTitle.textContent=note[0];reviewCopy.textContent=note[1];scenarioList.querySelectorAll("[data-scenario]").forEach(function(b){b.setAttribute("aria-pressed",String(b.dataset.scenario===state.view))})}
     function notice(){
-      if(state.view==="abandoned")return '<div class="alertbox success" role="status">'+icon("circle-check","alert-icon")+'<div><strong>Cliente desistiu - atendimento encerrado</strong>'+esc(product().name)+' - SKU '+esc(product().sku)+'-'+esc(state.size)+'. Nenhuma movimentação ou ruptura foi registrada.</div></div>';
+      if(state.view==="abandoned")return '<div class="alertbox success" role="status">'+icon("circle-check","alert-icon")+'<div><strong>Atendimento encerrado</strong>Faça uma nova consulta quando estiver pronto.</div></div>';
       if(state.view==="new-search")return '<div class="alertbox" role="status">'+icon("search","alert-icon")+'<div><strong>Nova consulta iniciada</strong>Nenhum resultado foi registrado no atendimento anterior.</div></div>';
       return ""
     }
@@ -159,9 +160,9 @@
     }
     function grid(concurrency,stockError){
       var p=product(),has=Boolean(state.size),selected=p.sizes.find(function(s){return s.number===state.size}),qty=selected?selected.quantity:0;if(concurrency&&state.size==="37")qty=0;
-      var summary=has?'<strong>SKU selecionado: Nº '+esc(state.size)+'</strong> · '+qty+(qty===1?" par":" pares"):'Selecione uma numeração para registrar o resultado deste atendimento.';
+      var summary=has?'<strong>SKU selecionado: Nº '+esc(state.size)+'</strong> · '+qty+(qty===1?" par":" pares"):'Selecione uma numeração para registrar <strong>Vendeu</strong> ou <strong>Não tinha</strong>.';
       var warning=concurrency?'<div class="alertbox warning" role="alert">'+icon("triangle-alert","alert-icon")+'<div><strong>Venda não registrada</strong>O saldo do SKU foi atualizado antes da confirmação. Confira a grade.</div></div>':stockError?'<div class="alertbox warning" role="alert">'+icon("triangle-alert","alert-icon")+'<div><strong>Venda não registrada</strong>Não foi possível registrar a venda: saldo indisponível.</div></div>':"";
-      return '<main class="screen">'+appbar("Grade de numerações",p.name,"back-results")+'<div class="content content-grid">'+warning+'<section class="product"><span class="product-icon">'+icon("package-check")+'</span><div><h1>'+esc(p.name)+'</h1><p>'+esc(p.meta)+' · SKU base '+esc(p.sku)+'</p></div></section><div class="grid-head"><h2>Escolha a numeração</h2><span>'+p.sizes.length+' SKUs</span></div><div class="size-grid">'+p.sizes.map(function(s){return sizeCard(s,concurrency)}).join("")+'</div><div class="selected-summary" role="status">'+summary+'</div><section class="actions" aria-label="Resultado do atendimento"><span class="actions-label">Resultado do atendimento</span><div class="action-grid"><button class="sq-btn sell" type="button" data-action="sell" '+(!has?"disabled":"")+'>'+icon("badge-check")+'Vendeu</button><button class="sq-btn missing" type="button" data-action="rupture" '+(!has?"disabled":"")+'>'+icon("package-x")+'Não tinha</button><button class="sq-btn neutral abandon" type="button" data-action="abandon" '+(!has?"disabled":"")+'>'+icon("user-round-x")+'Desistiu</button></div><p class="actions-help">Os três resultados ficam disponíveis somente após selecionar uma numeração.</p><button class="new-query" type="button" data-action="new-query">Nova consulta sem registrar resultado</button></section></div></main>'
+      return '<main class="screen">'+appbar("Grade de numerações",p.name,"back-results")+'<div class="content content-grid">'+warning+'<section class="product"><span class="product-icon">'+icon("package-check")+'</span><div><h1>'+esc(p.name)+'</h1><p>'+esc(p.meta)+' · SKU base '+esc(p.sku)+'</p></div></section><div class="grid-head"><h2>Escolha a numeração</h2><span>'+p.sizes.length+' SKUs</span></div><div class="size-grid">'+p.sizes.map(function(s){return sizeCard(s,concurrency)}).join("")+'</div><div class="selected-summary" role="status">'+summary+'</div><section class="actions" aria-label="Resultado do atendimento"><span class="actions-label">Resultado do atendimento</span><div class="action-grid"><button class="sq-btn sell" type="button" data-action="sell" '+(!has?"disabled":"")+'>'+icon("badge-check")+'Vendeu</button><button class="sq-btn missing" type="button" data-action="rupture" '+(!has?"disabled":"")+'>'+icon("package-x")+'Não tinha</button><button class="sq-btn neutral abandon" type="button" data-action="abandon">'+icon("user-round-x")+'Desistiu</button></div><p class="actions-help">Desistiu está sempre disponível e não exige numeração.</p><button class="new-query" type="button" data-action="new-query">Nova consulta sem registrar resultado</button></section></div></main>'
     }
     function noGrid(){
       var p=product();
@@ -192,7 +193,7 @@
       state.view=view;state.query="";state.product=products[0];state.size=null;
       if(view==="loading"||view==="results")state.query="runner";if(view==="empty")state.query="modelo inexistente";if(view==="error")state.query="runner";
       if(view==="no-grid")state.product=productWithoutGrid;
-      if(["grid-selected","sale","concurrency","abandoned"].indexOf(view)>=0)state.size="37";if(["rupture","stock-error"].indexOf(view)>=0)state.size="38";render()
+      if(["grid-selected","sale","concurrency"].indexOf(view)>=0)state.size="37";if(["rupture","stock-error"].indexOf(view)>=0)state.size="38";render()
     }
     scenarioList.addEventListener("click",function(e){var b=e.target.closest("[data-scenario]");if(b)scenario(b.dataset.scenario)});
     app.addEventListener("input",function(e){
@@ -214,7 +215,7 @@
       if(action==="select-size"){state.size=c.dataset.size;setView("grid-selected");return}
       if(action==="sell"){var selected=product().sizes.find(function(s){return s.number===state.size});setView(selected&&selected.quantity===0?"stock-error":"sale");return}
       if(action==="rupture"){setView("rupture");return}
-      if(action==="abandon"){state.query="";setView("abandoned");return}
+      if(action==="abandon"){state.query="";state.size=null;setView("abandoned");return}
       if(action==="new-query"){state.query="";state.size=null;setView("new-search")}
     });
     render()
