@@ -7,6 +7,7 @@ Esta pasta receberá capturas reais dos fluxos HTML após revisão. Não devem s
 | `lojista-desktop.png` | `../prototipos/lojista/prototipo-lojista.html` | 1440 × 900 | Pendente de captura e revisão |
 | `lojista-tablet.png` | `../prototipos/lojista/prototipo-lojista.html` | 768 × 1024 | Pendente de captura e revisão |
 | `vendedor-mobile.png` | `../prototipos/vendedor/prototipo-vendedor.html` | 390 × 844 | Pendente de captura e revisão |
+| `vendedor-s2-atendimento-mobile.png` | `../prototipos/vendedor/prototipo-vendedor.html` | Moldura de 414 px | Captura registrada: confirmação de Vendeu para o SKU RUN-PRO-PT-37. Fluxos de saldo zero, ruptura, desistência e nova consulta foram exercitados na mesma revisão automatizada. |
 
 ## Procedimento
 

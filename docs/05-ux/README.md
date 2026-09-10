@@ -23,7 +23,8 @@ Esta pasta concentra o inventário de interface e os protótipos navegacionais d
 
 - [Inventário de telas e navegação](inventario-telas-e-mapa-navegacao.md): origem, destino, permissão, status e rastreabilidade RF/UC/US.
 - [Mapa visual consolidado](mapa-navegacao-mvp.svg): fluxo-alvo por perfil.
-- [Especificação dos componentes mobile](S1-UX-010-especificacao-componentes-mobile.md): fonte oficial dos componentes da busca e da grade do vendedor.
+- [Especificação dos componentes mobile](especificacao-componentes-mobile.md): fonte oficial dos componentes da busca e da grade do vendedor.
+- [Fluxo do atendimento do vendedor - S2-UX-001](s2-ux-001-fluxo-atendimento-vendedor.md): estados e transições entre a grade e a nova consulta.
 - [Protótipos](prototipos/README.md): interfaces navegáveis separadas por perfil.
 - [Protótipo do lojista](prototipos/lojista/prototipo-lojista.html): referência visual desktop/tablet.
 - [Protótipo do vendedor](prototipos/vendedor/prototipo-vendedor.html): referência visual mobile.
