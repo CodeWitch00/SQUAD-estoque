@@ -510,6 +510,19 @@ dotnet build src/SquadEstoque.Web/SquadEstoque.Web.csproj
 dotnet test tests/SquadEstoque.Web.Tests/SquadEstoque.Web.Tests.csproj
 ```
 
+Cobertura automatizada:
+
+```bash
+dotnet test tests/SquadEstoque.Web.Tests/SquadEstoque.Web.Tests.csproj \
+  --configuration Release \
+  --collect:"XPlat Code Coverage"
+```
+
+O CI exige inicialmente cobertura de linhas igual ou superior a 50% e publica o
+arquivo `coverage.cobertura.xml`. A baseline medida antes deste lote era 52,81% de
+linhas e 32,65% de branches; o percentual deve ser medido novamente pela suíte
+completa, sem transformar esse registro histórico em resultado do commit atual.
+
 Com `mise`:
 
 ```bash
@@ -622,5 +635,6 @@ O registro acima é apenas um exemplo de preenchimento. Não representa uma exec
 | 1.1 | 2026-08-30 | Técnica | Codex, em revisão assistida solicitada pela equipe | Incluídos modelo obrigatório, separação por execução, estados controlados e cobertura transversal; rastreabilidade e referências conferidas |
 | 1.1 | 2026-08-30 | Textual | Codex, em revisão assistida solicitada pela equipe | Terminologia de situação, execução, resultado e evidência uniformizada; regra contra execução presumida explicitada |
 | 1.2 | 2026-08-30 | Integração documental | Codex, em revisão assistida solicitada pela equipe | Especificação detalhada de consulta, venda e ruptura do vendedor vinculada ao catálogo IT-18 a IT-29 |
+| 1.3 | 2026-09-02 | Automação | Codex, em execução assistida solicitada pela equipe | Cobertura automatizada no CI; cadastro, edição, inativação, autorização POST, limpeza de senha, BCrypt e auditoria atualizados conforme testes executados |
 
 Revisões assistidas não substituem o aceite do responsável de QA ou do produto quando esse aceite for exigido para release. A próxima alteração funcional ou de requisito deve gerar uma nova linha, com versão, data, tipo, revisor e resultado.

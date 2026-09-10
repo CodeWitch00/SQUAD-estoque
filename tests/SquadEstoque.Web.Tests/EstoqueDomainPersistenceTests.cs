@@ -67,6 +67,7 @@ public sealed class EstoqueDomainPersistenceTests
         var data = await SeedAsync(database.Context, initialBalance: 3);
         var controller = CreateController(database.Context, data.Usuario);
 
+        var before = DateTime.UtcNow;
         var result = await controller.Entrada(new MovimentacaoCreateViewModel
         {
             SkuId = data.Sku.Id,
@@ -77,8 +78,13 @@ public sealed class EstoqueDomainPersistenceTests
         Assert.IsType<RedirectToActionResult>(result);
         Assert.Equal(7, data.Sku.SaldoAtual);
         var movimentacao = await database.Context.Movimentacao.SingleAsync();
+        Assert.NotEqual(Guid.Empty, movimentacao.Id);
+        Assert.Equal(data.Sku.Id, movimentacao.SkuId);
         Assert.Equal(TipoMovimentacao.ENTRADA, movimentacao.Tipo);
         Assert.Equal(4, movimentacao.Quantidade);
+        Assert.Equal(data.Usuario.Id, movimentacao.UsuarioId);
+        Assert.InRange(movimentacao.CriadoEm, before, DateTime.UtcNow);
+        Assert.Equal("Reposição", movimentacao.Motivo);
     }
 
     [Fact]
@@ -88,6 +94,7 @@ public sealed class EstoqueDomainPersistenceTests
         var data = await SeedAsync(database.Context, initialBalance: 5);
         var controller = CreateController(database.Context, data.Usuario);
 
+        var before = DateTime.UtcNow;
         var result = await controller.Saida(new MovimentacaoCreateViewModel
         {
             SkuId = data.Sku.Id,
@@ -97,8 +104,13 @@ public sealed class EstoqueDomainPersistenceTests
         Assert.IsType<RedirectToActionResult>(result);
         Assert.Equal(3, data.Sku.SaldoAtual);
         var movimentacao = await database.Context.Movimentacao.SingleAsync();
+        Assert.NotEqual(Guid.Empty, movimentacao.Id);
+        Assert.Equal(data.Sku.Id, movimentacao.SkuId);
         Assert.Equal(TipoMovimentacao.SAIDA, movimentacao.Tipo);
         Assert.Equal(2, movimentacao.Quantidade);
+        Assert.Equal(data.Usuario.Id, movimentacao.UsuarioId);
+        Assert.InRange(movimentacao.CriadoEm, before, DateTime.UtcNow);
+        Assert.Null(movimentacao.Motivo);
     }
 
     [Fact]
@@ -127,6 +139,7 @@ public sealed class EstoqueDomainPersistenceTests
         var data = await SeedAsync(database.Context, initialBalance: 2);
         var controller = CreateController(database.Context, data.Usuario);
 
+        var before = DateTime.UtcNow;
         var result = await controller.Ajuste(new AjusteEstoqueViewModel
         {
             SkuId = data.Sku.Id,
@@ -137,8 +150,12 @@ public sealed class EstoqueDomainPersistenceTests
         Assert.IsType<RedirectToActionResult>(result);
         Assert.Equal(6, data.Sku.SaldoAtual);
         var movimentacao = await database.Context.Movimentacao.SingleAsync();
+        Assert.NotEqual(Guid.Empty, movimentacao.Id);
+        Assert.Equal(data.Sku.Id, movimentacao.SkuId);
         Assert.Equal(TipoMovimentacao.AJUSTE, movimentacao.Tipo);
         Assert.Equal(4, movimentacao.Quantidade);
+        Assert.Equal(data.Usuario.Id, movimentacao.UsuarioId);
+        Assert.InRange(movimentacao.CriadoEm, before, DateTime.UtcNow);
         Assert.Equal("Contagem física", movimentacao.Motivo);
     }
 

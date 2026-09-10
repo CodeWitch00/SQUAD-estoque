@@ -1,6 +1,9 @@
 using System.Net;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using SquadEstoque.Web.Data;
 using Xunit;
 
 namespace SquadEstoque.Web.Tests;
@@ -65,6 +68,38 @@ public sealed class AuthenticationAuthorizationTests : IClassFixture<SquadEstoqu
     }
 
     [Fact]
+    public async Task Vendedor_navigation_contains_only_operational_commands_and_logout()
+    {
+        using var client = CreateClient();
+        await LoginAsync(client, "vendedor@squad.com");
+
+        var response = await client.GetAsync("/Estoque/Consulta");
+        var html = WebUtility.HtmlDecode(await response.Content.ReadAsStringAsync());
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("href=\"/Estoque/Consulta\"", html);
+        Assert.DoesNotContain("href=\"/Produtos\"", html);
+        Assert.DoesNotContain("href=\"/Movimentacoes\"", html);
+        Assert.Contains("action=\"/Account/Logout\"", html);
+    }
+
+    [Fact]
+    public async Task Lojista_navigation_contains_only_administrative_commands_and_logout()
+    {
+        using var client = CreateClient();
+        await LoginAsync(client, "lojista@squad.com");
+
+        var response = await client.GetAsync("/Produtos");
+        var html = WebUtility.HtmlDecode(await response.Content.ReadAsStringAsync());
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("href=\"/Produtos\"", html);
+        Assert.Contains("href=\"/Movimentacoes\"", html);
+        Assert.DoesNotContain("href=\"/Estoque/Consulta\"", html);
+        Assert.Contains("action=\"/Account/Logout\"", html);
+    }
+
+    [Fact]
     public async Task Vendedor_can_access_saida()
     {
         using var client = CreateClient();
@@ -111,6 +146,45 @@ public sealed class AuthenticationAuthorizationTests : IClassFixture<SquadEstoqu
         Assert.Equal(
             "/Account/Login?ReturnUrl=%2FProdutos",
             produtosResponse.Headers.Location?.PathAndQuery);
+    }
+
+    [Fact]
+    public async Task Invalid_login_does_not_render_submitted_password()
+    {
+        using var client = CreateClient();
+        var loginPage = await client.GetAsync("/Account/Login");
+        var token = ExtractAntiforgeryToken(await loginPage.Content.ReadAsStringAsync());
+        const string submittedPassword = "senha-secreta-nao-deve-voltar";
+        using var content = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["Email"] = "usuario.invalido@example.test",
+            ["Senha"] = submittedPassword,
+            ["__RequestVerificationToken"] = token
+        });
+
+        var response = await client.PostAsync("/Account/Login", content);
+        var html = await response.Content.ReadAsStringAsync();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.DoesNotContain(submittedPassword, html, StringComparison.Ordinal);
+        Assert.Contains("E-mail ou senha inválidos.", WebUtility.HtmlDecode(html));
+    }
+
+    [Fact]
+    public void Seeded_users_use_bcrypt_with_work_factor_12()
+    {
+        using var scope = _factory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
+        var users = context.Usuario.AsNoTracking().ToList();
+
+        Assert.NotEmpty(users);
+        Assert.All(users, user =>
+        {
+            Assert.NotEqual("123", user.SenhaHash);
+            Assert.Matches(@"^\$2[aby]\$12\$", user.SenhaHash);
+            Assert.True(BCrypt.Net.BCrypt.Verify("123", user.SenhaHash));
+            Assert.False(BCrypt.Net.BCrypt.Verify("senha-incorreta", user.SenhaHash));
+        });
     }
 
     [Fact]

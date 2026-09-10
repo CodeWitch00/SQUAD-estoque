@@ -3,10 +3,18 @@ name: .NET Build and Tests
 on:
   push:
     branches:
-      - main
+      - '**'
   pull_request:
     branches:
       - main
+
+# O pipeline apenas valida o código. Não publica commits nem realiza merge.
+permissions:
+  contents: read
+
+concurrency:
+  group: dotnet-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-and-test:
@@ -34,4 +42,25 @@ jobs:
         run: dotnet build tests/SquadEstoque.Web.Tests/SquadEstoque.Web.Tests.csproj --no-restore --configuration Release
 
       - name: Test
-        run: dotnet test tests/SquadEstoque.Web.Tests/SquadEstoque.Web.Tests.csproj --configuration Release --no-build
+        run: >-
+          dotnet test tests/SquadEstoque.Web.Tests/SquadEstoque.Web.Tests.csproj
+          --configuration Release
+          --no-build
+          --collect:"XPlat Code Coverage"
+          --results-directory TestResults
+
+      - name: Enforce line coverage baseline
+        shell: bash
+        run: |
+          coverage_file="$(find TestResults -name coverage.cobertura.xml -print -quit)"
+          test -n "$coverage_file"
+          line_rate="$(sed -n 's/.*line-rate="\([0-9.]*\)".*/\1/p' "$coverage_file" | head -n 1)"
+          awk -v rate="$line_rate" 'BEGIN { if (rate < 0.50) { printf "Line coverage %.2f%% is below 50%%.\n", rate * 100; exit 1 } printf "Line coverage: %.2f%%.\n", rate * 100 }'
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-cobertura
+          path: TestResults/**/coverage.cobertura.xml
+          if-no-files-found: error

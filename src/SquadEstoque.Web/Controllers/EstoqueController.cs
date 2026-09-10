@@ -7,7 +7,7 @@ using SquadEstoque.Web.Models;
 namespace SquadEstoque.Web.Controllers;
 
 [Authorize(Roles = "VENDEDOR")]
-public class EstoqueController : Controller
+public sealed class EstoqueController : Controller
 {
     private const int TamanhoMinimoTermo = 2;
     private const int TamanhoMaximoTermo = 100;
@@ -75,9 +75,24 @@ public class EstoqueController : Controller
             return View(viewModel);
         }
 
-        if (produtoId.HasValue && viewModel.Resultados.Any(produto => produto.Id == produtoId.Value))
+        var produtoSelecionado = produtoId.HasValue
+            ? viewModel.Resultados.FirstOrDefault(produto => produto.Id == produtoId.Value)
+            : null;
+
+        if (produtoSelecionado is not null)
         {
             viewModel.ProdutoSelecionadoId = produtoId;
+            produtoSelecionado.Skus = await _context.Sku
+                .AsNoTracking()
+                .Where(sku => sku.ProdutoId == produtoSelecionado.Id && sku.Ativo)
+                .OrderBy(sku => sku.Numeracao)
+                .Select(sku => new SkuConsultaResultadoViewModel
+                {
+                    Id = sku.Id,
+                    Numeracao = sku.Numeracao,
+                    SaldoAtual = sku.SaldoAtual
+                })
+                .ToListAsync();
         }
 
         return View(viewModel);
@@ -90,4 +105,5 @@ public class EstoqueController : Controller
             .Replace("%", "\\%", StringComparison.Ordinal)
             .Replace("_", "\\_", StringComparison.Ordinal);
     }
+
 }
