@@ -39,7 +39,9 @@ public sealed class AtendimentoVendedorViewModelTests
 
         var erros = Validar(model);
 
-        Assert.Contains(erros, erro => erro.MemberNames.Contains(nameof(model.Resultado)));
+        Assert.Contains(erros, erro =>
+            erro.MemberNames.Contains(nameof(model.Resultado)) &&
+            erro.ErrorMessage == "Informe um resultado de atendimento válido.");
     }
 
     [Theory]

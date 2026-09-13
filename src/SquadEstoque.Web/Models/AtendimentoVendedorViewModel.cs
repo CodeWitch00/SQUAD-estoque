@@ -19,7 +19,9 @@ public sealed class AtendimentoVendedorViewModel : IValidatableObject
     [Range(0, int.MaxValue, ErrorMessage = "O saldo não pode ser negativo.")]
     public int? SaldoAtual { get; set; }
 
-    [EnumDataType(typeof(ResultadoAtendimento))]
+    [EnumDataType(
+        typeof(ResultadoAtendimento),
+        ErrorMessage = "Informe um resultado de atendimento válido.")]
     public ResultadoAtendimento? Resultado { get; set; }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
