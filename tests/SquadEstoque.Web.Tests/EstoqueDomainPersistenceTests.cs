@@ -13,8 +13,7 @@ using Xunit;
 namespace SquadEstoque.Web.Tests;
 
 // As constraints de unicidade e saldo são protegidas pelo EstoqueContext.
-// Entrada, saída, saldo insuficiente e ajuste ainda são regras do controller;
-// estes testes caracterizam o comportamento no ponto em que ele existe hoje.
+// A saída compartilhada e os controllers são verificados contra SQLite real.
 public sealed class EstoqueDomainPersistenceTests
 {
     [Fact]
@@ -196,6 +195,140 @@ public sealed class EstoqueDomainPersistenceTests
 
         Assert.Single(await database.Context.Ruptura.ToListAsync());
         Assert.Equal(3, data.Sku.SaldoAtual);
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(5)]
+    public async Task Venda_rapida_removes_exactly_one_pair_from_selected_sku(int saldo)
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedAsync(database.Context, saldo);
+        data.Usuario.Perfil = PerfilUsuario.VENDEDOR;
+        var outroSku = CreateSku(data.Sku.ProdutoId, "40", 7);
+        database.Context.Add(outroSku);
+        await database.Context.SaveChangesAsync();
+        var antes = DateTime.UtcNow;
+
+        var resultado = await database.Context.RegistrarVendaRapidaAsync(data.Sku.Id, data.Usuario.Id);
+
+        Assert.Null(resultado.Erro);
+        database.Context.ChangeTracker.Clear();
+        Assert.Equal(saldo - 1, (await database.Context.Sku.FindAsync(data.Sku.Id))!.SaldoAtual);
+        Assert.Equal(7, (await database.Context.Sku.FindAsync(outroSku.Id))!.SaldoAtual);
+        var movimento = await database.Context.Movimentacao.SingleAsync();
+        Assert.Equal(data.Sku.Id, movimento.SkuId);
+        Assert.Equal(data.Usuario.Id, movimento.UsuarioId);
+        Assert.Equal(TipoMovimentacao.SAIDA, movimento.Tipo);
+        Assert.Equal(1, movimento.Quantidade);
+        Assert.InRange(movimento.CriadoEm, antes, DateTime.UtcNow);
+        Assert.Empty(await database.Context.Ruptura.ToListAsync());
+    }
+
+    [Fact]
+    public async Task Venda_rapida_rejects_zero_balance_without_movement()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedAsync(database.Context, 0);
+        var resultado = await database.Context.RegistrarVendaRapidaAsync(data.Sku.Id, data.Usuario.Id);
+        Assert.Contains("Saldo insuficiente", resultado.Erro);
+        database.Context.ChangeTracker.Clear();
+        Assert.Equal(0, (await database.Context.Sku.FindAsync(data.Sku.Id))!.SaldoAtual);
+        Assert.Empty(await database.Context.Movimentacao.ToListAsync());
+    }
+
+    [Fact]
+    public async Task Venda_rapida_rejects_missing_sku()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedAsync(database.Context, 3);
+        var resultado = await database.Context.RegistrarVendaRapidaAsync(Guid.NewGuid(), data.Usuario.Id);
+        Assert.Contains("não foi encontrado", resultado.Erro);
+        Assert.Equal(3, data.Sku.SaldoAtual);
+        Assert.Empty(await database.Context.Movimentacao.ToListAsync());
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public async Task Shared_saida_rejects_nonpositive_quantity(int quantidade)
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedAsync(database.Context, 3);
+        var resultado = await database.Context.RegistrarSaidaAsync(data.Sku.Id, quantidade, data.Usuario.Id);
+        Assert.Equal("Quantidade", resultado.Campo);
+        Assert.NotNull(resultado.Erro);
+        Assert.Equal(3, data.Sku.SaldoAtual);
+        Assert.Empty(await database.Context.Movimentacao.ToListAsync());
+    }
+
+    [Fact]
+    public async Task Failed_movement_rolls_back_balance_and_allows_next_operation()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedAsync(database.Context, 3);
+        await Assert.ThrowsAsync<DbUpdateException>(() =>
+            database.Context.RegistrarVendaRapidaAsync(data.Sku.Id, Guid.NewGuid()));
+        Assert.Equal(3, data.Sku.SaldoAtual);
+        Assert.Equal(3, await database.Context.Sku.AsNoTracking()
+            .Where(s => s.Id == data.Sku.Id).Select(s => s.SaldoAtual).SingleAsync());
+        Assert.Empty(await database.Context.Movimentacao.ToListAsync());
+
+        var resultado = await database.Context.RegistrarVendaRapidaAsync(data.Sku.Id, data.Usuario.Id);
+        Assert.Null(resultado.Erro);
+        Assert.Equal(2, data.Sku.SaldoAtual);
+        Assert.Single(await database.Context.Movimentacao.ToListAsync());
+    }
+
+    [Fact]
+    public async Task Shared_saida_refreshes_previously_tracked_balance()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedAsync(database.Context, 3);
+        await database.Context.Sku.Where(s => s.Id == data.Sku.Id)
+            .ExecuteUpdateAsync(setters => setters.SetProperty(s => s.SaldoAtual, 0));
+        var resultado = await database.Context.RegistrarVendaRapidaAsync(data.Sku.Id, data.Usuario.Id);
+        Assert.NotNull(resultado.Erro);
+        Assert.Equal(0, data.Sku.SaldoAtual);
+        Assert.Empty(await database.Context.Movimentacao.ToListAsync());
+    }
+
+    [Fact]
+    public async Task Administrative_saida_preserves_quantity_reason_user_and_redirect()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedAsync(database.Context, 5);
+        var controller = CreateController(database.Context, data.Usuario);
+        var result = await controller.Saida(new MovimentacaoCreateViewModel
+        {
+            SkuId = data.Sku.Id, Quantidade = 3, Motivo = "  Venda administrativa  "
+        });
+        var redirect = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Details", redirect.ActionName);
+        Assert.Equal("Produtos", redirect.ControllerName);
+        Assert.Equal(data.Sku.ProdutoId, redirect.RouteValues!["id"]);
+        database.Context.ChangeTracker.Clear();
+        Assert.Equal(2, (await database.Context.Sku.FindAsync(data.Sku.Id))!.SaldoAtual);
+        var movimento = await database.Context.Movimentacao.SingleAsync();
+        Assert.Equal(3, movimento.Quantidade);
+        Assert.Equal(data.Usuario.Id, movimento.UsuarioId);
+        Assert.Equal("Venda administrativa", movimento.Motivo);
+    }
+
+    [Fact]
+    public async Task Saida_without_authenticated_identifier_does_not_change_stock()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedAsync(database.Context, 3);
+        var controller = CreateController(database.Context, data.Usuario);
+        controller.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity());
+        var result = await controller.Saida(new MovimentacaoCreateViewModel
+        {
+            SkuId = data.Sku.Id, Quantidade = 1
+        });
+        Assert.IsType<ChallengeResult>(result);
+        Assert.Equal(3, data.Sku.SaldoAtual);
+        Assert.Empty(await database.Context.Movimentacao.ToListAsync());
     }
 
     private static MovimentacoesController CreateController(EstoqueContext context, Usuario usuario)

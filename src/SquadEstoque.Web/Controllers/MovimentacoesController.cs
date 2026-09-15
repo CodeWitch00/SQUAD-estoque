@@ -226,66 +226,38 @@ public class MovimentacoesController : Controller
             return View(model);
         }
 
-        await using var transaction = await _context.Database.BeginTransactionAsync();
         try
         {
-            var sku = await _context.Sku
-                .Include(s => s.Produto)
-                .FirstOrDefaultAsync(s => s.Id == model.SkuId);
+            var resultado = await _context.RegistrarSaidaAsync(
+                model.SkuId, model.Quantidade, usuarioId.Value, model.Motivo);
 
-            if (sku == null || sku.Produto == null)
+            if (resultado.Erro != null)
             {
-                await transaction.RollbackAsync();
-                ModelState.AddModelError(string.Empty, "O item de estoque selecionado não foi encontrado.");
+                ModelState.AddModelError(resultado.Campo, resultado.Erro);
+                if (resultado.Sku is { } sku)
+                {
+                    model.ProdutoNome = $"{sku.Produto!.Nome} ({sku.Produto.Marca} - {sku.Produto.Cor})";
+                    model.Numeracao = sku.Numeracao;
+                    model.SaldoAtual = sku.SaldoAtual;
+                }
                 await PopulateSkusDropdownAsync(model.SkuId);
                 return View(model);
             }
-
-            if (model.Quantidade > sku.SaldoAtual)
-            {
-                await transaction.RollbackAsync();
-                ModelState.AddModelError(nameof(model.Quantidade), $"Saldo insuficiente para saída. Saldo disponível: {sku.SaldoAtual} par(es).");
-                model.ProdutoNome = $"{sku.Produto.Nome} ({sku.Produto.Marca} - {sku.Produto.Cor})";
-                model.Numeracao = sku.Numeracao;
-                model.SaldoAtual = sku.SaldoAtual;
-                await PopulateSkusDropdownAsync(model.SkuId);
-                return View(model);
-            }
-
-            sku.SaldoAtual -= model.Quantidade;
-
-            var movimentacao = new Movimentacao
-            {
-                Id = Guid.NewGuid(),
-                SkuId = sku.Id,
-                Tipo = TipoMovimentacao.SAIDA,
-                Quantidade = model.Quantidade,
-                UsuarioId = usuarioId.Value,
-                CriadoEm = DateTime.UtcNow,
-                Motivo = string.IsNullOrWhiteSpace(model.Motivo) ? null : model.Motivo.Trim()
-            };
-
-            _context.Movimentacao.Add(movimentacao);
-
-            await _context.SaveChangesAsync();
-            await transaction.CommitAsync();
 
             if (User.IsInRole("LOJISTA"))
             {
-                return RedirectToAction("Details", "Produtos", new { id = sku.ProdutoId });
+                return RedirectToAction("Details", "Produtos", new { id = resultado.Sku!.ProdutoId });
             }
 
             return RedirectToAction("Index", "Home");
         }
         catch (Exception)
         {
-            await transaction.RollbackAsync();
             ModelState.AddModelError(string.Empty, "O saldo deste item foi alterado por outra operação. Por favor, tente novamente.");
             await PopulateSkusDropdownAsync(model.SkuId);
             return View(model);
         }
     }
-
     // ==========================================
     // 4. AJUSTE MANUAL (EXCLUSIVO LOJISTA)
     // ==========================================

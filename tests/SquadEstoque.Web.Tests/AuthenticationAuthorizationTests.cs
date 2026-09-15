@@ -212,6 +212,55 @@ public sealed class AuthenticationAuthorizationTests : IClassFixture<SquadEstoqu
             afterLogoutResponse.Headers.Location?.PathAndQuery);
     }
 
+    [Theory]
+    [InlineData("lojista@squad.com")]
+    [InlineData("vendedor@squad.com")]
+    public async Task Existing_saida_form_persists_quantity_and_authenticated_user(string email)
+    {
+        using var client = CreateClient();
+        await LoginAsync(client, email);
+        Guid skuId;
+        Guid produtoId;
+        Guid usuarioId;
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
+            var produto = new SquadEstoque.Web.Models.Produto
+            {
+                Id = Guid.NewGuid(), Nome = "Saída integração", Marca = "Teste",
+                Categoria = "Calçado", Cor = "Preto", Ativo = true
+            };
+            var sku = new SquadEstoque.Web.Models.Sku
+            {
+                Id = Guid.NewGuid(), ProdutoId = produto.Id, Numeracao = "42", SaldoAtual = 5
+            };
+            context.AddRange(produto, sku);
+            await context.SaveChangesAsync();
+            skuId = sku.Id;
+            produtoId = produto.Id;
+            usuarioId = await context.Usuario.Where(u => u.Email == email).Select(u => u.Id).SingleAsync();
+        }
+        var page = await client.GetAsync($"/Movimentacoes/Saida?skuId={skuId}");
+        page.EnsureSuccessStatusCode();
+        var token = ExtractAntiforgeryToken(await page.Content.ReadAsStringAsync());
+        using var form = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["__RequestVerificationToken"] = token,
+            ["SkuId"] = skuId.ToString(), ["Quantidade"] = "2", ["Motivo"] = "Venda teste"
+        });
+        var response = await client.PostAsync("/Movimentacoes/Saida", form);
+        Assert.Equal(HttpStatusCode.Found, response.StatusCode);
+        Assert.Equal(email == "lojista@squad.com" ? $"/Produtos/Details/{produtoId}" : "/",
+            response.Headers.Location?.OriginalString);
+        using var verificationScope = _factory.Services.CreateScope();
+        var verification = verificationScope.ServiceProvider.GetRequiredService<EstoqueContext>();
+        Assert.Equal(3, (await verification.Sku.FindAsync(skuId))!.SaldoAtual);
+        var movement = await verification.Movimentacao.SingleAsync(m => m.SkuId == skuId);
+        Assert.Equal(2, movement.Quantidade);
+        Assert.Equal(usuarioId, movement.UsuarioId);
+        Assert.Equal(SquadEstoque.Web.Models.TipoMovimentacao.SAIDA, movement.Tipo);
+    }
+
     private HttpClient CreateClient()
     {
         return _factory.CreateClient(new WebApplicationFactoryClientOptions
