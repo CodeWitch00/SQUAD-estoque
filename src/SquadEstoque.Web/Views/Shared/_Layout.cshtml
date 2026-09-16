@@ -1,15 +1,10 @@
 @{
-    var usuarioVendedor = User.IsInRole("VENDEDOR");
-    var inicioController = usuarioVendedor
-        ? "Estoque"
-        : User.IsInRole("LOJISTA")
-            ? "Produtos"
-            : "Account";
-    var inicioAction = usuarioVendedor
-        ? "Consulta"
-        : User.IsInRole("LOJISTA")
-            ? "Index"
-            : "Login";
+    var vendedor = User.IsInRole("VENDEDOR");
+    var lojista = User.IsInRole("LOJISTA");
+    var autenticado = User.Identity?.IsAuthenticated == true;
+    var inicioController = vendedor ? "Estoque" : lojista ? "Produtos" : "Account";
+    var inicioAction = vendedor ? "Consulta" : lojista ? "Index" : "Login";
+    var controllerAtual = ViewContext.RouteData.Values["controller"]?.ToString();
 }
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -22,83 +17,60 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/SquadEstoque.Web.styles.css" asp-append-version="true" />
 </head>
-<body class="@(usuarioVendedor ? "seller-layout" : "admin-layout")">
+<body class="@(vendedor ? "seller-layout" : "admin-layout")">
     <header>
-        @if (usuarioVendedor)
-        {
-            <nav class="seller-navbar" aria-label="Navegação do vendedor">
-                <div class="seller-navbar-inner">
-                    <a class="seller-brand" asp-controller="Estoque" asp-action="Consulta">
-                        <span class="seller-brand-mark" aria-hidden="true">SQ</span>
-                        <span>SQUAD Estoque</span>
-                    </a>
-                    <div class="seller-navbar-actions">
-                        <a class="seller-nav-link" asp-controller="Estoque" asp-action="Consulta" aria-current="page">Consulta</a>
-                        <form asp-controller="Account" asp-action="Logout" method="post">
-                            <button type="submit" class="seller-logout">Sair</button>
-                        </form>
-                    </div>
-                </div>
-            </nav>
-        }
-        else
-        {
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-                <div class="container-fluid">
-                    <a class="navbar-brand" asp-area="" asp-controller="@inicioController" asp-action="@inicioAction">SQUAD Estoque</a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                            aria-expanded="false" aria-label="Alternar navegação">
+        <nav class="navbar navbar-expand-lg squad-navbar" aria-label="Navegação principal">
+            <div class="container-fluid squad-navbar-inner">
+                <a class="navbar-brand squad-brand" asp-controller="@inicioController" asp-action="@inicioAction" aria-label="SQUAD Estoque: início">
+                    <img src="~/images/logo-squad-header.png" alt="" width="128" height="96" />
+                </a>
+                @if (autenticado)
+                {
+                    <button class="navbar-toggler squad-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#squad-navigation"
+                            aria-controls="squad-navigation" aria-expanded="false" aria-label="Alternar navegação">
                         <span class="navbar-toggler-icon"></span>
                     </button>
-                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                        <ul class="navbar-nav flex-grow-1">
-                            @if (User.IsInRole("LOJISTA"))
-                            {
+                }
+                <div id="squad-navigation" class="@(autenticado ? "collapse navbar-collapse" : "navbar-collapse")">
+                    <ul class="navbar-nav me-auto squad-links">
+                        @if (lojista)
+                        {
                             <li class="nav-item">
-                                <a class="nav-link text-dark fw-bold" asp-controller="Produtos" asp-action="Index">Produtos</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark fw-bold" asp-controller="Movimentacoes" asp-action="Index">Movimentações</a>
-                            </li>
-                            }
-                        </ul>
-                        <ul class="navbar-nav">
-                            @if (User.Identity?.IsAuthenticated == true)
-                            {
-                            <li class="nav-item d-flex align-items-center me-3">
-                                <span class="text-dark me-2">@User.Identity.Name</span>
-                                <span class="badge bg-secondary">LOJISTA</span>
+                                <a class="nav-link @(controllerAtual == "Produtos" ? "active" : "")" asp-controller="Produtos" asp-action="Index"
+                                   aria-current="@(controllerAtual == "Produtos" ? "page" : null)">Produtos</a>
                             </li>
                             <li class="nav-item">
-                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                                    <button type="submit" class="btn btn-outline-danger btn-sm">Sair</button>
-                                </form>
+                                <a class="nav-link @(controllerAtual == "Movimentacoes" ? "active" : "")" asp-controller="Movimentacoes" asp-action="Index"
+                                   aria-current="@(controllerAtual == "Movimentacoes" ? "page" : null)">Movimentações</a>
                             </li>
-                            }
-                            else
-                            {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Entrar</a>
-                            </li>
-                            }
-                        </ul>
+                        }
+                    </ul>
+                    <div class="squad-session">
+                        @if (autenticado)
+                        {
+                            <span class="squad-role">@(vendedor ? "VENDEDOR" : lojista ? "LOJISTA" : "USUÁRIO")</span>
+                            <form asp-controller="Account" asp-action="Logout" method="post">
+                                <button type="submit" class="squad-logout">Sair</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a class="squad-login" asp-controller="Account" asp-action="Login">Entrar</a>
+                        }
                     </div>
                 </div>
-            </nav>
-        }
+            </div>
+        </nav>
     </header>
-    <div class="@(usuarioVendedor ? "seller-main" : "container")">
-        <main role="main" class="pb-3">
+    <div class="@(vendedor ? "seller-main" : "admin-main")">
+        <main role="main" class="pb-3 @(vendedor ? "" : "admin-content")">
             @RenderBody()
         </main>
     </div>
-
-    @if (!usuarioVendedor)
+    @if (!vendedor)
     {
-        <footer class="border-top footer text-muted">
-            <div class="container">
-                &copy; 2026 - SQUAD Estoque
-            </div>
+        <footer class="admin-footer">
+            <div class="admin-footer-inner">&copy; 2026 - SQUAD Estoque</div>
         </footer>
     }
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

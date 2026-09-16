@@ -13,15 +13,16 @@ Para navegar pelo protótipo, use `vendedor@squad.com` ou `lojista@squad.com` co
 ## Arquivos
 
 - [Login compartilhado](login.html)
-- [Protótipo do vendedor](prototipo-vendedor.html)
-- [Protótipo do lojista](prototipo-lojista.html)
+- [Protótipo do vendedor](vendedor/prototipo-vendedor.html)
+- [Protótipo do lojista](lojista/prototipo-lojista.html)
 
 O arquivo `docs/index.html` abre automaticamente o login compartilhado.
 
 ## Observações
 
 - O fluxo depende dos caminhos relativos entre as páginas.
-- Os protótipos do vendedor e do lojista permanecem diretamente nesta pasta.
+- O protótipo do vendedor deve permanecer em `vendedor/prototipo-vendedor.html`.
+- Evidências e capturas ficam em [../evidencias/README.md](../evidencias/README.md).
 
 ## Referências
 

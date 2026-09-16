@@ -80,6 +80,10 @@ public sealed class AuthenticationAuthorizationTests : IClassFixture<SquadEstoqu
         Assert.Contains("href=\"/Estoque/Consulta\"", html);
         Assert.DoesNotContain("href=\"/Produtos\"", html);
         Assert.DoesNotContain("href=\"/Movimentacoes\"", html);
+        Assert.Contains("src=\"/images/logo-squad-header.png\"", html);
+        Assert.DoesNotContain("Vendedor Teste", html);
+        Assert.Contains(">VENDEDOR</span>", html);
+        Assert.Contains("aria-controls=\"squad-navigation\"", html);
         Assert.Contains("action=\"/Account/Logout\"", html);
     }
 
@@ -96,6 +100,10 @@ public sealed class AuthenticationAuthorizationTests : IClassFixture<SquadEstoqu
         Assert.Contains("href=\"/Produtos\"", html);
         Assert.Contains("href=\"/Movimentacoes\"", html);
         Assert.DoesNotContain("href=\"/Estoque/Consulta\"", html);
+        Assert.Contains("src=\"/images/logo-squad-header.png\"", html);
+        Assert.DoesNotContain("Lojista Teste", html);
+        Assert.Contains(">LOJISTA</span>", html);
+        Assert.Contains("aria-controls=\"squad-navigation\"", html);
         Assert.Contains("action=\"/Account/Logout\"", html);
     }
 

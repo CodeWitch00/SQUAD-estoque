@@ -1,15 +1,9 @@
 html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+  font-size: 16px;
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #4c86d6;
 }
 
 html {
@@ -21,96 +15,312 @@ body {
   margin-bottom: 60px;
 }
 
+.admin-layout {
+  min-width: 320px;
+  min-height: 100vh;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  color: #17202a;
+  background: #f7fafd;
+}
+
+.admin-main {
+  width: min(100%, 1440px);
+  flex: 1 0 auto;
+  margin: 0 auto;
+  padding: 0 clamp(16px, 2.5vw, 36px) 48px;
+}
+
+.admin-content h1 {
+  color: #101f3b;
+  font-size: clamp(1.5rem, 2vw, 2rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.admin-content h2 {
+  color: #101f3b;
+  font-weight: 650;
+}
+
+.admin-content .form-label {
+  font-weight: 600;
+}
+
+.admin-content .card {
+  border: 1px solid #d8e2ee !important;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px #0a17300d !important;
+}
+
+.admin-content .table-responsive {
+  border: 1px solid #d8e2ee;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.admin-content .table {
+  margin-bottom: 0;
+}
+
+.admin-content .table th,
+.admin-content .table td {
+  padding: 14px 16px;
+  vertical-align: middle;
+}
+
+.admin-content .table th {
+  color: #2c4e82;
+  font-size: 0.875rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.admin-content .btn {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: normal;
+  text-align: center;
+}
+
+.admin-content .btn-sm {
+  min-height: 36px;
+}
+
+.admin-content :is(a, button, input, select, textarea):focus-visible {
+  outline: 3px solid #4c86d6;
+  outline-offset: 2px;
+}
+
+.admin-content .table-responsive:focus-visible {
+  outline: 3px solid #4c86d6;
+  outline-offset: 2px;
+}
+
+.admin-form-actions,
+.admin-detail-actions {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.admin-row-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.admin-row-actions form {
+  margin: 0;
+}
+
+@media (max-width: 575.98px) {
+  .admin-page-heading .btn,
+  .admin-page-actions,
+  .admin-page-actions .btn {
+    width: 100%;
+  }
+
+  .admin-content .card-body {
+    padding: 20px !important;
+  }
+
+  .admin-form-actions > *,
+  .admin-detail-actions > * {
+    flex: 1 1 100%;
+  }
+}
+
+.admin-footer {
+  margin-top: auto;
+  padding: 20px clamp(16px, 2.5vw, 36px);
+  border-top: 1px solid #1e3559;
+  color: #c9d6e8;
+  background: #0a1730;
+}
+
+.admin-footer-inner {
+  width: min(100%, 1368px);
+  margin: 0 auto;
+}
+
+.admin-page-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.admin-page-heading h1,
+.admin-page-heading h2 {
+  margin: 0;
+}
+
+.admin-page-intro {
+  max-width: 72ch;
+  margin: 6px 0 0;
+  color: #52657d;
+  line-height: 1.5;
+}
+
+.admin-form-heading {
+  margin-inline: auto;
+}
+
+@media (min-width: 768px) {
+  .admin-form-heading {
+    width: 83.333333%;
+  }
+}
+
+@media (min-width: 992px) {
+  .admin-form-heading {
+    width: 75%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .admin-form-heading {
+    width: 66.666667%;
+  }
+}
+
+.admin-page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-page-actions .btn {
+  margin: 0 !important;
+}
+
+.squad-navbar {
+  min-height: 96px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid #1e3559;
+  color: #edf1f7;
+  background: #0a1730;
+}
+
+.squad-navbar-inner {
+  max-width: 1360px;
+  gap: 16px;
+}
+
+.squad-brand {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  color: #fff;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.squad-brand:hover,
+.squad-brand:focus {
+  color: #fff;
+}
+
+.squad-brand img {
+  width: 128px;
+  height: 96px;
+  object-fit: contain;
+}
+
+.squad-navbar .nav-link {
+  min-height: 44px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  color: #c9d6e8;
+  font-weight: 600;
+}
+
+.squad-navbar .nav-link:hover,
+.squad-navbar .nav-link.active {
+  color: #fff;
+  background: #16305a;
+}
+
+.squad-session {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.squad-role {
+  padding: 4px 9px;
+  border: 1px solid #4c86d6;
+  border-radius: 999px;
+  color: #c9d6e8;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.squad-session form {
+  margin: 0;
+}
+
+.squad-logout,
+.squad-login {
+  min-height: 44px;
+  padding: 9px 14px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #4c86d6;
+  border-radius: 8px;
+  color: #edf1f7;
+  background: transparent;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.squad-logout:hover,
+.squad-login:hover {
+  color: #fff;
+  background: #2c4e82;
+}
+
+.squad-toggler {
+  border-color: #4c86d6;
+  background: #fff;
+}
+
+@media (max-width: 991.98px) {
+  .squad-navbar .navbar-collapse {
+    flex-basis: 100%;
+  }
+
+  .squad-links {
+    margin-top: 12px;
+  }
+
+  .squad-session {
+    padding: 12px 0 4px;
+    border-top: 1px solid #1e3559;
+  }
+}
+
+.squad-navbar a:focus-visible,
+.squad-navbar button:focus-visible {
+  outline: 3px solid #7fb0ff;
+  outline-offset: 2px;
+}
+
 .seller-layout {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
   color: #17202a;
-  background: #f5f6f8;
+  background: #f7fafd;
   font-family: Arial, Helvetica, sans-serif;
-}
-
-.seller-navbar {
-  position: sticky;
-  z-index: 10;
-  top: 0;
-  min-height: 68px;
-  border-bottom: 1px solid #d9dee7;
-  background: #fff;
-}
-
-.seller-navbar-inner {
-  width: min(100%, 960px);
-  min-height: 68px;
-  margin: 0 auto;
-  padding: 10px 18px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.seller-brand,
-.seller-navbar-actions {
-  display: flex;
-  align-items: center;
-}
-
-.seller-brand {
-  min-width: 0;
-  gap: 10px;
-  color: #172b4d;
-  font-size: 0.9375rem;
-  font-weight: 800;
-  text-decoration: none;
-}
-
-.seller-brand:hover {
-  color: #172b4d;
-}
-
-.seller-brand-mark {
-  width: 38px;
-  height: 38px;
-  flex: 0 0 auto;
-  display: grid;
-  place-items: center;
-  border-radius: 8px;
-  color: #fff;
-  background: #243b53;
-  font-size: 0.75rem;
-}
-
-.seller-navbar-actions {
-  gap: 8px;
-}
-
-.seller-navbar-actions form {
-  margin: 0;
-}
-
-.seller-nav-link,
-.seller-logout {
-  min-height: 44px;
-  padding: 10px 12px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  font-size: 0.8125rem;
-  font-weight: 700;
-}
-
-.seller-nav-link {
-  color: #243b53;
-  background: #eef2f6;
-  text-decoration: none;
-}
-
-.seller-logout {
-  border: 1px solid #b7c0cc;
-  color: #344054;
-  background: #fff;
 }
 
 .seller-main {
@@ -138,15 +348,6 @@ body {
   margin-bottom: 24px;
 }
 
-.consulta-saudacao {
-  margin: 0 0 5px;
-  color: #243b53;
-  font-size: 0.6875rem;
-  font-weight: 800;
-  letter-spacing: 0;
-  text-transform: uppercase;
-}
-
 .consulta-cabecalho h1 {
   margin: 0;
   color: #17202a;
@@ -159,7 +360,7 @@ body {
 .consulta-cabecalho > p:last-child {
   margin: 8px 0 0;
   color: #667085;
-  font-size: 0.875rem;
+  font-size: 1rem;
   line-height: 1.5;
 }
 
@@ -179,7 +380,7 @@ body {
 .consulta-ajuda {
   margin: 4px 0 0;
   color: #667085;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
 }
 
 .consulta-campo,
@@ -193,7 +394,7 @@ body {
   border: 1px solid #243b53;
   color: #fff;
   background: #243b53;
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-weight: 750;
 }
 
@@ -227,7 +428,7 @@ body {
 
 .consulta-grade-etapa {
   color: #243b53;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 700;
   letter-spacing: 0;
   text-transform: uppercase;
@@ -239,7 +440,7 @@ body {
   border-radius: 8px;
   color: #334c5a;
   background: #eaf0f3;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 700;
 }
 
@@ -289,7 +490,7 @@ body {
   align-items: center;
   gap: 0.4375rem;
   color: #263842;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   letter-spacing: 0;
   text-transform: uppercase;
 }
@@ -355,7 +556,7 @@ body {
 .consulta-resultados-contagem {
   margin: 4px 0 0;
   color: #667085;
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
 }
 
 .consulta-estado {
@@ -470,15 +671,6 @@ body {
 }
 
 @media (max-width: 420px) {
-  .seller-navbar-inner {
-    padding-inline: 14px;
-  }
-
-  .seller-brand > span:last-child,
-  .seller-nav-link {
-    display: none;
-  }
-
   .seller-main {
     padding: 24px 14px 40px;
   }
