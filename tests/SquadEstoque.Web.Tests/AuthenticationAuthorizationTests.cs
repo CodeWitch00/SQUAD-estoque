@@ -34,6 +34,24 @@ public sealed class AuthenticationAuthorizationTests : IClassFixture<SquadEstoqu
     }
 
     [Fact]
+    public async Task Login_page_associates_field_errors_with_their_controls()
+    {
+        using var client = CreateClient();
+
+        var response = await client.GetAsync("/Account/Login");
+        var html = await response.Content.ReadAsStringAsync();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("for=\"Email\"", html);
+        Assert.Contains("for=\"Senha\"", html);
+        Assert.Contains("aria-describedby=\"Email-error\"", html);
+        Assert.Contains("aria-describedby=\"Senha-error\"", html);
+        Assert.Contains("id=\"Email-error\"", html);
+        Assert.Contains("id=\"Senha-error\"", html);
+        Assert.Contains("role=\"alert\"", html);
+    }
+
+    [Fact]
     public async Task Lojista_can_login_and_access_produtos()
     {
         using var client = CreateClient();

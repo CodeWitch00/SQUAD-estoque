@@ -40,14 +40,14 @@
 
                     <div class="field">
                         <label asp-for="Email" class="form-label">E-mail</label>
-                        <input asp-for="Email" class="form-control" type="email" autocomplete="username" autofocus />
-                        <span asp-validation-for="Email" class="field-validation"></span>
+                        <input asp-for="Email" class="form-control" type="email" autocomplete="username" autofocus aria-describedby="Email-error" />
+                        <span asp-validation-for="Email" id="Email-error" class="field-validation"></span>
                     </div>
 
                     <div class="field">
                         <label asp-for="Senha" class="form-label">Senha</label>
                         <div class="password-field">
-                            <input asp-for="Senha" class="form-control" type="password" autocomplete="current-password" />
+                            <input asp-for="Senha" class="form-control" type="password" autocomplete="current-password" aria-describedby="Senha-error" />
                             <button type="button" class="password-toggle" id="toggle-password" aria-controls="Senha" aria-label="Mostrar senha" aria-pressed="false">
                                 <svg id="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z" />
@@ -58,7 +58,7 @@
                                 </svg>
                             </button>
                         </div>
-                        <span asp-validation-for="Senha" class="field-validation"></span>
+                        <span asp-validation-for="Senha" id="Senha-error" class="field-validation"></span>
                     </div>
 
                     <div class="login-options">
