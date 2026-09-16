@@ -54,7 +54,7 @@ public sealed class ConsultaEstoqueTests : IClassFixture<SquadEstoqueWebApplicat
         var html = WebUtility.HtmlDecode(await response.Content.ReadAsStringAsync());
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Contains("Consulta rápida", html);
+        Assert.Contains("Qual modelo o cliente procura?", html);
         Assert.Contains("<label", html);
         Assert.Contains("for=\"Termo\"", html);
         Assert.Contains("role=\"search\"", html);

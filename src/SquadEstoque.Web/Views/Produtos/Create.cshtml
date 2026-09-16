@@ -4,12 +4,17 @@
     ViewData["Title"] = "Novo Produto";
 }
 
+<header class="admin-page-heading admin-form-heading mb-4">
+    <div>
+        <h1>Cadastrar produto e grade</h1>
+        <p class="admin-page-intro">Informe o modelo e as numerações para criar os SKUs com saldo inicial zero.</p>
+    </div>
+</header>
+
 <div class="row justify-content-center">
-    <div class="col-12 col-md-8 col-lg-6">
+    <div class="col-12 col-md-10 col-lg-9 col-xl-8">
         <div class="card shadow-sm border-0">
             <div class="card-body p-4">
-                <h3 class="card-title mb-4">Cadastrar Produto e Grade</h3>
-
                 <form asp-action="Create" method="post">
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
@@ -45,7 +50,7 @@
                         <span asp-validation-for="NumeracoesGrade" class="text-danger small"></span>
                     </div>
 
-                    <div class="d-flex justify-content-between">
+                    <div class="admin-form-actions">
                         <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
                         <button type="submit" class="btn btn-primary">Salvar Produto e Grade</button>
                     </div>

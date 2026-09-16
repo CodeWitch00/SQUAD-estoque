@@ -4,28 +4,31 @@
     ViewData["Title"] = "Detalhes do Produto";
 }
 
+<header class="admin-page-heading mb-4">
+    <div>
+        <h1>@Model.Nome</h1>
+        <p class="admin-page-intro">Consulte a grade e os saldos deste modelo.</p>
+    </div>
+    <span class="badge @(Model.Ativo ? "bg-success" : "bg-secondary")">@(Model.Ativo ? "Ativo" : "Inativo")</span>
+</header>
+
 <div class="card shadow-sm border-0 mb-4">
     <div class="card-body p-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 class="card-title mb-0">@Model.Nome</h2>
-            <span class="badge @(Model.Ativo ? "bg-success" : "bg-secondary")">@(Model.Ativo ? "Ativo" : "Inativo")</span>
-        </div>
-
         <div class="row mb-4">
             <div class="col-sm-4"><strong>Marca:</strong> @Model.Marca</div>
             <div class="col-sm-4"><strong>Categoria:</strong> @Model.Categoria</div>
             <div class="col-sm-4"><strong>Cor:</strong> @Model.Cor</div>
         </div>
 
-        <h4 class="mt-4 mb-3">Grade de Numerações</h4>
-        <div class="table-responsive">
+        <h2 class="mt-4 mb-3">Grade de numerações</h2>
+        <div class="table-responsive" tabindex="0" role="region" aria-label="Grade de numerações e saldos">
             <table class="table table-bordered align-middle">
                 <thead class="table-light">
                     <tr>
-                        <th style="width: 20%;">Numeração</th>
-                        <th style="width: 25%;">Saldo Atual</th>
-                        <th style="width: 25%;">Estado</th>
-                        <th style="width: 30%;" class="text-end">Ações de Estoque</th>
+                        <th scope="col" style="width: 20%;">Numeração</th>
+                        <th scope="col" style="width: 25%;">Saldo Atual</th>
+                        <th scope="col" style="width: 25%;">Estado</th>
+                        <th scope="col" style="width: 30%;" class="text-end">Ações de Estoque</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -48,17 +51,19 @@
                                     <span class="badge bg-secondary">Indisponível</span>
                                 }
                             </td>
-                            <td class="text-end">
+                            <td>
+                                <div class="admin-row-actions">
                                 @if (User.IsInRole("LOJISTA"))
                                 {
-                                    <a asp-controller="Movimentacoes" asp-action="Entrada" asp-route-skuId="@sku.Id" class="btn btn-outline-success btn-sm me-1">+ Entrada</a>
-                                    <a asp-controller="Movimentacoes" asp-action="Saida" asp-route-skuId="@sku.Id" class="btn btn-outline-primary btn-sm me-1">- Saída</a>
-                                    <a asp-controller="Movimentacoes" asp-action="Ajuste" asp-route-skuId="@sku.Id" class="btn btn-outline-warning btn-sm">Ajuste</a>
+                                    <a asp-controller="Movimentacoes" asp-action="Entrada" asp-route-skuId="@sku.Id" class="btn btn-outline-secondary btn-sm">Entrada</a>
+                                    <a asp-controller="Movimentacoes" asp-action="Saida" asp-route-skuId="@sku.Id" class="btn btn-outline-secondary btn-sm">Saída</a>
+                                    <a asp-controller="Movimentacoes" asp-action="Ajuste" asp-route-skuId="@sku.Id" class="btn btn-outline-secondary btn-sm">Ajuste</a>
                                 }
                                 else if (User.IsInRole("VENDEDOR"))
                                 {
-                                    <a asp-controller="Movimentacoes" asp-action="Saida" asp-route-skuId="@sku.Id" class="btn btn-outline-primary btn-sm">- Saída</a>
+                                    <a asp-controller="Movimentacoes" asp-action="Saida" asp-route-skuId="@sku.Id" class="btn btn-outline-secondary btn-sm">Saída</a>
                                 }
+                                </div>
                             </td>
                         </tr>
                     }
@@ -66,7 +71,7 @@
             </table>
         </div>
 
-        <div class="mt-4 d-flex justify-content-between">
+        <div class="mt-4 admin-detail-actions">
             <a asp-action="Index" class="btn btn-outline-secondary">Voltar ao Catálogo</a>
             <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar Modelo</a>
         </div>

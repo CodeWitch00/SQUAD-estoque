@@ -1,14 +1,13 @@
 @model ConsultaEstoqueViewModel
 
 @{
-    ViewData["Title"] = "Consulta rápida";
+    ViewData["Title"] = "Atendimento";
     var buscaExecutada = !string.IsNullOrWhiteSpace(Model.Termo) && ViewData.ModelState.IsValid;
     var produtoSelecionado = Model.Resultados.FirstOrDefault(produto => produto.Id == Model.ProdutoSelecionadoId);
 }
 
 <div class="consulta-vendedor mx-auto">
     <header class="consulta-cabecalho">
-        <p class="consulta-saudacao">Consulta rápida</p>
         <h1>Qual modelo o cliente procura?</h1>
         <p>Digite o nome ou parte do nome para consultar o estoque.</p>
     </header>
