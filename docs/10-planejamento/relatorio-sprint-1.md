@@ -22,11 +22,12 @@ Este documento é um índice de resultados e evidências.
 ### Protótipos e UX
 
 - [Login navegável](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/05-ux/prototipos/login.html)
-- [Fluxo do vendedor](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/05-ux/prototipos/prototipo-vendedor.html)
-- [Fluxo do lojista](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/05-ux/prototipos/prototipo-lojista.html)
+- [Fluxo do vendedor](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/05-ux/prototipos/vendedor/prototipo-vendedor.html)
+- [Fluxo do lojista](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/05-ux/prototipos/lojista/prototipo-lojista.html)
 - [Inventário de telas e mapa de navegação](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/05-ux/inventario-telas-e-mapa-navegacao.md)
 - [Mapa visual de navegação](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/05-ux/mapa-navegacao-mvp.svg)
 - [Decisões de interface](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/05-ux/decisoes/decisoes-de-interface.md)
+- [Evidências de UX](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/05-ux/evidencias/README.md)
 
 ### Planejamento e especificação dos testes
 
