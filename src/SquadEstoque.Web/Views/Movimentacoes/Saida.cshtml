@@ -4,12 +4,17 @@
     ViewData["Title"] = "Registrar Saída de Estoque";
 }
 
+<header class="admin-page-heading admin-form-heading mb-4">
+    <div>
+        <h1>Registrar saída de estoque</h1>
+        <p class="admin-page-intro">Selecione a numeração e informe quantos pares saíram da loja.</p>
+    </div>
+</header>
+
 <div class="row justify-content-center">
-    <div class="col-12 col-md-8 col-lg-6">
+    <div class="col-12 col-md-10 col-lg-9 col-xl-8">
         <div class="card shadow-sm border-0">
             <div class="card-body p-4">
-                <h3 class="card-title mb-4 text-primary">Registrar Saída de Estoque</h3>
-
                 <form asp-action="Saida" method="post">
                     <input type="hidden" asp-for="Tipo" />
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
@@ -46,7 +51,7 @@
                         <span asp-validation-for="Motivo" class="text-danger small"></span>
                     </div>
 
-                    <div class="d-flex justify-content-between">
+                    <div class="admin-form-actions">
                         @if (User.IsInRole("LOJISTA"))
                         {
                             <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
@@ -55,7 +60,7 @@
                         {
                             <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
                         }
-                        <button type="submit" class="btn btn-primary btn-lg">Confirmar Saída</button>
+                        <button type="submit" class="btn btn-primary">Confirmar saída</button>
                     </div>
                 </form>
             </div>
