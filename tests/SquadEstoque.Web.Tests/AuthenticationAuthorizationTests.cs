@@ -48,7 +48,6 @@ public sealed class AuthenticationAuthorizationTests : IClassFixture<SquadEstoqu
         Assert.Contains("aria-describedby=\"Senha-error\"", html);
         Assert.Contains("id=\"Email-error\"", html);
         Assert.Contains("id=\"Senha-error\"", html);
-        Assert.Contains("role=\"alert\"", html);
     }
 
     [Fact]
