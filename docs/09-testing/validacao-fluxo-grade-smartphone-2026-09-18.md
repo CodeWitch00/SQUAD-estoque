@@ -1,10 +1,10 @@
 # Validação do fluxo até a grade — primeira consulta em smartphone
 
-**Cartão:** S2-QA-006  
-**Data:** 18/09/2026  
-**Branch:** `dev/rayana`  
-**Viewport:** 390 × 844 px, orientação vertical  
-**Navegador:** Brave com emulação de viewport móvel  
+**Cartão:** S2-QA-006
+**Data:** 18/09/2026
+**Branch:** `dev/rayana`
+**Viewport:** 390 × 844 px, orientação vertical
+**Navegador:** Brave com emulação de viewport móvel
 **Perfil:** VENDEDOR
 
 ## Objetivo e percurso

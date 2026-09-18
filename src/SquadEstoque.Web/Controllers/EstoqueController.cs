@@ -49,9 +49,29 @@ public sealed class EstoqueController : Controller
             return View(viewModel);
         }
 
+        var termoNormalizado = Normalizar(viewModel.Termo);
+        if (termoNormalizado.Length == 0)
+        {
+            viewModel.MensagemEstado = "Produto não encontrado.";
+            return View(viewModel);
+        }
+
+        var primeiroCaractere = termoNormalizado[0].ToString();
+        var ultimoCaractere = termoNormalizado[^1].ToString();
+        var padraoPrimeiroCaractere = $"%{EscapeLikePattern(primeiroCaractere)}%";
+        var padraoUltimoCaractere = $"%{EscapeLikePattern(ultimoCaractere)}%";
+
         var produtos = await _context.Produto
             .AsNoTracking()
-            .Where(produto => produto.Ativo)
+            .Where(produto => produto.Ativo &&
+                (EF.Functions.Like(produto.Nome, padraoPrimeiroCaractere, "\\") ||
+                 EF.Functions.Like(produto.Marca, padraoPrimeiroCaractere, "\\") ||
+                 EF.Functions.Like(produto.Categoria, padraoPrimeiroCaractere, "\\") ||
+                 EF.Functions.Like(produto.Cor, padraoPrimeiroCaractere, "\\")) &&
+                (EF.Functions.Like(produto.Nome, padraoUltimoCaractere, "\\") ||
+                 EF.Functions.Like(produto.Marca, padraoUltimoCaractere, "\\") ||
+                 EF.Functions.Like(produto.Categoria, padraoUltimoCaractere, "\\") ||
+                 EF.Functions.Like(produto.Cor, padraoUltimoCaractere, "\\")))
             .Select(produto => new ProdutoConsultaResultadoViewModel
             {
                 Id = produto.Id,
@@ -123,6 +143,14 @@ public sealed class EstoqueController : Controller
         }
 
         return semAcentos.ToString().Normalize(NormalizationForm.FormC);
+    }
+
+    private static string EscapeLikePattern(string value)
+    {
+        return value
+            .Replace("\\", "\\\\", StringComparison.Ordinal)
+            .Replace("%", "\\%", StringComparison.Ordinal)
+            .Replace("_", "\\_", StringComparison.Ordinal);
     }
 
     private static int DistanciaDeLevenshtein(string esquerda, string direita)
