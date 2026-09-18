@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+using System.Security.Claims;
 using System.Text;
 using SquadEstoque.Web.Data;
 using SquadEstoque.Web.Models;
@@ -116,6 +117,60 @@ public sealed class EstoqueController : Controller
         }
 
         return View(viewModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Vender(Guid skuId)
+    {
+        var usuarioId = GetAuthenticatedUserId();
+        if (!usuarioId.HasValue)
+        {
+            return Challenge();
+        }
+
+        if (skuId == Guid.Empty)
+        {
+            return BadRequest(new { mensagem = "Informe um SKU válido para registrar a venda." });
+        }
+
+        try
+        {
+            var skuDisponivel = await _context.Sku
+                .AsNoTracking()
+                .AnyAsync(sku => sku.Id == skuId && sku.Ativo && sku.Produto != null && sku.Produto.Ativo);
+
+            if (!skuDisponivel)
+            {
+                return BadRequest(new { mensagem = "O SKU selecionado não está disponível para venda." });
+            }
+
+            var resultado = await _context.RegistrarVendaRapidaAsync(skuId, usuarioId.Value);
+            if (resultado.Erro is not null)
+            {
+                return BadRequest(new { mensagem = resultado.Erro });
+            }
+
+            return Ok(new
+            {
+                mensagem = "Venda registrada com sucesso.",
+                skuId,
+                saldoAtual = resultado.Sku!.SaldoAtual
+            });
+        }
+        catch
+        {
+            return StatusCode(500, new
+            {
+                mensagem = "Não foi possível registrar a venda. Tente novamente."
+            });
+        }
+    }
+
+    private Guid? GetAuthenticatedUserId()
+    {
+        var claimValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return Guid.TryParse(claimValue, out var id) ? id : null;
     }
 
     private static bool CorrespondeAoTermo(ProdutoConsultaResultadoViewModel produto, string termo)
