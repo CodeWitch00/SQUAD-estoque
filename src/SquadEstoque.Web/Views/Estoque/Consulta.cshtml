@@ -20,6 +20,9 @@
             </p>
         </div>
 
+        <div id="consulta-antiforgery" class="visually-hidden">
+            @Html.AntiForgeryToken()
+        </div>
         <form asp-controller="Estoque" asp-action="Consulta" method="get" role="search" novalidate>
             <div class="mb-3">
                 <label asp-for="Termo" class="form-label fw-semibold">Produto</label>
