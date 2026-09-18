@@ -8,7 +8,7 @@ Tecnologias principais: ASP.NET Core MVC, .NET 10, Entity Framework Core, SQLite
 
 ## Demonstração
 
-- Protótipo navegável: https://codewitch00.github.io/SQUAD-estoque/
+- [Abrir protótipo navegável no GitHub Pages](https://codewitch00.github.io/SQUAD-estoque/) — demonstração estática dos fluxos de login, vendedor e lojista.
 - Fluxos e arquivos de interface: [docs/05-ux/prototipos/README.md](docs/05-ux/prototipos/README.md)
 
 ---
