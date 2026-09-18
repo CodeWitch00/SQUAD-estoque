@@ -44,7 +44,7 @@
 
     @if (produtoSelecionado is not null)
     {
-        <section class="consulta-grade mb-4" aria-labelledby="titulo-grade">
+        <section id="grade" class="consulta-grade mb-4" aria-labelledby="titulo-grade">
             <header class="consulta-grade-cabecalho">
                 <div>
                     <p class="consulta-grade-etapa mb-1">Grade disponível</p>
@@ -126,6 +126,7 @@
                        asp-action="Consulta"
                        asp-route-termo="@Model.Termo"
                        asp-route-produtoId="@produto.Id"
+                       asp-fragment="grade"
                        class="consulta-resultado @(selecionado ? "consulta-resultado-selecionado" : string.Empty)"
                        aria-current="@(selecionado ? "true" : null)">
                         <span class="consulta-produto-icone" aria-hidden="true">⌕</span>
@@ -141,3 +142,7 @@
         </section>
     }
 </div>
+
+@section Scripts {
+    <script src="~/js/consulta.js" asp-append-version="true"></script>
+}

@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
+using System.Text;
 using SquadEstoque.Web.Data;
 using SquadEstoque.Web.Models;
 
@@ -47,18 +49,29 @@ public sealed class EstoqueController : Controller
             return View(viewModel);
         }
 
-        var padrao = $"%{EscapeLikePattern(viewModel.Termo)}%";
+        var termoNormalizado = Normalizar(viewModel.Termo);
+        if (termoNormalizado.Length == 0)
+        {
+            viewModel.MensagemEstado = "Produto não encontrado.";
+            return View(viewModel);
+        }
 
-        viewModel.Resultados = await _context.Produto
+        var primeiroCaractere = termoNormalizado[0].ToString();
+        var ultimoCaractere = termoNormalizado[^1].ToString();
+        var padraoPrimeiroCaractere = $"%{EscapeLikePattern(primeiroCaractere)}%";
+        var padraoUltimoCaractere = $"%{EscapeLikePattern(ultimoCaractere)}%";
+
+        var produtos = await _context.Produto
             .AsNoTracking()
             .Where(produto => produto.Ativo &&
-                (EF.Functions.Like(produto.Nome, padrao, "\\") ||
-                 EF.Functions.Like(produto.Marca, padrao, "\\") ||
-                 EF.Functions.Like(produto.Categoria, padrao, "\\") ||
-                 EF.Functions.Like(produto.Cor, padrao, "\\")))
-            .OrderBy(produto => produto.Nome)
-            .ThenBy(produto => produto.Marca)
-            .ThenBy(produto => produto.Cor)
+                (EF.Functions.Like(produto.Nome, padraoPrimeiroCaractere, "\\") ||
+                 EF.Functions.Like(produto.Marca, padraoPrimeiroCaractere, "\\") ||
+                 EF.Functions.Like(produto.Categoria, padraoPrimeiroCaractere, "\\") ||
+                 EF.Functions.Like(produto.Cor, padraoPrimeiroCaractere, "\\")) &&
+                (EF.Functions.Like(produto.Nome, padraoUltimoCaractere, "\\") ||
+                 EF.Functions.Like(produto.Marca, padraoUltimoCaractere, "\\") ||
+                 EF.Functions.Like(produto.Categoria, padraoUltimoCaractere, "\\") ||
+                 EF.Functions.Like(produto.Cor, padraoUltimoCaractere, "\\")))
             .Select(produto => new ProdutoConsultaResultadoViewModel
             {
                 Id = produto.Id,
@@ -68,6 +81,13 @@ public sealed class EstoqueController : Controller
                 Cor = produto.Cor
             })
             .ToListAsync();
+
+        viewModel.Resultados = produtos
+            .Where(produto => CorrespondeAoTermo(produto, viewModel.Termo))
+            .OrderBy(produto => produto.Nome)
+            .ThenBy(produto => produto.Marca)
+            .ThenBy(produto => produto.Cor)
+            .ToList();
 
         if (viewModel.Resultados.Count == 0)
         {
@@ -98,12 +118,61 @@ public sealed class EstoqueController : Controller
         return View(viewModel);
     }
 
+    private static bool CorrespondeAoTermo(ProdutoConsultaResultadoViewModel produto, string termo)
+    {
+        var palavras = Normalizar(termo)
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var campos = Normalizar(string.Join(' ', produto.Nome, produto.Marca, produto.Categoria, produto.Cor));
+
+        return palavras.All(palavra => campos.Contains(palavra, StringComparison.Ordinal) ||
+            campos.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Any(campo => palavra.Length >= 4 && DistanciaDeLevenshtein(palavra, campo) <= 1));
+    }
+
+    private static string Normalizar(string valor)
+    {
+        var decomposicao = valor.Normalize(NormalizationForm.FormD);
+        var semAcentos = new StringBuilder(decomposicao.Length);
+
+        foreach (var caractere in decomposicao)
+        {
+            if (CharUnicodeInfo.GetUnicodeCategory(caractere) != UnicodeCategory.NonSpacingMark)
+            {
+                semAcentos.Append(char.ToLowerInvariant(caractere));
+            }
+        }
+
+        return semAcentos.ToString().Normalize(NormalizationForm.FormC);
+    }
+
     private static string EscapeLikePattern(string value)
     {
         return value
             .Replace("\\", "\\\\", StringComparison.Ordinal)
             .Replace("%", "\\%", StringComparison.Ordinal)
             .Replace("_", "\\_", StringComparison.Ordinal);
+    }
+
+    private static int DistanciaDeLevenshtein(string esquerda, string direita)
+    {
+        var linhaAnterior = Enumerable.Range(0, direita.Length + 1).ToArray();
+
+        for (var i = 1; i <= esquerda.Length; i++)
+        {
+            var linhaAtual = new int[direita.Length + 1];
+            linhaAtual[0] = i;
+
+            for (var j = 1; j <= direita.Length; j++)
+            {
+                linhaAtual[j] = Math.Min(
+                    Math.Min(linhaAtual[j - 1] + 1, linhaAnterior[j] + 1),
+                    linhaAnterior[j - 1] + (esquerda[i - 1] == direita[j - 1] ? 0 : 1));
+            }
+
+            linhaAnterior = linhaAtual;
+        }
+
+        return linhaAnterior[direita.Length];
     }
 
 }

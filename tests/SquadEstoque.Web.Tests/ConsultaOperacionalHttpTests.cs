@@ -80,6 +80,22 @@ public sealed class ConsultaOperacionalHttpTests : IClassFixture<SquadEstoqueWeb
         Assert.Contains("Produto não encontrado.", WebUtility.HtmlDecode(html));
     }
 
+    [Theory]
+    [InlineData("Tenis")]
+    [InlineData("tesnis")]
+    [InlineData("Squad")]
+    public async Task Consulta_accepts_accent_free_and_small_typo_searches(string termo)
+    {
+        using var client = CreateClient();
+        await LoginAsVendedorAsync(client);
+
+        var response = await client.GetAsync($"/Estoque/Consulta?termo={Uri.EscapeDataString(termo)}");
+        var html = WebUtility.HtmlDecode(await response.Content.ReadAsStringAsync());
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("Tênis Runner", html);
+    }
+
     private HttpClient CreateClient() => _factory.CreateClient(new WebApplicationFactoryClientOptions
     {
         AllowAutoRedirect = false,
