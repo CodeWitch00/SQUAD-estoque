@@ -1,109 +1,119 @@
 SQUAD ESTOQUE
 
-Guia Visual, Identidade e Código de Referência de Interface — Cartão [S1-UX-009]
+Guia Visual, Identidade e Código de Referência de Interface — Cartão S1-UX-009
 
-* Área: UX/Frontend
-* Reunião-alvo: 26/08/2026
-* Prazo: 09/09/2026 às 23:59 (BRT)
-* Branch sugerida: "docs/s1-ux-009-integrante"
-* Tecnologias: HTML5, CSS3, JavaScript e ASP.NET Core MVC
-* Escopo: Guia visual + código limpo e revisado
-* Documentação: "docs/05-ux/"
+- Área: UX/Frontend
+- Reunião-alvo: 26/08/2026
+- Prazo: 09/09/2026 às 23:59 (BRT)
+- Branch sugerida: "docs/s1-ux-009-integrante"
+- Tecnologias: HTML5, CSS3, JavaScript e ASP.NET Core MVC
+- Escopo: Guia visual + código de referência
+- Documentação: "docs/05-ux/"
 
 ---
 
-1. Objetivo da Interface
+1. Objetivo
 
 Definir uma referência visual curta e consistente para os protótipos e futuras Views do sistema SQUAD Estoque.
 
 O guia estabelece referências para:
 
 - identidade visual;
-- cores e estados de interface;
+- cores e estados da interface;
 - tipografia;
 - botões e componentes;
 - formulários e tabelas;
-- posicionamento dos ativos de marca;
+- ativos de marca;
 - responsividade;
 - acessibilidade;
 - separação visual conforme o perfil de acesso.
 
-Os exemplos devem representar o domínio de estoque de calçados e seguir o padrão arquitetural ASP.NET Core MVC utilizado pela aplicação.
+Os exemplos devem representar o domínio de estoque de calçados e seguir o padrão ASP.NET Core MVC utilizado pela aplicação.
 
-Este documento não define regras de negócio nem implementa funcionalidades de Venda Rápida.
+«Este documento não define regras de negócio nem implementa funcionalidades de Venda Rápida.»
 
 ---
 
 2. Sistema Visual e Paleta de Cores
 
-A linguagem visual utiliza cabeçalhos em tom azul-petróleo, superfícies claras, blocos suavemente arredondados e tipografia sem serifa.
+A linguagem visual utiliza cabeçalhos em azul-petróleo, superfícies claras, blocos suavemente arredondados e tipografia sem serifa.
 
-As cores abaixo representam a referência visual atualmente documentada para a interface. Elas não devem ser classificadas como identidade visual oficial sem que sua origem seja confirmada nos protótipos, Views existentes ou documentação aprovada pela equipe responsável.
+As cores abaixo são tratadas como referência visual atual. Elas não devem ser classificadas como identidade visual oficial sem que sua origem seja confirmada nos protótipos, Views existentes ou documentação aprovada pela equipe responsável.
 
-Paleta Principal
+Paleta de referência
 
-Aplicação / Elemento| Código Hex| Uso Visual
-Institucional / Cabeçalho| "#17657D"| Cabeçalho, títulos de seção e elementos primários
-Ação / Destaque| "#55B9D9"| Ações primárias e destaques de interação
-Superfícies| "#FFFFFF"| Cards, formulários, tabelas e áreas de conteúdo
-Fundo geral| "#F3F7F9"| Fundo principal das páginas
+Aplicação| Cor| Uso
+Institucional / Cabeçalho| "#17657D"| Cabeçalho, títulos e elementos primários
+Ação / Destaque| "#55B9D9"| Ações primárias e destaques
+Superfície| "#FFFFFF"| Cards, formulários e tabelas
+Fundo geral| "#F3F7F9"| Fundo das páginas
 Texto principal| "#20282D"| Textos de leitura
-Texto técnico| "#121C25"| Código e painéis técnicos
+Texto técnico| "#121C25"| Código e informações técnicas
 
-Origem das cores
+Estados
 
-A origem da paleta deve ser registrada durante a revisão do cartão:
+Estado| Cor| Uso
+Sucesso| "#38D39F"| Operação concluída
+Atenção| "#F1B84B"| Situações que exigem atenção
+Erro| "#E66A67"| Erros e falhas de validação
+
+Os estados não devem depender somente da cor para transmitir informação. Utilizar também texto ou ícone quando necessário.
+
+Origem da paleta
+
+A origem das cores deve ser registrada a partir de uma das seguintes fontes:
 
 - protótipos aprovados;
 - Views atualmente utilizadas pela aplicação;
 - documentação de identidade visual;
 - decisão formal da equipe de UX/Produto.
 
-Enquanto a origem não estiver formalmente confirmada, utilizar a classificação “referência visual atual”, e não “paleta oficial”.
+Enquanto essa origem não estiver confirmada, utilizar a classificação “referência visual atual”.
 
-Paleta de Estados de Feedback
+---
 
-Estado| Referência| Uso e Aplicação
-Sucesso| "#38D39F"| Confirmação de operação concluída
-Atenção / Alerta| "#F1B84B"| Pendências e situações que exigem atenção
-Erro| "#E66A67"| Falhas e erros de validação
+3. Verificação de Contraste
 
-Os estados não devem depender somente da cor para transmitir informação. Sempre que necessário, utilizar texto ou ícone complementar.
-
-Verificação de Contraste
-
-As principais combinações utilizadas na interface devem atender aos critérios de contraste da WCAG.
+As principais combinações da interface devem atender aos critérios de contraste da WCAG.
 
 Combinação| Aplicação| Contraste aproximado| Resultado
-"#FFFFFF" sobre "#17657D"| Cabeçalho e títulos em fundo azul| 6,7:1| Adequado para texto normal
+"#FFFFFF" sobre "#17657D"| Cabeçalho e títulos| 6,7:1| Adequado
 "#20282D" sobre "#FFFFFF"| Texto principal| 14:1| Adequado
 "#17657D" sobre "#FFFFFF"| Títulos e links| 6,7:1| Adequado
 "#10232D" sobre "#55B9D9"| Texto do botão primário| 7,2:1| Adequado
 "#17657D" sobre "#F3F7F9"| Texto sobre fundo geral| 5,9:1| Adequado
 
-Os valores devem ser confirmados durante a validação final do protótipo/implementação.
+Os valores devem ser confirmados durante a validação final dos protótipos e da implementação.
 
 ---
 
-3. Diretrizes de Identidade Visual e Tipografia
+4. Identidade Visual e Tipografia
 
 Logo e ativos de marca
 
 Não criar, redesenhar ou inventar versões alternativas da marca.
 
-Os arquivos de imagem existentes no repositório devem ser inventariados antes de definir qual deles é considerado oficial.
+Os ativos existentes no repositório devem ser identificados e diferenciados entre:
 
-O caminho abaixo pode ser utilizado como referência somente se o arquivo realmente existir no projeto e estiver validado:
+- uso atual na aplicação;
+- ativo aprovado;
+- ativo aguardando confirmação.
+
+A existência de um arquivo no repositório não significa automaticamente que ele seja oficialmente aprovado.
+
+Inventário dos ativos
+
+«Preencher esta tabela após a conferência do repositório.»
+
+Arquivo| Localização| Uso atual| Status
+"[arquivo encontrado]"| "[caminho]"| "[uso]"| Aprovado / A confirmar
+"[arquivo encontrado]"| "[caminho]"| "[uso]"| Aprovado / A confirmar
+
+Caso exista no projeto:
 
 img/logo-squad-estoque.png
 
-A presença de um arquivo no repositório não significa automaticamente que ele esteja aprovado pela equipe de marca.
-
-A documentação deve registrar:
-
-Arquivo| Localização| Uso| Aprovação
-"[arquivo encontrado]"| "[caminho]"| "[uso]"| Confirmar
-"[arquivo encontrado]"| "[caminho]"| "[uso]"| Confirmar
+o arquivo deve ser validado antes de ser tratado como ativo oficial.
 
 Tipografia
 
@@ -111,9 +121,7 @@ A referência atual utiliza:
 
 font-family: Arial, Helvetica, sans-serif;
 
-Títulos devem possuir maior peso visual e escala responsiva utilizando "clamp()" quando apropriado.
-
-Exemplo:
+Títulos devem possuir maior peso visual e escala responsiva quando necessário.
 
 h1 {
   font-size: clamp(1.8rem, 4vw, 2.5rem);
@@ -123,22 +131,22 @@ h2 {
   font-size: clamp(1.5rem, 3vw, 2rem);
 }
 
-Caso os protótipos aprovados definam outra família tipográfica, essa decisão deve prevalecer sobre esta referência.
+Caso os protótipos aprovados definam outra família tipográfica, a decisão documentada deve prevalecer.
 
 ---
 
-4. Componentes, Responsividade e Acessibilidade
+5. Componentes, Responsividade e Acessibilidade
 
-Componente / Regra| Diretriz de Design & Comportamento
-Botões| Azul-petróleo ou azul de ação, texto com contraste adequado e bordas arredondadas de 5px
+Componente| Diretriz
+Botões| Azul-petróleo ou azul de ação, contraste adequado e raio de 5px
 Estados| Normal, Hover, Foco, Ativo, Desabilitado, Sucesso e Erro
-Foco| Indicador de foco visível, com "outline" de pelo menos 3px
-Responsividade| Layout fluido utilizando Grid/Flexbox conforme necessidade
-Mobile| Em telas até 600px, navegação pode ser empilhada e ações podem ocupar 100% da largura
+Foco| Indicador visível, preferencialmente com "outline" de pelo menos 3px
+Responsividade| Utilizar Grid/Flexbox conforme a necessidade
+Mobile| Em telas até 600px, navegação pode ser empilhada e ações ocupar 100% da largura
 Formulários| Todo campo deve possuir "<label>" associado
 Tabelas| Utilizar estrutura semântica e "<th scope="col">"
-Imagens| Utilizar "alt" descritivo quando a imagem possuir função informativa
-Estados| Não utilizar apenas cor para comunicar sucesso, alerta ou erro
+Imagens| Utilizar "alt" descritivo para imagens informativas
+Feedback| Não utilizar somente cor para comunicar estados
 
 Separação por perfil
 
@@ -146,23 +154,23 @@ A interface deve respeitar os perfis existentes no sistema.
 
 Lojista
 
-- acesso às funcionalidades administrativas disponibilizadas para o perfil;
-- gestão e consulta de estoque conforme as permissões definidas pela aplicação.
+- funcionalidades administrativas disponibilizadas para o perfil;
+- gestão e consulta de estoque conforme as permissões da aplicação.
 
 Vendedor
 
-- acesso somente às funcionalidades disponibilizadas para o perfil;
-- funcionalidades de venda e consulta permitidas pela aplicação.
+- funcionalidades disponibilizadas para o perfil;
+- venda e consultas permitidas pela aplicação.
 
-A ocultação de elementos na interface não substitui a autorização no servidor.
+«A ocultação de elementos na interface não substitui a autorização no servidor.»
 
 ---
 
-5. Código HTML5 de Referência (Revisado e Corrigido)
+6. Código HTML5 de Referência
 
-O exemplo abaixo representa o domínio de estoque de calçados e serve como referência estrutural para futuras Views.
+O exemplo representa o domínio de estoque de calçados.
 
-No ASP.NET Core MVC, o conteúdo equivalente deve ser adaptado para as respectivas Views ".cshtml".
+No ASP.NET Core MVC, a estrutura deve ser adaptada para as respectivas Views ".cshtml".
 
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -174,9 +182,10 @@ No ASP.NET Core MVC, o conteúdo equivalente deve ser adaptado para as respectiv
 </head>
 
 <body>
-  <!-- Cabeçalho -->
+
   <header class="cabecalho">
     <div class="container cabecalho-conteudo">
+
       <a
         class="marca"
         href="/"
@@ -192,10 +201,10 @@ No ASP.NET Core MVC, o conteúdo equivalente deve ser adaptado para as respectiv
         <h1>SQUAD Estoque</h1>
         <p>Sistema de gestão de estoque de calçados</p>
       </div>
+
     </div>
   </header>
 
-  <!-- Navegação -->
   <nav class="navegacao" aria-label="Navegação principal">
     <div class="container">
       <ul>
@@ -207,17 +216,16 @@ No ASP.NET Core MVC, o conteúdo equivalente deve ser adaptado para as respectiv
     </div>
   </nav>
 
-  <!-- Conteúdo Principal -->
   <main>
 
-    <!-- Painel de Início -->
     <section id="inicio" class="secao">
       <div class="container">
+
         <h2>Painel de Estoque</h2>
 
         <p class="descricao">
-          Consulte produtos e acompanhe as movimentações do estoque
-          de forma simples e organizada.
+          Consulte produtos e acompanhe as movimentações
+          do estoque de forma simples e organizada.
         </p>
 
         <div class="cards">
@@ -225,7 +233,7 @@ No ASP.NET Core MVC, o conteúdo equivalente deve ser adaptado para as respectiv
           <article class="card">
             <h3>Produtos</h3>
             <p>
-              Cadastre e consulte os calçados disponíveis no estoque.
+              Cadastre e consulte os calçados disponíveis.
             </p>
             <a href="#produtos">Acessar</a>
           </article>
@@ -233,7 +241,7 @@ No ASP.NET Core MVC, o conteúdo equivalente deve ser adaptado para as respectiv
           <article class="card">
             <h3>Movimentações</h3>
             <p>
-              Registre e consulte entradas, saídas e ajustes de estoque.
+              Consulte entradas, saídas e ajustes de estoque.
             </p>
             <a href="#movimentacoes">Acessar</a>
           </article>
@@ -241,21 +249,23 @@ No ASP.NET Core MVC, o conteúdo equivalente deve ser adaptado para as respectiv
           <article class="card">
             <h3>Consultas</h3>
             <p>
-              Consulte rapidamente os dados disponíveis no estoque.
+              Consulte rapidamente os dados do estoque.
             </p>
             <a href="#consultas">Acessar</a>
           </article>
 
         </div>
+
       </div>
     </section>
 
-    <!-- Cadastro de Produtos -->
     <section id="produtos" class="secao secao-clara">
       <div class="container">
+
         <h2>Produtos</h2>
 
         <form class="formulario">
+
           <div class="campo">
             <label for="produto">Nome do calçado</label>
 
@@ -293,17 +303,21 @@ No ASP.NET Core MVC, o conteúdo equivalente deve ser adaptado para as respectiv
               Limpar
             </button>
           </div>
+
         </form>
+
       </div>
     </section>
 
-    <!-- Tabela de Movimentações -->
     <section id="movimentacoes" class="secao">
       <div class="container">
+
         <h2>Movimentações</h2>
 
         <div class="tabela-container">
+
           <table>
+
             <caption>
               Últimas movimentações do estoque
             </caption>
@@ -331,52 +345,22 @@ No ASP.NET Core MVC, o conteúdo equivalente deve ser adaptado para as respectiv
                 <td>3</td>
                 <td>26/08/2026</td>
               </tr>
-
-              <tr>
-                <td>Bota casual</td>
-                <td>Ajuste</td>
-                <td>2</td>
-                <td>26/08/2026</td>
-              </tr>
             </tbody>
+
           </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- Consultas -->
-    <section id="consultas" class="secao secao-clara">
-      <div class="container">
-        <h2>Controle de Estoque</h2>
-
-        <div class="consulta">
-
-          <div>
-            <strong>Produtos cadastrados</strong>
-            <span>125</span>
-          </div>
-
-          <div>
-            <strong>Itens disponíveis</strong>
-            <span>480</span>
-          </div>
-
-          <div>
-            <strong>Itens em baixa</strong>
-            <span>12</span>
-          </div>
 
         </div>
+
       </div>
     </section>
 
   </main>
 
-  <!-- Rodapé -->
   <footer class="rodape">
     <div class="container">
       <p>
-        &copy; 2026 SQUAD Estoque. Todos os direitos reservados.
+        &copy; 2026 SQUAD Estoque.
+        Todos os direitos reservados.
       </p>
     </div>
   </footer>
@@ -386,11 +370,7 @@ No ASP.NET Core MVC, o conteúdo equivalente deve ser adaptado para as respectiv
 
 ---
 
-6. Código CSS3 de Estilização e Layout (Revisado)
-
-/* =========================================
-   Configurações Globais
-   ========================================= */
+7. Código CSS3 de Referência
 
 * {
   box-sizing: border-box;
@@ -401,7 +381,7 @@ No ASP.NET Core MVC, o conteúdo equivalente deve ser adaptado para as respectiv
 body {
   font-family: Arial, Helvetica, sans-serif;
   color: #20282D;
-  background-color: #F3F7F9;
+  background: #F3F7F9;
   line-height: 1.5;
 }
 
@@ -410,9 +390,7 @@ body {
   margin: 0 auto;
 }
 
-/* =========================================
-   Cabeçalho
-   ========================================= */
+/* Cabeçalho */
 
 .cabecalho {
   background: #17657D;
@@ -443,13 +421,7 @@ body {
   font-size: clamp(1.8rem, 4vw, 2.5rem);
 }
 
-.cabecalho p {
-  margin-top: 0.25rem;
-}
-
-/* =========================================
-   Navegação
-   ========================================= */
+/* Navegação */
 
 .navegacao {
   background: #FFFFFF;
@@ -480,9 +452,7 @@ body {
   outline-offset: -3px;
 }
 
-/* =========================================
-   Seções
-   ========================================= */
+/* Seções */
 
 .secao {
   padding: 4rem 0;
@@ -498,13 +468,7 @@ body {
   margin-bottom: 1rem;
 }
 
-.descricao {
-  max-width: 750px;
-}
-
-/* =========================================
-   Cards
-   ========================================= */
+/* Cards */
 
 .cards {
   display: grid;
@@ -512,7 +476,6 @@ body {
     auto-fit,
     minmax(220px, 1fr)
   );
-
   gap: 1.5rem;
   margin-top: 1.5rem;
 }
@@ -522,7 +485,6 @@ body {
   border: 1px solid #DBE1E5;
   border-radius: 10px;
   padding: 1.5rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .card h3 {
@@ -530,16 +492,7 @@ body {
   margin-bottom: 0.5rem;
 }
 
-.card a {
-  display: inline-block;
-  margin-top: 1rem;
-  color: #17657D;
-  font-weight: bold;
-}
-
-/* =========================================
-   Formulários
-   ========================================= */
+/* Formulários */
 
 .formulario {
   max-width: 700px;
@@ -572,21 +525,16 @@ body {
 .campo select:focus-visible {
   outline: 3px solid #55B9D9;
   outline-offset: 2px;
-  border-color: #17657D;
 }
 
-/* =========================================
-   Botões
-   ========================================= */
+/* Botões */
 
 .acoes {
   display: flex;
   gap: 1rem;
-  margin-top: 1rem;
 }
 
 .botao {
-  display: inline-block;
   padding: 0.7rem 1rem;
   border: 2px solid #17657D;
   border-radius: 5px;
@@ -610,14 +558,7 @@ body {
   color: #17657D;
 }
 
-.botao:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-/* =========================================
-   Tabelas
-   ========================================= */
+/* Tabelas */
 
 .tabela-container {
   width: 100%;
@@ -630,38 +571,25 @@ table {
   background: #FFFFFF;
 }
 
-/* =========================================
-   Consultas
-   ========================================= */
-
-.consulta {
-  display: grid;
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(180px, 1fr)
-  );
-
-  gap: 1rem;
-}
-
-.consulta div {
-  display: flex;
-  flex-direction: column;
-  padding: 1.5rem;
-  background: #F3F7F9;
-  border: 1px solid #DBE1E5;
-  border-radius: 8px;
-}
-
-.consulta span {
-  color: #17657D;
-  font-size: 1.8rem;
+caption {
+  text-align: left;
   font-weight: bold;
+  margin-bottom: 0.75rem;
 }
 
-/* =========================================
-   Rodapé
-   ========================================= */
+th,
+td {
+  padding: 0.8rem;
+  border: 1px solid #DBE1E5;
+  text-align: left;
+}
+
+th {
+  background: #17657D;
+  color: #FFFFFF;
+}
+
+/* Rodapé */
 
 .rodape {
   padding: 2rem 0;
@@ -670,9 +598,7 @@ table {
   text-align: center;
 }
 
-/* =========================================
-   Responsividade
-   ========================================= */
+/* Responsividade */
 
 @media (max-width: 600px) {
 
@@ -696,50 +622,29 @@ table {
 
   .acoes .botao {
     width: 100%;
-    text-align: center;
   }
 
   .secao {
     padding: 2.5rem 0;
   }
 }
-7. Matriz de Atendimento aos Requisitos
-Requisito / Critério
-Status
-Observação e Resultado
-Respeito aos Ativos de Marca
-Em validação
-Os arquivos existentes no repositório devem ser inventariados e sua aprovação formal confirmada
-Cores
-Em validação
-A paleta foi mantida como referência visual atual; a classificação como oficial depende da origem documentada
-Contraste
-Atendido
-Principais combinações foram verificadas como referência de acessibilidade
-Tipografia
-Atendido
-Arial, Helvetica, sans-serif mantida como referência
-Responsividade
-Atendido
-Grid/Flexbox e comportamento específico para telas de até 600px
-Acessibilidade
-Atendido
-Labels associados, foco visível, tabelas semânticas e textos alternativos
-Domínio
-Corrigido
-Exemplos alterados de produtos eletrônicos para estoque de calçados
-Perfis
-Atendido
-Interface considera separação entre Lojista e Vendedor
-Arquitetura
-Atendido
-Exemplos alinhados ao padrão ASP.NET Core MVC
-Código de referência
-Atendido
-HTML/CSS mantidos curtos e focados na orientação visual
-Venda Rápida
-Fora do escopo
-Nenhum VendaRapidaService, TypeScript ou Jest foi incluído
-Documentação
-Atendido
-Documento destinado a docs/05-ux/
+
+---
+
+8. Matriz de Atendimento
+
+Requisito| Status| Resultado
+Descrição do PR| Corrigido| Escopo limitado ao guia de identidade visual e código de referência
+Ativos de marca| Em validação| Inventário deve ser preenchido com os arquivos reais do repositório
+Aprovação da marca| Em validação| Uso atual não é tratado automaticamente como aprovação oficial
+Cores| Em validação| Tratadas como referência visual até confirmação da origem
+Contraste| Atendido| Principais combinações verificadas
+Tipografia| Atendido| Arial, Helvetica, sans-serif
+Responsividade| Atendido| Grid/Flexbox e comportamento mobile
+Acessibilidade| Atendido| Labels, foco visível, "alt" e tabelas semânticas
+Domínio| Corrigido| Exemplos representam estoque de calçados
+Perfis| Atendido| Separação entre Lojista e Vendedor
+Arquitetura| Atendido| Referência alinhada ao ASP.NET Core MVC
+Guia| Atendido| Conteúdo reduzido e focado em orientar protótipos e Views
+Venda Rápida| Fora do escopo| Não faz parte desta branch
+Documentação| Atendido| Destinada a "docs/05-ux/"
