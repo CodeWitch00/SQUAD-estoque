@@ -38,8 +38,7 @@ O plano procura responder:
 - [Regras do domínio](../01-negocio/dominio.md)
 - [Arquitetura](../04-arquitetura/arquitetura.md)
 - [Inventário de telas e navegação](../05-ux/inventario-telas-e-mapa-navegacao.md)
-- [Guia do fluxo XP](../07-operacional/guia-fluxo-desenvolvimento-xp.md)
-- [Manual de ambiente](../07-operacional/manual-setup-ambiente.md)
+- [Preparação e fluxo de desenvolvimento](../../CONTRIBUTING.md)
 - [Especificação dos testes do vendedor](especificacao-testes-vendedor.md)
 - [Testes automatizados](../../tests/SquadEstoque.Web.Tests/)
 
