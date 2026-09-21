@@ -2,9 +2,12 @@
 
 Referências visuais e navegáveis das interfaces do MVP.
 
-## Demonstração
+## Página publicada
 
-- [Abrir protótipo navegável no GitHub Pages](https://codewitch00.github.io/SQUAD-estoque/)
+> [Abrir o protótipo navegável no GitHub Pages](https://codewitch00.github.io/SQUAD-estoque/)
+
+## Acesso alternativo
+
 - [Abrir o login localmente](login.html)
 - [Visualizar sem GitHub Pages](https://html-preview.github.io/?url=https://raw.githubusercontent.com/CodeWitch00/SQUAD-estoque/main/docs/05-ux/prototipos/login.html)
 

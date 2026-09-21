@@ -7,6 +7,16 @@ rupturas, com acessos distintos para `LOJISTA` e `VENDEDOR`.
 Tecnologias: ASP.NET Core MVC, .NET 10, Razor Views, Entity Framework Core,
 SQLite, Bootstrap, autenticação por cookies, xUnit e GitHub Actions.
 
+## Demonstração compartilhada
+
+A versão integrada está disponível no ambiente acadêmico de homologação:
+
+> [Abrir o SQUAD Estoque no Azure](https://asp-squad-estoque-free-hgabd8asd5f4a9g9.northcentralus-01.azurewebsites.net)
+
+O ambiente é destinado aos desenvolvedores e utiliza somente dados fictícios.
+O estado validado, as limitações e o procedimento de publicação estão no
+[runbook do Azure](docs/07-operacional/azure.md).
+
 ## Comece por aqui
 
 Existe um único fluxo obrigatório para preparar o computador, escolher uma
@@ -53,9 +63,10 @@ Os desenvolvedores compartilham os registros de homologação acessando a mesma
 aplicação no Azure pelo navegador. Nenhum computador deve abrir diretamente o
 arquivo SQLite hospedado.
 
-O App Service gratuito já foi provisionado, mas o pacote do SQUAD Estoque ainda
-não foi publicado. O estado e as regras de uso do ambiente estão no
-[CONTRIBUTING.md](CONTRIBUTING.md#8-ambiente-compartilhado-no-azure).
+O SQUAD Estoque foi publicado manualmente no App Service gratuito. O estado e
+as regras de uso do ambiente estão no
+[CONTRIBUTING.md](CONTRIBUTING.md#8-ambiente-compartilhado-no-azure) e no
+[runbook do Azure](docs/07-operacional/azure.md).
 
 ## Arquitetura preservada
 

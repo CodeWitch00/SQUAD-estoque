@@ -22,7 +22,7 @@ Compilar, testar e revisar o diff
         ↓
 Enviar a branch e abrir Pull Request
         ↓
-CI verde + revisão de outro integrante
+CI verde + revisão da mantenedora CodeWitch00
         ↓
 Merge na main
         ↓
@@ -219,28 +219,28 @@ Antes de codificar, confirme no Trello:
 Mova o cartão para `A Fazer`, atribua-o a você e esclareça dúvidas antes da
 implementação. Ao começar, mova-o para `Em execução`.
 
-### 4.2 Atualizar a main e criar a branch
+### 4.2 Atualizar a main e a branch pessoal
 
 Com a árvore de trabalho limpa:
 
 ```bash
 git switch main
 git pull --ff-only
-git switch -c tipo/cartao-descricao-integrante
+git switch dev/integrante
+git merge main
 ```
 
-Use uma branch curta por tarefa:
+Cada desenvolvedor trabalha somente em sua branch pessoal:
 
 ```text
-feat/s3-be-001-consulta-rayana
-fix/s3-qa-004-saldo-felipe
-test/s3-qa-010-autorizacao-emmy
-docs/s4-doc-006-runbook-nicolas
+dev/rayana
+dev/emmy
+dev/felipe
+dev/nicolas
 ```
 
-Tipos permitidos: `feat`, `fix`, `test`, `docs`, `refactor` e `chore`. As
-branches históricas `dev/<integrante>` podem continuar no Git, mas novas tarefas
-devem usar branches curtas e identificáveis.
+Não crie uma branch nova para cada tarefa. Identifique o cartão nos commits e
+no Pull Request. Somente a mantenedora atualiza diretamente a `main`.
 
 ### 4.3 Implementar
 
@@ -275,7 +275,7 @@ Revise os arquivos individualmente antes de adicioná-los:
 ```bash
 git add caminho/do/arquivo
 git commit -m "tipo: descrição objetiva"
-git push -u origin nome-da-branch
+git push -u origin dev/integrante
 ```
 
 Exemplos:
@@ -303,20 +303,22 @@ O Pull Request aponta para a `main` e informa:
 - capturas quando houver mudança visual;
 - riscos e limitações conhecidos.
 
-O autor não aprova o próprio trabalho. Outro integrante confere escopo, regras
-de negócio, arquitetura, segurança, testes e regressões.
+A revisão que autoriza a integração é feita exclusivamente pela mantenedora
+`CodeWitch00`, que confere escopo, regras de negócio, arquitetura, segurança,
+testes e regressões. Outros integrantes podem comentar e sugerir ajustes, mas
+não aprovam nem fazem o merge do Pull Request.
 
 ### 4.7 Integrar e concluir
 
-Somente depois de CI verde e aprovação:
+Somente depois de CI verde e aprovação da mantenedora, `CodeWitch00`:
 
-1. faça o merge pelo GitHub;
-2. valide a mudança integrada na `main`;
-3. vincule Pull Request e evidências ao cartão;
-4. mova o cartão para `Feito`;
-5. atualize a `main` local antes da próxima tarefa.
+1. faz o merge pelo GitHub;
+2. valida a mudança integrada na `main`;
+3. vincula Pull Request e evidências ao cartão;
+4. move o cartão para `Feito`;
+5. orienta a equipe a atualizar a `main` e a branch pessoal antes da próxima tarefa.
 
-Não use force push. Não faça merge direto na `main`.
+Nenhum outro integrante deve fazer push ou merge na `main`. Não use force push.
 
 ## 5. Regras de implementação
 
@@ -401,14 +403,15 @@ Região: North Central US
 URL: https://asp-squad-estoque-free-hgabd8asd5f4a9g9.northcentralus-01.azurewebsites.net
 ```
 
-O recurso gratuito já existe, mas o pacote da aplicação ainda não foi
-publicado. Até a primeira publicação validada, a URL exibe a página padrão do
-Azure.
+O primeiro pacote da aplicação foi publicado manualmente em 21/09/2026. O
+endpoint `/health` respondeu com sucesso; as validações de login, persistência
+após reinício e republicação, backup e restauração continuam pendentes e estão
+registradas no [runbook do Azure](docs/07-operacional/azure.md).
 
-Depois da publicação, cada integrante acessará a URL pelo navegador com sua
-credencial individual. Todos verão o mesmo banco de homologação. Esse ambiente
-serve para validar a versão integrada da `main`, ensaiar os fluxos e preparar a
-demonstração.
+Depois da publicação, cada integrante acessa a URL pelo navegador com as
+credenciais demonstrativas temporárias. Todos veem o mesmo banco de homologação.
+Esse ambiente serve para validar a versão integrada da `main`, ensaiar os fluxos
+e preparar a demonstração.
 
 Somente uma pessoa autorizada publica por vez. Antes de cada publicação:
 
@@ -420,9 +423,12 @@ Somente uma pessoa autorizada publica por vez. Antes de cada publicação:
 6. confirme a persistência após reinício e republicação;
 7. registre versão, horário, responsável e resultado.
 
-Não teste branches individuais no Azure compartilhado. Não use as credenciais
-locais `123`. O CD será configurado somente depois do deploy manual e da
-persistência estarem comprovados.
+Não teste branches individuais no Azure compartilhado. Como exceção temporária,
+o seed demonstrativo está habilitado para a validação interna dos
+desenvolvedores, sempre com dados fictícios e com a URL compartilhada somente
+com a equipe. O cartão `S4-BE-003` deverá substituir essas credenciais antes da
+demonstração final ou de qualquer uso real. O CD será configurado somente depois
+da persistência e da recuperação estarem comprovadas.
 
 ## 9. Critérios comuns
 
