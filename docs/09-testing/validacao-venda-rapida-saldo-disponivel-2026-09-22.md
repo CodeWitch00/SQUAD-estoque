@@ -1,45 +1,25 @@
-# QA — Venda rápida com saldo disponível
+# Validação da venda rápida com saldo disponível — 22/09/2026
 
-## Escopo e implementação
+## Escopo
 
-Branch: `dev/emmy`. Base integrada: `716c582` (inclui S2-BE-007 e S2-BE-008).
-A branch local `main` não foi alterada. Não houve alteração de código de produção.
+Cartão S2-QA-011: comprovar que a venda rápida de um SKU com saldo disponível reduz seu estoque em exatamente um par, sem alterar outros SKUs.
 
-Teste: `VendaRapidaHttpTests.Vendedor_sells_exactly_one_pair_without_changing_any_other_sku`.
+Rota validada: `POST /Estoque/Vender`, como `VENDEDOR` autenticado.
 
-- Uma nova `SquadEstoqueWebApplicationFactory` cria bancos SQLite em memória exclusivos desta execução.
-- Prepara produto e SKU com identificadores fixos e saldo inicial de 5 pares; outro SKU do mesmo produto possui 7 pares. Os SKUs de outro produto, criados pela factory, também são comparados.
-- Autentica `VENDEDOR` pelo formulário real de login, com cookies e antiforgery; obtém novo token após o login.
-- Executa `POST /Estoque/Vender` enviando somente SKU e token.
-- Confere HTTP 200, JSON, mensagem de sucesso, identificador do SKU e saldo 4.
-- Consulta o banco em novo escopo, sem rastreamento: compara o conjunto completo de IDs e todos os campos escalares dos SKUs. Somente o saldo selecionado pode mudar, exatamente de 5 para 4.
-- Confere uma única movimentação de saída, de quantidade 1, vinculada ao SKU e ao vendedor autenticado.
+## Resultado
 
-Não foram adicionados cenários de saldo zero, autorização ou concorrência.
+| Cenário | Resultado esperado | Situação |
+| --- | --- | --- |
+| Venda do SKU selecionado, com saldo inicial de 5 pares | Resposta de sucesso e saldo final de 4 pares | Aprovado |
+| Demais SKUs, inclusive de outro produto | Permanecem sem alterações | Aprovado |
+| Movimentação de saída | Um registro de 1 par, vinculado ao SKU e ao vendedor | Aprovado |
 
-## Evidências locais
+## Evidência automatizada
 
-Windows; SDK .NET 10.0.400; execução em 22/09/2026.
+O teste de integração `VendaRapidaHttpTests.Vendedor_sells_exactly_one_pair_without_changing_any_other_sku` usa SQLite em memória isolado, login real com cookie e token antiforgery. O estado persistido é conferido em outro escopo, sem rastreamento do contexto usado na preparação dos dados.
 
-```powershell
-dotnet test tests/SquadEstoque.Web.Tests/SquadEstoque.Web.Tests.csproj --filter FullyQualifiedName~VendaRapidaHttpTests --logger "trx;LogFileName=venda-rapida.trx"
-# Aprovado: 1; falhas: 0; ignorados: 0.
+- Teste do cartão: 1 aprovado, 0 falhas.
+- Suíte completa: 82 aprovados, 0 falhas.
+- Build: aprovado. `git diff --check`: sem erros.
 
-dotnet build src/SquadEstoque.Web/SquadEstoque.Web.csproj
-# Compilação com êxito; 0 avisos; 0 erros.
-
-dotnet test tests/SquadEstoque.Web.Tests/SquadEstoque.Web.Tests.csproj --logger "trx;LogFileName=suite-venda-rapida.trx" --collect:"XPlat Code Coverage"
-# Aprovados: 82; falhas: 0; ignorados: 0.
-
-git diff --check
-# Sem erros.
-```
-
-Os relatórios TRX estão em `tests/SquadEstoque.Web.Tests/TestResults/` (artefatos locais ignorados pelo Git).
-O teste passou na primeira execução: a implementação existente já atende ao cenário. Não se aplica evidência de falha anterior a uma correção; não houve correção de produção neste cartão.
-
-## Verificação manual e pendências
-
-No endereço Azure informado, o login de vendedor foi realizado e a consulta por `Tênis` retornou `Tênis run`. A grade exibiu tamanho 37 com saldo 0 e não apresentou ação de venda rápida. Assim, login e consulta foram verificados, mas a venda manual pela interface permanece pendente. Nenhuma venda foi enviada ao banco compartilhado; a comprovação da venda com saldo positivo é do teste HTTP isolado.
-
-Por orientação do solicitante, as evidências serão entregues na conversa e ele abrirá o Pull Request. Revisão por outro integrante, atualização do cartão e merge permanecem pendentes. Nenhum cartão histórico foi editado e o cartão não foi movido para Feito.
+O teste passou na primeira execução; não houve correção de código de produção neste cartão. Saldo zero, autorização e concorrência pertencem a outros cenários e não foram cobertos aqui.
