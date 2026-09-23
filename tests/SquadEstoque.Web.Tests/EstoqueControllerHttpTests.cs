@@ -94,6 +94,8 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Contains("Venda registrada com sucesso", body);
+        Assert.Contains($"\"skuId\":\"{skuId}\"", body);
+        Assert.Contains("\"saldoAtual\":2", body);
         using var scope = _factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
         Assert.Equal(2, (await context.Sku.FindAsync(skuId))!.SaldoAtual);
@@ -101,6 +103,14 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
         Assert.Equal(1, movement.Quantidade);
         Assert.Equal(TipoMovimentacao.SAIDA, movement.Tipo);
         Assert.Equal(usuarioId, movement.UsuarioId);
+
+        var skuAtualizado = await context.Sku.Include(s => s.Produto).SingleAsync(s => s.Id == skuId);
+        var consultaAtualizada = await client.GetAsync(
+            $"/Estoque/Consulta?termo={Uri.EscapeDataString(skuAtualizado.Produto!.Nome)}&produtoId={skuAtualizado.ProdutoId}");
+        var gradeAtualizada = WebUtility.HtmlDecode(await consultaAtualizada.Content.ReadAsStringAsync());
+        Assert.Equal(HttpStatusCode.OK, consultaAtualizada.StatusCode);
+        Assert.Contains("Grade disponível", gradeAtualizada);
+        Assert.Contains("2 pares", gradeAtualizada);
     }
 
     [Fact]
@@ -121,6 +131,67 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.Contains("não está disponível", body);
+    }
+
+    [Fact]
+    public async Task Vender_rejects_zero_balance_without_creating_movement_or_rupture()
+    {
+        using var client = CreateClient();
+        await LoginAsync(client, "vendedor@squad.com");
+        var (skuId, _) = await AddSkuAsync(0);
+        var token = await ExtractAntiforgeryTokenAsync(client);
+
+        using var form = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["skuId"] = skuId.ToString(),
+            ["__RequestVerificationToken"] = token
+        });
+
+        var response = await client.PostAsync("/Estoque/Vender", form);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        using var scope = _factory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
+        Assert.Equal(0, (await context.Sku.FindAsync(skuId))!.SaldoAtual);
+        Assert.Empty(await context.Movimentacao.Where(m => m.SkuId == skuId).ToListAsync());
+        Assert.Empty(await context.Ruptura.Where(r => r.SkuId == skuId).ToListAsync());
+    }
+
+    [Fact]
+    public async Task Vendedor_can_register_rupture_for_selected_sku_without_changing_stock()
+    {
+        using var client = CreateClient();
+        await LoginAsync(client, "vendedor@squad.com");
+        var (skuId, usuarioId) = await AddSkuAsync(3);
+        var token = await ExtractAntiforgeryTokenAsync(client);
+
+        using var form = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["skuId"] = skuId.ToString(),
+            ["__RequestVerificationToken"] = token
+        });
+
+        var response = await client.PostAsync("/Estoque/RegistrarNaoTinha", form);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        using var scope = _factory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
+        Assert.Equal(3, (await context.Sku.FindAsync(skuId))!.SaldoAtual);
+        Assert.Empty(await context.Movimentacao.Where(m => m.SkuId == skuId).ToListAsync());
+        var ruptura = await context.Ruptura.SingleAsync(r => r.SkuId == skuId);
+        Assert.Equal(usuarioId, ruptura.UsuarioId);
+    }
+
+    [Fact]
+    public async Task Registrar_nao_tinha_rejects_missing_antiforgery_token()
+    {
+        using var client = CreateClient();
+        await LoginAsync(client, "vendedor@squad.com");
+
+        var response = await client.PostAsync("/Estoque/RegistrarNaoTinha", new FormUrlEncodedContent(
+            new Dictionary<string, string> { ["skuId"] = Guid.NewGuid().ToString() }));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
     [Fact]

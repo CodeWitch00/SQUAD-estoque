@@ -63,6 +63,7 @@
                     @produtoSelecionado.Skus.Count @(produtoSelecionado.Skus.Count == 1 ? "numeração" : "numerações")
                 </span>
             </header>
+            <p id="consulta-venda-retorno" class="consulta-venda-retorno" role="status" aria-live="polite" tabindex="-1" hidden></p>
 
             @if (produtoSelecionado.Skus.Count == 0)
             {
@@ -75,23 +76,47 @@
                 <ul class="consulta-grade-lista" aria-label="Grade completa de numerações">
                     @foreach (var sku in produtoSelecionado.Skus)
                     {
-                        <li class="consulta-grade-item consulta-grade-item--@sku.ClasseDisponibilidade"
-                            aria-label="Tamanho @sku.Numeracao, saldo @sku.SaldoAtual, @sku.EstadoDisponibilidade">
-                            <span class="consulta-grade-numero">
-                                <span class="consulta-grade-prefixo">Nº</span>
-                                @sku.Numeracao
-                            </span>
-                            <span class="consulta-grade-saldo">
-                                @sku.SaldoAtual @(sku.SaldoAtual == 1 ? "par" : "pares")
-                            </span>
-                            <strong class="consulta-grade-estado">
-                                <span class="consulta-grade-marcador" aria-hidden="true"></span>
-                                @sku.EstadoDisponibilidade
-                            </strong>
+                        <li class="consulta-grade-item consulta-grade-item--@sku.ClasseDisponibilidade" data-sku-id="@sku.Id">
+                            <label class="consulta-grade-card">
+                                <input class="consulta-grade-selecao" type="radio" name="skuSelecionado" value="@sku.Id"
+                                       data-numeracao="@sku.Numeracao" data-saldo="@sku.SaldoAtual" />
+                                <span class="consulta-grade-card-conteudo" aria-label="Nº @sku.Numeracao, @sku.SaldoAtual @(sku.SaldoAtual == 1 ? "par" : "pares"), @sku.EstadoDisponibilidade">
+                                    <span class="consulta-grade-numero">
+                                        <span class="consulta-grade-prefixo">Nº</span>
+                                        @sku.Numeracao
+                                    </span>
+                                    <span class="consulta-grade-saldo">
+                                        @sku.SaldoAtual @(sku.SaldoAtual == 1 ? "par" : "pares")
+                                    </span>
+                                    <strong class="consulta-grade-estado">
+                                        <span class="consulta-grade-marcador" aria-hidden="true"></span>
+                                        @sku.EstadoDisponibilidade
+                                    </strong>
+                                </span>
+                            </label>
                         </li>
                     }
                 </ul>
             }
+        </section>
+    }
+
+    @if (produtoSelecionado is not null && produtoSelecionado.Skus.Count > 0)
+    {
+        <section class="consulta-atendimento-acoes" aria-labelledby="titulo-acoes-atendimento">
+            <h2 class="consulta-atendimento-rotulo">Atendimento atual</h2>
+            <p id="consulta-atendimento-resumo" class="consulta-atendimento-resumo" role="status" aria-live="polite">
+                Selecione a numeração solicitada pelo cliente.
+            </p>
+            <h2 id="titulo-acoes-atendimento" class="consulta-acoes-titulo">Resultado do atendimento</h2>
+            <div class="consulta-acoes-grade">
+                <button type="button" class="consulta-acao consulta-acao--primaria"
+                        data-resultado="vendeu" data-vender-url="@Url.Action("Vender", "Estoque")" disabled>Vendeu</button>
+                <button type="button" class="consulta-acao" data-resultado="nao-tinha" disabled>Não tinha</button>
+                <button type="button" class="consulta-acao consulta-acao--desistiu" data-resultado="desistiu">Desistiu</button>
+            </div>
+            <p class="consulta-acao-feedback" id="consulta-acao-feedback" role="status" aria-live="polite" hidden></p>
+            <a class="consulta-nova-consulta" asp-controller="Estoque" asp-action="Consulta">Nova consulta sem registrar resultado</a>
         </section>
     }
 

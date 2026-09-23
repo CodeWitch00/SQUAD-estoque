@@ -156,16 +156,20 @@ public sealed class ConsultaEstoqueTests : IClassFixture<SquadEstoqueWebApplicat
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Contains("Grade disponível", html);
         Assert.Contains("Grade completa de numerações", html);
-        Assert.Contains("Tamanho 36, saldo 3, Disponível", html);
-        Assert.Contains("Tamanho 38, saldo 1, Último par", html);
-        Assert.Contains("Tamanho 40, saldo 0, Indisponível", html);
+        Assert.Contains("Nº</span>\n                                        36", html);
+        Assert.Contains("3 pares", html);
+        Assert.Contains("Último par", html);
+        Assert.Contains("Indisponível", html);
         Assert.DoesNotContain("Tamanho 42", html);
-        Assert.True(html.IndexOf("Tamanho 36", StringComparison.Ordinal) <
-                    html.IndexOf("Tamanho 38", StringComparison.Ordinal));
-        Assert.True(html.IndexOf("Tamanho 38", StringComparison.Ordinal) <
-                    html.IndexOf("Tamanho 40", StringComparison.Ordinal));
-        Assert.DoesNotContain(">Vendeu<", html, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain(">Não tinha<", html, StringComparison.OrdinalIgnoreCase);
+        Assert.True(html.IndexOf("data-numeracao=\"36\"", StringComparison.Ordinal) <
+                    html.IndexOf("data-numeracao=\"38\"", StringComparison.Ordinal));
+        Assert.True(html.IndexOf("data-numeracao=\"38\"", StringComparison.Ordinal) <
+                    html.IndexOf("data-numeracao=\"40\"", StringComparison.Ordinal));
+        Assert.Contains("name=\"skuSelecionado\"", html);
+        Assert.Contains("Resultado do atendimento", html);
+        Assert.DoesNotContain("consulta-venda-card-botao", html);
+        Assert.Matches("data-resultado=\"vendeu\"[^>]*disabled", html);
+        Assert.Contains("Selecione a numeração solicitada pelo cliente.", html);
     }
 
     private HttpClient CreateClient()
