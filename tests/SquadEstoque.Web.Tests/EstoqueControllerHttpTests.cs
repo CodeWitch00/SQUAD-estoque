@@ -168,10 +168,13 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
         using var form = new FormUrlEncodedContent(new Dictionary<string, string>
         {
             ["skuId"] = skuId.ToString(),
+            ["usuarioId"] = Guid.NewGuid().ToString(),
             ["__RequestVerificationToken"] = token
         });
 
+        var antesDoPost = DateTime.UtcNow;
         var response = await client.PostAsync("/Estoque/RegistrarNaoTinha", form);
+        var depoisDoPost = DateTime.UtcNow;
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         using var scope = _factory.Services.CreateScope();
@@ -179,7 +182,66 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
         Assert.Equal(3, (await context.Sku.FindAsync(skuId))!.SaldoAtual);
         Assert.Empty(await context.Movimentacao.Where(m => m.SkuId == skuId).ToListAsync());
         var ruptura = await context.Ruptura.SingleAsync(r => r.SkuId == skuId);
+        Assert.Equal(skuId, ruptura.SkuId);
         Assert.Equal(usuarioId, ruptura.UsuarioId);
+        Assert.InRange(ruptura.CriadoEm, antesDoPost, depoisDoPost);
+    }
+
+    [Fact]
+    public async Task Registrar_nao_tinha_rejects_missing_or_unknown_sku_without_creating_rupture()
+    {
+        using var client = CreateClient();
+        await LoginAsync(client, "vendedor@squad.com");
+        var token = await ExtractAntiforgeryTokenAsync(client);
+
+        var skuIdsInvalidos = new[] { Guid.Empty, Guid.NewGuid() };
+        foreach (var skuId in skuIdsInvalidos)
+        {
+            using var form = new FormUrlEncodedContent(new Dictionary<string, string>
+            {
+                ["skuId"] = skuId.ToString(),
+                ["__RequestVerificationToken"] = token
+            });
+
+            var response = await client.PostAsync("/Estoque/RegistrarNaoTinha", form);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        using var scope = _factory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
+        Assert.Empty(await context.Ruptura
+            .Where(ruptura => skuIdsInvalidos.Contains(ruptura.SkuId))
+            .ToListAsync());
+    }
+
+    [Theory]
+    [InlineData("lojista@squad.com", HttpStatusCode.Found, "/Account/AccessDenied?ReturnUrl=%2FEstoque%2FRegistrarNaoTinha")]
+    [InlineData(null, HttpStatusCode.Found, "/Account/Login?ReturnUrl=%2FEstoque%2FRegistrarNaoTinha")]
+    public async Task Registrar_nao_tinha_requires_authenticated_vendedor(
+        string? email,
+        HttpStatusCode expectedStatus,
+        string expectedLocation)
+    {
+        using var client = CreateClient();
+        if (email is not null)
+        {
+            await LoginAsync(client, email);
+        }
+
+        var (skuId, _) = await AddSkuAsync(3);
+        using var form = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["skuId"] = skuId.ToString()
+        });
+
+        var response = await client.PostAsync("/Estoque/RegistrarNaoTinha", form);
+
+        Assert.Equal(expectedStatus, response.StatusCode);
+        Assert.Equal(expectedLocation, response.Headers.Location?.PathAndQuery);
+        using var scope = _factory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
+        Assert.Empty(await context.Ruptura.Where(r => r.SkuId == skuId).ToListAsync());
     }
 
     [Fact]

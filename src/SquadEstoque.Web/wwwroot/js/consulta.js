@@ -174,6 +174,7 @@
             if (tipo === 'nao-tinha') {
                 radio.checked = false;
                 atualizarSelecao();
+                feedback.hidden = false;
             }
             botoes.forEach((item) => item.disabled = item.dataset.resultado !== 'desistiu' && !selecionado());
         }
