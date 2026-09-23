@@ -75,12 +75,16 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
         Assert.DoesNotContain("Tênis Runner", html);
     }
 
-    [Fact]
-    public async Task Vendedor_can_post_venda_for_sku_and_records_authenticated_user()
+    [Theory]
+    [InlineData(3, 2, "Disponível", "disponivel")]
+    [InlineData(2, 1, "Último par", "ultimo-par")]
+    [InlineData(1, 0, "Indisponível", "indisponivel")]
+    public async Task Vendedor_can_post_venda_for_sku_and_records_authenticated_user(
+        int saldoInicial, int saldoFinal, string estado, string classe)
     {
         using var client = CreateClient();
         await LoginAsync(client, "vendedor@squad.com");
-        var (skuId, usuarioId) = await AddSkuAsync(3);
+        var (skuId, usuarioId) = await AddSkuAsync(saldoInicial);
         var token = await ExtractAntiforgeryTokenAsync(client);
 
         using var form = new FormUrlEncodedContent(new Dictionary<string, string>
@@ -95,10 +99,10 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Contains("Venda registrada com sucesso", body);
         Assert.Contains($"\"skuId\":\"{skuId}\"", body);
-        Assert.Contains("\"saldoAtual\":2", body);
+        Assert.Contains($"\"saldoAtual\":{saldoFinal}", body);
         using var scope = _factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
-        Assert.Equal(2, (await context.Sku.FindAsync(skuId))!.SaldoAtual);
+        Assert.Equal(saldoFinal, (await context.Sku.FindAsync(skuId))!.SaldoAtual);
         var movement = await context.Movimentacao.SingleAsync(m => m.SkuId == skuId);
         Assert.Equal(1, movement.Quantidade);
         Assert.Equal(TipoMovimentacao.SAIDA, movement.Tipo);
@@ -110,7 +114,10 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
         var gradeAtualizada = WebUtility.HtmlDecode(await consultaAtualizada.Content.ReadAsStringAsync());
         Assert.Equal(HttpStatusCode.OK, consultaAtualizada.StatusCode);
         Assert.Contains("Grade disponível", gradeAtualizada);
-        Assert.Contains("2 pares", gradeAtualizada);
+        var quantidade = $"{saldoFinal} {(saldoFinal == 1 ? "par" : "pares")}";
+        Assert.Contains($"aria-label=\"Nº 42, {quantidade}, {estado}\"", gradeAtualizada);
+        Assert.Contains($"consulta-grade-item--{classe}", gradeAtualizada);
+        Assert.Contains($"data-numeracao=\"42\" data-saldo=\"{saldoFinal}\"", gradeAtualizada);
     }
 
     [Fact]
