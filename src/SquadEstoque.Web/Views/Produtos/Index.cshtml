@@ -4,9 +4,12 @@
     ViewData["Title"] = "Catálogo de Produtos";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Catálogo de Produtos</h2>
-    <a asp-action="Create" class="btn btn-primary">+ Novo Produto com Grade</a>
+<div class="admin-page-heading mb-4">
+    <div>
+        <h1>Catálogo de Produtos</h1>
+        <p class="admin-page-intro">Consulte os modelos, as numerações e o estado de cada produto.</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">Novo produto com grade</a>
 </div>
 
 @if (!Model.Any())
@@ -15,17 +18,17 @@
 }
 else
 {
-    <div class="table-responsive">
+    <div class="table-responsive" tabindex="0" role="region" aria-label="Catálogo de produtos">
         <table class="table table-hover align-middle">
             <thead class="table-light">
                 <tr>
-                    <th>Modelo</th>
-                    <th>Marca</th>
-                    <th>Categoria</th>
-                    <th>Cor</th>
-                    <th>Grade (Tamanhos)</th>
-                    <th>Status</th>
-                    <th class="text-end">Ações</th>
+                    <th scope="col">Modelo</th>
+                    <th scope="col">Marca</th>
+                    <th scope="col">Categoria</th>
+                    <th scope="col">Cor</th>
+                    <th scope="col">Grade (Tamanhos)</th>
+                    <th scope="col">Status</th>
+                    <th scope="col" class="text-end">Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -52,14 +55,16 @@ else
                                 <span class="badge bg-secondary">Inativo</span>
                             }
                         </td>
-                        <td class="text-end">
-                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-sm me-1">Detalhes</a>
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm me-1">Editar</a>
+                        <td>
+                            <div class="admin-row-actions">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-sm">Detalhes</a>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm">Editar</a>
                             <form asp-action="ToggleAtivo" asp-route-id="@item.Id" method="post" class="d-inline">
-                                <button type="submit" class="btn @(item.Ativo ? "btn-outline-warning" : "btn-outline-success") btn-sm">
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">
                                     @(item.Ativo ? "Desativar" : "Ativar")
                                 </button>
                             </form>
+                            </div>
                         </td>
                     </tr>
                 }

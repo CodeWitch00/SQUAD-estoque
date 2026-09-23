@@ -41,9 +41,23 @@ validada desde já.
 |---|---|---|---|---|
 | NFT-MOB-01 | RNF-01 | Abrir login, login de `VENDEDOR`, consulta de estoque e resultado do atendimento em Chrome Android atual, sem instalar aplicativo. | Toda a jornada funciona no navegador; não exige aplicativo, download ou recurso exclusivo de desktop. | Parcial — login existe; consulta do vendedor é dependente de implementação. |
 | NFT-MOB-02 | RNF-01 | Repetir NFT-MOB-01 em Safari iOS atual. | Mesmo fluxo crítico funciona sem erro de layout ou interação. | Dependente do módulo de consulta. |
-| NFT-MOB-03 | RNF-07 | Abrir as telas públicas e autenticadas nos viewports `360×800`, `390×844` e `430×932`; usar orientação vertical. | Não há rolagem horizontal, texto cortado, sobreposição, botão fora da área visível ou controle impossível de acionar. | Planejado |
+| NFT-MOB-03 | RNF-07 | Abrir as telas públicas e autenticadas nos viewports `360×800`, `390×844` e `430×932`; usar orientação vertical. | Não há rolagem horizontal, texto cortado, sobreposição, botão fora da área visível ou controle impossível de acionar. | Parcial — viewport `390×844` validado no fluxo da consulta; `360×800` e `430×932` pendentes. |
 | NFT-MOB-04 | RNF-07 | Em cada viewport, usar login, logout e as ações disponíveis de `LOJISTA` e `VENDEDOR`, incluindo mensagens de validação. | Campos, mensagens e botões permanecem legíveis e utilizáveis sem zoom obrigatório. | Planejado |
-| NFT-MOB-05 | RNF-06 | Cinco vendedores sem treinamento recebem a tarefa: após login, localizar um modelo disponível. Registrar toques necessários, tempo e pedidos de ajuda. | Cada participante conclui a primeira consulta em no máximo dois toques após o login, sem ajuda. Falha de qualquer participante exige análise de UX. | Dependente do módulo de consulta. |
+| NFT-MOB-05 | RNF-06 | Cinco vendedores sem treinamento recebem a tarefa: após login, localizar um modelo disponível. Registrar toques necessários, tempo e pedidos de ajuda. | Cada participante conclui a primeira consulta em no máximo dois toques após o login, sem ajuda. Falha de qualquer participante exige análise de UX. | Parcial — validação técnica da consulta em dois toques aprovada no Brave (`390×844`); rodada com cinco vendedores pendente. |
+
+### Registro da validação S2-QA-006
+
+O fluxo até a grade foi validado em 18/09/2026 no viewport `390×844`, em orientação
+vertical, usando Brave com emulação de dispositivo móvel. Após o login como
+`VENDEDOR`, a busca automática apresentou o resultado depois da digitação e a
+seleção do produto abriu a grade no segundo toque. Não houve rolagem horizontal,
+sobreposição ou controle inacessível; os saldos e estados das numerações foram
+exibidos corretamente.
+
+O relatório completo está em
+[`validacao-fluxo-grade-smartphone-2026-09-18.md`](validacao-fluxo-grade-smartphone-2026-09-18.md).
+Essa validação técnica não substitui a rodada com cinco vendedores sem treinamento
+prevista em NFT-MOB-05.
 
 ## 4. Casos de teste de desempenho
 
@@ -71,7 +85,7 @@ equivalem a uma auditoria completa ou teste de invasão.
 
 | ID | Requisitos | Entradas e procedimento | Resultado esperado | Situação |
 |---|---|---|---|---|
-| NFT-SEG-01 | RF-04, RNF-04 | Inspecionar `SenhaHash` dos usuários de teste e validar a senha correta e uma incorreta usando BCrypt. | A senha não aparece em texto plano; o hash é bcrypt válido; o fator de custo é ≥ 12; somente a senha correta é aceita. | Planejado — a massa de teste já cria hashes com custo 12, mas ainda não há asserção específica. |
+| NFT-SEG-01 | RF-04, RNF-04 | Inspecionar `SenhaHash` dos usuários de teste e validar a senha correta e uma incorreta usando BCrypt. | A senha não aparece em texto plano; o hash é bcrypt válido; o fator de custo é ≥ 12; somente a senha correta é aceita. | Existente — `Seeded_users_use_bcrypt_with_work_factor_12`. |
 | NFT-SEG-02 | RF-01, RF-02 | Enviar credenciais inválidas, depois solicitar uma rota protegida; executar também tentativa de `VENDEDOR` em `/Produtos`. | Credenciais inválidas não criam sessão; anônimo é redirecionado ao login; `VENDEDOR` é redirecionado a acesso negado e não recebe dados protegidos. | Existente — consultar `AuthenticationAuthorizationTests.cs`; detalhamento em `AUT-04`, `AUT-09` e `AUT-12`. |
 | NFT-SEG-03 | RF-01, RF-03 | Enviar `POST /Account/Login` e `POST /Account/Logout` sem token antiforgery ou com token inválido. | A operação é rejeitada; não autentica nem encerra uma sessão válida por requisição forjada. | Planejado |
 | NFT-SEG-04 | RF-01 | Autenticar com `ReturnUrl` local (`/Produtos`) e, em execução separada, com URL externa (`https://exemplo.test`). | O destino local é aceito; URL externa é ignorada e o usuário segue ao destino padrão. | Planejado |
@@ -83,8 +97,8 @@ equivalem a uma auditoria completa ou teste de invasão.
 O arquivo
 [`AuthenticationAuthorizationTests.cs`](../../tests/SquadEstoque.Web.Tests/AuthenticationAuthorizationTests.cs)
 já cobre o formulário de login, credenciais inválidas, autorização de `LOJISTA` e
-`VENDEDOR`, rota proibida e logout. Ele é referência para NFT-SEG-02 e parte de
-NFT-SEG-06, sem duplicar seus cenários.
+`VENDEDOR`, rota proibida, política BCrypt e logout. Ele é referência para
+NFT-SEG-01, NFT-SEG-02 e parte de NFT-SEG-06, sem duplicar seus cenários.
 
 Para liberar uma versão que altere essas áreas:
 

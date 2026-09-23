@@ -71,7 +71,7 @@ Cada teste deve criar sua própria massa em SQLite em memória e não depender d
 - **Pré-condição:** USR-LOJ-01 autenticado.
 - **Entrada:** `POST /Produtos/Create` com `Nome=Sandália Verão`, `Marca=Passo Leve`, `Categoria=Sandália`, `Cor=Bege`, `NumeracoesGrade=35,36,37` e antiforgery válido.
 - **Resultado esperado:** `302 Found` para `/Produtos`; um Produto ativo com UUID é persistido; três SKUs ativos, com UUIDs distintos e saldo zero, ficam vinculados ao Produto; o item aparece na listagem.
-- **Situação:** planejado. `Produto_requires_identification_fields` cobre somente obrigatoriedade dos campos da entidade.
+- **Situação:** **existente:** `Lojista_creates_complete_product_and_grade_via_http` cobre formulário HTTP, antiforgery, redirecionamento e persistência completa.
 
 ### ADM-PROD-02 — Rejeitar campo obrigatório ausente
 
@@ -119,7 +119,7 @@ Cada teste deve criar sua própria massa em SQLite em memória e não depender d
 - **Nível:** integração HTTP.
 - **Entrada:** `GET` e `POST /Produtos/Create` primeiro como USR-VEN-01 e depois como anônimo.
 - **Resultado esperado:** vendedor recebe `302` para AccessDenied; anônimo recebe `302` para Login; nenhum Produto ou SKU é persistido.
-- **Situação:** parcial — o controller é restrito a `LOJISTA` e o acesso de vendedor a `/Produtos` já é automatizado; falta afirmar especificamente a escrita.
+- **Situação:** **existente:** `Vendedor_cannot_execute_administrative_post_endpoints` e `Anonymous_user_cannot_execute_protected_post_endpoints` cobrem especificamente a escrita.
 
 ## 6. Casos de teste — entrada de estoque
 
@@ -130,7 +130,7 @@ Cada teste deve criar sua própria massa em SQLite em memória e não depender d
 - **Pré-condição:** SKU-01 com saldo 5; USR-LOJ-01 autenticado.
 - **Entrada:** `SkuId` de SKU-01, `Quantidade=10`, `Motivo=Reposição`.
 - **Resultado esperado:** redirecionamento para o detalhe do produto; saldo final 15; exatamente uma movimentação `ENTRADA`, quantidade 10, SKU correto, usuário lojista, data/hora preenchida e motivo `Reposição`.
-- **Situação:** parcial — `Entrada_registers_movement_and_increases_balance` cobre saldo, tipo e quantidade; faltam as asserções completas de auditoria.
+- **Situação:** **existente:** `Entrada_registers_movement_and_increases_balance` cobre saldo e todos os campos persistidos da movimentação.
 
 ### ADM-ENT-02 — Rejeitar quantidade zero ou negativa
 
@@ -159,7 +159,7 @@ Nesta seção, “saída” significa a operação administrativa de quantidade 
 - **Pré-condição:** SKU-01 com saldo 5; usuário lojista.
 - **Entrada:** `SkuId` de SKU-01 e `Quantidade=2`.
 - **Resultado esperado:** redirecionamento para o detalhe do produto; saldo final 3; exatamente uma movimentação `SAIDA`, quantidade 2, SKU e usuário corretos, com data/hora.
-- **Situação:** parcial — `Saida_registers_movement_and_reduces_balance` cobre saldo, tipo e quantidade; faltam as asserções completas de auditoria.
+- **Situação:** **existente:** `Saida_registers_movement_and_reduces_balance` cobre saldo e todos os campos persistidos da movimentação.
 
 ### ADM-SAI-02 — Rejeitar saída com saldo insuficiente
 
@@ -203,7 +203,7 @@ O contrato implementado recebe `SkuId`, `NovoSaldoApurado` e `Motivo`. A direç�
 - **Nível:** integração de controller/persistência.
 - **Entrada:** saldo atual 2, `NovoSaldoApurado=6`, `Motivo=Contagem física`.
 - **Resultado esperado:** saldo final 6; movimentação `AJUSTE` com quantidade 4, motivo, SKU, usuário lojista e data/hora; redirecionamento ao detalhe do produto.
-- **Situação:** parcial — `Ajuste_registers_movement_and_updates_balance` cobre saldo, tipo, quantidade e motivo; faltam usuário e data/hora.
+- **Situação:** **existente:** `Ajuste_registers_movement_and_updates_balance` cobre saldo e todos os campos persistidos da movimentação.
 
 ### ADM-AJU-02 — Reduzir saldo com motivo
 

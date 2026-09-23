@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,9 @@ public sealed class SquadEstoqueWebApplicationFactory : WebApplicationFactory<Pr
 
         builder.ConfigureServices(services =>
         {
+            services.AddDataProtection()
+                .UseEphemeralDataProtectionProvider();
+
             services.RemoveAll<DbContextOptions<EstoqueContext>>();
             services.RemoveAll<EstoqueContext>();
             services.RemoveAll<DbContextOptions<LegacyMovieContext>>();
@@ -47,6 +51,7 @@ public sealed class SquadEstoqueWebApplicationFactory : WebApplicationFactory<Pr
         estoqueContext.Usuario.AddRange(
             CreateUser("Lojista Teste", "lojista@squad.com", PerfilUsuario.LOJISTA),
             CreateUser("Vendedor Teste", "vendedor@squad.com", PerfilUsuario.VENDEDOR));
+        estoqueContext.Produto.Add(CreateProdutoConsulta());
         estoqueContext.SaveChanges();
 
         return host;
@@ -72,5 +77,24 @@ public sealed class SquadEstoqueWebApplicationFactory : WebApplicationFactory<Pr
             SenhaHash = BCrypt.Net.BCrypt.HashPassword("123", 12),
             Perfil = perfil
         };
+    }
+
+    private static Produto CreateProdutoConsulta()
+    {
+        var produto = new Produto
+        {
+            Id = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+            Nome = "Tênis Runner",
+            Marca = "Squad",
+            Categoria = "Calçado",
+            Cor = "Preto",
+            Ativo = true
+        };
+
+        produto.Skus.Add(new Sku { Id = Guid.NewGuid(), ProdutoId = produto.Id, Numeracao = "37", SaldoAtual = 0 });
+        produto.Skus.Add(new Sku { Id = Guid.NewGuid(), ProdutoId = produto.Id, Numeracao = "38", SaldoAtual = 1 });
+        produto.Skus.Add(new Sku { Id = Guid.NewGuid(), ProdutoId = produto.Id, Numeracao = "39", SaldoAtual = 2 });
+
+        return produto;
     }
 }

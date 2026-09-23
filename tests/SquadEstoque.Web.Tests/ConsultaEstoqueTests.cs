@@ -54,7 +54,7 @@ public sealed class ConsultaEstoqueTests : IClassFixture<SquadEstoqueWebApplicat
         var html = WebUtility.HtmlDecode(await response.Content.ReadAsStringAsync());
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Contains("Consulta rápida", html);
+        Assert.Contains("Qual modelo o cliente procura?", html);
         Assert.Contains("<label", html);
         Assert.Contains("for=\"Termo\"", html);
         Assert.Contains("role=\"search\"", html);
@@ -136,6 +136,42 @@ public sealed class ConsultaEstoqueTests : IClassFixture<SquadEstoqueWebApplicat
         Assert.Contains("aria-current=\"true\"", html);
     }
 
+    [Fact]
+    public async Task Selected_product_shows_ordered_grade_with_balance_and_text_status()
+    {
+        var marker = Guid.NewGuid().ToString("N")[..10];
+        var product = CreateProduct("Grade " + marker);
+        product.Skus.Add(CreateSku(product.Id, "40", 0));
+        product.Skus.Add(CreateSku(product.Id, "36", 3));
+        product.Skus.Add(CreateSku(product.Id, "38", 1));
+        product.Skus.Add(CreateSku(product.Id, "42", 5, ativo: false));
+        await AddProductsAsync(product);
+        using var client = CreateClient();
+        await LoginAsync(client, "vendedor@squad.com");
+
+        var response = await client.GetAsync(
+            $"/Estoque/Consulta?termo={marker}&produtoId={product.Id}");
+        var html = WebUtility.HtmlDecode(await response.Content.ReadAsStringAsync());
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("Grade disponível", html);
+        Assert.Contains("Grade completa de numerações", html);
+        Assert.Contains("Nº</span>\n                                        36", html);
+        Assert.Contains("3 pares", html);
+        Assert.Contains("Último par", html);
+        Assert.Contains("Indisponível", html);
+        Assert.DoesNotContain("Tamanho 42", html);
+        Assert.True(html.IndexOf("data-numeracao=\"36\"", StringComparison.Ordinal) <
+                    html.IndexOf("data-numeracao=\"38\"", StringComparison.Ordinal));
+        Assert.True(html.IndexOf("data-numeracao=\"38\"", StringComparison.Ordinal) <
+                    html.IndexOf("data-numeracao=\"40\"", StringComparison.Ordinal));
+        Assert.Contains("name=\"skuSelecionado\"", html);
+        Assert.Contains("Resultado do atendimento", html);
+        Assert.DoesNotContain("consulta-venda-card-botao", html);
+        Assert.Matches("data-resultado=\"vendeu\"[^>]*disabled", html);
+        Assert.Contains("Selecione a numeração solicitada pelo cliente.", html);
+    }
+
     private HttpClient CreateClient()
     {
         return _factory.CreateClient(new WebApplicationFactoryClientOptions
@@ -167,6 +203,18 @@ public sealed class ConsultaEstoqueTests : IClassFixture<SquadEstoqueWebApplicat
             Marca = marca,
             Categoria = categoria,
             Cor = cor,
+            Ativo = ativo
+        };
+    }
+
+    private static Sku CreateSku(Guid productId, string numeracao, int saldo, bool ativo = true)
+    {
+        return new Sku
+        {
+            Id = Guid.NewGuid(),
+            ProdutoId = productId,
+            Numeracao = numeracao,
+            SaldoAtual = saldo,
             Ativo = ativo
         };
     }
