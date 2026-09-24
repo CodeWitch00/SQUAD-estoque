@@ -167,6 +167,43 @@ public sealed class EstoqueController : Controller
         }
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RegistrarNaoTinha(Guid skuId)
+    {
+        var usuarioId = GetAuthenticatedUserId();
+        if (!usuarioId.HasValue)
+        {
+            return Challenge();
+        }
+
+        if (skuId == Guid.Empty)
+        {
+            return BadRequest(new { mensagem = "Selecione uma numeração para registrar a ruptura." });
+        }
+
+        var skuDisponivel = await _context.Sku
+            .AnyAsync(sku => sku.Id == skuId && sku.Ativo && sku.Produto != null && sku.Produto.Ativo);
+
+        if (!skuDisponivel)
+        {
+            return BadRequest(new { mensagem = "A numeração selecionada não está disponível para registro." });
+        }
+
+        var ruptura = new Ruptura
+        {
+            Id = Guid.NewGuid(),
+            SkuId = skuId,
+            UsuarioId = usuarioId.Value,
+            CriadoEm = DateTime.UtcNow
+        };
+
+        _context.Ruptura.Add(ruptura);
+        await _context.SaveChangesAsync();
+
+        return Ok(new { mensagem = "Ruptura registrada com sucesso.", skuId });
+    }
+
     private Guid? GetAuthenticatedUserId()
     {
         var claimValue = User.FindFirstValue(ClaimTypes.NameIdentifier);

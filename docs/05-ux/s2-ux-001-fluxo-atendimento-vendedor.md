@@ -2,7 +2,7 @@
 
 ## Delimitação
 
-Este recorte atualiza o trecho do protótipo entre a grade consultada e a próxima consulta. Ele parte do [protótipo do vendedor](prototipos/vendedor/prototipo-vendedor.html) e do [mapa de navegação do MVP](mapa-navegacao-mvp.svg). É uma referência de interação: não cria Razor Pages, controllers, endpoints nem persistência.
+Este recorte atualiza o trecho do protótipo entre a grade consultada e a próxima consulta. Ele parte do [protótipo do vendedor](prototipos/prototipo-vendedor.html) e do [mapa de navegação do MVP](mapa-navegacao-mvp.svg). É uma referência de interação: não cria Razor Pages, controllers, endpoints nem persistência.
 
 ## Regra de contexto
 
@@ -31,4 +31,4 @@ Os resultados aparecem na grade do modelo consultado. **Vendeu** e **Não tinha*
 
 ## Como revisar
 
-Abra `prototipo-vendedor.html` no navegador e use o painel **Navegação de revisão** para inspecionar, em especial, os estados 07 a 14. O fluxo navegável também permite buscar um modelo, abrir a grade, selecionar uma numeração e acionar cada resultado.
+Abra `prototipos/prototipo-vendedor.html` no navegador e use o painel **Navegação de revisão** para inspecionar, em especial, os estados 07 a 14. O fluxo navegável também permite buscar um modelo, abrir a grade, selecionar uma numeração e acionar cada resultado.

@@ -47,8 +47,22 @@ public sealed class ConsultaOperacionalHttpTests : IClassFixture<SquadEstoqueWeb
         Assert.Contains("Indisponível", visibleHtml);
         Assert.Contains("Último par", visibleHtml);
         Assert.Contains("Disponível", visibleHtml);
-        Assert.DoesNotContain("Venda", visibleHtml, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("Ruptura", visibleHtml, StringComparison.OrdinalIgnoreCase);
+        foreach (var (skuId, saldo) in saldosEsperados)
+        {
+            var card = Regex.Match(visibleHtml,
+                $"<li[^>]*data-sku-id=\"{skuId}\"[^>]*>.*?</li>", RegexOptions.Singleline);
+            Assert.True(card.Success, $"SKU {skuId} não encontrado na grade.");
+            Assert.Contains("class=\"consulta-grade-card\"", card.Value);
+            Assert.Contains($"type=\"radio\" name=\"skuSelecionado\" value=\"{skuId}\"", card.Value);
+            Assert.DoesNotContain("Vendeu", card.Value);
+        }
+        Assert.Contains("Resultado do atendimento", visibleHtml);
+        Assert.Matches("data-resultado=\"vendeu\"[^>]*disabled", visibleHtml);
+        Assert.Contains("data-vender-url=\"/Estoque/Vender\"", visibleHtml);
+        Assert.Contains("data-resultado=\"nao-tinha\" disabled", visibleHtml);
+        Assert.Contains("data-resultado=\"desistiu\"", visibleHtml);
+        Assert.Contains("Selecione a numeração solicitada pelo cliente.", visibleHtml);
+        Assert.Contains("Nova consulta sem registrar resultado", visibleHtml);
         Assert.DoesNotContain("/Movimentacoes/Saida", visibleHtml, StringComparison.OrdinalIgnoreCase);
         await AssertSkuBalancesAsync(saldosEsperados);
     }
