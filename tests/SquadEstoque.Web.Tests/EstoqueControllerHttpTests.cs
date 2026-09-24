@@ -276,9 +276,10 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
     }
 
     [Theory]
-    [InlineData("lojista@squad.com", HttpStatusCode.Found)]
-    [InlineData(null, HttpStatusCode.Found)]
-    public async Task Vender_requires_authenticated_vendedor(string? email, HttpStatusCode expectedStatus)
+    [InlineData("lojista@squad.com", "/Produtos", "/Account/AccessDenied?ReturnUrl=%2FEstoque%2FVender")]
+    [InlineData(null, "/Account/Login", "/Account/Login?ReturnUrl=%2FEstoque%2FVender")]
+    public async Task Vender_denies_unauthorized_access_without_changing_stock_or_movements(
+        string? email, string tokenPage, string expectedRedirect)
     {
         using var client = CreateClient();
         if (email is not null)
@@ -286,12 +287,57 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
             await LoginAsync(client, email);
         }
 
-        var response = await client.PostAsync("/Estoque/Vender", new FormUrlEncodedContent(
-            new Dictionary<string, string> { ["SkuId"] = Guid.NewGuid().ToString() }));
+        // Use a sellable SKU and a token issued to this session so an invalid
+        // request cannot mask a missing authorization check.
+        var (skuId, usuarioId) = await AddSkuAsync(3);
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
+            context.Movimentacao.Add(new Movimentacao
+            {
+                Id = Guid.NewGuid(), SkuId = skuId, UsuarioId = usuarioId,
+                Tipo = TipoMovimentacao.ENTRADA, Quantidade = 3,
+                Motivo = "Saldo inicial para verificar preservação do histórico"
+            });
+            await context.SaveChangesAsync();
+        }
+        using var page = await client.GetAsync(tokenPage);
+        Assert.Equal(HttpStatusCode.OK, page.StatusCode);
+        var token = ExtractAntiforgeryToken(await page.Content.ReadAsStringAsync());
+        var before = await ReadStockStateAsync();
+        using var form = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["SkuId"] = skuId.ToString(),
+            ["__RequestVerificationToken"] = token
+        });
+        using var response = await client.PostAsync("/Estoque/Vender", form);
 
-        Assert.Equal(expectedStatus, response.StatusCode);
-        Assert.NotEqual(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Found, response.StatusCode);
+        Assert.Equal(expectedRedirect, response.Headers.Location?.PathAndQuery);
+        var after = await ReadStockStateAsync();
+        Assert.Equal(before.Skus, after.Skus);
+        Assert.Equal(before.Movements, after.Movements);
     }
+
+    private async Task<(SkuState[] Skus, MovementState[] Movements)> ReadStockStateAsync()
+    {
+        // A fresh context verifies persisted rows, including existing history,
+        // rather than entities cached by the request or setup change tracker.
+        using var scope = _factory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
+        var skus = await context.Sku.AsNoTracking().OrderBy(s => s.Id)
+            .Select(s => new SkuState(s.Id, s.ProdutoId, s.Numeracao, s.SaldoAtual, s.Ativo))
+            .ToArrayAsync();
+        var movements = await context.Movimentacao.AsNoTracking().OrderBy(m => m.Id)
+            .Select(m => new MovementState(m.Id, m.SkuId, m.Tipo, m.Quantidade,
+                m.UsuarioId, m.CriadoEm, m.Motivo))
+            .ToArrayAsync();
+        return (skus, movements);
+    }
+
+    private sealed record SkuState(Guid Id, Guid ProdutoId, string Numeracao, int SaldoAtual, bool Ativo);
+    private sealed record MovementState(Guid Id, Guid SkuId, TipoMovimentacao Tipo,
+        int Quantidade, Guid UsuarioId, DateTime CriadoEm, string? Motivo);
 
     [Fact]
     public async Task Consulta_without_results_shows_not_found_message()
