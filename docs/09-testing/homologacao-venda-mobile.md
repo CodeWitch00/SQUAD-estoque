@@ -1,8 +1,10 @@
 # Homologação da venda rápida no mobile
 
-**Estado:** em execução; aceite mobile pendente  
-**Ambiente:** aplicação publicada no Azure, `https://asp-squad-estoque-free-hgabd8asd5f4a9g9.northcentralus-01.azurewebsites.net`  
-**Execução disponível:** Firefox 156.0 em Linux, viewport de 390 × 844 px, orientação vertical, em modo sem interface. Não é um smartphone físico nem um navegador com entrada por toque.  
+**Estado:** em execução; aceite mobile pendente
+
+**Ambiente:** aplicação publicada no Azure, `https://asp-squad-estoque-free-hgabd8asd5f4a9g9.northcentralus-01.azurewebsites.net`
+
+**Execução disponível:** Firefox 156.0 em Linux, viewport de 390 × 844 px, orientação vertical, em modo sem interface. Não é um smartphone físico nem um navegador com entrada por toque.
 **Conta e massa:** a conta de teste `vendedor@squad.com` autenticou em uma consulta HTTP de leitura. A busca por `Tênis` retornou o produto `Tênis run` (Olympics, Preto), com apenas a numeração 37, saldo 0 e estado **Indisponível**. Não foram identificados SKUs com saldo maior que 1 ou saldo 1 nas buscas por `Tênis`, `Sapato`, `Sandália`, `Bota`, `Preto` e `Squad`. Nenhuma venda foi enviada e nenhum dado foi alterado.
 
 ## Registro por passo
