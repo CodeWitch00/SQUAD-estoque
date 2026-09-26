@@ -7,14 +7,15 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
 
-# O pipeline apenas valida o código. Não publica commits nem realiza merge.
+# O deploy exige validacao da main e ativacao explicita da variavel AZURE_CD_ENABLED.
 permissions:
   contents: read
 
 concurrency:
   group: dotnet-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   build-and-test:
@@ -64,3 +65,53 @@ jobs:
           name: coverage-cobertura
           path: TestResults/**/coverage.cobertura.xml
           if-no-files-found: error
+
+  deploy-azure:
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main' && vars.AZURE_CD_ENABLED == 'true'
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Publish application
+        run: >-
+          dotnet publish src/SquadEstoque.Web/SquadEstoque.Web.csproj
+          --configuration Release
+          --output publish/azure
+
+      - name: Reject database files in deployment package
+        shell: bash
+        run: |
+          if find publish/azure -type f \( -name '*.db' -o -name '*.db-wal' -o -name '*.db-shm' -o -name '*.sqlite' -o -name '*.sqlite3' \) -print -quit | grep -q .; then
+            echo 'O pacote de publicação contém um arquivo de banco de dados.' >&2
+            exit 1
+          fi
+
+      - name: Sign in to Azure with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy to App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: asp-squad-estoque-free
+          package: publish/azure
+
+      - name: Check application health
+        shell: bash
+        run: |
+          response=$(curl --fail --silent --show-error --retry 12 --retry-all-errors --retry-delay 10 --max-time 15 https://asp-squad-estoque-free-hgabd8asd5f4a9g9.northcentralus-01.azurewebsites.net/health)
+          test "$response" = Healthy
