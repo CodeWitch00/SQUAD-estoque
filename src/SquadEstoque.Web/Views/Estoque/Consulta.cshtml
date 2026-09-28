@@ -112,10 +112,13 @@
             <div class="consulta-acoes-grade">
                 <button type="button" class="consulta-acao consulta-acao--primaria"
                         data-resultado="vendeu" data-vender-url="@Url.Action("Vender", "Estoque")" disabled>Vendeu</button>
-                <button type="button" class="consulta-acao" data-resultado="nao-tinha" disabled>Não tinha</button>
+                <button type="button" class="consulta-acao" data-resultado="nao-tinha"
+                        data-nao-tinha-url="@Url.Action("RegistrarNaoTinha", "Estoque")"
+                        aria-describedby="consulta-atendimento-resumo consulta-nao-tinha-ajuda" disabled>Não tinha</button>
                 <button type="button" class="consulta-acao consulta-acao--desistiu" data-resultado="desistiu">Desistiu</button>
             </div>
-            <p class="consulta-acao-feedback" id="consulta-acao-feedback" role="status" aria-live="polite" hidden></p>
+            <p id="consulta-nao-tinha-ajuda" class="consulta-ajuda">Não encontrou a numeração no atendimento? Registre Não tinha, mesmo com saldo disponível. O saldo não será alterado.</p>
+            <p class="consulta-acao-feedback" id="consulta-acao-feedback" role="status" aria-live="polite" tabindex="-1" hidden></p>
             <a class="consulta-nova-consulta" asp-controller="Estoque" asp-action="Consulta">Nova consulta sem registrar resultado</a>
         </section>
     }

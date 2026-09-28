@@ -32,19 +32,19 @@
     const botoes = document.querySelectorAll('.consulta-acao[data-resultado]');
     if (!grade || !retorno || !resumo || !feedback || botoes.length === 0) return;
 
-    let vendaPendente = false;
+    let registroPendente = false;
     let gradeDesatualizada = false;
     const selecionado = () => grade.querySelector('input[name="skuSelecionado"]:checked');
     const atualizarSelecao = () => {
         const radio = selecionado();
         grade.querySelectorAll('.consulta-grade-item').forEach((card) => {
             const input = card.querySelector('input');
-            input.disabled = vendaPendente;
+            input.disabled = registroPendente;
             const selecionadoEsteCard = input === radio;
             card.classList.toggle('consulta-grade-item--selecionado', selecionadoEsteCard);
         });
         botoes.forEach((botao) => {
-            if (vendaPendente) {
+            if (registroPendente) {
                 botao.disabled = true;
             } else if (botao.dataset.resultado === 'desistiu') {
                 botao.disabled = false;
@@ -118,7 +118,7 @@
     };
 
     botoes.forEach((botao) => botao.addEventListener('click', async () => {
-        if (vendaPendente || botao.disabled) return;
+        if (registroPendente || botao.disabled) return;
         const tipo = botao.dataset.resultado;
         const radio = selecionado();
         if (tipo === 'vendeu') {
@@ -126,7 +126,7 @@
 
             const skuId = radio.value;
             const numero = radio.dataset.numeracao;
-            vendaPendente = true;
+            registroPendente = true;
             grade.setAttribute('aria-busy', 'true');
             atualizarSelecao();
             const textoBotao = botao.textContent;
@@ -157,7 +157,7 @@
                 }
             }
 
-            vendaPendente = false;
+            registroPendente = false;
             grade.removeAttribute('aria-busy');
             botao.textContent = textoBotao;
             atualizarSelecao();
@@ -171,6 +171,7 @@
 
         if (tipo !== 'desistiu' && !radio) return;
 
+        const skuId = radio?.value;
         const produto = grade.querySelector('#titulo-grade').textContent.trim();
         const numero = radio?.dataset.numeracao;
         botoes.forEach((item) => item.disabled = true);
@@ -182,41 +183,34 @@
             return;
         }
 
+        registroPendente = true;
+        grade.setAttribute('aria-busy', 'true');
+        atualizarSelecao();
+        const textoBotao = botao.textContent;
+        botao.textContent = 'Registrando…';
         let sucesso = false;
         let mensagem = '';
         try {
-            const action = '/Estoque/RegistrarNaoTinha';
-            const { response, data } = await postResultado(action, radio.value);
-            sucesso = response.ok && data?.skuId === radio.value;
+            const { response, data } = await postResultado(botao.dataset.naoTinhaUrl, skuId);
+            sucesso = response.ok && data?.skuId === skuId;
             if (sucesso) {
-                mensagem = `Ruptura registrada\n${produto}\nNº ${numero}\nO saldo não foi alterado.`;
+                mensagem = `Não tinha registrado. ${produto} · Nº ${numero}. O saldo não foi alterado.`;
             } else {
-                mensagem = data?.mensagem || 'Não foi possível registrar o resultado. Tente novamente.';
+                mensagem = data?.mensagem || 'Não foi possível confirmar o registro. Confira as rupturas antes de tentar novamente.';
             }
         } catch {
-            mensagem = 'Não foi possível registrar o resultado. Verifique a conexão e tente novamente.';
+            mensagem = 'Não foi possível confirmar o registro. Confira as rupturas antes de tentar novamente.';
+        } finally {
+            registroPendente = false;
+            grade.removeAttribute('aria-busy');
+            botao.textContent = textoBotao;
+            atualizarSelecao();
         }
 
         feedback.classList.toggle('consulta-venda-retorno--erro', !sucesso);
         feedback.textContent = mensagem;
         feedback.hidden = false;
-        if (sucesso) {
-            feedback.classList.remove('consulta-venda-retorno--erro');
-            feedback.innerHTML = mensagem.split('\n').map((linha, indice) =>
-                indice === 0 ? `<strong>${linha}</strong>` : `<span>${linha}</span>`
-            ).join('<br>');
-            if (tipo === 'nao-tinha') {
-                radio.checked = false;
-                atualizarSelecao();
-                feedback.hidden = false;
-            }
-            atualizarSelecao();
-            feedback.hidden = false;
-        }
-        if (!sucesso) {
-            atualizarSelecao();
-            feedback.hidden = false;
-        }
+        feedback.focus({ preventScroll: true });
         feedback.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }));
 
