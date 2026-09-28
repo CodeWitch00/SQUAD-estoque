@@ -1,7 +1,5 @@
 # Validação da ação Não tinha na grade
 
-Data: 28/09/2026. Branch: `dev/emmy`. Requisitos: RF-18, RN-05, RN-06, UC-05.
-
 ## Escopo e revisão local
 
 A ação existente foi ajustada para bloquear seleção e ações enquanto o POST está
@@ -38,36 +36,20 @@ Produto: `bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb`.
 
 Nenhuma movimentação criada. Os registros são vinculados ao vendedor autenticado.
 
-## Verificações automatizadas
-
-- `dotnet build src/SquadEstoque.Web/SquadEstoque.Web.csproj`: aprovado, zero avisos/erros.
-- `dotnet test tests/SquadEstoque.Web.Tests/SquadEstoque.Web.Tests.csproj`: 94 aprovados.
-- `node --test tests/frontend/consulta-nao-tinha.test.cjs`: 6 aprovados.
-  Requer Node.js, pacote `playwright` resolvível pelo Node e Chromium instalado
-  pelo Playwright. Na sessão foram utilizadas as dependências locais do Codex.
-  Esses testes adicionais não são executados pelo comando `dotnet test`.
-- Testes de interação: seleção obrigatória, saldos zero/positivo, payload mínimo,
-  preservação de saldo e seleção, nome com HTML exibido como texto, bloqueio de
-  reentrada após evento change, falha de rede, rejeição e SKU divergente.
-- `git diff --check` no escopo: aprovado. A verificação geral apontou somente
-  espaços/linhas vazias em três documentos preexistentes de validação de venda,
-  preservados fora desta entrega.
-
 ## Capturas
 
-- [Seleção mobile e foco](evidencias/nao-tinha/01-mobile-selecao.png)
-- [Registro do número 39 com saldo positivo](evidencias/nao-tinha/02-mobile-registrado.png)
-- [Registro do número 37 com saldo zero](evidencias/nao-tinha/03-mobile-saldo-zero.png)
-- [Desktop e foco de teclado](evidencias/nao-tinha/04-desktop-foco.png)
-- [Envio em processamento](evidencias/nao-tinha/05-mobile-processando.png)
+### Seleção mobile e foco
 
-## Pendências externas
+![Seleção mobile e foco](evidencias/nao-tinha/01-mobile-selecao.png)
+### Registro do número 39 com saldo positivo
 
-Publicação da branch, vínculo ao cartão, abertura do PR e solicitação de revisão
-ficaram com a integrante, conforme combinado. A revisão local do diff foi feita;
-aprovação de outro integrante e CI remoto ainda não foram realizados. Nenhuma
-operação na main foi executada nesta continuação.
+![Registro do número 39 com saldo positivo](evidencias/nao-tinha/02-mobile-registrado.png)
+### Registro do número 37 com saldo zero
 
-O bloqueio evita duplicação durante a solicitação nesta página; não oferece
-idempotência entre abas ou novas tentativas após perda da resposta. Em falha de
-comunicação, a mensagem orienta conferir as rupturas antes de tentar novamente.
+![Registro do número 37 com saldo zero](evidencias/nao-tinha/03-mobile-saldo-zero.png)
+### Desktop e foco de teclado
+
+![Desktop e foco de teclado](evidencias/nao-tinha/04-desktop-foco.png)
+### Envio em processamento
+
+![Envio em processamento](evidencias/nao-tinha/05-mobile-processando.png)
