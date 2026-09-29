@@ -164,12 +164,15 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
         Assert.Empty(await context.Ruptura.Where(r => r.SkuId == skuId).ToListAsync());
     }
 
-    [Fact]
-    public async Task Vendedor_can_register_rupture_for_selected_sku_without_changing_stock()
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(3)]
+    public async Task Vendedor_can_register_rupture_for_selected_sku_without_changing_stock(int saldoInicial)
     {
         using var client = CreateClient();
         await LoginAsync(client, "vendedor@squad.com");
-        var (skuId, usuarioId) = await AddSkuAsync(3);
+        var (skuId, usuarioId) = await AddSkuAsync(saldoInicial);
         var token = await ExtractAntiforgeryTokenAsync(client);
 
         using var form = new FormUrlEncodedContent(new Dictionary<string, string>
@@ -186,7 +189,7 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         using var scope = _factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
-        Assert.Equal(3, (await context.Sku.FindAsync(skuId))!.SaldoAtual);
+        Assert.Equal(saldoInicial, (await context.Sku.FindAsync(skuId))!.SaldoAtual);
         Assert.Empty(await context.Movimentacao.Where(m => m.SkuId == skuId).ToListAsync());
         var ruptura = await context.Ruptura.SingleAsync(r => r.SkuId == skuId);
         Assert.Equal(skuId, ruptura.SkuId);

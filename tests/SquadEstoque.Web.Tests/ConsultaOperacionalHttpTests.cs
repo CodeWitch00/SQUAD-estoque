@@ -59,7 +59,8 @@ public sealed class ConsultaOperacionalHttpTests : IClassFixture<SquadEstoqueWeb
         Assert.Contains("Resultado do atendimento", visibleHtml);
         Assert.Matches("data-resultado=\"vendeu\"[^>]*disabled", visibleHtml);
         Assert.Contains("data-vender-url=\"/Estoque/Vender\"", visibleHtml);
-        Assert.Contains("data-resultado=\"nao-tinha\" disabled", visibleHtml);
+        Assert.Matches("data-resultado=\"nao-tinha\"[^>]*disabled", visibleHtml);
+        Assert.Contains("data-nao-tinha-url=\"/Estoque/RegistrarNaoTinha\"", visibleHtml);
         Assert.Contains("data-resultado=\"desistiu\"", visibleHtml);
         Assert.Contains("Selecione a numeração solicitada pelo cliente.", visibleHtml);
         Assert.Contains("Nova consulta sem registrar resultado", visibleHtml);
