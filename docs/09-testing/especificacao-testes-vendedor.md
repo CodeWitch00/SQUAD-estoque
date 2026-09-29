@@ -5,13 +5,13 @@
 | Campo | Valor |
 |---|---|
 | Projeto | SQUAD Estoque |
-| Versão do documento | 1.0 |
+| Versão do documento | 1.1 |
 | Área | QA |
 | Escopo | Consulta de estoque e resultados `Vendeu`, `Não tinha` e `Desistiu` |
 | Perfil principal | `VENDEDOR` |
 | Requisitos | RF-02, RF-03, RF-10 a RF-20, RNF-01, RNF-02, RNF-06, RNF-07 e RN-02, RN-05 a RN-07 |
 | Casos de uso | UC-02 a UC-06 e UC-S2 a UC-S5 |
-| Status | Especificado; execução pendente da implementação do módulo do vendedor |
+| Status | Especificado; execução parcial registrada para consulta, venda e ruptura |
 
 ## 2. Objetivo e fontes
 
@@ -28,11 +28,11 @@ Fontes:
 
 ## 3. Estado da implementação e limites
 
-Na baseline atual, as telas e endpoints VEN-02 a VEN-06 ainda estão pendentes. Produto, SKU, saldo, Movimentação e Ruptura existem no domínio, e o teste automatizado `Ruptura_can_be_persisted_without_changing_balance` comprova apenas a persistência isolada de uma ruptura. Ele não comprova consulta, venda, autorização ou registro de ruptura pelo fluxo HTTP do vendedor.
+Na baseline atual, consulta, venda e o registro explícito de ruptura pelo fluxo HTTP do vendedor estão implementados. O teste `Registrar_nao_tinha_creates_rupture_without_changing_any_stock_or_movement` comprova a ruptura com SKU e vendedor, a preservação integral dos saldos e a ausência de alteração em qualquer movimentação. Os demais casos mantêm o estado informado em cada cenário.
 
 Por isso:
 
-- todos os casos deste documento permanecem com status de execução `Não executado`;
+- apenas casos com execução e evidência identificadas podem receber status `Aprovado` ou `Reprovado`;
 - casos dependentes do endpoint do vendedor não podem ser aprovados pela rota administrativa `/Movimentacoes/Saida`;
 - `Vendeu` deve decrementar exatamente uma unidade do SKU consultado, enquanto a saída administrativa aceita quantidade variável e constitui outro fluxo;
 - as rotas definitivas devem substituir os marcadores desta especificação quando o módulo for implementado, sem alterar os resultados de negócio esperados;
@@ -218,7 +218,7 @@ Cada teste automatizado deve criar sua própria massa, controlar data/hora e nã
 - **Rastreabilidade:** RF-16, RF-18, RN-05, RN-06, UC-05, UC-S3; IT-23 e IT-26.
 - **Forma de execução:** Automatizado.
 - **Nível:** Integração HTTP e persistência.
-- **Situação:** Parcial; persistência isolada existente, fluxo do vendedor dependente.
+- **Situação:** Existente no fluxo HTTP do vendedor.
 - **Pré-condição:** USR-VEN-01 autenticado; SKU-05 consultado com saldo 5.
 - **Passos:**
   1. Selecionar SKU-05 na grade.
@@ -226,9 +226,9 @@ Cada teste automatizado deve criar sua própria massa, controlar data/hora e nã
   3. Consultar saldo, rupturas e movimentações.
 - **Entrada:** SKU-05 e ação explícita `Não tinha`.
 - **Saída esperada:** exatamente uma Ruptura é criada com SKU-05, USR-VEN-01 e data/hora; saldo permanece 5; nenhuma movimentação é criada; confirmação é exibida.
-- **Resultado obtido:** Não executado.
-- **Status de execução:** Não executado.
-- **Evidência:** Não gerada.
+- **Resultado obtido:** Para saldos iniciais 0, 1 e 3, exatamente uma Ruptura foi acrescentada com SKU, vendedor e data esperados; todos os SKUs e todas as movimentações permaneceram idênticos.
+- **Status de execução:** Aprovado em 29/09/2026.
+- **Evidência:** [S2-BE-021 — Preservar saldo na ruptura](s2-be-021-preservar-saldo-ruptura.md).
 
 ### VEN-RUP-02 — Rejeitar ruptura sem SKU válido
 

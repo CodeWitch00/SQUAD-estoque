@@ -168,12 +168,15 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
     [InlineData(0)]
     [InlineData(1)]
     [InlineData(3)]
-    public async Task Vendedor_can_register_rupture_for_selected_sku_without_changing_stock(int saldoInicial)
+    public async Task Registrar_nao_tinha_creates_rupture_without_changing_any_stock_or_movement(
+        int saldoInicial)
     {
         using var client = CreateClient();
         await LoginAsync(client, "vendedor@squad.com");
         var (skuId, usuarioId) = await AddSkuAsync(saldoInicial);
         var token = await ExtractAntiforgeryTokenAsync(client);
+        var before = await ReadStockStateAsync();
+        var rupturesBefore = await ReadRuptureStateAsync();
 
         using var form = new FormUrlEncodedContent(new Dictionary<string, string>
         {
@@ -190,8 +193,12 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
         using var scope = _factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
         Assert.Equal(saldoInicial, (await context.Sku.FindAsync(skuId))!.SaldoAtual);
-        Assert.Empty(await context.Movimentacao.Where(m => m.SkuId == skuId).ToListAsync());
-        var ruptura = await context.Ruptura.SingleAsync(r => r.SkuId == skuId);
+        var after = await ReadStockStateAsync();
+        Assert.Equal(before.Skus, after.Skus);
+        Assert.Equal(before.Movements, after.Movements);
+        var rupturesAfter = await ReadRuptureStateAsync();
+        Assert.Equal(rupturesBefore.Length + 1, rupturesAfter.Length);
+        var ruptura = Assert.Single(rupturesAfter.Except(rupturesBefore));
         Assert.Equal(skuId, ruptura.SkuId);
         Assert.Equal(usuarioId, ruptura.UsuarioId);
         Assert.InRange(ruptura.CriadoEm, antesDoPost, depoisDoPost);
@@ -338,9 +345,19 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
         return (skus, movements);
     }
 
+    private async Task<RuptureState[]> ReadRuptureStateAsync()
+    {
+        using var scope = _factory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
+        return await context.Ruptura.AsNoTracking().OrderBy(r => r.Id)
+            .Select(r => new RuptureState(r.Id, r.SkuId, r.UsuarioId, r.CriadoEm))
+            .ToArrayAsync();
+    }
+
     private sealed record SkuState(Guid Id, Guid ProdutoId, string Numeracao, int SaldoAtual, bool Ativo);
     private sealed record MovementState(Guid Id, Guid SkuId, TipoMovimentacao Tipo,
         int Quantidade, Guid UsuarioId, DateTime CriadoEm, string? Motivo);
+    private sealed record RuptureState(Guid Id, Guid SkuId, Guid UsuarioId, DateTime CriadoEm);
 
     [Fact]
     public async Task Consulta_without_results_shows_not_found_message()

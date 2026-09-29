@@ -5,7 +5,7 @@
 | Campo | Valor |
 |---|---|
 | Projeto | SQUAD Estoque |
-| Versão do documento | 1.4 |
+| Versão do documento | 1.5 |
 | Status | Atualizado com a execução real do fluxo de venda; homologação mobile publicada pendente |
 | Tipo | Aplicação web ASP.NET Core MVC |
 | Estratégia | Pirâmide de testes |
@@ -374,7 +374,7 @@ Os casos detalhados, incluindo pré-condições, passos e campos de execução, 
 | IT-23 | RF-16 | Ações do atendimento | consulta válida | As três opções de resultado são exibidas | Dependente |
 | IT-24 | RF-10, RF-17, UC-04, UC-S2, UC-S5 | Resultado `Vendeu` | SKU com saldo 5, 3, 2 ou 1; vendedor autenticado | Saldo reduz exatamente 1; uma saída vinculada ao SKU e ao vendedor; confirmação e grade atualizada | **Existente:** `Vendedor_sells_exactly_one_pair_without_changing_any_other_sku` e `Vendedor_can_post_venda_for_sku_and_records_authenticated_user` |
 | IT-25 | RF-17, RN-02, UC-S4 | Venda sem saldo | SKU saldo 0 | Rejeição; saldo 0; nenhuma movimentação ou ruptura | **Existente:** `Vendedor_cannot_sell_zero_stock_and_creates_no_movement`, `Vender_rejects_zero_balance_without_creating_movement_or_rupture` e `Venda_rapida_rejects_zero_balance_without_movement` |
-| IT-26 | RF-18, RN-05, RN-06, UC-05, UC-S3 | Resultado `Não tinha` | SKU válido; vendedor autenticado | Uma Ruptura com SKU, vendedor e data; saldo inalterado | **Parcial:** persistência isolada existente; falta fluxo HTTP do vendedor |
+| IT-26 | RF-18, RN-05, RN-06, UC-05, UC-S3 | Resultado `Não tinha` | SKU válido; vendedor autenticado | Uma Ruptura com SKU, vendedor e data; saldo inalterado e nenhuma movimentação | **Existente:** `Registrar_nao_tinha_creates_rupture_without_changing_any_stock_or_movement` |
 | IT-27 | RN-06 | Ruptura sem SKU | `sku_id` ausente ou inválido | Rejeição; nenhuma Ruptura | Planejado/dependente do endpoint |
 | IT-28 | RF-19, UC-06 | Resultado `Desistiu` | atendimento iniciado | Nenhuma movimentação ou ruptura; retorno à busca | Dependente |
 | IT-29 | RF-20 | Nova consulta sem registrar resultado | abandonar resultado e iniciar nova busca | Nova busca permitida sem efeito no estoque | Dependente |
@@ -674,5 +674,6 @@ O registro acima é apenas um exemplo de preenchimento. Não representa uma exec
 | 1.2 | 2026-08-30 | Integração documental | Codex, em revisão assistida solicitada pela equipe | Especificação detalhada de consulta, venda e ruptura do vendedor vinculada ao catálogo IT-18 a IT-29 |
 | 1.3 | 2026-09-02 | Automação | Codex, em execução assistida solicitada pela equipe | Cobertura automatizada no CI; cadastro, edição, inativação, autorização POST, limpeza de senha, BCrypt e auditoria atualizados conforme testes executados |
 | 1.4 | 2026-09-29 | Execução e rastreabilidade | Codex, em execução solicitada pela equipe | Resultados reais da venda com saldo, saldo zero, autorização, movimentação, vínculo Produto–SKU e validação mobile registrados; divergência do Azure e validação por toque mantidas abertas |
+| 1.5 | 2026-09-29 | Ruptura | Codex, em execução solicitada pela equipe | IT-26 atualizado com a execução HTTP que comprova uma ruptura, saldos integralmente preservados e nenhuma alteração na tabela de movimentações |
 
 Revisões assistidas não substituem o aceite do responsável de QA ou do produto quando esse aceite for exigido para release. A próxima alteração funcional ou de requisito deve gerar uma nova linha, com versão, data, tipo, revisor e resultado.
