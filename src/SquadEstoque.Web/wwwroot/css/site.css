@@ -857,6 +857,11 @@ body {
     padding: 16px 16px calc(2rem + env(safe-area-inset-bottom));
   }
 
+  .consulta-atendimento-acoes {
+    position: static;
+    margin: 1rem 0 0;
+  }
+
   .consulta-vendedor {
     width: 100%;
   }
