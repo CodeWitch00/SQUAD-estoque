@@ -1,4 +1,6 @@
 using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -69,6 +71,9 @@ public sealed class RupturaHttpTests
         using var response = await client.PostAsync("/Estoque/RegistrarNaoTinha", rupturaForm);
         var fim = DateTime.UtcNow;
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var payload = await response.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal("Ruptura registrada com sucesso.", payload.GetProperty("mensagem").GetString());
+        Assert.Equal(skuId, payload.GetProperty("skuId").GetGuid());
 
         // Reload from the database in a new scope, never from the setup tracker.
         using var verificationScope = factory.Services.CreateScope();
@@ -81,6 +86,64 @@ public sealed class RupturaHttpTests
         Assert.Equal(skuId, ruptura.SkuId);
         Assert.Equal(vendedorId, ruptura.UsuarioId);
         Assert.InRange(ruptura.CriadoEm, inicio, fim);
+    }
+
+    [Theory]
+    [InlineData("lojista@squad.com", "/Produtos", "/Account/AccessDenied?ReturnUrl=%2FEstoque%2FRegistrarNaoTinha")]
+    [InlineData(null, "/Account/Login", "/Account/Login?ReturnUrl=%2FEstoque%2FRegistrarNaoTinha")]
+    public async Task Nao_tinha_denies_access_without_changing_stock_ruptures_or_movements(
+        string? email, string tokenPage, string expectedRedirect)
+    {
+        using var factory = new SquadEstoqueWebApplicationFactory();
+        using var client = factory.CreateClient(new WebApplicationFactoryClientOptions
+        {
+            AllowAutoRedirect = false,
+            HandleCookies = true
+        });
+        Dictionary<Guid, int> balancesBefore;
+        Guid skuId;
+        using (var scope = factory.Services.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
+            balancesBefore = await context.Sku.AsNoTracking().ToDictionaryAsync(s => s.Id, s => s.SaldoAtual);
+            skuId = await context.Sku.Where(s => s.Ativo && s.Produto!.Ativo && s.SaldoAtual > 0)
+                .Select(s => s.Id).FirstAsync();
+            Assert.Empty(await context.Ruptura.AsNoTracking().ToListAsync());
+            Assert.Empty(await context.Movimentacao.AsNoTracking().ToListAsync());
+            if (email is not null)
+                Assert.Equal(PerfilUsuario.LOJISTA, (await context.Usuario.SingleAsync(u => u.Email == email)).Perfil);
+        }
+
+        if (email is not null)
+        {
+            using var loginPage = await client.GetAsync("/Account/Login");
+            using var loginForm = new FormUrlEncodedContent(new Dictionary<string, string>
+            {
+                ["Email"] = email, ["Senha"] = "123",
+                ["__RequestVerificationToken"] = await TokenAsync(loginPage)
+            });
+            using var loginResponse = await client.PostAsync("/Account/Login", loginForm);
+            Assert.Equal(HttpStatusCode.Found, loginResponse.StatusCode);
+            Assert.Equal("/Produtos", loginResponse.Headers.Location?.OriginalString);
+        }
+
+        // Obtain a token for the current identity so CSRF rejection cannot mask authorization.
+        using var page = await client.GetAsync(tokenPage);
+        using var form = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["skuId"] = skuId.ToString(),
+            ["__RequestVerificationToken"] = await TokenAsync(page)
+        });
+        using var response = await client.PostAsync("/Estoque/RegistrarNaoTinha", form);
+        Assert.Equal(HttpStatusCode.Found, response.StatusCode);
+        Assert.Equal(expectedRedirect, response.Headers.Location?.PathAndQuery);
+
+        using var verificationScope = factory.Services.CreateScope();
+        var persisted = verificationScope.ServiceProvider.GetRequiredService<EstoqueContext>();
+        var balancesAfter = await persisted.Sku.AsNoTracking().ToDictionaryAsync(s => s.Id, s => s.SaldoAtual);
+        Assert.Equal(balancesBefore.OrderBy(s => s.Key), balancesAfter.OrderBy(s => s.Key));
+        Assert.Empty(await persisted.Ruptura.AsNoTracking().ToListAsync());
+        Assert.Empty(await persisted.Movimentacao.AsNoTracking().ToListAsync());
     }
 
     private static async Task<string> TokenAsync(HttpResponseMessage page)
