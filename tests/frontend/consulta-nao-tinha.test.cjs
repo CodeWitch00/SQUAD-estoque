@@ -5,7 +5,12 @@ const path = require('node:path');
 const { chromium } = require('playwright');
 
 let browser;
-before(async () => { browser = await chromium.launch({ headless: true }); });
+before(async () => {
+    browser = await chromium.launch({
+        headless: true,
+        executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined
+    });
+});
 after(async () => { await browser?.close(); });
 
 async function abrir(t) {
@@ -38,6 +43,25 @@ async function abrir(t) {
     await page.addScriptTag({ path: path.resolve(__dirname, '../../src/SquadEstoque.Web/wwwroot/js/consulta.js') });
     return page;
 }
+
+test('busca permite digitar o nome completo sem envio automatico', async (t) => {
+    const page = await browser.newPage();
+    t.after(() => page.close());
+    await page.setContent('<div class="consulta-painel"><form><input name="Termo"></form></div>');
+    await page.evaluate(() => {
+        window.enviosAutomaticos = 0;
+        HTMLFormElement.prototype.requestSubmit = () => window.enviosAutomaticos++;
+    });
+    await page.addScriptTag({ path: path.resolve(__dirname, '../../src/SquadEstoque.Web/wwwroot/js/consulta.js') });
+
+    const campo = page.locator('input[name="Termo"]');
+    await campo.pressSequentially('Tênis Court Vision Low', { delay: 100 });
+    await page.waitForTimeout(1000);
+
+    assert.equal(await campo.inputValue(), 'Tênis Court Vision Low');
+    assert.equal(await campo.evaluate(element => element === document.activeElement), true);
+    assert.equal(await page.evaluate(() => window.enviosAutomaticos), 0);
+});
 
 for (const numero of ['37', '39']) {
     test(`Não tinha aceita nº ${numero}, envia só SKU/token e preserva saldo`, async (t) => {
