@@ -112,10 +112,10 @@
             <div class="consulta-acoes-grade">
                 <button type="button" class="consulta-acao consulta-acao--primaria"
                         data-resultado="vendeu" data-vender-url="@Url.Action("Vender", "Estoque")" disabled>Vendeu</button>
-                <button type="button" class="consulta-acao" data-resultado="nao-tinha" disabled>Não tinha</button>
+                <button type="button" class="consulta-acao" data-ruptura-url="@Url.Action("RegistrarNaoTinha", "Estoque")" data-resultado="nao-tinha" disabled>Não tinha</button>
                 <button type="button" class="consulta-acao consulta-acao--desistiu" data-resultado="desistiu">Desistiu</button>
             </div>
-            <p class="consulta-acao-feedback" id="consulta-acao-feedback" role="status" aria-live="polite" hidden></p>
+            <p class="consulta-acao-feedback" id="consulta-acao-feedback" role="status" aria-live="polite" aria-atomic="true" tabindex="-1" hidden></p>
             <a class="consulta-nova-consulta" asp-controller="Estoque" asp-action="Consulta">Nova consulta sem registrar resultado</a>
         </section>
     }

@@ -4,12 +4,13 @@
     if (!form || !field) return;
 
     let timer;
+    let enviando = false;
     let composing = false;
 
     const scheduleSearch = () => {
         clearTimeout(timer);
         const term = field.value.trim();
-        if (composing || term.length < 2 || term.length > 100) return;
+        if (enviando || composing || term.length < 2 || term.length > 100) return;
 
         timer = setTimeout(() => form.requestSubmit(), 800);
     };
@@ -23,7 +24,10 @@
         composing = false;
         scheduleSearch();
     });
-    form.addEventListener('submit', () => clearTimeout(timer));
+    form.addEventListener('submit', (event) => {
+        clearTimeout(timer);
+        if (enviando) event.preventDefault();
+    });
 
     const grade = document.querySelector('.consulta-grade');
     const retorno = document.querySelector('#consulta-venda-retorno');
@@ -33,14 +37,16 @@
     if (!grade || !retorno || !resumo || !feedback || botoes.length === 0) return;
 
     const selecionado = () => grade.querySelector('input[name="skuSelecionado"]:checked');
-    const atualizarSelecao = () => {
+    const atualizarSelecao = (limparMensagens = true) => {
         const radio = selecionado();
         grade.querySelectorAll('.consulta-grade-item').forEach((card) => {
             const selecionadoEsteCard = card.querySelector('input') === radio;
             card.classList.toggle('consulta-grade-item--selecionado', selecionadoEsteCard);
         });
         botoes.forEach((botao) => {
-            if (botao.dataset.resultado === 'desistiu') {
+            if (enviando) {
+                botao.disabled = true;
+            } else if (botao.dataset.resultado === 'desistiu') {
                 botao.disabled = false;
             } else if (botao.dataset.resultado === 'vendeu') {
                 botao.disabled = !radio || Number(radio.dataset.saldo) <= 0;
@@ -57,8 +63,17 @@
         } else {
             resumo.textContent = `Nº ${radio.dataset.numeracao} · ${radio.dataset.saldo} pares disponíveis`;
         }
-        feedback.hidden = true;
-        retorno.hidden = true;
+        if (limparMensagens) {
+            feedback.hidden = true;
+            retorno.hidden = true;
+        }
+    };
+    const definirEnvio = (ativo) => {
+        enviando = ativo;
+        clearTimeout(timer);
+        grade.setAttribute('aria-busy', String(ativo));
+        grade.querySelectorAll('input[name="skuSelecionado"]').forEach((radio) => radio.disabled = ativo);
+        atualizarSelecao(false);
     };
     grade.addEventListener('change', (event) => {
         if (event.target.matches('input[name="skuSelecionado"]')) atualizarSelecao();
@@ -94,6 +109,7 @@
     };
 
     botoes.forEach((botao) => botao.addEventListener('click', async () => {
+        if (enviando || botao.disabled) return;
         const tipo = botao.dataset.resultado;
         const radio = selecionado();
         if (tipo === 'vendeu') {
@@ -101,7 +117,7 @@
 
             const skuId = radio.value;
             const numero = radio.dataset.numeracao;
-            botao.disabled = true;
+            definirEnvio(true);
             retorno.hidden = true;
             feedback.hidden = true;
             let sucesso = false;
@@ -128,6 +144,7 @@
                 mensagem += ' Atualize a consulta para conferir o saldo vigente.';
             }
 
+            definirEnvio(false);
             retorno.classList.toggle('consulta-venda-retorno--erro', !sucesso);
             retorno.textContent = mensagem;
             retorno.hidden = false;
@@ -139,7 +156,7 @@
 
         const produto = grade.querySelector('#titulo-grade').textContent.trim();
         const numero = radio?.dataset.numeracao;
-        botoes.forEach((item) => item.disabled = true);
+        definirEnvio(true);
         feedback.hidden = true;
         retorno.hidden = true;
 
@@ -151,11 +168,11 @@
         let sucesso = false;
         let mensagem = '';
         try {
-            const action = '/Estoque/RegistrarNaoTinha';
+            const action = botao.dataset.rupturaUrl;
             const { response, data } = await postResultado(action, radio.value);
             sucesso = response.ok && data?.skuId === radio.value;
             if (sucesso) {
-                mensagem = `Ruptura registrada\n${produto}\nNº ${numero}\nO saldo não foi alterado.`;
+                mensagem = `Ruptura registrada para a numeração ${numero}.\n${produto}\nO saldo não foi alterado. Você pode continuar o atendimento ou fazer uma nova consulta.`;
             } else {
                 mensagem = data?.mensagem || 'Não foi possível registrar o resultado. Tente novamente.';
             }
@@ -163,24 +180,11 @@
             mensagem = 'Não foi possível registrar o resultado. Verifique a conexão e tente novamente.';
         }
 
+        definirEnvio(false);
         feedback.classList.toggle('consulta-venda-retorno--erro', !sucesso);
         feedback.textContent = mensagem;
         feedback.hidden = false;
-        if (sucesso) {
-            feedback.classList.remove('consulta-venda-retorno--erro');
-            feedback.innerHTML = mensagem.split('\n').map((linha, indice) =>
-                indice === 0 ? `<strong>${linha}</strong>` : `<span>${linha}</span>`
-            ).join('<br>');
-            if (tipo === 'nao-tinha') {
-                radio.checked = false;
-                atualizarSelecao();
-                feedback.hidden = false;
-            }
-            botoes.forEach((item) => item.disabled = item.dataset.resultado !== 'desistiu' && !selecionado());
-        }
-        if (!sucesso) botoes.forEach((item) => {
-            item.disabled = item.dataset.resultado !== 'desistiu' && !selecionado();
-        });
+        feedback.focus({ preventScroll: true });
         feedback.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }));
 
