@@ -122,10 +122,11 @@
         atualizarSelecao();
     };
 
-    const postResultado = async (url, skuId) => {
+    const postResultado = async (url, skuId, produtoId) => {
         const token = document.querySelector('#consulta-antiforgery input[name="__RequestVerificationToken"]')?.value;
         const body = new FormData();
         body.append('skuId', skuId);
+        if (produtoId !== undefined) body.append('produtoId', produtoId);
         body.append('__RequestVerificationToken', token || '');
         const response = await fetch(url, {
             method: 'POST', body, credentials: 'same-origin',
@@ -250,7 +251,7 @@
         let sucesso = false;
         let mensagem = '';
         try {
-            const { response, data } = await postResultado(botao.dataset.naoTinhaUrl, skuId);
+            const { response, data } = await postResultado(botao.dataset.naoTinhaUrl, skuId, botao.dataset.produtoId || '');
             sucesso = response.ok && data?.skuId === skuId;
             if (!sucesso) {
                 mensagem = data?.mensagem || 'Não foi possível confirmar o registro. Confira as rupturas antes de tentar novamente.';
