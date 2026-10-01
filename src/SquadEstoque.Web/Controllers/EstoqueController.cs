@@ -121,6 +121,24 @@ public sealed class EstoqueController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    public IActionResult RegistrarDesistiu()
+    {
+        if (!GetAuthenticatedUserId().HasValue)
+        {
+            return Challenge();
+        }
+
+        return Ok(new
+        {
+            resultado = "desistiu",
+            atendimentoEncerrado = true,
+            mensagem = "Atendimento encerrado.",
+            novaConsultaUrl = Url.Action(nameof(Consulta), "Estoque")
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Vender(Guid skuId)
     {
         var usuarioId = GetAuthenticatedUserId();
