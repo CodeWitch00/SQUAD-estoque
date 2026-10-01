@@ -4,22 +4,22 @@
     ViewData["Title"] = "Catálogo de Produtos";
 }
 
-<div class="admin-page-heading mb-4">
+<div class="admin-page-heading product-page-heading">
     <div>
         <h1>Catálogo de Produtos</h1>
         <p class="admin-page-intro">Consulte os modelos, as numerações e o estado de cada produto.</p>
     </div>
-    <a asp-action="Create" class="btn btn-primary">Novo produto com grade</a>
+    <a asp-action="Create" class="btn btn-primary product-create-button"><span aria-hidden="true">+</span> Novo produto</a>
 </div>
 
 @if (!Model.Any())
 {
-    <div class="alert alert-info">Nenhum produto cadastrado no momento.</div>
+    <div class="alert product-empty-state" role="status">Nenhum produto cadastrado no momento.</div>
 }
 else
 {
-    <div class="table-responsive" tabindex="0" role="region" aria-label="Catálogo de produtos">
-        <table class="table table-hover align-middle">
+    <div class="table-responsive product-table-shell" tabindex="0" role="region" aria-label="Catálogo de produtos">
+        <table class="table align-middle product-table">
             <thead class="table-light">
                 <tr>
                     <th scope="col">Modelo</th>
@@ -35,35 +35,35 @@ else
                 @foreach (var item in Model)
                 {
                     <tr class="@(!item.Ativo ? "text-muted opacity-75" : "")">
-                        <td class="fw-bold">@item.Nome</td>
+                        <td class="product-model">@item.Nome</td>
                         <td>@item.Marca</td>
                         <td>@item.Categoria</td>
                         <td>@item.Cor</td>
                         <td>
                             @foreach (var sku in item.Skus.OrderBy(s => s.Numeracao))
                             {
-                                <span class="badge bg-light text-dark border me-1">@sku.Numeracao</span>
+                                <span class="badge product-size-chip">@sku.Numeracao</span>
                             }
                         </td>
                         <td>
                             @if (item.Ativo)
                             {
-                                <span class="badge bg-success">Ativo</span>
+                                <span class="badge product-status product-status-active">Ativo</span>
                             }
                             else
                             {
-                                <span class="badge bg-secondary">Inativo</span>
+                                <span class="badge product-status product-status-inactive">Inativo</span>
                             }
                         </td>
                         <td>
-                            <div class="admin-row-actions">
-                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-sm">Detalhes</a>
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm">Editar</a>
-                            <form asp-action="ToggleAtivo" asp-route-id="@item.Id" method="post" class="d-inline">
-                                <button type="submit" class="btn btn-outline-secondary btn-sm">
-                                    @(item.Ativo ? "Desativar" : "Ativar")
-                                </button>
-                            </form>
+                            <div class="admin-row-actions product-row-actions">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm product-action-details">Detalhes</a>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm product-action-edit">Editar</a>
+                                <form asp-action="ToggleAtivo" asp-route-id="@item.Id" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm @(item.Ativo ? "product-action-deactivate" : "product-action-activate")">
+                                        @(item.Ativo ? "Desativar" : "Ativar")
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>

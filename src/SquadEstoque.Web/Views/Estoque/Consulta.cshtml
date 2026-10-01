@@ -7,64 +7,61 @@
 }
 
 <div class="consulta-vendedor mx-auto">
-    <header class="consulta-cabecalho">
-        <h1>Qual modelo o cliente procura?</h1>
-        <p>Digite o nome ou parte do nome para consultar o estoque.</p>
-    </header>
+    <div id="consulta-antiforgery" class="visually-hidden">
+        @Html.AntiForgeryToken()
+    </div>
 
-    <section class="consulta-painel mb-4" aria-labelledby="titulo-busca">
-        <div class="mb-3">
-            <h2 id="titulo-busca">Buscar modelo</h2>
-            <p id="ajuda-busca" class="consulta-ajuda">
-                A busca exige pelo menos dois caracteres.
-            </p>
-        </div>
+    @if (produtoSelecionado is null)
+    {
+        <header class="consulta-cabecalho">
+            <h1>Qual modelo o cliente procura?</h1>
+        </header>
 
-        <div id="consulta-antiforgery" class="visually-hidden">
-            @Html.AntiForgeryToken()
-        </div>
-        <form asp-controller="Estoque" asp-action="Consulta" method="get" role="search" novalidate>
-            <div class="mb-3">
-                <label asp-for="Termo" class="form-label fw-semibold">Produto</label>
-                <input asp-for="Termo"
-                       class="form-control form-control-lg consulta-campo"
-                       type="search"
-                       minlength="2"
-                       maxlength="100"
-                       autocomplete="off"
-                       enterkeyhint="search"
-                       aria-describedby="ajuda-busca erro-busca"
-                       placeholder="Buscar modelo..."
-                       autofocus />
-                <span asp-validation-for="Termo" id="erro-busca" class="text-danger small d-block mt-2" role="alert"></span>
-            </div>
+        <section class="consulta-painel consulta-painel--busca mb-4">
+            <form asp-controller="Estoque" asp-action="Consulta" method="get" role="search"
+                  aria-label="Pronto para consultar" novalidate>
+                <div class="mb-3">
+                    <label asp-for="Termo" class="visually-hidden">Produto</label>
+                    <input asp-for="Termo"
+                           class="form-control form-control-lg consulta-campo"
+                           type="search"
+                           minlength="2"
+                           maxlength="100"
+                           autocomplete="off"
+                           enterkeyhint="search"
+                           aria-describedby="erro-busca"
+                           placeholder="Buscar modelo..."
+                           autofocus />
+                    <span asp-validation-for="Termo" id="erro-busca" class="text-danger small d-block mt-2" role="alert"></span>
+                </div>
 
-            <button type="submit" class="btn consulta-botao">
-                Buscar
-            </button>
-        </form>
-    </section>
+                <button type="submit" class="btn consulta-botao">
+                    Buscar
+                </button>
+            </form>
+        </section>
+    }
 
     @if (produtoSelecionado is not null)
     {
-        <section id="grade" class="consulta-grade mb-4" aria-labelledby="titulo-grade">
+        <section id="grade" class="consulta-grade mb-4" aria-labelledby="titulo-grade" aria-current="true">
+            <a class="consulta-nova-consulta consulta-nova-consulta--contexto" asp-controller="Estoque" asp-action="Consulta"
+               title="Nova consulta sem registrar resultado">← Nova consulta</a>
             <header class="consulta-grade-cabecalho">
                 <div>
-                    <p class="consulta-grade-etapa mb-1">Grade disponível</p>
-                    <h2 id="titulo-grade">@produtoSelecionado.Nome</h2>
+                    <h1 id="titulo-grade">@produtoSelecionado.Nome</h1>
                     <p class="visually-hidden" role="status" aria-live="polite">
                         @produtoSelecionado.Nome selecionado.
                     </p>
                     <p class="consulta-produto-meta">
                         @produtoSelecionado.Marca · @produtoSelecionado.Categoria · @produtoSelecionado.Cor
                     </p>
+                    <p class="consulta-grade-etapa mt-3 mb-0">Grade disponível</p>
                 </div>
                 <span class="consulta-grade-contagem">
                     @produtoSelecionado.Skus.Count @(produtoSelecionado.Skus.Count == 1 ? "numeração" : "numerações")
                 </span>
             </header>
-            <p id="consulta-venda-retorno" class="consulta-venda-retorno" role="status" aria-live="polite" tabindex="-1" hidden></p>
-
             @if (produtoSelecionado.Skus.Count == 0)
             {
                 <p class="consulta-grade-vazia mb-0" role="status">
@@ -104,42 +101,33 @@
     @if (produtoSelecionado is not null && produtoSelecionado.Skus.Count > 0)
     {
         <section class="consulta-atendimento-acoes" aria-labelledby="titulo-acoes-atendimento">
-            <h2 class="consulta-atendimento-rotulo">Atendimento atual</h2>
+            <button type="button" class="consulta-painel-fechar" aria-label="Fechar painel de atendimento">×</button>
             <p id="consulta-atendimento-resumo" class="consulta-atendimento-resumo" role="status" aria-live="polite">
-                Selecione a numeração solicitada pelo cliente.
+                <span id="consulta-atendimento-selecao">Selecione a numeração solicitada pelo cliente.</span>
+                <span id="consulta-atendimento-saldo" class="consulta-atendimento-saldo"></span>
             </p>
-            <h2 id="titulo-acoes-atendimento" class="consulta-acoes-titulo">Resultado do atendimento</h2>
-            <div class="consulta-acoes-grade">
+            <h2 id="titulo-acoes-atendimento" class="consulta-acoes-titulo">O que aconteceu?</h2>
+            <div class="consulta-acoes-grade" aria-label="Resultado do atendimento">
                 <button type="button" class="consulta-acao consulta-acao--primaria"
                         data-resultado="vendeu" data-vender-url="@Url.Action("Vender", "Estoque")" disabled>Vendeu</button>
                 <button type="button" class="consulta-acao" data-resultado="nao-tinha"
                         data-nao-tinha-url="@Url.Action("RegistrarNaoTinha", "Estoque")"
-                        aria-describedby="consulta-atendimento-resumo consulta-nao-tinha-ajuda" disabled>Não tinha</button>
+                        aria-describedby="consulta-atendimento-resumo" disabled>Não tinha</button>
                 <button type="button" class="consulta-acao consulta-acao--desistiu" data-resultado="desistiu">Desistiu</button>
             </div>
-            <p id="consulta-nao-tinha-ajuda" class="consulta-ajuda">Não encontrou a numeração no atendimento? Registre Não tinha, mesmo com saldo disponível. O saldo não será alterado.</p>
+            <p id="consulta-venda-retorno" class="consulta-venda-retorno" role="status" aria-live="polite" tabindex="-1" hidden></p>
             <p class="consulta-acao-feedback" id="consulta-acao-feedback" role="status" aria-live="polite" tabindex="-1" hidden></p>
-            <a class="consulta-nova-consulta" asp-controller="Estoque" asp-action="Consulta">Nova consulta sem registrar resultado</a>
+            <a class="consulta-nova-consulta consulta-nova-consulta--conclusao"
+               asp-controller="Estoque" asp-action="Consulta" hidden>Nova consulta</a>
         </section>
     }
 
-    @if (!buscaExecutada)
+    @if (produtoSelecionado is null && buscaExecutada && Model.Resultados.Count == 0)
     {
-        <section class="consulta-estado" aria-labelledby="titulo-estado-inicial">
-            <div class="consulta-estado-icone" aria-hidden="true">⌕</div>
-            <h2 id="titulo-estado-inicial">Pronto para consultar</h2>
-            <p>Digite ao menos dois caracteres para começar.</p>
-        </section>
+        <p class="consulta-sem-resultados" role="status"
+           aria-description="Revise o termo ou faça uma nova busca.">@Model.MensagemEstado</p>
     }
-    else if (Model.Resultados.Count == 0)
-    {
-        <section class="consulta-estado" aria-labelledby="titulo-sem-resultado" aria-live="polite">
-            <div class="consulta-estado-icone" aria-hidden="true">!</div>
-            <h2 id="titulo-sem-resultado">@Model.MensagemEstado</h2>
-            <p>Revise o termo ou faça uma nova busca.</p>
-        </section>
-    }
-    else
+    else if (produtoSelecionado is null)
     {
         <section aria-labelledby="titulo-resultados">
             <div class="d-flex flex-wrap align-items-baseline justify-content-between gap-2 mb-3">
