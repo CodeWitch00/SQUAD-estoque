@@ -1,40 +1,43 @@
 (() => {
-    const form = document.querySelector('.consulta-painel form');
-    const field = form?.querySelector('input[name="Termo"]');
-    if (!form || !field) return;
-
-    let timer;
-    let composing = false;
-
-    const scheduleSearch = () => {
-        clearTimeout(timer);
-        const term = field.value.trim();
-        if (composing || term.length < 2 || term.length > 100) return;
-
-        timer = setTimeout(() => form.requestSubmit(), 800);
-    };
-
-    field.addEventListener('input', scheduleSearch);
-    field.addEventListener('compositionstart', () => {
-        composing = true;
-        clearTimeout(timer);
-    });
-    field.addEventListener('compositionend', () => {
-        composing = false;
-        scheduleSearch();
-    });
-    form.addEventListener('submit', () => clearTimeout(timer));
-
     const grade = document.querySelector('.consulta-grade');
     const retorno = document.querySelector('#consulta-venda-retorno');
     const resumo = document.querySelector('#consulta-atendimento-resumo');
+    const selecaoResumo = document.querySelector('#consulta-atendimento-selecao') || resumo;
+    const saldoResumo = document.querySelector('#consulta-atendimento-saldo');
     const feedback = document.querySelector('#consulta-acao-feedback');
+    const painelAtendimento = document.querySelector('.consulta-atendimento-acoes');
+    const fecharPainel = document.querySelector('.consulta-painel-fechar');
+    const novaConsultaConclusao = document.querySelector('.consulta-nova-consulta--conclusao');
     const botoes = document.querySelectorAll('.consulta-acao[data-resultado]');
     if (!grade || !retorno || !resumo || !feedback || botoes.length === 0) return;
 
     let registroPendente = false;
     let gradeDesatualizada = false;
+    let painelDispensado = false;
+    const atualizarEspacoPainel = () => {
+        if (painelAtendimento) {
+            document.body.style.setProperty('--consulta-painel-mobile-altura', `${painelAtendimento.offsetHeight}px`);
+        }
+    };
+    if (painelAtendimento && 'ResizeObserver' in window) {
+        new ResizeObserver(atualizarEspacoPainel).observe(painelAtendimento);
+    }
     const selecionado = () => grade.querySelector('input[name="skuSelecionado"]:checked');
+    const garantirSkuVisivel = (radio) => {
+        if (!radio || !painelAtendimento || !window.matchMedia('(max-width: 575.98px)').matches) return;
+        window.setTimeout(() => {
+            const card = radio.closest('.consulta-grade-item');
+            if (!card) return;
+            const limitePainel = window.innerHeight - painelAtendimento.offsetHeight - 12;
+            const cardRect = card.getBoundingClientRect();
+            if (cardRect.bottom <= limitePainel) return;
+            const movimentoReduzido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            window.scrollBy({
+                top: cardRect.bottom - limitePainel,
+                behavior: movimentoReduzido ? 'auto' : 'smooth'
+            });
+        }, 210);
+    };
     const atualizarSelecao = () => {
         const radio = selecionado();
         grade.querySelectorAll('.consulta-grade-item').forEach((card) => {
@@ -55,14 +58,17 @@
             }
         });
         if (!radio) {
-            resumo.textContent = 'Selecione a numeração solicitada pelo cliente.';
-        } else if (Number(radio.dataset.saldo) === 0) {
-            resumo.textContent = `Nº ${radio.dataset.numeracao} · Indisponível`;
-        } else if (Number(radio.dataset.saldo) === 1) {
-            resumo.textContent = `Nº ${radio.dataset.numeracao} · Último par`;
+            selecaoResumo.textContent = 'Selecione a numeração solicitada pelo cliente.';
+            if (saldoResumo) saldoResumo.textContent = '';
         } else {
-            resumo.textContent = `Nº ${radio.dataset.numeracao} · ${radio.dataset.saldo} pares disponíveis`;
+            selecaoResumo.textContent = `Nº ${radio.dataset.numeracao} selecionado`;
+            const saldo = Number(radio.dataset.saldo);
+            if (saldoResumo) saldoResumo.textContent = `${saldo} ${saldo === 1 ? 'par disponível' : 'pares disponíveis'}`;
         }
+        const painelVisivel = Boolean(radio) && !painelDispensado;
+        painelAtendimento?.classList.toggle('consulta-atendimento-acoes--visivel', painelVisivel);
+        document.body.classList.toggle('consulta-painel-mobile-aberto', painelVisivel);
+        if (painelVisivel) window.requestAnimationFrame(atualizarEspacoPainel);
         feedback.hidden = true;
         retorno.hidden = !gradeDesatualizada;
     };
@@ -84,7 +90,19 @@
             .setAttribute('aria-label', `Nº ${radio.dataset.numeracao}, ${quantidade}, ${estado}`);
     };
     grade.addEventListener('change', (event) => {
-        if (event.target.matches('input[name="skuSelecionado"]')) atualizarSelecao();
+        if (event.target.matches('input[name="skuSelecionado"]')) {
+            painelDispensado = false;
+            atualizarSelecao();
+            garantirSkuVisivel(event.target);
+        }
+    });
+
+    fecharPainel?.addEventListener('click', () => {
+        painelDispensado = true;
+        painelAtendimento.classList.remove('consulta-atendimento-acoes--visivel');
+        document.body.classList.remove('consulta-painel-mobile-aberto');
+        document.body.style.removeProperty('--consulta-painel-mobile-altura');
+        grade.querySelector('input[name="skuSelecionado"]:checked')?.focus({ preventScroll: true });
     });
 
     const buscarGradeAtualizada = async (manterSelecao = false) => {
@@ -117,6 +135,25 @@
         return { response, data };
     };
 
+    const exibirConfirmacao = (elemento, titulo, complemento) => {
+        const tituloElemento = document.createElement('strong');
+        const complementoElemento = document.createElement('span');
+        tituloElemento.textContent = titulo;
+        complementoElemento.textContent = complemento;
+        elemento.replaceChildren(tituloElemento, complementoElemento);
+        elemento.hidden = false;
+    };
+
+    const concluirAtendimento = (feedbackAtivo) => {
+        painelAtendimento?.classList.add('consulta-atendimento-acoes--concluido');
+        retorno.hidden = feedbackAtivo !== retorno;
+        feedback.hidden = feedbackAtivo !== feedback;
+        if (novaConsultaConclusao) novaConsultaConclusao.hidden = false;
+        botoes.forEach((item) => item.disabled = true);
+        grade.querySelectorAll('input[name="skuSelecionado"]').forEach((item) => item.disabled = true);
+        window.requestAnimationFrame(atualizarEspacoPainel);
+    };
+
     botoes.forEach((botao) => botao.addEventListener('click', async () => {
         if (registroPendente || botao.disabled) return;
         const tipo = botao.dataset.resultado;
@@ -133,15 +170,17 @@
             botao.textContent = 'Registrando…';
             let sucesso = false;
             let mensagem;
+            let saldoAtual;
 
             try {
                 const { response, data } = await postResultado(botao.dataset.venderUrl, skuId);
                 sucesso = response.ok && data?.skuId === skuId &&
                     Number.isInteger(data.saldoAtual) && data.saldoAtual >= 0;
-                if (sucesso) atualizarSkuVendido(radio, data.saldoAtual);
-                mensagem = sucesso
-                    ? `Venda registrada. Nº ${numero} · saldo atualizado: ${data.saldoAtual} ${data.saldoAtual === 1 ? 'par' : 'pares'}.`
-                    : response.status === 400 && data?.mensagem?.includes('Saldo insuficiente')
+                if (sucesso) {
+                    saldoAtual = data.saldoAtual;
+                    atualizarSkuVendido(radio, saldoAtual);
+                }
+                mensagem = response.status === 400 && data?.mensagem?.includes('Saldo insuficiente')
                         ? 'Venda não registrada. O saldo desta numeração foi atualizado. Confira a grade.'
                         : data?.mensagem || 'Não foi possível registrar a venda. Tente novamente.';
             } catch {
@@ -163,23 +202,43 @@
             atualizarSelecao();
 
             retorno.classList.toggle('consulta-venda-retorno--erro', !sucesso);
-            retorno.textContent = mensagem;
-            retorno.hidden = false;
-            retorno.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            if (sucesso) {
+                exibirConfirmacao(
+                    retorno,
+                    `Venda registrada para o nº ${numero}.`,
+                    `Saldo atualizado: ${saldoAtual} pares.`);
+                concluirAtendimento(retorno);
+            } else {
+                retorno.textContent = mensagem;
+                retorno.hidden = false;
+            }
+            retorno.focus({ preventScroll: true });
+            if (!window.matchMedia('(max-width: 575.98px)').matches) {
+                retorno.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            }
             return;
         }
 
         if (tipo !== 'desistiu' && !radio) return;
 
         const skuId = radio?.value;
-        const produto = grade.querySelector('#titulo-grade').textContent.trim();
         const numero = radio?.dataset.numeracao;
         botoes.forEach((item) => item.disabled = true);
         feedback.hidden = true;
         retorno.hidden = true;
 
         if (tipo === 'desistiu') {
-            window.location.assign('/Estoque/Consulta');
+            feedback.classList.remove('consulta-venda-retorno--erro');
+            exibirConfirmacao(
+                feedback,
+                'Atendimento encerrado.',
+                'Nenhuma movimentação foi registrada.');
+            concluirAtendimento(feedback);
+            feedback.focus({ preventScroll: true });
+            if (!window.matchMedia('(max-width: 575.98px)').matches) {
+                feedback.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            }
+            window.setTimeout(() => window.location.assign('/Estoque/Consulta'), 1200);
             return;
         }
 
@@ -193,9 +252,7 @@
         try {
             const { response, data } = await postResultado(botao.dataset.naoTinhaUrl, skuId);
             sucesso = response.ok && data?.skuId === skuId;
-            if (sucesso) {
-                mensagem = `Não tinha registrado. ${produto} · Nº ${numero}. O saldo não foi alterado.`;
-            } else {
+            if (!sucesso) {
                 mensagem = data?.mensagem || 'Não foi possível confirmar o registro. Confira as rupturas antes de tentar novamente.';
             }
         } catch {
@@ -208,10 +265,20 @@
         }
 
         feedback.classList.toggle('consulta-venda-retorno--erro', !sucesso);
-        feedback.textContent = mensagem;
-        feedback.hidden = false;
+        if (sucesso) {
+            exibirConfirmacao(
+                feedback,
+                `Falta registrada para o nº ${numero}.`,
+                'O saldo do sistema não foi alterado.');
+            concluirAtendimento(feedback);
+        } else {
+            feedback.textContent = mensagem;
+            feedback.hidden = false;
+        }
         feedback.focus({ preventScroll: true });
-        feedback.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        if (!window.matchMedia('(max-width: 575.98px)').matches) {
+            feedback.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
     }));
 
     atualizarSelecao();
