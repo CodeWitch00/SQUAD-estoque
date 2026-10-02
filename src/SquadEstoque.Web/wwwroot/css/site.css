@@ -1708,3 +1708,21 @@ body {
     grid-column: auto;
   }
 }
+
+/* Desistiu permanece acessível no produto sem seleção de SKU. */
+@media (max-width: 575.98px) {
+  .consulta-atendimento-acoes:not(.consulta-atendimento-acoes--visivel) {
+    position: static;
+    margin-top: 24px;
+    max-height: none;
+    transform: none;
+    visibility: visible;
+    border-width: 1px;
+    border-radius: 14px;
+    box-shadow: none;
+    transition: none;
+  }
+  .consulta-atendimento-acoes:not(.consulta-atendimento-acoes--visivel) .consulta-painel-fechar {
+    display: none;
+  }
+}

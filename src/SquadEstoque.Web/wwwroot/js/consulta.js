@@ -125,7 +125,7 @@
     const postResultado = async (url, skuId, produtoId) => {
         const token = document.querySelector('#consulta-antiforgery input[name="__RequestVerificationToken"]')?.value;
         const body = new FormData();
-        body.append('skuId', skuId);
+        if (skuId !== undefined) body.append('skuId', skuId);
         if (produtoId !== undefined) body.append('produtoId', produtoId);
         body.append('__RequestVerificationToken', token || '');
         const response = await fetch(url, {
@@ -229,17 +229,57 @@
         retorno.hidden = true;
 
         if (tipo === 'desistiu') {
-            feedback.classList.remove('consulta-venda-retorno--erro');
-            exibirConfirmacao(
-                feedback,
-                'Atendimento encerrado.',
-                'Nenhuma movimentação foi registrada.');
-            concluirAtendimento(feedback);
-            feedback.focus({ preventScroll: true });
-            if (!window.matchMedia('(max-width: 575.98px)').matches) {
-                feedback.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            registroPendente = true;
+            grade.setAttribute('aria-busy', 'true');
+            atualizarSelecao();
+            let data;
+            let sucesso = false;
+            try {
+                const resultado = await postResultado(botao.dataset.desistiuUrl);
+                data = resultado.data;
+                sucesso = resultado.response.ok && data?.resultado === 'desistiu' &&
+                    data.atendimentoEncerrado === true && data.novaConsultaUrl === '/Estoque/Consulta';
+            } catch {
+                sucesso = false;
+            } finally {
+                registroPendente = false;
+                grade.removeAttribute('aria-busy');
+                atualizarSelecao();
             }
-            window.setTimeout(() => window.location.assign('/Estoque/Consulta'), 1200);
+            if (!sucesso) {
+                feedback.classList.add('consulta-venda-retorno--erro');
+                feedback.textContent = 'Não foi possível encerrar o atendimento. Tente novamente.';
+                feedback.hidden = false;
+                feedback.focus({ preventScroll: true });
+                return;
+            }
+            feedback.classList.remove('consulta-venda-retorno--erro');
+            exibirConfirmacao(feedback, 'Desistiu — atendimento encerrado.',
+                'Sem venda, sem ruptura e sem alteração no estoque.');
+            concluirAtendimento(feedback);
+            try {
+                const response = await fetch(data.novaConsultaUrl, { credentials: 'same-origin', cache: 'no-store' });
+                if (!response.ok || response.redirected) throw new Error('Consulta indisponível');
+                const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+                const consulta = page.querySelector('.consulta-vendedor');
+                const campo = consulta?.querySelector('input[name="Termo"]');
+                if (!campo || campo.value || consulta.querySelector('.consulta-grade')) throw new Error('Consulta inválida');
+                const aviso = feedback.cloneNode(true);
+                aviso.id = 'consulta-desistiu-retorno';
+                aviso.classList.add('mb-4');
+                consulta.prepend(aviso);
+                campo.setAttribute('aria-describedby', `${campo.getAttribute('aria-describedby') || ''} ${aviso.id}`.trim());
+                document.querySelector('.consulta-vendedor').replaceWith(consulta);
+                document.body.classList.remove('consulta-painel-mobile-aberto');
+                document.body.style.removeProperty('--consulta-painel-mobile-altura');
+                history.replaceState(null, '', data.novaConsultaUrl);
+                window.scrollTo(0, 0);
+                campo.focus({ preventScroll: true });
+            } catch {
+                // Encerramento confirmado: falha ao carregar a busca não deve repetir o POST.
+                feedback.focus({ preventScroll: true });
+                novaConsultaConclusao?.focus();
+            }
             return;
         }
 

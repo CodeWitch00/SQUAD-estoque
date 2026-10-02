@@ -98,7 +98,7 @@
         </section>
     }
 
-    @if (produtoSelecionado is not null && produtoSelecionado.Skus.Count > 0)
+    @if (produtoSelecionado is not null)
     {
         <section class="consulta-atendimento-acoes" aria-labelledby="titulo-acoes-atendimento">
             <button type="button" class="consulta-painel-fechar" aria-label="Fechar painel de atendimento">×</button>
@@ -113,8 +113,10 @@
                 <button type="button" class="consulta-acao" data-resultado="nao-tinha"
                         data-nao-tinha-url="@Url.Action("RegistrarNaoTinha", "Estoque")" data-produto-id="@produtoSelecionado.Id"
                         aria-describedby="consulta-atendimento-resumo" disabled>Não tinha</button>
-                <button type="button" class="consulta-acao consulta-acao--desistiu" data-resultado="desistiu">Desistiu</button>
+                <button type="button" class="consulta-acao consulta-acao--desistiu" data-resultado="desistiu"
+                        data-desistiu-url="@Url.Action("RegistrarDesistiu", "Estoque")" aria-describedby="consulta-desistiu-ajuda">Desistiu</button>
             </div>
+            <p class="small mt-3 mb-0" id="consulta-desistiu-ajuda">Desistiu encerra o atendimento sem venda, sem ruptura e sem alterar o estoque.</p>
             <p id="consulta-venda-retorno" class="consulta-venda-retorno" role="status" aria-live="polite" tabindex="-1" hidden></p>
             <p class="consulta-acao-feedback" id="consulta-acao-feedback" role="status" aria-live="polite" tabindex="-1" hidden></p>
             <a class="consulta-nova-consulta consulta-nova-consulta--conclusao"
