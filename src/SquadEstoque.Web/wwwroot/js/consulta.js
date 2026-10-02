@@ -254,16 +254,32 @@
                 return;
             }
             feedback.classList.remove('consulta-venda-retorno--erro');
-            exibirConfirmacao(
-                feedback,
-                data.mensagem,
-                'Nenhuma movimentação foi registrada.');
+            exibirConfirmacao(feedback, 'Desistiu — atendimento encerrado.',
+                'Sem venda, sem ruptura e sem alteração no estoque.');
             concluirAtendimento(feedback);
-            feedback.focus({ preventScroll: true });
-            if (!window.matchMedia('(max-width: 575.98px)').matches) {
-                feedback.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            try {
+                const response = await fetch(data.novaConsultaUrl, { credentials: 'same-origin', cache: 'no-store' });
+                if (!response.ok || response.redirected) throw new Error('Consulta indisponível');
+                const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+                const consulta = page.querySelector('.consulta-vendedor');
+                const campo = consulta?.querySelector('input[name="Termo"]');
+                if (!campo || campo.value || consulta.querySelector('.consulta-grade')) throw new Error('Consulta inválida');
+                const aviso = feedback.cloneNode(true);
+                aviso.id = 'consulta-desistiu-retorno';
+                aviso.classList.add('mb-4');
+                consulta.prepend(aviso);
+                campo.setAttribute('aria-describedby', `${campo.getAttribute('aria-describedby') || ''} ${aviso.id}`.trim());
+                document.querySelector('.consulta-vendedor').replaceWith(consulta);
+                document.body.classList.remove('consulta-painel-mobile-aberto');
+                document.body.style.removeProperty('--consulta-painel-mobile-altura');
+                history.replaceState(null, '', data.novaConsultaUrl);
+                window.scrollTo(0, 0);
+                campo.focus({ preventScroll: true });
+            } catch {
+                // Encerramento confirmado: falha ao carregar a busca não deve repetir o POST.
+                feedback.focus({ preventScroll: true });
+                novaConsultaConclusao?.focus();
             }
-            window.setTimeout(() => window.location.assign(data.novaConsultaUrl), 1200);
             return;
         }
 
