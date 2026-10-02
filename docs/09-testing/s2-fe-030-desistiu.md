@@ -36,4 +36,3 @@ Branch criada a partir de origin/dev/emmy, com a dependência #43 incorporada.
 Destino do PR: dev/emmy. Main preservada; alterações locais anteriores preservadas.
 Revisão humana e CI devem ser conferidas no PR; este registro não representa aprovação humana.
 Trello será atualizado pela responsável com o PR e as evidências deste arquivo.
-
