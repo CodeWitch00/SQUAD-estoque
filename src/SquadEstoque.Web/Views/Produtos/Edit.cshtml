@@ -4,18 +4,16 @@
     ViewData["Title"] = "Editar Produto";
 }
 
-<header class="admin-page-heading admin-form-heading mb-4">
+<header class="admin-page-heading admin-form-heading product-form-heading">
     <div>
         <h1>Editar produto</h1>
         <p class="admin-page-intro">Atualize os dados do modelo cadastrado.</p>
     </div>
 </header>
 
-<div class="row justify-content-center">
-    <div class="col-12 col-md-10 col-lg-9 col-xl-8">
-        <div class="card shadow-sm border-0">
-            <div class="card-body p-4">
-                <form asp-action="Edit" method="post">
+<div class="admin-form-layout">
+    <section class="admin-form-surface" aria-label="Formulário de edição de produto">
+        <form asp-action="Edit" method="post" class="admin-form">
                     <input type="hidden" asp-for="Id" />
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
@@ -48,10 +46,8 @@
                         <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
                         <button type="submit" class="btn btn-primary">Salvar Alterações</button>
                     </div>
-                </form>
-            </div>
-        </div>
-    </div>
+        </form>
+    </section>
 </div>
 
 @section Scripts {

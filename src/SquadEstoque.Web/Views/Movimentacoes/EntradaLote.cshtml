@@ -1,0 +1,75 @@
+@model SquadEstoque.Web.Models.EntradaLoteViewModel
+
+@{
+    ViewData["Title"] = "Registrar entrada em lote";
+}
+
+<header class="admin-page-heading admin-form-heading movement-form-heading batch-entry-heading">
+    <div>
+        <h1>Registrar entrada em lote</h1>
+        <p class="admin-page-intro">Informe somente as numerações recebidas nesta remessa.</p>
+    </div>
+</header>
+
+<div class="movement-form-layout batch-entry-layout">
+    <section class="movement-form-surface batch-entry-surface" aria-label="Formulário de entrada em lote">
+        <form asp-action="EntradaLote" method="post" class="movement-form">
+            <input type="hidden" asp-for="ProdutoId" />
+            <div asp-validation-summary="ModelOnly" class="movement-validation-summary" role="alert"></div>
+
+            <div class="movement-context batch-entry-context">
+                <p class="movement-context-label">Produto selecionado</p>
+                <p class="movement-context-product">@Model.NomeProduto</p>
+                <div class="movement-context-details">
+                    <span>@Model.Marca</span>
+                    <span>@Model.Categoria</span>
+                    <span>@Model.Cor</span>
+                </div>
+            </div>
+
+            <div class="batch-entry-table-shell" tabindex="0" role="region" aria-label="Numerações e quantidades recebidas">
+                <table class="table batch-entry-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Numeração</th>
+                            <th scope="col">Saldo atual</th>
+                            <th scope="col">Quantidade recebida</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var index = 0; index < Model.Itens.Count; index++)
+                        {
+                            <tr>
+                                <td>
+                                    <input type="hidden" asp-for="Itens[index].SkuId" />
+                                    <span class="batch-entry-size">@Model.Itens[index].Numeracao</span>
+                                </td>
+                                <td>@Model.Itens[index].SaldoAtual par(es)</td>
+                                <td>
+                                    <label asp-for="Itens[index].QuantidadeRecebida" class="visually-hidden">Quantidade recebida para a numeração @Model.Itens[index].Numeracao</label>
+                                    <input asp-for="Itens[index].QuantidadeRecebida" type="number" min="0" class="form-control batch-entry-quantity" aria-label="Quantidade recebida para a numeração @Model.Itens[index].Numeracao" />
+                                    <span asp-validation-for="Itens[index].QuantidadeRecebida" class="movement-validation"></span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="movement-field movement-field--last batch-entry-observation">
+                <label asp-for="Observacao" class="form-label">Observação / Nota (Opcional)</label>
+                <input asp-for="Observacao" class="form-control movement-input" placeholder="ex: Recebimento fornecedor - pedido 1048" />
+                <span asp-validation-for="Observacao" class="movement-validation"></span>
+            </div>
+
+            <div class="movement-form-actions">
+                <a asp-controller="Produtos" asp-action="Details" asp-route-id="@Model.ProdutoId" class="btn btn-outline-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-primary">Registrar entrada</button>
+            </div>
+        </form>
+    </section>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
