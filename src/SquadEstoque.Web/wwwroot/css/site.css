@@ -609,7 +609,9 @@ body {
 }
 
 .consulta-atendimento-acoes {
-  position: relative;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
   margin: 1rem -0.5rem 0;
   padding: 1rem 0.75rem calc(1rem + env(safe-area-inset-bottom));
   border-top: 1px solid #c9d8e0;
@@ -692,12 +694,6 @@ body {
 }
 
 .consulta-acao-feedback {
-  white-space: pre-line;
-  overflow-wrap: anywhere;
-  padding: 1rem;
-  border: 1px solid #257343;
-  border-radius: 0.75rem;
-  background: #eef7f1;
   margin: 0.625rem 0 0;
   color: #243b53;
   font-size: 0.875rem;
@@ -706,12 +702,6 @@ body {
 
 .consulta-acao-feedback[hidden] {
   display: none;
-}
-
-.consulta-acao-feedback.consulta-venda-retorno--erro {
-  border-color: #a86500;
-  color: #5c3b00;
-  background: #fff8e8;
 }
 
 .consulta-acao-feedback > strong {
