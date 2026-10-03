@@ -86,6 +86,58 @@ public sealed class AdministrativeHttpTests : IClassFixture<SquadEstoqueWebAppli
         Assert.False(persisted.Ativo);
     }
 
+    [Fact]
+    public async Task Lojista_can_open_batch_entry_and_vendedor_cannot()
+    {
+        using var lojistaClient = CreateClient();
+        await LoginAsync(lojistaClient, "lojista@squad.com");
+        var response = await lojistaClient.GetAsync("/Movimentacoes/EntradaLote?produtoId=aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var html = await response.Content.ReadAsStringAsync();
+        Assert.Contains("Registrar entrada em lote", html);
+        Assert.Contains("Quantidade recebida", html);
+
+        using var vendedorClient = CreateClient();
+        await LoginAsync(vendedorClient, "vendedor@squad.com");
+        var denied = await vendedorClient.GetAsync("/Movimentacoes/EntradaLote?produtoId=aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+        Assert.Equal(HttpStatusCode.Found, denied.StatusCode);
+        Assert.StartsWith("/Account/AccessDenied", denied.Headers.Location?.PathAndQuery);
+
+        using var deniedContent = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["ProdutoId"] = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+        });
+        var deniedPost = await vendedorClient.PostAsync("/Movimentacoes/EntradaLote", deniedContent);
+        Assert.Equal(HttpStatusCode.Found, deniedPost.StatusCode);
+        Assert.StartsWith("/Account/AccessDenied", deniedPost.Headers.Location?.PathAndQuery);
+    }
+
+    [Fact]
+    public async Task Lojista_can_open_grade_management_and_vendedor_cannot()
+    {
+        using var lojistaClient = CreateClient();
+        await LoginAsync(lojistaClient, "lojista@squad.com");
+        var response = await lojistaClient.GetAsync("/Produtos/AdicionarNumeracoes/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("Adicionar numerações", await response.Content.ReadAsStringAsync());
+
+        using var vendedorClient = CreateClient();
+        await LoginAsync(vendedorClient, "vendedor@squad.com");
+        var denied = await vendedorClient.GetAsync("/Produtos/AdicionarNumeracoes/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+        Assert.Equal(HttpStatusCode.Found, denied.StatusCode);
+        Assert.StartsWith("/Account/AccessDenied", denied.Headers.Location?.PathAndQuery);
+
+        using var deniedContent = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["ProdutoId"] = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+            ["NumeracoesGrade"] = "41"
+        });
+        var deniedPost = await vendedorClient.PostAsync(
+            "/Produtos/AdicionarNumeracoes/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", deniedContent);
+        Assert.Equal(HttpStatusCode.Found, deniedPost.StatusCode);
+        Assert.StartsWith("/Account/AccessDenied", deniedPost.Headers.Location?.PathAndQuery);
+    }
+
     [Theory]
     [InlineData("/Produtos/Create")]
     [InlineData("/Produtos/Edit/00000000-0000-0000-0000-000000000001")]

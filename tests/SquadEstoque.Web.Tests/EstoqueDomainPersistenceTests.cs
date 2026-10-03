@@ -87,6 +87,106 @@ public sealed class EstoqueDomainPersistenceTests
     }
 
     [Fact]
+    public async Task Movimentacoes_index_filters_by_product_type_period_and_responsible()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var air = CreateProduto();
+        air.Nome = "Tênis Air Zoom Pegasus";
+        air.Marca = "Nike";
+        var derby = CreateProduto();
+        derby.Nome = "Sapato Derby";
+        derby.Marca = "Ferracini";
+        var airSku = CreateSku(air.Id, "40", 5);
+        var derbySku = CreateSku(derby.Id, "41", 5);
+        var responsavel = new Usuario
+        {
+            Id = Guid.NewGuid(),
+            Nome = "Responsável Um",
+            Email = $"{Guid.NewGuid():N}@example.test",
+            SenhaHash = "hash",
+            Perfil = PerfilUsuario.LOJISTA
+        };
+        var outroResponsavel = new Usuario
+        {
+            Id = Guid.NewGuid(),
+            Nome = "Responsável Dois",
+            Email = $"{Guid.NewGuid():N}@example.test",
+            SenhaHash = "hash",
+            Perfil = PerfilUsuario.LOJISTA
+        };
+
+        database.Context.AddRange(air, derby, airSku, derbySku, responsavel, outroResponsavel);
+        database.Context.Movimentacao.AddRange(
+            CreateMovement(airSku, responsavel, TipoMovimentacao.SAIDA, new DateTime(2026, 9, 30, 18, 0, 0)),
+            CreateMovement(airSku, outroResponsavel, TipoMovimentacao.ENTRADA, new DateTime(2026, 9, 15)),
+            CreateMovement(derbySku, responsavel, TipoMovimentacao.SAIDA, new DateTime(2026, 9, 20)));
+        await database.Context.SaveChangesAsync();
+
+        var controller = CreateController(database.Context, responsavel);
+        var result = await controller.Index(
+            "Air", "SAIDA", new DateTime(2026, 9, 1), new DateTime(2026, 9, 30), responsavel.Id);
+
+        var view = Assert.IsType<ViewResult>(result);
+        var model = Assert.IsType<MovimentacoesIndexViewModel>(view.Model);
+        var movimento = Assert.Single(model.Movimentacoes);
+        Assert.Equal(airSku.Id, movimento.SkuId);
+        Assert.Equal(TipoMovimentacao.SAIDA, movimento.Tipo);
+        Assert.Equal(responsavel.Id, movimento.UsuarioId);
+        Assert.Equal(1, model.TotalItens);
+        Assert.Equal(new DateTime(2026, 9, 1), model.DataInicio);
+        Assert.Equal(new DateTime(2026, 9, 30), model.DataFim);
+    }
+
+    [Fact]
+    public async Task Movimentacoes_index_paginates_most_recent_first_and_clamps_page()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedAsync(database.Context, initialBalance: 1);
+        var baseDate = new DateTime(2026, 9, 1);
+        for (var index = 0; index < 21; index++)
+        {
+            database.Context.Movimentacao.Add(CreateMovement(
+                data.Sku, data.Usuario, TipoMovimentacao.ENTRADA, baseDate.AddDays(index)));
+        }
+
+        await database.Context.SaveChangesAsync();
+        var controller = CreateController(database.Context, data.Usuario);
+
+        var secondPageResult = await controller.Index(null, null, null, null, null, 2);
+        var secondPage = Assert.IsType<MovimentacoesIndexViewModel>(Assert.IsType<ViewResult>(secondPageResult).Model);
+        Assert.Equal(2, secondPage.PaginaAtual);
+        Assert.Equal(2, secondPage.TotalPaginas);
+        Assert.Single(secondPage.Movimentacoes);
+        Assert.Equal(baseDate, secondPage.Movimentacoes[0].CriadoEm);
+
+        var invalidPageResult = await controller.Index(null, null, null, null, null, 0);
+        var invalidPage = Assert.IsType<MovimentacoesIndexViewModel>(Assert.IsType<ViewResult>(invalidPageResult).Model);
+        Assert.Equal(1, invalidPage.PaginaAtual);
+        Assert.Equal(20, invalidPage.Movimentacoes.Count);
+    }
+
+    [Fact]
+    public async Task Movimentacoes_index_rejects_invalid_period_without_querying_results()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedAsync(database.Context, initialBalance: 1);
+        database.Context.Movimentacao.Add(CreateMovement(
+            data.Sku, data.Usuario, TipoMovimentacao.ENTRADA, new DateTime(2026, 9, 10)));
+        await database.Context.SaveChangesAsync();
+
+        var controller = CreateController(database.Context, data.Usuario);
+        var result = await controller.Index(
+            null, null, new DateTime(2026, 10, 1), new DateTime(2026, 9, 1), null);
+
+        var view = Assert.IsType<ViewResult>(result);
+        var model = Assert.IsType<MovimentacoesIndexViewModel>(view.Model);
+        Assert.Empty(model.Movimentacoes);
+        Assert.False(controller.ModelState.IsValid);
+        Assert.Contains(controller.ModelState.Values.SelectMany(value => value.Errors),
+            error => error.ErrorMessage == "A data inicial não pode ser posterior à data final.");
+    }
+
+    [Fact]
     public async Task Saida_registers_movement_and_reduces_balance()
     {
         await using var database = await TestDatabase.CreateAsync();
@@ -331,6 +431,458 @@ public sealed class EstoqueDomainPersistenceTests
         Assert.Empty(await database.Context.Movimentacao.ToListAsync());
     }
 
+    [Fact]
+    public async Task Adicionar_numeracao_creates_new_sku_with_zero_balance()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedGradeAsync(database.Context, ("38", 4), ("39", 2), ("40", 1));
+        var controller = CreateProdutosController(database.Context, data.Usuario);
+
+        var result = await controller.AdicionarNumeracoes(data.Produto.Id, new AdicionarNumeracoesViewModel
+        {
+            ProdutoId = data.Produto.Id,
+            NumeracoesGrade = "41"
+        });
+
+        var redirect = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Details", redirect.ActionName);
+        database.Context.ChangeTracker.Clear();
+        var skus = await database.Context.Sku.Where(sku => sku.ProdutoId == data.Produto.Id)
+            .OrderBy(sku => sku.Numeracao).ToListAsync();
+        Assert.Equal(new[] { "38", "39", "40", "41" }, skus.Select(sku => sku.Numeracao));
+        Assert.Equal(0, skus.Single(sku => sku.Numeracao == "41").SaldoAtual);
+        Assert.Empty(await database.Context.Movimentacao.ToListAsync());
+    }
+
+    [Fact]
+    public async Task Adicionar_numeracoes_cria_varios_skus_atomically()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedGradeAsync(database.Context, ("38", 0), ("39", 1));
+        var controller = CreateProdutosController(database.Context, data.Usuario);
+
+        var result = await controller.AdicionarNumeracoes(data.Produto.Id, new AdicionarNumeracoesViewModel
+        {
+            ProdutoId = data.Produto.Id,
+            NumeracoesGrade = "40, 41, 42"
+        });
+
+        Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal(5, await database.Context.Sku.CountAsync(sku => sku.ProdutoId == data.Produto.Id));
+        Assert.All(await database.Context.Sku.Where(sku => sku.ProdutoId == data.Produto.Id &&
+            new[] { "40", "41", "42" }.Contains(sku.Numeracao)).ToListAsync(),
+            sku => Assert.Equal(0, sku.SaldoAtual));
+    }
+
+    [Theory]
+    [InlineData("40")]
+    [InlineData("41, 40, 42")]
+    public async Task Adicionar_numeracoes_rejeita_duplicidade_existente_sem_criacao_parcial(string numeracoes)
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedGradeAsync(database.Context, ("38", 0), ("39", 0), ("40", 3));
+        var controller = CreateProdutosController(database.Context, data.Usuario);
+
+        var result = await controller.AdicionarNumeracoes(data.Produto.Id, new AdicionarNumeracoesViewModel
+        {
+            ProdutoId = data.Produto.Id,
+            NumeracoesGrade = numeracoes
+        });
+
+        Assert.IsType<ViewResult>(result);
+        Assert.Contains(controller.ModelState.Values.SelectMany(value => value.Errors),
+            error => error.ErrorMessage!.Contains("já existe"));
+        Assert.Equal(3, await database.Context.Sku.CountAsync(sku => sku.ProdutoId == data.Produto.Id));
+        Assert.Equal(3, data.Skus["40"].SaldoAtual);
+    }
+
+    [Fact]
+    public async Task Adicionar_numeracoes_rejeita_duplicidade_no_formulario()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedGradeAsync(database.Context, ("38", 0));
+        var controller = CreateProdutosController(database.Context, data.Usuario);
+
+        var result = await controller.AdicionarNumeracoes(data.Produto.Id, new AdicionarNumeracoesViewModel
+        {
+            ProdutoId = data.Produto.Id,
+            NumeracoesGrade = "41, 41"
+        });
+
+        Assert.IsType<ViewResult>(result);
+        Assert.Contains(controller.ModelState.Values.SelectMany(value => value.Errors),
+            error => error.ErrorMessage!.Contains("mais de uma vez"));
+        Assert.Single(await database.Context.Sku.Where(sku => sku.ProdutoId == data.Produto.Id).ToListAsync());
+    }
+
+    [Fact]
+    public async Task Adicionar_numeracoes_rejeita_campo_vazio()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedGradeAsync(database.Context, ("38", 0));
+        var controller = CreateProdutosController(database.Context, data.Usuario);
+
+        var result = await controller.AdicionarNumeracoes(data.Produto.Id, new AdicionarNumeracoesViewModel
+        {
+            ProdutoId = data.Produto.Id,
+            NumeracoesGrade = "   "
+        });
+
+        Assert.IsType<ViewResult>(result);
+        Assert.Contains(controller.ModelState.Values.SelectMany(value => value.Errors),
+            error => error.ErrorMessage!.Contains("ao menos uma numeração"));
+        Assert.Single(await database.Context.Sku.Where(sku => sku.ProdutoId == data.Produto.Id).ToListAsync());
+    }
+
+    [Fact]
+    public async Task Adicionar_numeracoes_rejeita_produto_inexistente()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedGradeAsync(database.Context, ("38", 0));
+        var controller = CreateProdutosController(database.Context, data.Usuario);
+
+        var result = await controller.AdicionarNumeracoes(Guid.NewGuid(), new AdicionarNumeracoesViewModel
+        {
+            ProdutoId = Guid.NewGuid(),
+            NumeracoesGrade = "41"
+        });
+
+        Assert.IsType<NotFoundResult>(result);
+        Assert.Single(await database.Context.Sku.Where(sku => sku.ProdutoId == data.Produto.Id).ToListAsync());
+    }
+
+    [Fact]
+    public async Task Nova_numeracao_aparece_na_entrada_em_lote_sem_movimentacao()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedGradeAsync(database.Context, ("38", 0), ("39", 2));
+        var produtosController = CreateProdutosController(database.Context, data.Usuario);
+
+        await produtosController.AdicionarNumeracoes(data.Produto.Id, new AdicionarNumeracoesViewModel
+        {
+            ProdutoId = data.Produto.Id,
+            NumeracoesGrade = "41"
+        });
+
+        database.Context.ChangeTracker.Clear();
+        var movimentacoesController = CreateController(database.Context, data.Usuario);
+        var result = await movimentacoesController.EntradaLote(data.Produto.Id);
+        var view = Assert.IsType<ViewResult>(result);
+        var model = Assert.IsType<EntradaLoteViewModel>(view.Model);
+        Assert.Contains(model.Itens, item => item.Numeracao == "41" && item.SaldoAtual == 0);
+        Assert.Empty(await database.Context.Movimentacao.ToListAsync());
+        Assert.Equal(2, (await database.Context.Sku.SingleAsync(sku => sku.Numeracao == "39")).SaldoAtual);
+    }
+
+    [Fact]
+    public async Task Produtos_index_searches_by_name_and_brand()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedGradeAsync(database.Context, ("38", 0));
+        data.Produto.Nome = "Tênis Air Zoom Pegasus";
+        data.Produto.Marca = "Nike";
+        var outroProduto = CreateProduto();
+        outroProduto.Nome = "Tênis 574 Core";
+        outroProduto.Marca = "New Balance";
+        var terceiroProduto = CreateProduto();
+        terceiroProduto.Nome = "Sapato Derby";
+        terceiroProduto.Marca = "Ferracini";
+        database.Context.AddRange(outroProduto, terceiroProduto);
+        await database.Context.SaveChangesAsync();
+        var controller = CreateProdutosController(database.Context, data.Usuario);
+
+        var porNome = Assert.IsType<ViewResult>(await controller.Index("Air", null, null, null, 1));
+        var modeloPorNome = Assert.IsType<ProdutosIndexViewModel>(porNome.Model);
+        Assert.Single(modeloPorNome.Produtos);
+        Assert.Equal("Tênis Air Zoom Pegasus", modeloPorNome.Produtos[0].Nome);
+
+        var porMarca = Assert.IsType<ViewResult>(await controller.Index("Nike", null, null, null, 1));
+        var modeloPorMarca = Assert.IsType<ProdutosIndexViewModel>(porMarca.Model);
+        Assert.Single(modeloPorMarca.Produtos);
+        Assert.Equal("Nike", modeloPorMarca.Produtos[0].Marca);
+
+        var inexistente = Assert.IsType<ViewResult>(await controller.Index("Inexistente", null, null, null, 1));
+        Assert.Empty(Assert.IsType<ProdutosIndexViewModel>(inexistente.Model).Produtos);
+    }
+
+    [Fact]
+    public async Task Produtos_index_applies_status_brand_category_filters_together()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedGradeAsync(database.Context, ("38", 0));
+        data.Produto.Nome = "Produto alvo";
+        data.Produto.Marca = "Nike";
+        data.Produto.Categoria = "Running";
+        var inativo = CreateProduto();
+        inativo.Nome = "Produto inativo";
+        inativo.Marca = "Nike";
+        inativo.Categoria = "Running";
+        inativo.Ativo = false;
+        var outraCategoria = CreateProduto();
+        outraCategoria.Nome = "Produto casual";
+        outraCategoria.Marca = "Nike";
+        outraCategoria.Categoria = "Casual";
+        database.Context.AddRange(inativo, outraCategoria);
+        await database.Context.SaveChangesAsync();
+        var controller = CreateProdutosController(database.Context, data.Usuario);
+
+        var result = Assert.IsType<ViewResult>(await controller.Index(
+            null, "ativo", "Nike", "Running", 1));
+        var model = Assert.IsType<ProdutosIndexViewModel>(result.Model);
+        Assert.Single(model.Produtos);
+        Assert.Equal("Produto alvo", model.Produtos[0].Nome);
+        Assert.Equal("ativo", model.Status);
+        Assert.Equal("Nike", model.Marca);
+        Assert.Equal("Running", model.Categoria);
+    }
+
+    [Fact]
+    public async Task Produtos_index_paginates_twenty_items_and_preserves_query_state()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedGradeAsync(database.Context, ("38", 0));
+        data.Produto.Nome = "Produto 00";
+        data.Produto.Marca = "Marca filtrada";
+        data.Produto.Categoria = "Categoria filtrada";
+        for (var index = 1; index < 25; index++)
+        {
+            var produto = CreateProduto();
+            produto.Nome = $"Produto {index:00}";
+            produto.Marca = "Marca filtrada";
+            produto.Categoria = "Categoria filtrada";
+            database.Context.Add(produto);
+        }
+        await database.Context.SaveChangesAsync();
+        var controller = CreateProdutosController(database.Context, data.Usuario);
+
+        var pageOneResult = Assert.IsType<ViewResult>(await controller.Index(
+            "Produto", "ativo", "Marca filtrada", "Categoria filtrada", 1));
+        var pageOne = Assert.IsType<ProdutosIndexViewModel>(pageOneResult.Model);
+        Assert.Equal(1, pageOne.PaginaAtual);
+        Assert.Equal(25, pageOne.TotalItens);
+        Assert.Equal(2, pageOne.TotalPaginas);
+        Assert.Equal(20, pageOne.Produtos.Count);
+        Assert.Equal("Produto", pageOne.Busca);
+        Assert.Equal("ativo", pageOne.Status);
+        Assert.Equal("Marca filtrada", pageOne.Marca);
+        Assert.Equal("Categoria filtrada", pageOne.Categoria);
+
+        var pageTwoResult = Assert.IsType<ViewResult>(await controller.Index(
+            "Produto", "ativo", "Marca filtrada", "Categoria filtrada", 2));
+        var pageTwo = Assert.IsType<ProdutosIndexViewModel>(pageTwoResult.Model);
+        Assert.Equal(2, pageTwo.PaginaAtual);
+        Assert.Equal(5, pageTwo.Produtos.Count);
+        Assert.Empty(pageOne.Produtos.Select(p => p.Id).Intersect(pageTwo.Produtos.Select(p => p.Id)));
+    }
+
+    [Theory]
+    [InlineData(0, 1)]
+    [InlineData(-3, 1)]
+    [InlineData(99, 2)]
+    public async Task Produtos_index_normalizes_invalid_page(int paginaInformada, int paginaEsperada)
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedGradeAsync(database.Context, ("38", 0));
+        for (var index = 1; index < 25; index++)
+        {
+            var produto = CreateProduto();
+            produto.Nome = $"Produto {index:00}";
+            database.Context.Add(produto);
+        }
+        await database.Context.SaveChangesAsync();
+        var controller = CreateProdutosController(database.Context, data.Usuario);
+
+        var result = Assert.IsType<ViewResult>(await controller.Index(null, null, null, null, paginaInformada));
+        Assert.Equal(paginaEsperada, Assert.IsType<ProdutosIndexViewModel>(result.Model).PaginaAtual);
+    }
+
+    [Fact]
+    public async Task Entrada_lote_updates_multiple_skus_in_one_submission()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedBatchAsync(database.Context);
+        var controller = CreateController(database.Context, data.Usuario);
+
+        var result = await controller.EntradaLote(new EntradaLoteViewModel
+        {
+            ProdutoId = data.Produto.Id,
+            Observacao = "  Recebimento fornecedor  ",
+            Itens = new List<EntradaLoteItemViewModel>
+            {
+                new() { SkuId = data.Sku36.Id, QuantidadeRecebida = 2 },
+                new() { SkuId = data.Sku38.Id, QuantidadeRecebida = 4 },
+                new() { SkuId = data.Sku40.Id, QuantidadeRecebida = 3 }
+            }
+        });
+
+        var redirect = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Details", redirect.ActionName);
+        Assert.Equal(data.Produto.Id, redirect.RouteValues!["id"]);
+        database.Context.ChangeTracker.Clear();
+        Assert.Equal(3, (await database.Context.Sku.FindAsync(data.Sku36.Id))!.SaldoAtual);
+        Assert.Equal(6, (await database.Context.Sku.FindAsync(data.Sku38.Id))!.SaldoAtual);
+        Assert.Equal(3, (await database.Context.Sku.FindAsync(data.Sku40.Id))!.SaldoAtual);
+
+        var movimentos = await database.Context.Movimentacao.OrderBy(m => m.SkuId).ToListAsync();
+        Assert.Equal(3, movimentos.Count);
+        Assert.All(movimentos, movimento =>
+        {
+            Assert.Equal(TipoMovimentacao.ENTRADA, movimento.Tipo);
+            Assert.Equal(data.Usuario.Id, movimento.UsuarioId);
+            Assert.Equal("Recebimento fornecedor", movimento.Motivo);
+        });
+        var quantidadesPorSku = movimentos.ToDictionary(m => m.SkuId, m => m.Quantidade);
+        Assert.Equal(2, quantidadesPorSku[data.Sku36.Id]);
+        Assert.Equal(4, quantidadesPorSku[data.Sku38.Id]);
+        Assert.Equal(3, quantidadesPorSku[data.Sku40.Id]);
+    }
+
+    [Fact]
+    public async Task Entrada_lote_ignores_empty_and_zero_quantities()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedBatchAsync(database.Context);
+        var controller = CreateController(database.Context, data.Usuario);
+
+        var result = await controller.EntradaLote(new EntradaLoteViewModel
+        {
+            ProdutoId = data.Produto.Id,
+            Itens = new List<EntradaLoteItemViewModel>
+            {
+                new() { SkuId = data.Sku36.Id, QuantidadeRecebida = 2 },
+                new() { SkuId = data.Sku38.Id, QuantidadeRecebida = null },
+                new() { SkuId = data.Sku40.Id, QuantidadeRecebida = 0 }
+            }
+        });
+
+        Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal(3, data.Sku36.SaldoAtual);
+        Assert.Equal(2, data.Sku38.SaldoAtual);
+        Assert.Equal(0, data.Sku40.SaldoAtual);
+        Assert.Single(await database.Context.Movimentacao.ToListAsync());
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData(0)]
+    public async Task Entrada_lote_rejects_when_no_positive_quantity_is_informed(int? quantidade)
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedBatchAsync(database.Context);
+        var controller = CreateController(database.Context, data.Usuario);
+
+        var result = await controller.EntradaLote(new EntradaLoteViewModel
+        {
+            ProdutoId = data.Produto.Id,
+            Itens = new List<EntradaLoteItemViewModel>
+            {
+                new() { SkuId = data.Sku36.Id, QuantidadeRecebida = quantidade },
+                new() { SkuId = data.Sku38.Id, QuantidadeRecebida = 0 }
+            }
+        });
+
+        Assert.IsType<ViewResult>(result);
+        Assert.Contains(controller.ModelState.Values.SelectMany(value => value.Errors),
+            error => error.ErrorMessage!.Contains("pelo menos uma numeração"));
+        Assert.Equal(1, data.Sku36.SaldoAtual);
+        Assert.Empty(await database.Context.Movimentacao.ToListAsync());
+    }
+
+    [Fact]
+    public async Task Entrada_lote_rejects_negative_quantity_without_changes()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedBatchAsync(database.Context);
+        var controller = CreateController(database.Context, data.Usuario);
+
+        var result = await controller.EntradaLote(new EntradaLoteViewModel
+        {
+            ProdutoId = data.Produto.Id,
+            Itens = new List<EntradaLoteItemViewModel>
+            {
+                new() { SkuId = data.Sku36.Id, QuantidadeRecebida = -1 },
+                new() { SkuId = data.Sku38.Id, QuantidadeRecebida = 2 }
+            }
+        });
+
+        Assert.IsType<ViewResult>(result);
+        Assert.False(controller.ModelState.IsValid);
+        Assert.Equal(1, data.Sku36.SaldoAtual);
+        Assert.Equal(2, data.Sku38.SaldoAtual);
+        Assert.Empty(await database.Context.Movimentacao.ToListAsync());
+    }
+
+    [Fact]
+    public async Task Entrada_lote_rejects_sku_from_another_product_atomically()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedBatchAsync(database.Context);
+        var outroProduto = CreateProduto();
+        var skuDeOutroProduto = CreateSku(outroProduto.Id, "42", 7);
+        database.Context.AddRange(outroProduto, skuDeOutroProduto);
+        await database.Context.SaveChangesAsync();
+        var controller = CreateController(database.Context, data.Usuario);
+
+        var result = await controller.EntradaLote(new EntradaLoteViewModel
+        {
+            ProdutoId = data.Produto.Id,
+            Itens = new List<EntradaLoteItemViewModel>
+            {
+                new() { SkuId = data.Sku36.Id, QuantidadeRecebida = 2 },
+                new() { SkuId = skuDeOutroProduto.Id, QuantidadeRecebida = 5 }
+            }
+        });
+
+        Assert.IsType<ViewResult>(result);
+        Assert.Equal(1, data.Sku36.SaldoAtual);
+        Assert.Equal(7, skuDeOutroProduto.SaldoAtual);
+        Assert.Empty(await database.Context.Movimentacao.ToListAsync());
+    }
+
+    [Fact]
+    public async Task Entrada_lote_rejects_unknown_sku_without_changes()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedBatchAsync(database.Context);
+        var controller = CreateController(database.Context, data.Usuario);
+
+        var result = await controller.EntradaLote(new EntradaLoteViewModel
+        {
+            ProdutoId = data.Produto.Id,
+            Itens = new List<EntradaLoteItemViewModel>
+            {
+                new() { SkuId = data.Sku36.Id, QuantidadeRecebida = 2 },
+                new() { SkuId = Guid.NewGuid(), QuantidadeRecebida = 3 }
+            }
+        });
+
+        Assert.IsType<ViewResult>(result);
+        Assert.Equal(1, data.Sku36.SaldoAtual);
+        Assert.Empty(await database.Context.Movimentacao.ToListAsync());
+    }
+
+    [Fact]
+    public async Task Entrada_lote_rejects_duplicate_sku_ids_without_changes()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedBatchAsync(database.Context);
+        var controller = CreateController(database.Context, data.Usuario);
+
+        var result = await controller.EntradaLote(new EntradaLoteViewModel
+        {
+            ProdutoId = data.Produto.Id,
+            Itens = new List<EntradaLoteItemViewModel>
+            {
+                new() { SkuId = data.Sku36.Id, QuantidadeRecebida = 2 },
+                new() { SkuId = data.Sku36.Id, QuantidadeRecebida = 3 }
+            }
+        });
+
+        Assert.IsType<ViewResult>(result);
+        Assert.Equal(1, data.Sku36.SaldoAtual);
+        Assert.Empty(await database.Context.Movimentacao.ToListAsync());
+    }
+
     private static MovimentacoesController CreateController(EstoqueContext context, Usuario usuario)
     {
         var claims = new[]
@@ -342,6 +894,28 @@ public sealed class EstoqueDomainPersistenceTests
         var identity = new ClaimsIdentity(claims, "TestAuthentication");
 
         return new MovimentacoesController(context)
+        {
+            ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = new ClaimsPrincipal(identity)
+                }
+            }
+        };
+    }
+
+    private static ProdutosController CreateProdutosController(EstoqueContext context, Usuario usuario)
+    {
+        var claims = new[]
+        {
+            new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
+            new Claim(ClaimTypes.Name, usuario.Email),
+            new Claim(ClaimTypes.Role, usuario.Perfil.ToString())
+        };
+        var identity = new ClaimsIdentity(claims, "TestAuthentication");
+
+        return new ProdutosController(context)
         {
             ControllerContext = new ControllerContext
             {
@@ -371,6 +945,48 @@ public sealed class EstoqueDomainPersistenceTests
         return new TestData(sku, usuario);
     }
 
+    private static async Task<GradeTestData> SeedGradeAsync(EstoqueContext context,
+        params (string Numeracao, int Saldo)[] grade)
+    {
+        var produto = CreateProduto();
+        var skus = grade.ToDictionary(item => item.Numeracao,
+            item => CreateSku(produto.Id, item.Numeracao, item.Saldo));
+        var usuario = new Usuario
+        {
+            Id = Guid.NewGuid(),
+            Nome = "Usuário de Teste",
+            Email = $"{Guid.NewGuid():N}@example.test",
+            SenhaHash = "hash-isolado-de-teste",
+            Perfil = PerfilUsuario.LOJISTA
+        };
+
+        context.Add(produto);
+        context.AddRange(skus.Values);
+        context.Add(usuario);
+        await context.SaveChangesAsync();
+        return new GradeTestData(produto, skus, usuario);
+    }
+
+    private static async Task<BatchTestData> SeedBatchAsync(EstoqueContext context)
+    {
+        var produto = CreateProduto();
+        var sku36 = CreateSku(produto.Id, "36", 1);
+        var sku38 = CreateSku(produto.Id, "38", 2);
+        var sku40 = CreateSku(produto.Id, "40", 0);
+        var usuario = new Usuario
+        {
+            Id = Guid.NewGuid(),
+            Nome = "Usuário de Teste",
+            Email = $"{Guid.NewGuid():N}@example.test",
+            SenhaHash = "hash-isolado-de-teste",
+            Perfil = PerfilUsuario.LOJISTA
+        };
+
+        context.AddRange(produto, sku36, sku38, sku40, usuario);
+        await context.SaveChangesAsync();
+        return new BatchTestData(produto, sku36, sku38, sku40, usuario);
+    }
+
     private static Produto CreateProduto()
     {
         return new Produto
@@ -394,7 +1010,30 @@ public sealed class EstoqueDomainPersistenceTests
         };
     }
 
+    private static Movimentacao CreateMovement(
+        Sku sku,
+        Usuario usuario,
+        TipoMovimentacao tipo,
+        DateTime criadoEm)
+    {
+        return new Movimentacao
+        {
+            Id = Guid.NewGuid(),
+            SkuId = sku.Id,
+            Sku = sku,
+            Tipo = tipo,
+            Quantidade = 1,
+            UsuarioId = usuario.Id,
+            Usuario = usuario,
+            CriadoEm = criadoEm
+        };
+    }
+
     private sealed record TestData(Sku Sku, Usuario Usuario);
+
+    private sealed record BatchTestData(Produto Produto, Sku Sku36, Sku Sku38, Sku Sku40, Usuario Usuario);
+
+    private sealed record GradeTestData(Produto Produto, Dictionary<string, Sku> Skus, Usuario Usuario);
 
     private sealed class TestDatabase : IAsyncDisposable
     {
