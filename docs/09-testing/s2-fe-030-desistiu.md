@@ -55,3 +55,11 @@ Branch criada a partir de origin/dev/emmy, com a dependência #43 incorporada.
 Destino do PR: dev/emmy. Main preservada; alterações locais anteriores preservadas.
 Revisão humana e CI devem ser conferidas no PR; este registro não representa aprovação humana.
 Trello será atualizado pela responsável com o PR e as evidências deste arquivo.
+
+## Revisão de 03/10/2026
+
+- Base origin/dev/emmy incorporada; conflito CSS resolvido preservando os dois blocos.
+- Feedback atualizado para os dois textos aprovados, com assertions exatas.
+- package.json e package-lock.json adicionados; Playwright 1.62.1 declarado.
+- Job frontend-tests adicionado ao workflow, com npm ci e Chromium.
+- Build aprovado sem avisos/erros; 140 testes .NET e 13 testes frontend aprovados.
