@@ -1,0 +1,64 @@
+@model SquadEstoque.Web.Models.AdicionarNumeracoesViewModel
+
+@{
+    ViewData["Title"] = "Adicionar numerações";
+}
+
+<header class="admin-page-heading admin-form-heading product-form-heading">
+    <div>
+        <h1>Adicionar numerações</h1>
+        <p class="admin-page-intro">Inclua novos tamanhos na grade sem alterar os saldos atuais.</p>
+    </div>
+</header>
+
+<div class="admin-form-layout grade-form-layout">
+    <section class="admin-form-surface" aria-label="Formulário para adicionar numerações">
+        <form asp-action="AdicionarNumeracoes" asp-route-id="@Model.ProdutoId" method="post" class="admin-form">
+            <input type="hidden" asp-for="ProdutoId" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+
+            <div class="movement-context grade-context">
+                <p class="movement-context-label">Produto selecionado</p>
+                <p class="movement-context-product">@Model.NomeProduto</p>
+                <div class="movement-context-details">
+                    <span>@Model.Marca</span>
+                    <span>@Model.Categoria</span>
+                    <span>@Model.Cor</span>
+                </div>
+            </div>
+
+            <div class="grade-current-sizes" aria-labelledby="grade-current-sizes-title">
+                <h2 id="grade-current-sizes-title">Grade atual</h2>
+                <div class="grade-current-size-list">
+                    @if (Model.NumeracoesAtuais.Any())
+                    {
+                        foreach (var numeracao in Model.NumeracoesAtuais)
+                        {
+                            <span class="badge product-size-chip">@numeracao</span>
+                        }
+                    }
+                    else
+                    {
+                        <span class="grade-current-empty">Nenhuma numeração ativa cadastrada.</span>
+                    }
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="NumeracoesGrade" class="form-label"></label>
+                <input asp-for="NumeracoesGrade" class="form-control" placeholder="ex: 41, 42, 43" autofocus />
+                <div class="form-text">Informe uma ou mais numerações separadas por vírgula. Os novos SKUs serão criados com saldo 0.</div>
+                <span asp-validation-for="NumeracoesGrade" class="text-danger small"></span>
+            </div>
+
+            <div class="admin-form-actions">
+                <a asp-action="Details" asp-route-id="@Model.ProdutoId" class="btn btn-outline-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-primary">Adicionar à grade</button>
+            </div>
+        </form>
+    </section>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

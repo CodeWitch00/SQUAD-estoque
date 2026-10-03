@@ -1,10 +1,10 @@
-@model IEnumerable<SquadEstoque.Web.Models.Movimentacao>
+@model SquadEstoque.Web.Models.MovimentacoesIndexViewModel
 
 @{
     ViewData["Title"] = "Histórico de Movimentações";
 }
 
-<div class="admin-page-heading mb-4">
+<div class="admin-page-heading movement-page-heading mb-4">
     <div>
         <h1>Histórico de Movimentações</h1>
         <p class="admin-page-intro">Acompanhe entradas, saídas e ajustes registrados no estoque.</p>
@@ -16,14 +16,84 @@
     </div>
 </div>
 
-@if (!Model.Any())
+@{
+    var primeiroItem = Model.TotalItens == 0 ? 0 : ((Model.PaginaAtual - 1) * Model.TamanhoPagina) + 1;
+    var ultimoItem = Math.Min(Model.PaginaAtual * Model.TamanhoPagina, Model.TotalItens);
+    var inicioJanela = Math.Max(1, Model.PaginaAtual - 2);
+    var fimJanela = Math.Min(Model.TotalPaginas, Model.PaginaAtual + 2);
+}
+
+<form asp-action="Index" method="get" class="movement-filter-surface" aria-label="Buscar e filtrar movimentações">
+    <div class="movement-filter-search">
+        <label for="busca" class="form-label">Buscar produto</label>
+        <input id="busca" name="busca" value="@Model.Busca" class="form-control" placeholder="Modelo do produto" />
+    </div>
+    <div class="movement-filter-field">
+        <label for="tipo" class="form-label">Tipo</label>
+        <select id="tipo" name="tipo" class="form-select">
+            <option value="" selected="@(string.IsNullOrEmpty(Model.Tipo) ? "selected" : null)">Todos</option>
+            <option value="ENTRADA" selected="@(Model.Tipo == "ENTRADA" ? "selected" : null)">Entrada</option>
+            <option value="SAIDA" selected="@(Model.Tipo == "SAIDA" ? "selected" : null)">Saída</option>
+            <option value="AJUSTE" selected="@(Model.Tipo == "AJUSTE" ? "selected" : null)">Ajuste</option>
+        </select>
+    </div>
+    <div class="movement-filter-field">
+        <label for="dataInicio" class="form-label">Data inicial</label>
+        <input id="dataInicio" name="dataInicio" type="date" value="@(Model.DataInicio?.ToString("yyyy-MM-dd"))" class="form-control" />
+    </div>
+    <div class="movement-filter-field">
+        <label for="dataFim" class="form-label">Data final</label>
+        <input id="dataFim" name="dataFim" type="date" value="@(Model.DataFim?.ToString("yyyy-MM-dd"))" class="form-control" />
+    </div>
+    <div class="movement-filter-field">
+        <label for="responsavelId" class="form-label">Responsável</label>
+        <select id="responsavelId" name="responsavelId" class="form-select">
+            <option value="" selected="@(!Model.ResponsavelId.HasValue ? "selected" : null)">Todos</option>
+            @foreach (var responsavel in Model.Responsaveis)
+            {
+                <option value="@responsavel.Id" selected="@(Model.ResponsavelId == responsavel.Id ? "selected" : null)">@responsavel.Nome</option>
+            }
+        </select>
+    </div>
+    <div class="movement-filter-actions">
+        <button type="submit" class="btn btn-primary">Aplicar filtros</button>
+        @if (Model.PossuiFiltros)
+        {
+            <a asp-action="Index" class="btn btn-outline-secondary">Limpar filtros</a>
+        }
+    </div>
+</form>
+
+@if (!ViewData.ModelState.IsValid)
 {
-    <div class="alert alert-info">Nenhuma movimentação registrada até o momento.</div>
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger movement-filter-validation" role="alert"></div>
+}
+
+<div class="product-list-summary movement-list-summary" role="status">
+    @if (Model.TotalItens > 0)
+    {
+        <span>Mostrando @primeiroItem–@ultimoItem de @Model.TotalItens movimentações</span>
+    }
+    else
+    {
+        <span>Nenhuma movimentação encontrada com os filtros selecionados.</span>
+    }
+</div>
+
+@if (!Model.Movimentacoes.Any())
+{
+    <div class="alert movement-empty-state" role="status">
+        <p>Nenhuma movimentação encontrada com os filtros selecionados.</p>
+        @if (Model.PossuiFiltros)
+        {
+            <a asp-action="Index" class="btn btn-outline-secondary">Limpar filtros</a>
+        }
+    </div>
 }
 else
 {
-    <div class="table-responsive" tabindex="0" role="region" aria-label="Histórico de movimentações">
-        <table class="table table-hover align-middle">
+    <div class="table-responsive movement-table-shell" tabindex="0" role="region" aria-label="Histórico de movimentações">
+        <table class="table table-hover align-middle movement-table">
             <thead class="table-light">
                 <tr>
                     <th scope="col">Data/Hora</th>
@@ -36,36 +106,36 @@ else
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model)
+                @foreach (var item in Model.Movimentacoes)
                 {
                     <tr>
-                        <td>@item.CriadoEm.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")</td>
-                        <td class="fw-bold">@item.Sku?.Produto?.Nome</td>
-                        <td><span class="badge bg-light text-dark border">@item.Sku?.Numeracao</span></td>
+                        <td class="movement-date">@item.CriadoEm.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")</td>
+                        <td class="movement-product">@item.Sku?.Produto?.Nome</td>
+                        <td><span class="badge movement-size-chip">@item.Sku?.Numeracao</span></td>
                         <td>
                             @switch (item.Tipo)
                             {
                                 case SquadEstoque.Web.Models.TipoMovimentacao.ENTRADA:
-                                    <span class="badge bg-light text-dark border">ENTRADA</span>
+                                    <span class="badge movement-type movement-type--entrada">ENTRADA</span>
                                     break;
                                 case SquadEstoque.Web.Models.TipoMovimentacao.SAIDA:
-                                    <span class="badge bg-light text-dark border">SAÍDA</span>
+                                    <span class="badge movement-type movement-type--saida">SAÍDA</span>
                                     break;
                                 case SquadEstoque.Web.Models.TipoMovimentacao.AJUSTE:
-                                    <span class="badge bg-light text-dark border">AJUSTE</span>
+                                    <span class="badge movement-type movement-type--ajuste">AJUSTE</span>
                                     break;
                             }
                         </td>
-                        <td class="fw-bold">@item.Quantidade</td>
-                        <td>@item.Usuario?.Nome</td>
-                        <td>
+                        <td class="movement-quantity">@item.Quantidade</td>
+                        <td class="movement-responsible">@item.Usuario?.Nome</td>
+                        <td class="movement-reason">
                             @if (!string.IsNullOrEmpty(item.Motivo))
                             {
                                 <span>@item.Motivo</span>
                             }
                             else
                             {
-                                <span class="text-muted small">—</span>
+                                <span class="movement-reason-empty">—</span>
                             }
                         </td>
                     </tr>
@@ -73,4 +143,32 @@ else
             </tbody>
         </table>
     </div>
+
+    @if (Model.TotalPaginas > 1)
+    {
+        <nav class="product-pagination" aria-label="Paginação do histórico de movimentações">
+            <a class="btn btn-outline-secondary @(Model.PaginaAtual == 1 ? "disabled" : "")" asp-action="Index" asp-route-busca="@Model.Busca" asp-route-tipo="@Model.Tipo" asp-route-dataInicio="@(Model.DataInicio?.ToString("yyyy-MM-dd"))" asp-route-dataFim="@(Model.DataFim?.ToString("yyyy-MM-dd"))" asp-route-responsavelId="@Model.ResponsavelId" asp-route-pagina="@(Model.PaginaAtual - 1)" aria-label="Página anterior">Anterior</a>
+            @if (inicioJanela > 1)
+            {
+                <a class="product-page-link" asp-action="Index" asp-route-busca="@Model.Busca" asp-route-tipo="@Model.Tipo" asp-route-dataInicio="@(Model.DataInicio?.ToString("yyyy-MM-dd"))" asp-route-dataFim="@(Model.DataFim?.ToString("yyyy-MM-dd"))" asp-route-responsavelId="@Model.ResponsavelId" asp-route-pagina="1">1</a>
+                @if (inicioJanela > 2)
+                {
+                    <span class="product-page-ellipsis" aria-hidden="true">…</span>
+                }
+            }
+            @for (var pagina = inicioJanela; pagina <= fimJanela; pagina++)
+            {
+                <a class="product-page-link @(pagina == Model.PaginaAtual ? "active" : "")" asp-action="Index" asp-route-busca="@Model.Busca" asp-route-tipo="@Model.Tipo" asp-route-dataInicio="@(Model.DataInicio?.ToString("yyyy-MM-dd"))" asp-route-dataFim="@(Model.DataFim?.ToString("yyyy-MM-dd"))" asp-route-responsavelId="@Model.ResponsavelId" asp-route-pagina="@pagina" aria-current="@(pagina == Model.PaginaAtual ? "page" : null)">@pagina</a>
+            }
+            @if (fimJanela < Model.TotalPaginas)
+            {
+                @if (fimJanela < Model.TotalPaginas - 1)
+                {
+                    <span class="product-page-ellipsis" aria-hidden="true">…</span>
+                }
+                <a class="product-page-link" asp-action="Index" asp-route-busca="@Model.Busca" asp-route-tipo="@Model.Tipo" asp-route-dataInicio="@(Model.DataInicio?.ToString("yyyy-MM-dd"))" asp-route-dataFim="@(Model.DataFim?.ToString("yyyy-MM-dd"))" asp-route-responsavelId="@Model.ResponsavelId" asp-route-pagina="@Model.TotalPaginas">@Model.TotalPaginas</a>
+            }
+            <a class="btn btn-outline-secondary @(Model.PaginaAtual == Model.TotalPaginas ? "disabled" : "")" asp-action="Index" asp-route-busca="@Model.Busca" asp-route-tipo="@Model.Tipo" asp-route-dataInicio="@(Model.DataInicio?.ToString("yyyy-MM-dd"))" asp-route-dataFim="@(Model.DataFim?.ToString("yyyy-MM-dd"))" asp-route-responsavelId="@Model.ResponsavelId" asp-route-pagina="@(Model.PaginaAtual + 1)" aria-label="Próxima página">Próxima</a>
+        </nav>
+    }
 }
