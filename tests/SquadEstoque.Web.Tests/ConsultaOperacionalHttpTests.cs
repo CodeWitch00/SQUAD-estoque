@@ -94,13 +94,16 @@ public sealed class ConsultaOperacionalHttpTests : IClassFixture<SquadEstoqueWeb
         Assert.Equal(HttpStatusCode.OK, atendimentoResponse.StatusCode);
         Assert.Contains($"data-sku-id=\"{skuId}\"", atendimentoHtml);
         var link = Regex.Match(atendimentoHtml,
-            "<a class=\"consulta-nova-consulta\" href=\"([^\"]+)\"[^>]*>Nova consulta sem registrar resultado</a>");
+            "<a[^>]*class=\"[^\"]*consulta-nova-consulta--contexto[^\"]*\"[^>]*href=\"([^\"]+)\"[^>]*>← Nova consulta</a>");
         Assert.True(link.Success, "O atendimento deve oferecer a ação de nova consulta sem desfecho.");
 
         var novaConsultaResponse = await client.GetAsync(link.Groups[1].Value);
         var novaConsultaHtml = WebUtility.HtmlDecode(await novaConsultaResponse.Content.ReadAsStringAsync());
         Assert.Equal(HttpStatusCode.OK, novaConsultaResponse.StatusCode);
-        Assert.Contains("Pronto para consultar", novaConsultaHtml);
+        Assert.Contains("Qual modelo o cliente procura?", novaConsultaHtml);
+        Assert.Contains("placeholder=\"Buscar modelo...\"", novaConsultaHtml);
+        Assert.Matches(@">\s*Buscar\s*<", novaConsultaHtml);
+        Assert.DoesNotContain("<h2 id=\"titulo-estado-inicial\">Pronto para consultar</h2>", novaConsultaHtml);
         Assert.DoesNotContain("id=\"grade\"", novaConsultaHtml);
         Assert.DoesNotContain("consulta-atendimento-acoes", novaConsultaHtml);
         Assert.Matches("<input(?=[^>]*id=\"Termo\")(?=[^>]*value=\"\")[^>]*>", novaConsultaHtml);
