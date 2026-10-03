@@ -157,6 +157,88 @@ public sealed class ConsultaOperacionalHttpTests : IClassFixture<SquadEstoqueWeb
         Assert.Contains("Tênis Runner", html);
     }
 
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    public async Task Desistiu_retorna_a_consulta_preserva_estoque_e_permite_proximo_atendimento(int saldo)
+    {
+        var produto = await AddProdutoAsync(true, ("38", saldo));
+        var proximoProduto = await AddProdutoAsync(true, ("40", 3));
+        using var client = CreateClient();
+        await LoginAsVendedorAsync(client);
+        var antes = await ReadEstoqueSnapshotAsync();
+
+        var atendimento = await client.GetAsync(
+            $"/Estoque/Consulta?termo={Uri.EscapeDataString(produto.Nome)}&produtoId={produto.Id}");
+        Assert.Equal(HttpStatusCode.OK, atendimento.StatusCode);
+        var html = WebUtility.HtmlDecode(await atendimento.Content.ReadAsStringAsync());
+        Assert.Contains($"data-sku-id=\"{produto.Skus.Single().Id}\"", html);
+        var desistiu = Regex.Match(html,
+            "<button\\b(?=[^>]*data-resultado=\"desistiu\")[^>]*>\\s*Desistiu\\s*</button>");
+        Assert.True(desistiu.Success, "O atendimento deve oferecer o botão Desistiu.");
+        Assert.Contains("type=\"button\"", desistiu.Value);
+        Assert.DoesNotContain("disabled", desistiu.Value);
+
+        // TestServer não executa JavaScript. Verificamos o contrato do script servido
+        // e seguimos seu destino por HTTP; isto não substitui um teste de clique/DOM.
+        var scriptTag = Regex.Match(html, "<script\\b[^>]*src=\"([^\"]*/js/consulta\\.js[^\"]*)\"");
+        Assert.True(scriptTag.Success, "A página deve carregar o script do atendimento.");
+        var scriptResponse = await client.GetAsync(scriptTag.Groups[1].Value);
+        Assert.Equal(HttpStatusCode.OK, scriptResponse.StatusCode);
+        var script = await scriptResponse.Content.ReadAsStringAsync();
+        var navegacao = Regex.Match(script,
+            "if\\s*\\(tipo\\s*===\\s*'desistiu'\\)\\s*\\{\\s*window\\.location\\.assign\\('([^']+)'\\);\\s*return;\\s*\\}");
+        Assert.True(navegacao.Success,
+            "Desistiu deve navegar e encerrar seu ramo sem registrar venda ou ruptura.");
+        var destino = navegacao.Groups[1].Value;
+        Assert.Equal("/Estoque/Consulta", destino);
+
+        var consulta = await client.GetAsync(destino);
+        Assert.Equal(HttpStatusCode.OK, consulta.StatusCode);
+        var consultaHtml = WebUtility.HtmlDecode(await consulta.Content.ReadAsStringAsync());
+        Assert.Contains("Pronto para consultar", consultaHtml);
+        Assert.DoesNotContain("id=\"grade\"", consultaHtml);
+        Assert.DoesNotContain("consulta-atendimento-acoes", consultaHtml);
+        Assert.Matches("<input(?=[^>]*id=\"Termo\")(?=[^>]*value=\"\")[^>]*>", consultaHtml);
+        await AssertEstoqueUnchangedAsync(antes);
+
+        var busca = await client.GetAsync($"{destino}?termo={Uri.EscapeDataString(proximoProduto.Nome)}");
+        Assert.Equal(HttpStatusCode.OK, busca.StatusCode);
+        var buscaHtml = WebUtility.HtmlDecode(await busca.Content.ReadAsStringAsync());
+        Assert.Contains(proximoProduto.Nome, buscaHtml);
+        var resultado = Regex.Match(buscaHtml,
+            $"<a\\b[^>]*href=\"([^\"]*produtoId={proximoProduto.Id}[^\"]*)\"");
+        Assert.True(resultado.Success, "A próxima busca deve permitir selecionar outro produto.");
+
+        var proximoAtendimento = await client.GetAsync(resultado.Groups[1].Value);
+        Assert.Equal(HttpStatusCode.OK, proximoAtendimento.StatusCode);
+        var proximoHtml = WebUtility.HtmlDecode(await proximoAtendimento.Content.ReadAsStringAsync());
+        Assert.Contains($"{proximoProduto.Nome} selecionado.", proximoHtml);
+        Assert.Contains($"data-sku-id=\"{proximoProduto.Skus.Single().Id}\"", proximoHtml);
+        Assert.Contains("data-resultado=\"desistiu\"", proximoHtml);
+        await AssertEstoqueUnchangedAsync(antes);
+    }
+
+    private async Task<(Dictionary<Guid, int> Saldos, Guid[] Movimentacoes, Guid[] Rupturas)> ReadEstoqueSnapshotAsync()
+    {
+        using var scope = _factory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
+        return (
+            await context.Sku.AsNoTracking().ToDictionaryAsync(s => s.Id, s => s.SaldoAtual),
+            await context.Movimentacao.OrderBy(m => m.Id).Select(m => m.Id).ToArrayAsync(),
+            await context.Ruptura.OrderBy(r => r.Id).Select(r => r.Id).ToArrayAsync());
+    }
+
+    private async Task AssertEstoqueUnchangedAsync(
+        (Dictionary<Guid, int> Saldos, Guid[] Movimentacoes, Guid[] Rupturas) antes)
+    {
+        var depois = await ReadEstoqueSnapshotAsync();
+        Assert.Equal(antes.Saldos, depois.Saldos);
+        Assert.Equal(antes.Movimentacoes, depois.Movimentacoes);
+        Assert.Equal(antes.Rupturas, depois.Rupturas);
+    }
+
     private HttpClient CreateClient() => _factory.CreateClient(new WebApplicationFactoryClientOptions
     {
         AllowAutoRedirect = false,
