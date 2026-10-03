@@ -72,6 +72,7 @@ public sealed class RupturaPersistenceHttpTests
         using var rupturaForm = new FormUrlEncodedContent(new Dictionary<string, string>
         {
             ["skuId"] = skuId.ToString(),
+            ["produtoId"] = produtoId.ToString(),
             ["__RequestVerificationToken"] = await ExtractTokenAsync(consulta)
         });
         var inicio = DateTime.UtcNow;

@@ -177,11 +177,15 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
         var token = await ExtractAntiforgeryTokenAsync(client);
         var before = await ReadStockStateAsync();
         var rupturesBefore = await ReadRuptureStateAsync();
+        using var productScope = _factory.Services.CreateScope();
+        var produtoId = await productScope.ServiceProvider.GetRequiredService<EstoqueContext>()
+            .Sku.Where(s => s.Id == skuId).Select(s => s.ProdutoId).SingleAsync();
 
         using var form = new FormUrlEncodedContent(new Dictionary<string, string>
         {
             ["skuId"] = skuId.ToString(),
             ["usuarioId"] = Guid.NewGuid().ToString(),
+            ["produtoId"] = produtoId.ToString(),
             ["__RequestVerificationToken"] = token
         });
 

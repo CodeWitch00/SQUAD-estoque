@@ -24,6 +24,7 @@ public sealed class RupturaHttpTests
             HandleCookies = true
         });
         var skuId = Guid.NewGuid();
+        var produtoId = Guid.NewGuid();
         const int saldoInicial = 5;
         Guid vendedorId;
 
@@ -32,7 +33,7 @@ public sealed class RupturaHttpTests
             var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
             var produto = new Produto
             {
-                Id = Guid.NewGuid(), Nome = "Tênis ruptura QA", Marca = "Squad",
+                Id = produtoId, Nome = "Tênis ruptura QA", Marca = "Squad",
                 Categoria = "Calçado", Cor = "Azul", Ativo = true
             };
             produto.Skus.Add(new Sku
@@ -65,6 +66,7 @@ public sealed class RupturaHttpTests
         using var rupturaForm = new FormUrlEncodedContent(new Dictionary<string, string>
         {
             ["skuId"] = skuId.ToString(),
+            ["produtoId"] = produtoId.ToString(),
             ["__RequestVerificationToken"] = await TokenAsync(consulta)
         });
         var inicio = DateTime.UtcNow;

@@ -169,7 +169,7 @@ public sealed class EstoqueController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> RegistrarNaoTinha(Guid skuId)
+    public async Task<IActionResult> RegistrarNaoTinha(Guid skuId, Guid produtoId)
     {
         var usuarioId = GetAuthenticatedUserId();
         if (!usuarioId.HasValue)
@@ -182,8 +182,14 @@ public sealed class EstoqueController : Controller
             return BadRequest(new { mensagem = "Selecione uma numeração para registrar a ruptura." });
         }
 
+        if (produtoId == Guid.Empty || !ModelState.IsValid)
+        {
+            return BadRequest(new { mensagem = "A numeração selecionada não está disponível para registro." });
+        }
+
         var skuDisponivel = await _context.Sku
-            .AnyAsync(sku => sku.Id == skuId && sku.Ativo && sku.Produto != null && sku.Produto.Ativo);
+            .AnyAsync(sku => sku.Id == skuId && sku.ProdutoId == produtoId &&
+                sku.Ativo && sku.Produto != null && sku.Produto.Ativo);
 
         if (!skuDisponivel)
         {

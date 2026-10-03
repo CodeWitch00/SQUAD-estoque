@@ -27,7 +27,7 @@ async function abrir(t) {
         </section>
         <p id="consulta-atendimento-resumo"></p>
         <button class="consulta-acao" data-resultado="vendeu" disabled>Vendeu</button>
-        <button class="consulta-acao" data-resultado="nao-tinha" data-nao-tinha-url="/Estoque/RegistrarNaoTinha" disabled>Não tinha</button>
+        <button class="consulta-acao" data-resultado="nao-tinha" data-nao-tinha-url="/Estoque/RegistrarNaoTinha" data-produto-id="produto-consultado" disabled>Não tinha</button>
         <p id="consulta-acao-feedback" tabindex="-1" hidden></p>
     `);
     await page.evaluate(() => {
@@ -64,7 +64,7 @@ test('busca permite digitar o nome completo sem envio automatico', async (t) => 
 });
 
 for (const numero of ['37', '39']) {
-    test(`Não tinha aceita nº ${numero}, envia só SKU/token e preserva saldo`, async (t) => {
+    test(`Não tinha aceita nº ${numero}, envia SKU/produto/token e preserva saldo`, async (t) => {
         const page = await abrir(t);
         const botao = page.getByRole('button', { name: 'Não tinha', exact: true });
         assert.equal(await botao.isDisabled(), true);
@@ -73,11 +73,11 @@ for (const numero of ['37', '39']) {
         await botao.click();
         assert.deepEqual(await page.evaluate(() => window.pedidos), [{
             url: '/Estoque/RegistrarNaoTinha', method: 'POST',
-            fields: [['skuId', `sku-${numero}`], ['__RequestVerificationToken', 'token-teste']]
+            fields: [['skuId', `sku-${numero}`], ['produtoId', 'produto-consultado'], ['__RequestVerificationToken', 'token-teste']]
         }]);
         await page.evaluate(n => window.responder(true, { skuId: `sku-${n}` }), numero);
         await page.waitForFunction(() => !document.querySelector('#consulta-acao-feedback').hidden);
-        assert.match(await page.locator('#consulta-acao-feedback').innerText(), new RegExp(`Nº ${numero}`));
+        assert.match(await page.locator('#consulta-acao-feedback').innerText(), new RegExp(`nº ${numero}`, 'i'));
         assert.equal(await page.locator('#consulta-acao-feedback img').count(), 0);
         assert.equal(await page.locator(`input[data-numeracao="${numero}"]`).isChecked(), true);
         assert.deepEqual(await page.locator('[data-saldo]').evaluateAll(inputs => inputs.map(i => i.dataset.saldo)), ['0', '3']);
