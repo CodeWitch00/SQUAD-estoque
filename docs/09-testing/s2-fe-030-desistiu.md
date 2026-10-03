@@ -4,8 +4,8 @@ Requisitos: RF-16, RF-19, US-06 e UC-06. Dependência: PR #43 (S2-BE-029).
 
 Desistiu permanece disponível no contexto do produto, inclusive sem SKU selecionado
 ou sem numerações ativas. Após confirmação real do endpoint, a interface carrega a
-consulta vazia, preserva o cabeçalho/autenticação e mostra: “Desistiu — atendimento
-encerrado. Sem venda, sem ruptura e sem alteração no estoque.” O foco vai para Produto.
+consulta vazia, preserva o cabeçalho/autenticação e mostra: “Atendimento encerrado.”
+e “Nenhuma movimentação foi registrada.” O foco vai para Produto.
 Nenhum saldo é calculado e nenhuma persistência é simulada no navegador.
 
 Falha no POST conserva o contexto e permite tentar novamente. Falha ao carregar a
@@ -22,6 +22,25 @@ POST. Não há modal nem espera artificial.
 - Smartphone em viewport de 390 × 844, sem SKU selecionado: Desistiu visível; Enter retorna à busca vazia; Produto recebe foco e Tab segue para Buscar.
 - Desktop em viewport de 1280 × 900, nº 39 selecionado: Espaço retorna à busca vazia com mensagem e foco; saldos 0/1/5 preservados ao consultar novamente.
 - Smartphone foi validado por emulação de viewport; aparelho físico não foi utilizado.
+
+## Capturas históricas de 02/10/2026
+
+As capturas abaixo antecedem a revisão de texto de 03/10/2026. O feedback vigente
+é “Atendimento encerrado.” / “Nenhuma movimentação foi registrada.”
+
+## Execução reproduzível dos testes frontend
+
+Pré-requisito: Node.js 22 e npm. Na raiz do repositório:
+
+```sh
+npm ci
+npx playwright install --with-deps chromium
+npm run test:frontend
+```
+
+A suíte usa fixtures isoladas de DOM e respostas HTTP controladas; não substitui
+a validação HTTP .NET ou a conferência manual da aplicação. O workflow executa
+essa mesma suíte no job frontend-tests.
 
 ## Capturas
 

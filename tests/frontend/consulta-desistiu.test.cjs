@@ -30,7 +30,8 @@ for(const width of [390,1280])for(const selected of [false,true])test(`Desistiu 
  await page.evaluate(()=>window.respond({resultado:'desistiu',atendimentoEncerrado:true,novaConsultaUrl:'/Estoque/Consulta'}));
  await page.waitForFunction(()=>document.activeElement?.name==='Termo');
  assert.equal(await page.locator('[name=Termo]').inputValue(),'');assert.equal(await page.locator('.consulta-grade').count(),0);
- assert.match(await page.locator('#consulta-desistiu-retorno').innerText(),/Sem venda, sem ruptura e sem alteração/);
+ assert.equal(await page.locator('#consulta-desistiu-retorno strong').innerText(), 'Atendimento encerrado.');
+ assert.equal(await page.locator('#consulta-desistiu-retorno span').innerText(), 'Nenhuma movimentação foi registrada.');
  assert.equal(new URL(page.url()).search,'');assert.equal(new URL(page.url()).hash,'');
  assert.deepEqual(await page.evaluate(()=>window.requests[0].fields),[['__RequestVerificationToken','token']]);
  await page.keyboard.press('Tab');assert.equal(await page.evaluate(()=>document.activeElement.textContent),'Buscar');

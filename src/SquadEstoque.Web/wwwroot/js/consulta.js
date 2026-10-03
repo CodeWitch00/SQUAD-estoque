@@ -254,8 +254,8 @@
                 return;
             }
             feedback.classList.remove('consulta-venda-retorno--erro');
-            exibirConfirmacao(feedback, 'Desistiu — atendimento encerrado.',
-                'Sem venda, sem ruptura e sem alteração no estoque.');
+            exibirConfirmacao(feedback, 'Atendimento encerrado.',
+                'Nenhuma movimentação foi registrada.');
             concluirAtendimento(feedback);
             try {
                 const response = await fetch(data.novaConsultaUrl, { credentials: 'same-origin', cache: 'no-store' });

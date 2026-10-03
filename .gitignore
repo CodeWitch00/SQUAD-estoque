@@ -52,3 +52,6 @@ gestao-privada/
 
 # Gestão privada local
 gestao_privada/
+
+# Frontend test dependencies
+node_modules/
