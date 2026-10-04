@@ -69,6 +69,56 @@ public sealed class ConsultaOperacionalHttpTests : IClassFixture<SquadEstoqueWeb
     }
 
     [Fact]
+    public async Task Nova_consulta_sem_desfecho_retorna_a_busca_inicial_sem_persistir_resultado()
+    {
+        var produto = await AddProdutoAsync(true, ("38", 2));
+        var skuId = produto.Skus.Single().Id;
+        using var client = CreateClient();
+        await LoginAsVendedorAsync(client);
+
+        Dictionary<Guid, int> saldosAntes;
+        int movimentacoesAntes;
+        int rupturasAntes;
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
+            saldosAntes = await context.Sku.AsNoTracking().Where(s => s.Id == skuId)
+                .ToDictionaryAsync(s => s.Id, s => s.SaldoAtual);
+            movimentacoesAntes = await context.Movimentacao.CountAsync();
+            rupturasAntes = await context.Ruptura.CountAsync();
+        }
+
+        var atendimentoResponse = await client.GetAsync(
+            $"/Estoque/Consulta?termo={Uri.EscapeDataString(produto.Nome)}&produtoId={produto.Id}");
+        var atendimentoHtml = WebUtility.HtmlDecode(await atendimentoResponse.Content.ReadAsStringAsync());
+        Assert.Equal(HttpStatusCode.OK, atendimentoResponse.StatusCode);
+        Assert.Contains($"data-sku-id=\"{skuId}\"", atendimentoHtml);
+        var link = Regex.Match(atendimentoHtml,
+            "<a[^>]*class=\"[^\"]*consulta-nova-consulta--contexto[^\"]*\"[^>]*href=\"([^\"]+)\"[^>]*>← Nova consulta</a>");
+        Assert.True(link.Success, "O atendimento deve oferecer a ação de nova consulta sem desfecho.");
+
+        var novaConsultaResponse = await client.GetAsync(link.Groups[1].Value);
+        var novaConsultaHtml = WebUtility.HtmlDecode(await novaConsultaResponse.Content.ReadAsStringAsync());
+        Assert.Equal(HttpStatusCode.OK, novaConsultaResponse.StatusCode);
+        Assert.Contains("Qual modelo o cliente procura?", novaConsultaHtml);
+        Assert.Contains("placeholder=\"Buscar modelo...\"", novaConsultaHtml);
+        Assert.Matches(@">\s*Buscar\s*<", novaConsultaHtml);
+        Assert.DoesNotContain("<h2 id=\"titulo-estado-inicial\">Pronto para consultar</h2>", novaConsultaHtml);
+        Assert.DoesNotContain("id=\"grade\"", novaConsultaHtml);
+        Assert.DoesNotContain("consulta-atendimento-acoes", novaConsultaHtml);
+        Assert.Matches("<input(?=[^>]*id=\"Termo\")(?=[^>]*value=\"\")[^>]*>", novaConsultaHtml);
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
+            var saldosDepois = await context.Sku.AsNoTracking().Where(s => s.Id == skuId)
+                .ToDictionaryAsync(s => s.Id, s => s.SaldoAtual);
+            Assert.Equal(saldosAntes, saldosDepois);
+            Assert.Equal(movimentacoesAntes, await context.Movimentacao.CountAsync());
+            Assert.Equal(rupturasAntes, await context.Ruptura.CountAsync());
+        }
+    }
+    [Fact]
     public async Task Consulta_does_not_render_inactive_product()
     {
         var produto = await AddProdutoAsync(false, ("38", 2));
