@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SquadEstoque.Web.Data;
+using SquadEstoque.Web.Models;
 using Xunit;
 
 namespace SquadEstoque.Web.Tests;
@@ -13,20 +14,28 @@ namespace SquadEstoque.Web.Tests;
 public sealed class DesistiuHttpTests
 {
     [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public async Task Desistiu_ends_context_without_persistence_and_allows_another_query(bool enviarSku)
+    [InlineData(false, 0)]
+    [InlineData(false, 1)]
+    [InlineData(false, 2)]
+    [InlineData(true, 0)]
+    [InlineData(true, 1)]
+    [InlineData(true, 2)]
+    public async Task Desistiu_ends_context_without_persistence_and_allows_another_query(bool enviarSku, int saldo)
     {
         using var factory = new SquadEstoqueWebApplicationFactory();
         using var client = CreateClient(factory);
+        var produto = await AddProdutoAsync(factory, saldo);
+        var proximoProduto = await AddProdutoAsync(factory, 3);
         var before = await SnapshotAsync(factory);
         await LoginAsync(client, "vendedor@squad.com");
-        using var grade = await client.GetAsync("/Estoque/Consulta?termo=Runner&produtoId=aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
-        var html = await grade.Content.ReadAsStringAsync();
+        using var grade = await client.GetAsync($"/Estoque/Consulta?termo={Uri.EscapeDataString(produto.Nome)}&produtoId={produto.Id}");
+        var html = WebUtility.HtmlDecode(await grade.Content.ReadAsStringAsync());
+        Assert.Contains($"data-sku-id=\"{produto.Skus.Single().Id}\"", html);
         Assert.Contains("data-desistiu-url=\"/Estoque/RegistrarDesistiu\"", html);
         var values = new Dictionary<string, string> { ["__RequestVerificationToken"] = await TokenAsync(grade) };
         // A selected SKU is optional context and must never trigger a stock operation.
-        if (enviarSku) values["skuId"] = before.Saldos.First().Key.ToString();
+        if (enviarSku) values["skuId"] = produto.Skus.Single().Id.ToString();
+        string? novaConsultaUrl = null;
         for (var tentativa = 0; tentativa < 2; tentativa++)
         {
             using var form = new FormUrlEncodedContent(values);
@@ -36,15 +45,34 @@ public sealed class DesistiuHttpTests
             Assert.Equal("desistiu", payload.GetProperty("resultado").GetString());
             Assert.True(payload.GetProperty("atendimentoEncerrado").GetBoolean());
             Assert.Equal("Atendimento encerrado.", payload.GetProperty("mensagem").GetString());
-            Assert.Equal("/Estoque/Consulta", payload.GetProperty("novaConsultaUrl").GetString());
+            novaConsultaUrl = payload.GetProperty("novaConsultaUrl").GetString();
+            Assert.Equal("/Estoque/Consulta", novaConsultaUrl);
+            await AssertUnchangedAsync(factory, before);
         }
-        using var novaConsulta = await client.GetAsync("/Estoque/Consulta");
+        using var novaConsulta = await client.GetAsync(novaConsultaUrl);
         var novaHtml = await novaConsulta.Content.ReadAsStringAsync();
         Assert.Equal(HttpStatusCode.OK, novaConsulta.StatusCode);
         Assert.DoesNotContain("id=\"grade\"", novaHtml);
-        Assert.Contains("value=\"\"", novaHtml);
-        using var outraGrade = await client.GetAsync("/Estoque/Consulta?termo=Runner&produtoId=aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
-        Assert.Contains("id=\"grade\"", await outraGrade.Content.ReadAsStringAsync());
+        Assert.DoesNotContain("consulta-atendimento-acoes", novaHtml);
+        Assert.Matches("<input(?=[^>]*id=\"Termo\")(?=[^>]*value=\"\")[^>]*>", novaHtml);
+        await AssertUnchangedAsync(factory, before);
+
+        using var busca = await client.GetAsync($"{novaConsultaUrl}?termo={Uri.EscapeDataString(proximoProduto.Nome)}");
+        Assert.Equal(HttpStatusCode.OK, busca.StatusCode);
+        var buscaHtml = WebUtility.HtmlDecode(await busca.Content.ReadAsStringAsync());
+        Assert.Contains(proximoProduto.Nome, buscaHtml);
+        var resultado = Regex.Match(buscaHtml,
+            $"<a\\b[^>]*href=\"([^\"]*produtoId={proximoProduto.Id}[^\"]*)\"");
+        Assert.True(resultado.Success, "A próxima busca deve permitir selecionar outro produto.");
+
+        using var outraGrade = await client.GetAsync(resultado.Groups[1].Value);
+        Assert.Equal(HttpStatusCode.OK, outraGrade.StatusCode);
+        var outraHtml = WebUtility.HtmlDecode(await outraGrade.Content.ReadAsStringAsync());
+        Assert.Contains("id=\"grade\"", outraHtml);
+        Assert.Contains(proximoProduto.Nome, outraHtml);
+        Assert.Contains($"data-sku-id=\"{proximoProduto.Skus.Single().Id}\"", outraHtml);
+        Assert.DoesNotContain($"data-sku-id=\"{produto.Skus.Single().Id}\"", outraHtml);
+        Assert.Contains("data-resultado=\"desistiu\"", outraHtml);
         await AssertUnchangedAsync(factory, before);
     }
 
@@ -83,6 +111,29 @@ public sealed class DesistiuHttpTests
         await AssertUnchangedAsync(factory, before);
     }
 
+    private static async Task<Produto> AddProdutoAsync(SquadEstoqueWebApplicationFactory factory, int saldo)
+    {
+        using var scope = factory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
+        var produto = new Produto
+        {
+            Id = Guid.NewGuid(),
+            Nome = $"Tênis desistiu {Guid.NewGuid():N}",
+            Marca = "Squad",
+            Categoria = "Calçado",
+            Cor = "Preto",
+            Ativo = true
+        };
+        produto.Skus.Add(new Sku
+        {
+            Id = Guid.NewGuid(), ProdutoId = produto.Id, Numeracao = "38",
+            SaldoAtual = saldo, Ativo = true
+        });
+        context.Produto.Add(produto);
+        await context.SaveChangesAsync();
+        return produto;
+    }
+
     private static HttpClient CreateClient(SquadEstoqueWebApplicationFactory factory) =>
         factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false, HandleCookies = true });
 
@@ -106,17 +157,18 @@ public sealed class DesistiuHttpTests
         return WebUtility.HtmlDecode(match.Groups[1].Value);
     }
 
-    private static async Task<(Dictionary<Guid, int> Saldos, int Movimentacoes, int Rupturas)> SnapshotAsync(
+    private static async Task<(Dictionary<Guid, int> Saldos, Guid[] Movimentacoes, Guid[] Rupturas)> SnapshotAsync(
         SquadEstoqueWebApplicationFactory factory)
     {
         using var scope = factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
         return (await context.Sku.AsNoTracking().ToDictionaryAsync(s => s.Id, s => s.SaldoAtual),
-            await context.Movimentacao.CountAsync(), await context.Ruptura.CountAsync());
+            await context.Movimentacao.OrderBy(m => m.Id).Select(m => m.Id).ToArrayAsync(),
+            await context.Ruptura.OrderBy(r => r.Id).Select(r => r.Id).ToArrayAsync());
     }
 
     private static async Task AssertUnchangedAsync(SquadEstoqueWebApplicationFactory factory,
-        (Dictionary<Guid, int> Saldos, int Movimentacoes, int Rupturas) before)
+        (Dictionary<Guid, int> Saldos, Guid[] Movimentacoes, Guid[] Rupturas) before)
     {
         var after = await SnapshotAsync(factory);
         Assert.Equal(before.Saldos.OrderBy(s => s.Key), after.Saldos.OrderBy(s => s.Key));
