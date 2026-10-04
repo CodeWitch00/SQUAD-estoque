@@ -12,6 +12,98 @@ namespace SquadEstoque.Web.Tests;
 
 public sealed class VendaRapidaHttpTests
 {
+    [Theory]
+    [InlineData("sku-ausente")]
+    [InlineData("produto-ausente")]
+    [InlineData("sku-inexistente")]
+    [InlineData("produto-inexistente")]
+    [InlineData("sku-divergente")]
+    public async Task Vendedor_rejects_invalid_product_sku_pair_without_changing_stock_or_movements(string scenario)
+    {
+        using var factory = new SquadEstoqueWebApplicationFactory();
+        using var client = factory.CreateClient(new WebApplicationFactoryClientOptions
+        {
+            AllowAutoRedirect = false,
+            HandleCookies = true
+        });
+        var produtoId = Guid.NewGuid();
+        var outroProdutoId = Guid.NewGuid();
+        var skuId = Guid.NewGuid();
+        var outroSkuId = Guid.NewGuid();
+        var nomeProduto = $"Tênis vínculo {produtoId:N}";
+        Dictionary<Guid, int> saldosAntes;
+
+        using (var scope = factory.Services.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
+            var produto = new Produto
+            {
+                Id = produtoId, Nome = nomeProduto, Marca = "Squad",
+                Categoria = "Calçado", Cor = "Preto", Ativo = true
+            };
+            produto.Skus.Add(new Sku
+            {
+                Id = skuId, ProdutoId = produtoId, Numeracao = "38", SaldoAtual = 3, Ativo = true
+            });
+            var outroProduto = new Produto
+            {
+                Id = outroProdutoId, Nome = $"Tênis outro {outroProdutoId:N}", Marca = "Squad",
+                Categoria = "Calçado", Cor = "Azul", Ativo = true
+            };
+            outroProduto.Skus.Add(new Sku
+            {
+                Id = outroSkuId, ProdutoId = outroProdutoId, Numeracao = "39", SaldoAtual = 5, Ativo = true
+            });
+            context.Produto.AddRange(produto, outroProduto);
+            await context.SaveChangesAsync();
+            saldosAntes = await context.Sku.AsNoTracking().ToDictionaryAsync(s => s.Id, s => s.SaldoAtual);
+            Assert.Empty(await context.Movimentacao.AsNoTracking().ToListAsync());
+        }
+
+        using var loginPage = await client.GetAsync("/Account/Login");
+        using var loginForm = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["Email"] = "vendedor@squad.com", ["Senha"] = "123",
+            ["__RequestVerificationToken"] = await TokenAsync(loginPage)
+        });
+        using var loginResponse = await client.PostAsync("/Account/Login", loginForm);
+        Assert.Equal(HttpStatusCode.Found, loginResponse.StatusCode);
+
+        using var consulta = await client.GetAsync(
+            $"/Estoque/Consulta?termo={Uri.EscapeDataString(nomeProduto)}&produtoId={produtoId}");
+        var html = await consulta.Content.ReadAsStringAsync();
+        Assert.Contains($"data-sku-id=\"{skuId}\"", html);
+        Assert.DoesNotContain($"data-sku-id=\"{outroSkuId}\"", html);
+
+        var values = new Dictionary<string, string>
+        {
+            ["__RequestVerificationToken"] = await TokenAsync(consulta)
+        };
+        if (scenario != "sku-ausente")
+            values["skuId"] = (scenario == "sku-divergente" ? outroSkuId :
+                scenario == "sku-inexistente" ? Guid.NewGuid() : skuId).ToString();
+        if (scenario != "produto-ausente")
+            values["produtoId"] = (scenario == "produto-inexistente" ? Guid.NewGuid() : produtoId).ToString();
+
+        using var form = new FormUrlEncodedContent(values);
+        using var response = await client.PostAsync("/Estoque/Vender", form);
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        using var body = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        var mensagemEsperada = scenario switch
+        {
+            "sku-ausente" => "Informe um SKU válido para registrar a venda.",
+            "produto-ausente" => "Informe um produto válido para registrar a venda.",
+            _ => "O SKU selecionado não está disponível para venda."
+        };
+        Assert.Equal(mensagemEsperada, body.RootElement.GetProperty("mensagem").GetString());
+
+        using var verificationScope = factory.Services.CreateScope();
+        var persisted = verificationScope.ServiceProvider.GetRequiredService<EstoqueContext>();
+        var saldosDepois = await persisted.Sku.AsNoTracking().ToDictionaryAsync(s => s.Id, s => s.SaldoAtual);
+        Assert.Equal(saldosAntes.OrderBy(s => s.Key), saldosDepois.OrderBy(s => s.Key));
+        Assert.Empty(await persisted.Movimentacao.AsNoTracking().ToListAsync());
+    }
+
     [Fact]
     public async Task Completed_sale_persists_one_traceable_exit_for_authenticated_seller()
     {
@@ -66,6 +158,7 @@ public sealed class VendaRapidaHttpTests
         using var vendaForm = new FormUrlEncodedContent(new Dictionary<string, string>
         {
             ["skuId"] = skuId.ToString(),
+            ["produtoId"] = produtoId.ToString(),
             ["__RequestVerificationToken"] = await TokenAsync(consulta)
         });
         var inicio = DateTime.UtcNow;
@@ -137,6 +230,7 @@ public sealed class VendaRapidaHttpTests
         using var vendaForm = new FormUrlEncodedContent(new Dictionary<string, string>
         {
             ["skuId"] = skuId.ToString(),
+            ["produtoId"] = produtoId.ToString(),
             ["__RequestVerificationToken"] = await TokenAsync(consulta)
         });
         using var response = await client.PostAsync("/Estoque/Vender", vendaForm);
@@ -213,6 +307,7 @@ public sealed class VendaRapidaHttpTests
         using var vendaForm = new FormUrlEncodedContent(new Dictionary<string, string>
         {
             ["skuId"] = skuId.ToString(),
+            ["produtoId"] = produtoId.ToString(),
             ["__RequestVerificationToken"] = await TokenAsync(consulta)
         });
         using var response = await client.PostAsync("/Estoque/Vender", vendaForm);

@@ -174,7 +174,7 @@
             let saldoAtual;
 
             try {
-                const { response, data } = await postResultado(botao.dataset.venderUrl, skuId);
+                const { response, data } = await postResultado(botao.dataset.venderUrl, skuId, botao.dataset.produtoId);
                 sucesso = response.ok && data?.skuId === skuId &&
                     Number.isInteger(data.saldoAtual) && data.saldoAtual >= 0;
                 if (sucesso) {

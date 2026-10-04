@@ -139,7 +139,7 @@ public sealed class EstoqueController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Vender(Guid skuId)
+    public async Task<IActionResult> Vender(Guid skuId, Guid produtoId)
     {
         var usuarioId = GetAuthenticatedUserId();
         if (!usuarioId.HasValue)
@@ -152,11 +152,17 @@ public sealed class EstoqueController : Controller
             return BadRequest(new { mensagem = "Informe um SKU válido para registrar a venda." });
         }
 
+        if (produtoId == Guid.Empty)
+        {
+            return BadRequest(new { mensagem = "Informe um produto válido para registrar a venda." });
+        }
+
         try
         {
             var skuDisponivel = await _context.Sku
                 .AsNoTracking()
-                .AnyAsync(sku => sku.Id == skuId && sku.Ativo && sku.Produto != null && sku.Produto.Ativo);
+                .AnyAsync(sku => sku.Id == skuId && sku.ProdutoId == produtoId &&
+                    sku.Ativo && sku.Produto != null && sku.Produto.Ativo);
 
             if (!skuDisponivel)
             {

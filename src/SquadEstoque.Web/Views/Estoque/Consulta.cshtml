@@ -109,7 +109,8 @@
             <h2 id="titulo-acoes-atendimento" class="consulta-acoes-titulo">O que aconteceu?</h2>
             <div class="consulta-acoes-grade" aria-label="Resultado do atendimento">
                 <button type="button" class="consulta-acao consulta-acao--primaria"
-                        data-resultado="vendeu" data-vender-url="@Url.Action("Vender", "Estoque")" disabled>Vendeu</button>
+                        data-resultado="vendeu" data-vender-url="@Url.Action("Vender", "Estoque")"
+                        data-produto-id="@produtoSelecionado.Id" disabled>Vendeu</button>
                 <button type="button" class="consulta-acao" data-resultado="nao-tinha"
                         data-nao-tinha-url="@Url.Action("RegistrarNaoTinha", "Estoque")" data-produto-id="@produtoSelecionado.Id"
                         aria-describedby="consulta-atendimento-resumo" disabled>Não tinha</button>
