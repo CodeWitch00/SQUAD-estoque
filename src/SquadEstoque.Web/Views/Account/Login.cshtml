@@ -20,6 +20,7 @@
 </head>
 <body>
     <main class="login-app">
+        <div class="login-composition">
         <section class="brand-panel" aria-labelledby="brand-headline">
             <img class="login-brand-logo" src="~/images/logo-squad-header.png"
                  alt="SQUAD Controle de Estoque" width="1448" height="1086" />
@@ -32,7 +33,6 @@
             <div class="login-card">
                 <div class="card-heading">
                     <h1 id="login-title">Bem-vindo</h1>
-                    <p>Entre com suas credenciais para acessar o SQUAD.</p>
                 </div>
 
                 <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" novalidate>
@@ -72,6 +72,7 @@
                 </form>
             </div>
         </section>
+        </div>
         <footer class="login-copyright">© 2026 SQUAD Controle de Estoque</footer>
     </main>
 

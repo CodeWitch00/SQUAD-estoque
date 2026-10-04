@@ -1,54 +1,60 @@
-# S2-QA-031 — Desistiu sem registrar resultado
+# S2-QA-031 — Desistiu: encerrar atendimento e iniciar outra consulta
 
-Cobertura em `ConsultaOperacionalHttpTests.Desistiu_retorna_a_consulta_preserva_estoque_e_permite_proximo_atendimento`.
+A cobertura está consolidada em `DesistiuHttpTests`, usando xUnit,
+`SquadEstoqueWebApplicationFactory`, TestServer, autenticação por cookie e SQLite
+em memória. Cada cenário usa um banco isolado, sem preparação manual.
 
-O teste usa xUnit e a `SquadEstoqueWebApplicationFactory` existente, com
-TestServer, autenticação por cookie e SQLite em memória. Não exige Chrome,
-Playwright, Node, Python, servidor externo ou preparação manual de banco.
+## Fluxo validado
+
+O vendedor abre a grade e envia um POST para `/Estoque/RegistrarDesistiu`,
+com token antiforgery obtido da página. O servidor confirma o encerramento em
+JSON e informa `novaConsultaUrl`. O teste acessa essa URL por HTTP, verifica
+que a busca está vazia e realiza uma nova busca e seleção de outro produto
+na mesma sessão autenticada.
+
+Os seis cenários combinam saldos 0, 1 e 2 com envio ou ausência de `skuId`.
+No JavaScript atual, o POST envia apenas o token; o envio opcional de SKU no
+teste verifica que esse contexto adicional também não provoca operação de estoque.
+Cada cenário repete o POST e confere:
+
+- confirmação de encerramento e URL de retorno;
+- preservação de todos os saldos e dos IDs de movimentações e rupturas após
+  cada POST, após retornar à busca e após abrir outro produto;
+- campo de busca vazio, sem grade nem ações do atendimento anterior;
+- nova busca e seleção de outro produto, com a grade correspondente.
+
+São preservados os testes existentes de autenticação do vendedor, bloqueio do
+lojista, antiforgery e rejeição de GET no endpoint. A cobertura de
+`Nova_consulta_sem_desfecho_retorna_a_busca_inicial_sem_persistir_resultado`
+permanece em `ConsultaOperacionalHttpTests`: essa ação tem fluxo próprio.
 
 ## Execução
 
-Na raiz do repositório, com o SDK .NET 10:
+Na raiz do repositório, com SDK .NET 10:
 
 ```sh
 dotnet test tests/SquadEstoque.Web.Tests/SquadEstoque.Web.Tests.csproj --configuration Release
 ```
 
-Para executar somente os três cenários deste cartão:
+Somente os testes HTTP de Desistiu:
 
 ```sh
-dotnet test tests/SquadEstoque.Web.Tests/SquadEstoque.Web.Tests.csproj --configuration Release --filter FullyQualifiedName~Desistiu
+dotnet test tests/SquadEstoque.Web.Tests/SquadEstoque.Web.Tests.csproj --configuration Release --filter FullyQualifiedName~DesistiuHttpTests
 ```
 
-## Critérios cobertos
+A suíte de frontend existente requer Node.js e Chromium:
 
-Para saldos 0, 1 e 2, o vendedor autenticado abre um produto e sua grade.
-O teste confere que a página oferece Desistiu habilitado e carrega o script
-do atendimento. Verifica estaticamente que o ramo Desistiu do script servido
-navega para `/Estoque/Consulta` e retorna imediatamente.
+```sh
+npm ci
+npx playwright install chromium
+npm run test:frontend
+```
 
-Em seguida, acessa esse destino pelo TestServer e verifica:
+## Limites da cobertura
 
-- resposta HTTP 200 com estado inicial e campo de busca vazio;
-- ausência da grade e das ações do atendimento anterior;
-- preservação de todos os saldos e dos identificadores de movimentações e rupturas;
-- nova busca e seleção de outro produto na mesma sessão autenticada;
-- preservação dos dados também após abrir o próximo atendimento.
-
-## Limite da cobertura
-
-TestServer não executa JavaScript. A verificação do ramo de navegação é um
-contrato estático, sensível a refatorações do script, e não comprova a execução
-do evento de clique, seleção de rádio ou alterações do DOM. A navegação HTTP,
-autenticação, renderização Razor e persistência são exercitadas de verdade.
-O clique real permanece como validação manual complementar; não há alegação
-de teste de navegador ou garantia de ausência de POST durante um clique real.
-
-## Particularidade existente no Windows
-
-O teste anterior `Selected_product_shows_ordered_grade_with_balance_and_text_status`
-compara um trecho de HTML com quebra de linha LF literal. Um checkout que
-converte `Consulta.cshtml` para CRLF pode falhar nessa comparação, independentemente
-do fluxo Desistiu. A validação local utilizou nessa página as quebras LF do
-conteúdo versionado, sem alterar seu conteúdo no PR. Os novos testes usam
-expressões que aceitam ambos os formatos.
+TestServer exercita requisições HTTP, autenticação, renderização Razor e
+persistência. Ele não executa JavaScript nem simula cliques, foco ou alterações
+do DOM. Os testes de frontend existentes em
+`tests/frontend/consulta-desistiu.test.cjs` exercitam o JavaScript em Chromium,
+com HTML e respostas HTTP controlados pelo teste. A validação visual da página
+completa continua sendo complementar.

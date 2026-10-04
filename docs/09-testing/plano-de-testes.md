@@ -5,8 +5,8 @@
 | Campo | Valor |
 |---|---|
 | Projeto | SQUAD Estoque |
-| Versão do documento | 1.2 |
-| Status | Revisado |
+| Versão do documento | 1.5 |
+| Status | Atualizado com a execução real do fluxo de venda; homologação mobile publicada pendente |
 | Tipo | Aplicação web ASP.NET Core MVC |
 | Estratégia | Pirâmide de testes |
 | Perfis | `LOJISTA` e `VENDEDOR` |
@@ -40,6 +40,12 @@ O plano procura responder:
 - [Inventário de telas e navegação](../05-ux/inventario-telas-e-mapa-navegacao.md)
 - [Preparação e fluxo de desenvolvimento](../../CONTRIBUTING.md)
 - [Especificação dos testes do vendedor](especificacao-testes-vendedor.md)
+- [Validação da venda rápida com saldo disponível](validacao-venda-rapida-saldo-disponivel-2026-09-22.md)
+- [Validação da venda rápida sem saldo](validacao-venda-rapida-sem-saldo-2026-09-22.md)
+- [Persistência da movimentação de venda](validacao-movimentacao-venda-2026-09-24.md)
+- [Autorização da venda rápida](s2-qa-013-autorizacao-venda.md)
+- [Grade após a venda](s2-fe-016-grade-apos-venda.md)
+- [Homologação da venda rápida no mobile](homologacao-venda-mobile.md)
 - [Testes automatizados](../../tests/SquadEstoque.Web.Tests/)
 
 ## 4. Escopo
@@ -334,7 +340,7 @@ O destino pós-login ainda possui uma divergência: o UC-01 exige uma tela inici
 | IT-01 | RF-05, UC-07 | Lojista cadastra produto válido | `POST /Produtos/Create` com nome, marca, categoria e cor | Produto persistido; redirecionamento de sucesso; dados aparecem na listagem | Planejado |
 | IT-02 | RF-05 | Cadastro inválido | Campo obrigatório ausente e token válido | Tela retorna com erros; nenhum Produto é salvo | Planejado |
 | IT-03 | RF-02 | Vendedor tenta cadastrar produto | Login `VENDEDOR`; `GET` e `POST /Produtos/Create` | Acesso negado; nenhum Produto é salvo | Parcial: o controller inteiro já é protegido, mas falta caso específico de escrita |
-| IT-04 | RF-06, RF-07, UC-08, UC-S1 | Criação da grade | Produto válido; numerações 37, 38 e 39 | Três SKUs com IDs únicos e vínculo ao Produto são persistidos | Planejado |
+| IT-04 | RF-06, RF-07, UC-08, UC-S1 | Criação da grade | Produto válido; numerações 37, 38 e 39 | Três SKUs com IDs únicos e vínculo ao Produto são persistidos | **Parcial:** `Lojista_creates_complete_product_and_grade_via_http` comprova a grade persistida e carregada pelo Produto; falta afirmar explicitamente os IDs únicos e cada `ProdutoId` |
 | IT-05 | RF-08, RN-01 | SKU duplicado | Mesmo Produto e numeração 38 duas vezes | Persistência rejeitada pela constraint; nenhum duplicado permanece | **Existente:** `Sku_with_same_product_and_numeracao_cannot_be_persisted_twice` |
 | IT-06 | RF-07, RN-01 | Mesma numeração em produtos diferentes | Dois Produtos; numeração 38 em ambos | Ambos os SKUs são aceitos e possuem IDs distintos | Planejado |
 
@@ -366,9 +372,9 @@ Os casos detalhados, incluindo pré-condições, passos e campos de execução, 
 | IT-21 | RF-14, UC-03 | Grade completa | selecionar PRD-01 | Todas as numerações e respectivos saldos são exibidos | Dependente |
 | IT-22 | RF-15, UC-03 | Estados da grade | SKUs com saldo 0, 1 e 2 | Cada SKU recebe estado visual correto | Dependente |
 | IT-23 | RF-16 | Ações do atendimento | consulta válida | As três opções de resultado são exibidas | Dependente |
-| IT-24 | RF-17, UC-04, UC-S2 | Resultado `Vendeu` | SKU saldo 2; vendedor autenticado | Saldo 1; uma saída vinculada ao vendedor; confirmação exibida | Dependente |
-| IT-25 | RF-17, RN-02 | Venda sem saldo | SKU saldo 0 | Rejeição; saldo 0; nenhuma movimentação | Dependente |
-| IT-26 | RF-18, RN-05, RN-06, UC-05, UC-S3 | Resultado `Não tinha` | SKU válido; vendedor autenticado | Uma Ruptura com SKU, vendedor e data; saldo inalterado | **Parcial:** persistência isolada existente; falta fluxo HTTP do vendedor |
+| IT-24 | RF-10, RF-17, UC-04, UC-S2, UC-S5 | Resultado `Vendeu` | SKU com saldo 5, 3, 2 ou 1; vendedor autenticado | Saldo reduz exatamente 1; uma saída vinculada ao SKU e ao vendedor; confirmação e grade atualizada | **Existente:** `Vendedor_sells_exactly_one_pair_without_changing_any_other_sku` e `Vendedor_can_post_venda_for_sku_and_records_authenticated_user` |
+| IT-25 | RF-17, RN-02, UC-S4 | Venda sem saldo | SKU saldo 0 | Rejeição; saldo 0; nenhuma movimentação ou ruptura | **Existente:** `Vendedor_cannot_sell_zero_stock_and_creates_no_movement`, `Vender_rejects_zero_balance_without_creating_movement_or_rupture` e `Venda_rapida_rejects_zero_balance_without_movement` |
+| IT-26 | RF-18, RN-05, RN-06, UC-05, UC-S3 | Resultado `Não tinha` | SKU válido; vendedor autenticado | Uma Ruptura com SKU, vendedor e data; saldo inalterado e nenhuma movimentação | **Existente:** `Registrar_nao_tinha_creates_rupture_without_changing_any_stock_or_movement` |
 | IT-27 | RN-06 | Ruptura sem SKU | `sku_id` ausente ou inválido | Rejeição; nenhuma Ruptura | Planejado/dependente do endpoint |
 | IT-28 | RF-19, UC-06 | Resultado `Desistiu` | atendimento iniciado | Nenhuma movimentação ou ruptura; retorno à busca | Dependente |
 | IT-29 | RF-20 | Nova consulta sem registrar resultado | abandonar resultado e iniciar nova busca | Nova busca permitida sem efeito no estoque | Dependente |
@@ -390,7 +396,7 @@ Executar em homologação com Playwright quando as jornadas estiverem estáveis.
 |---|---|---|---|---|---|
 | E2E-01 | Login e logout de lojista | credenciais válidas; acessar Produtos; sair | Home do perfil; área autorizada; após sair, rota protegida pede login | RF-01 a RF-03, UC-01 | Planejado |
 | E2E-02 | Cadastro até entrada inicial | lojista cria PRD-01, grade 37–40 e entrada | Produto e SKUs visíveis; saldos e movimentações corretos | RF-05 a RF-10, UC-07 a UC-09 | Planejado |
-| E2E-03 | Consulta e venda | vendedor busca PRD-01, escolhe SKU-02 e marca `Vendeu` | Grade aparece; saldo reduz em 1; confirmação visível | RF-13 a RF-17, UC-02 a UC-04 | Dependente do módulo do vendedor |
+| E2E-03 | Consulta e venda | vendedor busca PRD-01, escolhe SKU-02 e marca `Vendeu` | Grade aparece; saldo reduz em 1; confirmação visível | RF-13 a RF-17, UC-02 a UC-04 | Parcial: aprovado em navegador local; bloqueado no ambiente publicado conforme `DEF-VEN-MOB-01` |
 | E2E-04 | Consulta e ruptura | vendedor busca, escolhe SKU e marca `Não tinha` | Ruptura registrada; saldo não muda | RF-18, RN-05, RN-06, UC-05 | Dependente |
 | E2E-05 | Desistência e continuidade | vendedor consulta, desiste e inicia nova consulta | Nenhum efeito no estoque; uso continua sem bloqueio | RF-19, RF-20, UC-06 | Dependente |
 | E2E-06 | Ajuste administrativo | lojista ajusta SKU com motivo | Novo saldo e histórico rastreável; vendedor não acessa a função | RF-23, RN-04, UC-10 | Planejado |
@@ -452,15 +458,47 @@ Para NFT-02, documentar volume de dados, número de usuários virtuais, duraçã
 | UC-S4 — Rejeitar saída inválida | UT-05, IT-11, IT-12, IT-25 |
 | UC-S5 — Registrar movimentação | IT-07, IT-09, IT-10, IT-15 |
 
+### 13.2 Matriz de execução real do fluxo de venda
+
+Execução automatizada realizada em 29/09/2026, na branch `dev/rayana`, sobre a base [`72893af`](https://github.com/CodeWitch00/SQUAD-estoque/commit/72893af89346121f144c9e64606c028309070029) atualizada de `origin/main`, em Linux com .NET 10, SQLite em memória e `WebApplicationFactory`. Comando: `dotnet test tests/SquadEstoque.Web.Tests/SquadEstoque.Web.Tests.csproj --configuration Release --no-restore`. Resultado: **94 aprovados, 0 falhas e 0 ignorados**. A execução manual indicada nas linhas mobile ocorreu nas datas e ambientes dos relatórios vinculados.
+
+| ID e cenário | Requisito | Pré-condição | Entrada | Resultado esperado | Resultado obtido | Status | Evidência |
+|---|---|---|---|---|---|---|---|
+| EXEC-VEN-01 — Venda com saldo | RF-10, RF-17; UC-04, UC-S2, UC-S5; IT-24 | `VENDEDOR` autenticado; SKU ativo com saldo 5; outro SKU do mesmo produto com saldo 7 | `POST /Estoque/Vender` com o ID do SKU de saldo 5 e token antiforgery | HTTP 200; saldo 5→4; demais SKUs inalterados; confirmação de sucesso | Teste aprovado; JSON retornou saldo 4, o SKU selecionado passou a 4 e todos os demais snapshots permaneceram iguais | Aprovado | [`VendaRapidaHttpTests`](../../tests/SquadEstoque.Web.Tests/VendaRapidaHttpTests.cs), [relatório de 22/09](validacao-venda-rapida-saldo-disponivel-2026-09-22.md), [PR #31](https://github.com/CodeWitch00/SQUAD-estoque/pull/31) |
+| EXEC-VEN-02 — Venda até saldo zero | RF-14, RF-15, RF-17; RN-02; UC-03, UC-04; IT-22, IT-24 | `VENDEDOR` autenticado; execuções isoladas com saldos 3, 2 e 1 | Uma venda para cada saldo inicial | Transições 3→2 `Disponível`, 2→1 `Último par` e 1→0 `Indisponível`; grade posterior coerente | Os três casos foram aprovados; JSON, persistência e HTML posterior apresentaram os saldos e estados esperados | Aprovado | [`Vendedor_can_post_venda_for_sku_and_records_authenticated_user`](../../tests/SquadEstoque.Web.Tests/EstoqueControllerHttpTests.cs), [PR #35](https://github.com/CodeWitch00/SQUAD-estoque/pull/35), [capturas e relatório](s2-fe-016-grade-apos-venda.md) |
+| EXEC-VEN-03 — Tentativa com saldo zero | RF-17; RN-02; UC-04, UC-S4; IT-25 | `VENDEDOR` autenticado; SKU ativo com saldo 0 | `POST /Estoque/Vender` com o ID do SKU sem saldo e token antiforgery | HTTP 400; saldo permanece 0; nenhuma movimentação ou ruptura é criada | Os testes HTTP e de domínio foram aprovados; saldo 0 preservado e coleções de movimentação e ruptura vazias | Aprovado | [`Vendedor_cannot_sell_zero_stock_and_creates_no_movement`](../../tests/SquadEstoque.Web.Tests/VendaRapidaHttpTests.cs), [relatório](validacao-venda-rapida-sem-saldo-2026-09-22.md), [captura](evidencias/venda-sem-saldo/venda-nao-registrada.jpeg), [PR #32](https://github.com/CodeWitch00/SQUAD-estoque/pull/32) |
+| EXEC-VEN-04 — Autorização | RF-01, RF-02, RF-16, RF-17; UC-04 | Mesmo SKU vendável com saldo 3; sessões separadas de `VENDEDOR`, `LOJISTA` e anônimo; token válido de cada sessão | `POST /Estoque/Vender` pelos três perfis | Vendedor conclui a venda; lojista recebe acesso negado; anônimo é enviado ao login; recusas não alteram estoque nem histórico | Venda do vendedor aprovada; casos de lojista e anônimo aprovados com HTTP 302 para os destinos esperados e snapshots persistidos idênticos | Aprovado | [`Vender_denies_unauthorized_access_without_changing_stock_or_movements`](../../tests/SquadEstoque.Web.Tests/EstoqueControllerHttpTests.cs), [relatório S2-QA-013](s2-qa-013-autorizacao-venda.md), [PR #34](https://github.com/CodeWitch00/SQUAD-estoque/pull/34) |
+| EXEC-VEN-05 — Movimentação da venda | RF-10, RF-17; UC-S5; IT-09, IT-24 | `VENDEDOR` autenticado; nenhuma movimentação anterior; SKU com saldo 2 | Uma venda do SKU selecionado | Exatamente uma `SAIDA` de quantidade 1, com ID, data, SKU e usuário autenticado rastreáveis | Teste aprovado; foi persistida uma única movimentação global, com ID não vazio, `CriadoEm` dentro da janela do POST, `SkuId` e `UsuarioId` esperados, tipo `SAIDA` e quantidade 1 | Aprovado | [`Completed_sale_persists_one_traceable_exit_for_authenticated_seller`](../../tests/SquadEstoque.Web.Tests/VendaRapidaHttpTests.cs), [relatório](validacao-movimentacao-venda-2026-09-24.md), [PR #32](https://github.com/CodeWitch00/SQUAD-estoque/pull/32) |
+| EXEC-VEN-06 — Vínculo Produto–SKU | RF-06, RF-07; RN-01; UC-08, UC-S1; IT-04 | `LOJISTA` autenticado para criar a grade; produto com SKUs controlados na venda | Cadastro das numerações 37–40 e venda posterior de um SKU pertencente a um produto | SKUs persistidos na grade do produto; venda altera somente o saldo do SKU selecionado e preserva `ProdutoId`, numeração, atividade e demais SKUs | Testes aprovados; a grade foi recuperada pelo produto com quatro SKUs e o snapshot da venda preservou o vínculo e todos os campos não afetados | Aprovado | [`Lojista_creates_complete_product_and_grade_via_http`](../../tests/SquadEstoque.Web.Tests/AdministrativeHttpTests.cs), [`VendaRapidaHttpTests`](../../tests/SquadEstoque.Web.Tests/VendaRapidaHttpTests.cs) |
+| EXEC-MOB-01 — Venda em viewport mobile local | RF-14, RF-15, RF-17; RNF-01, RNF-07; UC-03, UC-04; E2E-03, NFT-01, NFT-07 | Aplicação local real em Windows; viewport 390×844; produto fictício com grade 37=0, 38=1, 39=3 e 40=5 | Vendas sequenciais do nº 39 até saldo 0 e nova consulta | Estados, confirmação e saldo atualizados; ação bloqueada em zero; sem rolagem horizontal; nova consulta disponível | Vendas 3→2→1→0 observadas; cartões mudaram para `Disponível`, `Último par` e `Indisponível`; três saídas persistidas; demais SKUs preservados; layout sem rolagem horizontal | Aprovado no ambiente local | [relatório](s2-fe-016-grade-apos-venda.md), capturas de [último par](evidencias/s2-fe-016/mobile-ultimo-par.png) e [saldo zero](evidencias/s2-fe-016/mobile-saldo-zero.png), [PR #35](https://github.com/CodeWitch00/SQUAD-estoque/pull/35) |
+| EXEC-MOB-02 — Homologação mobile publicada | RF-14 a RF-17; RNF-01, RNF-07; UC-03, UC-04; E2E-03, NFT-01, NFT-07 | Azure; Firefox 156 em Linux sem interface; viewport 390×844; conta de vendedor; massa publicada encontrada apenas com saldo 0 | Login, consulta por termos documentados e tentativa de localizar o fluxo `Vendeu` | Versão publicada contém seleção, `Vendeu` e `Nova consulta`; massa permite validar saldo disponível, último par e saldo zero | Login e consulta responderam; a grade antiga exibiu somente um SKU indisponível e não continha `Vendeu`, seleção ou `Nova consulta`; nenhuma venda foi enviada | Bloqueado — `DEF-VEN-MOB-01` aberto | [registro da homologação e da divergência](homologacao-venda-mobile.md), [captura do login 390×844](evidencias/homologacao-venda-mobile/login-firefox-390x844.png) |
+
+#### Pendências abertas
+
+| ID | Estado | Registro | Condição de retomada |
+|---|---|---|---|
+| DEF-VEN-MOB-01 | Aberto; bloqueia o aceite mobile publicado | O Azure consultado apresentou a grade anterior, sem `Vendeu`, seleção de SKU ou `Nova consulta`. A divergência está registrada na [homologação mobile](homologacao-venda-mobile.md#divergência-do-ambiente-publicado); não há issue externa vinculada no repositório. | Publicar uma versão identificada que contenha o fluxo atual e preparar SKUs com saldos maior que 1, igual a 1 e igual a 0. |
+| PEND-MOB-TOQUE-01 | Pendente; não executado | A execução disponível usou viewport mobile sem dispositivo físico e sem entrada por toque. | Homologar foco, ordem e alvos de toque em aparelho físico, ou registrar o aceite formal da emulação pela equipe. |
+
+Os resultados locais não aprovam `EXEC-MOB-02`. Também não houve execução de venda concorrente do último par (`IT-18`), que permanece planejada e fora desta matriz de resultados.
+
 ## 14. Baseline automatizada existente
 
-A baseline possui 22 testes. Não duplicar estas implementações; ampliar os testes existentes ou adicionar novas classes por domínio.
+A execução de 29/09/2026 descobriu 94 casos .NET na baseline `72893af`. Não duplicar estas implementações; ampliar os testes existentes ou adicionar novas classes por domínio.
 
 | Arquivo | Quantidade | Cobertura atual |
 |---|---:|---|
 | [BasicRoutesTests.cs](../../tests/SquadEstoque.Web.Tests/BasicRoutesTests.cs) | 5 | inicialização, Home, Login e acesso anônimo |
-| [AuthenticationAuthorizationTests.cs](../../tests/SquadEstoque.Web.Tests/AuthenticationAuthorizationTests.cs) | 8 | login, perfis, rota permitida/proibida, credenciais inválidas e logout |
-| [EstoqueDomainPersistenceTests.cs](../../tests/SquadEstoque.Web.Tests/EstoqueDomainPersistenceTests.cs) | 9 | validação de Produto, constraints de SKU/saldo, entrada, saída, ajuste e Ruptura |
+| [AuthenticationAuthorizationTests.cs](../../tests/SquadEstoque.Web.Tests/AuthenticationAuthorizationTests.cs) | 15 | login, perfis, navegação, rota permitida/proibida, credenciais, BCrypt, logout e saída existente |
+| [AdministrativeHttpTests.cs](../../tests/SquadEstoque.Web.Tests/AdministrativeHttpTests.cs) | 13 | cadastro e edição de Produto/grade e autorização dos endpoints administrativos |
+| [ConsultaEstoqueTests.cs](../../tests/SquadEstoque.Web.Tests/ConsultaEstoqueTests.cs) | 8 | autorização, busca, seleção, grade, saldos e estados visuais |
+| [ConsultaOperacionalHttpTests.cs](../../tests/SquadEstoque.Web.Tests/ConsultaOperacionalHttpTests.cs) | 7 | grade completa, produto ativo, busca tolerante e controles do atendimento |
+| [EnumDomainMigrationTests.cs](../../tests/SquadEstoque.Web.Tests/EnumDomainMigrationTests.cs) | 1 | valores documentados dos enums na migration |
+| [EstoqueControllerHttpTests.cs](../../tests/SquadEstoque.Web.Tests/EstoqueControllerHttpTests.cs) | 23 | consulta, venda, saldo zero, autorização, antiforgery, ruptura e renderização da grade |
+| [EstoqueDomainPersistenceTests.cs](../../tests/SquadEstoque.Web.Tests/EstoqueDomainPersistenceTests.cs) | 19 | Produto, constraints de SKU/saldo, movimentações, venda, rollback, ajuste e Ruptura |
+| [VendaRapidaHttpTests.cs](../../tests/SquadEstoque.Web.Tests/VendaRapidaHttpTests.cs) | 3 | venda de uma unidade, saldo zero, preservação dos demais SKUs e movimentação rastreável |
+
+Validação complementar após atualizar a branch: `node --test tests/frontend/consulta-nao-tinha.test.cjs`, com Playwright e Chromium instalados somente em diretório temporário: **6 aprovados e 0 falhas**. O repositório ainda não declara a dependência `playwright`; por isso, a execução direta sem preparação do ambiente falha antes de descobrir os casos JavaScript.
 
 Infraestrutura compartilhada: [SquadEstoqueWebApplicationFactory.cs](../../tests/SquadEstoque.Web.Tests/SquadEstoqueWebApplicationFactory.cs).
 
@@ -635,5 +673,7 @@ O registro acima é apenas um exemplo de preenchimento. Não representa uma exec
 | 1.1 | 2026-08-30 | Textual | Codex, em revisão assistida solicitada pela equipe | Terminologia de situação, execução, resultado e evidência uniformizada; regra contra execução presumida explicitada |
 | 1.2 | 2026-08-30 | Integração documental | Codex, em revisão assistida solicitada pela equipe | Especificação detalhada de consulta, venda e ruptura do vendedor vinculada ao catálogo IT-18 a IT-29 |
 | 1.3 | 2026-09-02 | Automação | Codex, em execução assistida solicitada pela equipe | Cobertura automatizada no CI; cadastro, edição, inativação, autorização POST, limpeza de senha, BCrypt e auditoria atualizados conforme testes executados |
+| 1.4 | 2026-09-29 | Execução e rastreabilidade | Codex, em execução solicitada pela equipe | Resultados reais da venda com saldo, saldo zero, autorização, movimentação, vínculo Produto–SKU e validação mobile registrados; divergência do Azure e validação por toque mantidas abertas |
+| 1.5 | 2026-09-29 | Ruptura | Codex, em execução solicitada pela equipe | IT-26 atualizado com a execução HTTP que comprova uma ruptura, saldos integralmente preservados e nenhuma alteração na tabela de movimentações |
 
 Revisões assistidas não substituem o aceite do responsável de QA ou do produto quando esse aceite for exigido para release. A próxima alteração funcional ou de requisito deve gerar uma nova linha, com versão, data, tipo, revisor e resultado.

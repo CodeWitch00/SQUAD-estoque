@@ -1,25 +1,92 @@
-@model IEnumerable<SquadEstoque.Web.Models.Produto>
+@model SquadEstoque.Web.Models.ProdutosIndexViewModel
 
 @{
     ViewData["Title"] = "Catálogo de Produtos";
+    var primeiroItem = Model.TotalItens == 0 ? 0 : ((Model.PaginaAtual - 1) * Model.TamanhoPagina) + 1;
+    var ultimoItem = Math.Min(Model.PaginaAtual * Model.TamanhoPagina, Model.TotalItens);
+    var inicioJanela = Math.Max(1, Model.PaginaAtual - 2);
+    var fimJanela = Math.Min(Model.TotalPaginas, Model.PaginaAtual + 2);
 }
 
-<div class="admin-page-heading mb-4">
+<div class="admin-page-heading product-page-heading">
     <div>
         <h1>Catálogo de Produtos</h1>
         <p class="admin-page-intro">Consulte os modelos, as numerações e o estado de cada produto.</p>
     </div>
-    <a asp-action="Create" class="btn btn-primary">Novo produto com grade</a>
+    <a asp-action="Create" class="btn btn-primary product-create-button"><span aria-hidden="true">+</span> Novo produto</a>
 </div>
 
-@if (!Model.Any())
+<form asp-action="Index" method="get" class="product-filter-surface" aria-label="Buscar e filtrar produtos">
+    <div class="product-filter-search">
+        <label for="busca" class="form-label">Buscar produto</label>
+        <input id="busca" name="busca" value="@Model.Busca" class="form-control" placeholder="Modelo ou marca" />
+    </div>
+
+    <div class="product-filter-field">
+        <label for="status" class="form-label">Status</label>
+        <select id="status" name="status" class="form-select">
+            <option value="" selected="@(string.IsNullOrEmpty(Model.Status) ? "selected" : null)">Todos</option>
+            <option value="ativo" selected="@(Model.Status == "ativo" ? "selected" : null)">Ativos</option>
+            <option value="inativo" selected="@(Model.Status == "inativo" ? "selected" : null)">Inativos</option>
+        </select>
+    </div>
+
+    <div class="product-filter-field">
+        <label for="marca" class="form-label">Marca</label>
+        <select id="marca" name="marca" class="form-select">
+            <option value="" selected="@(string.IsNullOrEmpty(Model.Marca) ? "selected" : null)">Todas</option>
+            @foreach (var opcao in Model.Marcas)
+            {
+                <option value="@opcao" selected="@(Model.Marca == opcao ? "selected" : null)">@opcao</option>
+            }
+        </select>
+    </div>
+
+    <div class="product-filter-field">
+        <label for="categoria" class="form-label">Categoria</label>
+        <select id="categoria" name="categoria" class="form-select">
+            <option value="" selected="@(string.IsNullOrEmpty(Model.Categoria) ? "selected" : null)">Todas</option>
+            @foreach (var opcao in Model.Categorias)
+            {
+                <option value="@opcao" selected="@(Model.Categoria == opcao ? "selected" : null)">@opcao</option>
+            }
+        </select>
+    </div>
+
+    <div class="product-filter-actions">
+        <button type="submit" class="btn btn-primary">Aplicar filtros</button>
+        @if (Model.PossuiFiltros)
+        {
+            <a asp-action="Index" class="btn btn-outline-secondary">Limpar filtros</a>
+        }
+    </div>
+</form>
+
+<div class="product-list-summary" role="status">
+    @if (Model.TotalItens > 0)
+    {
+        <span>Mostrando @primeiroItem–@ultimoItem de @Model.TotalItens produtos</span>
+    }
+    else
+    {
+        <span>Nenhum produto encontrado com os filtros selecionados.</span>
+    }
+</div>
+
+@if (!Model.Produtos.Any())
 {
-    <div class="alert alert-info">Nenhum produto cadastrado no momento.</div>
+    <div class="alert product-empty-state" role="status">
+        <p>@(Model.PossuiFiltros ? "Nenhum produto encontrado com os filtros selecionados." : "Nenhum produto cadastrado no momento.")</p>
+        @if (Model.PossuiFiltros)
+        {
+            <a asp-action="Index" class="btn btn-outline-secondary">Limpar filtros</a>
+        }
+    </div>
 }
 else
 {
-    <div class="table-responsive" tabindex="0" role="region" aria-label="Catálogo de produtos">
-        <table class="table table-hover align-middle">
+    <div class="table-responsive product-table-shell" tabindex="0" role="region" aria-label="Catálogo de produtos">
+        <table class="table align-middle product-table">
             <thead class="table-light">
                 <tr>
                     <th scope="col">Modelo</th>
@@ -32,38 +99,38 @@ else
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model)
+                @foreach (var item in Model.Produtos)
                 {
                     <tr class="@(!item.Ativo ? "text-muted opacity-75" : "")">
-                        <td class="fw-bold">@item.Nome</td>
+                        <td class="product-model">@item.Nome</td>
                         <td>@item.Marca</td>
                         <td>@item.Categoria</td>
                         <td>@item.Cor</td>
                         <td>
                             @foreach (var sku in item.Skus.OrderBy(s => s.Numeracao))
                             {
-                                <span class="badge bg-light text-dark border me-1">@sku.Numeracao</span>
+                                <span class="badge product-size-chip">@sku.Numeracao</span>
                             }
                         </td>
                         <td>
                             @if (item.Ativo)
                             {
-                                <span class="badge bg-success">Ativo</span>
+                                <span class="badge product-status product-status-active">Ativo</span>
                             }
                             else
                             {
-                                <span class="badge bg-secondary">Inativo</span>
+                                <span class="badge product-status product-status-inactive">Inativo</span>
                             }
                         </td>
                         <td>
-                            <div class="admin-row-actions">
-                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-sm">Detalhes</a>
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm">Editar</a>
-                            <form asp-action="ToggleAtivo" asp-route-id="@item.Id" method="post" class="d-inline">
-                                <button type="submit" class="btn btn-outline-secondary btn-sm">
-                                    @(item.Ativo ? "Desativar" : "Ativar")
-                                </button>
-                            </form>
+                            <div class="admin-row-actions product-row-actions">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm product-action-details">Detalhes</a>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm product-action-edit">Editar</a>
+                                <form asp-action="ToggleAtivo" asp-route-id="@item.Id" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm @(item.Ativo ? "product-action-deactivate" : "product-action-activate")">
+                                        @(item.Ativo ? "Desativar" : "Ativar")
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>
@@ -71,4 +138,36 @@ else
             </tbody>
         </table>
     </div>
+
+    @if (Model.TotalPaginas > 1)
+    {
+        <nav class="product-pagination" aria-label="Paginação do catálogo">
+            <a class="btn btn-outline-secondary @(Model.PaginaAtual == 1 ? "disabled" : "")" asp-action="Index" asp-route-busca="@Model.Busca" asp-route-status="@Model.Status" asp-route-marca="@Model.Marca" asp-route-categoria="@Model.Categoria" asp-route-pagina="@(Model.PaginaAtual - 1)" aria-label="Página anterior">Anterior</a>
+
+            @if (inicioJanela > 1)
+            {
+                <a class="product-page-link" asp-action="Index" asp-route-busca="@Model.Busca" asp-route-status="@Model.Status" asp-route-marca="@Model.Marca" asp-route-categoria="@Model.Categoria" asp-route-pagina="1">1</a>
+                @if (inicioJanela > 2)
+                {
+                    <span class="product-page-ellipsis" aria-hidden="true">…</span>
+                }
+            }
+
+            @for (var pagina = inicioJanela; pagina <= fimJanela; pagina++)
+            {
+                <a class="product-page-link @(pagina == Model.PaginaAtual ? "active" : "")" asp-action="Index" asp-route-busca="@Model.Busca" asp-route-status="@Model.Status" asp-route-marca="@Model.Marca" asp-route-categoria="@Model.Categoria" asp-route-pagina="@pagina" aria-current="@(pagina == Model.PaginaAtual ? "page" : null)">@pagina</a>
+            }
+
+            @if (fimJanela < Model.TotalPaginas)
+            {
+                @if (fimJanela < Model.TotalPaginas - 1)
+                {
+                    <span class="product-page-ellipsis" aria-hidden="true">…</span>
+                }
+                <a class="product-page-link" asp-action="Index" asp-route-busca="@Model.Busca" asp-route-status="@Model.Status" asp-route-marca="@Model.Marca" asp-route-categoria="@Model.Categoria" asp-route-pagina="@Model.TotalPaginas">@Model.TotalPaginas</a>
+            }
+
+            <a class="btn btn-outline-secondary @(Model.PaginaAtual == Model.TotalPaginas ? "disabled" : "")" asp-action="Index" asp-route-busca="@Model.Busca" asp-route-status="@Model.Status" asp-route-marca="@Model.Marca" asp-route-categoria="@Model.Categoria" asp-route-pagina="@(Model.PaginaAtual + 1)" aria-label="Próxima página">Próxima</a>
+        </nav>
+    }
 }
