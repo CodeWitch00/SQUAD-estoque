@@ -23,11 +23,6 @@ public class HomeController : Controller
         return RedirectToAction("AccessDenied", "Account");
     }
 
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

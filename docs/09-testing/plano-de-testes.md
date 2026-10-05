@@ -73,7 +73,6 @@ Conforme o SRS, não serão testados como funcionalidades do SQUAD:
 - funções de PDV, financeiro ou ERP;
 - integração automática com sistemas externos;
 - operação multi-loja;
-- funcionalidades legadas de `Movies` e `HelloWorld`, exceto enquanto um teste de inicialização precisar detectar regressão técnica global.
 
 ## 5. Estratégia em pirâmide
 

@@ -14,13 +14,11 @@ namespace SquadEstoque.Web.Tests;
 public sealed class SquadEstoqueWebApplicationFactory : WebApplicationFactory<Program>
 {
     private readonly SqliteConnection _estoqueConnection = new("Data Source=:memory:");
-    private readonly SqliteConnection _legacyMovieConnection = new("Data Source=:memory:");
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Testing");
         _estoqueConnection.Open();
-        _legacyMovieConnection.Open();
 
         builder.ConfigureServices(services =>
         {
@@ -29,13 +27,8 @@ public sealed class SquadEstoqueWebApplicationFactory : WebApplicationFactory<Pr
 
             services.RemoveAll<DbContextOptions<EstoqueContext>>();
             services.RemoveAll<EstoqueContext>();
-            services.RemoveAll<DbContextOptions<LegacyMovieContext>>();
-            services.RemoveAll<LegacyMovieContext>();
-
             services.AddDbContext<EstoqueContext>(options =>
                 options.UseSqlite(_estoqueConnection));
-            services.AddDbContext<LegacyMovieContext>(options =>
-                options.UseSqlite(_legacyMovieConnection));
         });
     }
 
@@ -44,9 +37,7 @@ public sealed class SquadEstoqueWebApplicationFactory : WebApplicationFactory<Pr
         var host = base.CreateHost(builder);
         using var scope = host.Services.CreateScope();
         var estoqueContext = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
-        var legacyMovieContext = scope.ServiceProvider.GetRequiredService<LegacyMovieContext>();
         estoqueContext.Database.EnsureCreated();
-        legacyMovieContext.Database.EnsureCreated();
 
         estoqueContext.Usuario.AddRange(
             CreateUser("Lojista Teste", "lojista@squad.com", PerfilUsuario.LOJISTA),
@@ -63,7 +54,6 @@ public sealed class SquadEstoqueWebApplicationFactory : WebApplicationFactory<Pr
         if (disposing)
         {
             _estoqueConnection.Dispose();
-            _legacyMovieConnection.Dispose();
         }
     }
 

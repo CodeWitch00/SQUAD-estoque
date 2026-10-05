@@ -12,7 +12,6 @@
 - Navegação do lojista restrita aos comandos administrativos disponíveis.
 - Logout acessível para os dois perfis.
 - Marca do cabeçalho direcionada à entrada do perfil, sem depender da Home provisória.
-- Legado Movie preservado.
 
 ## Resultado
 
@@ -29,5 +28,3 @@
 
 Os cenários são cobertos por `AuthenticationAuthorizationTests`, incluindo os destinos
 pós-login, o conteúdo da navegação por perfil e a invalidação da sessão após logout.
-
-O legado `Movie` não foi alterado neste cartão.

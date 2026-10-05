@@ -82,26 +82,15 @@ Esta matriz descreve o fluxo-alvo. “Voltar” deve preservar a origem quando a
 4. **“Saída” não é “Vendeu”.** `/Movimentacoes/Saida` aceita quantidade livre, pode ser aberta sem consulta anterior e redireciona o vendedor para a Home provisória. VEN-04 exige um SKU consultado, decremento fixo de 1 e continuidade do atendimento.
 5. **Permissão da saída genérica está ampla.** O controller permite `LOJISTA,VENDEDOR`, embora o fluxo-alvo reserve a operação administrativa ao LOJISTA e dê ao VENDEDOR apenas “Vendeu”. A equipe deve corrigir essa autorização quando VEN-04 for implementada.
 6. **Saldos zerados e rupturas não têm endpoints ou views.** São pendências diretas de RF-21/UC-11/US-12 e RF-22/UC-12/US-13.
-7. **A navegação global contém itens fora do MVP.** “Privacy” está no menu e rodapé; deve sair do fluxo principal. Produtos e Movimentações aparecem apenas para LOJISTA, o que está correto para as áreas administrativas.
+7. **A navegação global é restrita ao MVP.** Produtos e Movimentações aparecem apenas para LOJISTA, o que está correto para as áreas administrativas.
 8. **A última atualização do SKU não aparece.** A grade existente mostra o saldo, mas não data/hora de atualização; RF-12 continua pendente para a grade operacional.
 
-## 5. Telas de apoio e legado fora do fluxo
+## 5. Telas de apoio
 
 | ID | Rota | Classificação | Decisão para os protótipos e testes P1 |
 | --- | --- | --- | --- |
 | SUP-01 | `/Account/AccessDenied` | Apoio técnico existente | Manter como estado de autorização; testar retorno seguro ao início do perfil. |
 | SUP-02 | `/Home/Error` | Apoio técnico existente | Não entra no caminho feliz; cobrir apenas em teste técnico de erro. |
-| LEG-01 | `/` (`Home/Index` atual) | Legado/provisório | Substituir pelos inícios por perfil; não usar como referência visual. |
-| LEG-02 | `/Home/Privacy` | Legado de template | Fora do MVP e do mapa principal. |
-| LEG-03 | `/Movies` | Legado de tutorial | Fora do MVP; inclui lista de filmes. |
-| LEG-04 | `/Movies/Details/{id}` | Legado de tutorial | Fora do MVP. |
-| LEG-05 | `/Movies/Create` | Legado de tutorial | Fora do MVP. |
-| LEG-06 | `/Movies/Edit/{id}` | Legado de tutorial | Fora do MVP. |
-| LEG-07 | `/Movies/Delete/{id}` | Legado de tutorial | Fora do MVP. |
-| LEG-08 | `/HelloWorld` | Legado de tutorial | Fora do MVP. |
-| LEG-09 | `/HelloWorld/Welcome` | Legado de tutorial | Fora do MVP. |
-
-As rotas de Movies e HelloWorld não possuem `[Authorize]`; embora estejam fora do fluxo, essa exposição deve constar no plano técnico de remoção do legado, sem ampliar o escopo funcional do MVP.
 
 ## 6. Cobertura das fontes
 
@@ -129,5 +118,3 @@ As rotas de Movies e HelloWorld não possuem `[Authorize]`; embora estejam fora 
 | Entrada, saída e ajuste | Permissão; saldo atualizado; histórico; rejeição de saldo negativo; motivo obrigatório no ajuste; inexistência de editar/excluir movimentação. |
 | Saldos zerados | Somente saldo 0; agrupamento por modelo; estado vazio. |
 | Rupturas | Modelo, numeração e contagem corretos; agrupamento; estado vazio; acesso exclusivo do lojista. |
-
-

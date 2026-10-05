@@ -12,7 +12,8 @@ contribuição diferentes neste arquivo.
 Controllers/   actions MVC e coordenação das requisições
 Data/          contextos do Entity Framework Core
 Migrations/    histórico versionado de schema
-Models/        entidades e ViewModels usados pela aplicação
+Models/Entities/ entidades persistidas do estoque
+Models/ViewModels/ modelos de tela, entrada e erro
 Views/         páginas Razor
 wwwroot/       CSS, JavaScript, imagens e bibliotecas da interface
 Program.cs     composição e pipeline HTTP
