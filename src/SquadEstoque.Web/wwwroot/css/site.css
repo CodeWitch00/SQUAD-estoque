@@ -1057,6 +1057,9 @@ body {
 
 .seller-main {
   width: min(100%, 1100px);
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   margin: 0 auto;
   padding: 24px 20px 48px;
 }
@@ -1663,6 +1666,9 @@ body {
 /* Consulta operacional do vendedor — S1-FE-018 */
 .consulta-vendedor {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   padding-bottom: 2.5rem;
 }
 
@@ -1671,9 +1677,10 @@ body {
 }
 
 .consulta-cabecalho h1 {
+  max-width: 100%;
   margin: 0 0 8px;
   color: #101f3b;
-  font-size: clamp(1.75rem, 3.5vw, 2.125rem);
+  font-size: clamp(1.5rem, 6vw, 2.125rem);
   font-weight: 750;
   line-height: 1.25;
   letter-spacing: -0.015em;
@@ -1687,6 +1694,8 @@ body {
 }
 
 .consulta-painel {
+  max-width: 100%;
+  box-sizing: border-box;
   padding: clamp(20px, 3.5vw, 28px);
   border: 1px solid #d8e2ee;
   border-radius: 14px;
