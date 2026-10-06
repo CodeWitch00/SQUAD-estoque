@@ -5,15 +5,15 @@
 | Item              | Resultado                                                                  |
 | ----------------- | -------------------------------------------------------------------------- |
 | Branch            | `main`                                                                   |
-| Commit            | `327efc588bf4e4480f2475a5537cf869e0153ad8`                               |
+| Commit de referência do modelo | `dca1bc5bb0ab87b7cd1274da11e8c5522bea49e7`                 |
 | Última migration | `20260901000759_AddEnumDomainConstraints`                                |
 | ModelSnapshot     | `src/SquadEstoque.Web/Migrations/Estoque/EstoqueContextModelSnapshot.cs` |
 | Banco             | SQLite —`src/SquadEstoque.Web/Estoque.db`                               |
-| Fonte do diagrama | [`DER-fisico.mmd`](DER-fisico.mmd)  |
+| Fonte do diagrama | [`DER-fisicom.md`](DER-fisicom.md) e [`DER_fisico_SQUAD_final.svg`](DER_fisico_SQUAD_final.svg) |
 
 ## Diagrama
 
-O código-fonte Mermaid está em [`DER-fisico.mmd`](DER-fisico.mmd).
+O código-fonte Mermaid está em [`DER-fisicom.md`](DER-fisicom.md), e a versão renderizada aprovada está em [`DER_fisico_SQUAD_final.svg`](DER_fisico_SQUAD_final.svg).
 
 O desenho contém somente as tabelas realmente implementadas:
 
@@ -23,7 +23,19 @@ O desenho contém somente as tabelas realmente implementadas:
 - `Movimentacao`
 - `Ruptura`
 
-Não foi gerado SVG porque não há Mermaid CLI, PlantUML ou Graphviz disponível no ambiente. Não foram instaladas dependências para renderização.
+O SVG foi conferido estruturalmente com o modelo EF Core e contém as mesmas cinco entidades e cinco relacionamentos implementados.
+
+### Cardinalidades e relacionamentos
+
+| Relacionamento | Cardinalidade | FK obrigatória |
+| --- | --- | --- |
+| `Produto` → `Sku` | `1 : 0..N` | `Sku.ProdutoId -> Produto.Id` |
+| `Sku` → `Movimentacao` | `1 : 0..N` | `Movimentacao.SkuId -> Sku.Id` |
+| `Sku` → `Ruptura` | `1 : 0..N` | `Ruptura.SkuId -> Sku.Id` |
+| `Usuario` → `Movimentacao` | `1 : 0..N` | `Movimentacao.UsuarioId -> Usuario.Id` |
+| `Usuario` → `Ruptura` | `1 : 0..N` | `Ruptura.UsuarioId -> Usuario.Id` |
+
+Cada registro dependente possui exatamente um registro principal, porque as FKs são `NOT NULL`. Um `Produto`, `Sku` ou `Usuario` pode existir sem registros dependentes, por isso o lado principal é `0..N`. Nos relacionamentos com `Usuario`, a entidade não possui coleção de navegação no C#, mas a cardinalidade física continua sendo 1:N por causa da FK repetível na tabela dependente.
 
 ## Restrições e índices
 
@@ -96,12 +108,13 @@ Não existem `UpdatedAt`, `AtualizadoEm`, `UltimaAtualizacao` ou campo equivalen
 | Entidades conferidas          | 5 entidades confirmadas                         |
 | Campos conferidos             | Models, migrations, snapshot e SQLite coerentes |
 | Relacionamentos conferidos    | 5 relações 1:N confirmadas                    |
+| Cardinalidades conferidas     | 5 relações `1 : 0..N` confirmadas              |
 | Constraints conferidas        | PK, FK, UNIQUE e CHECK confirmadas              |
 | Índices conferidos           | 6 índices confirmados                          |
 | Campo de atualização do SKU | Não existe                                     |
 | Migration mais recente        | `20260901000759_AddEnumDomainConstraints`     |
 | ModelSnapshot                 | Coerente com a migration mais recente           |
-| Commit utilizado              | `327efc588bf4e4480f2475a5537cf869e0153ad8`    |
+| Commit de referência utilizado | `dca1bc5bb0ab87b7cd1274da11e8c5522bea49e7`   |
 
 ## Legenda para a monografia
 
