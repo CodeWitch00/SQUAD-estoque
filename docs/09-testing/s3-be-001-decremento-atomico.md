@@ -28,12 +28,11 @@ Comandos de validação:
 git diff --check
 dotnet build src/SquadEstoque.Web/SquadEstoque.Web.csproj
 dotnet test tests/SquadEstoque.Web.Tests/SquadEstoque.Web.Tests.csproj --logger 'trx;LogFileName=s3-be-001.trx' --results-directory output/s3-be-001 --collect:'XPlat Code Coverage'
+
 ```
 
 Build final: aprovado, zero avisos e zero erros. Suite final: 153 aprovados, zero falhas e zero ignorados (58 segundos). Cobertura de linhas: 73,66%, acima do mínimo de 50% do CI. `git diff --check` aprovado. TRX e Cobertura ficam em `output/s3-be-001` na cópia isolada, fora dos arquivos versionados.
 
 ## Conferência manual sugerida
 
-Com um SKU de saldo um, abrir duas sessões autenticadas e vender o mesmo SKU nas duas. Confirmar uma venda, rejeição na segunda, saldo zero e uma movimentação. Repetir entre venda rápida e saída administrativa. Esta conferência de interface não foi executada nesta atividade; a disputa no banco e os fluxos HTTP foram validados automaticamente.
-
-O Trello fica sob responsabilidade do usuário. Copiar o link do PR e esta evidência ao cartão. A main não deve receber merge até a aprovação humana e CI verde.
+Com um SKU de saldo um, abrir duas sessões autenticadas e vender o mesmo SKU nas duas. Confirmar uma venda, rejeição na segunda, saldo zero e uma movimentação. Repetir entre venda rápida e saída administrativa. A disputa no banco e os fluxos HTTP foram validados automaticamente.
