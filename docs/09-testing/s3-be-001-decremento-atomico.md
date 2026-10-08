@@ -2,7 +2,7 @@
 
 Data: 08/10/2026 (America/Sao_Paulo). Branch: `dev/emmy`.
 Cartão: [S3-BE-001] Implementar decremento atômico — venda concorrente sem saldo negativo.
-Base: `a6c1877`. A branch main e as alterações locais de atividades anteriores foram preservadas.
+Base: `a6c1877`.
 
 ## Implementação e revisão técnica
 
@@ -10,7 +10,7 @@ Base: `a6c1877`. A branch main e as alterações locais de atividades anteriores
 
 O UPDATE e a inserção da movimentação usam a mesma transação. O saldo rastreado é recarregado após o UPDATE e após rollback, evitando que SaveChanges regrave saldo antigo. Não há mutex em memória nem troca de banco ou migration.
 
-Revisão local: conferidos o predicado condicional, a sincronização do ChangeTracker, o rollback e os dois controllers que utilizam a operação compartilhada. Revisão humana será solicitada no PR; aprovação depende do integrante.
+Revisão local: conferidos o predicado condicional, a sincronização do ChangeTracker, o rollback e os dois controllers que utilizam a operação compartilhada.
 
 ## Testes
 
