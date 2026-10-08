@@ -22,6 +22,12 @@ public static class SaidaEstoque
             return new(null, "A quantidade de saída deve ser no mínimo 1.", "Quantidade");
 
         await using var transaction = await context.Database.BeginTransactionAsync();
+        // A condição e o decremento são executados pelo banco no mesmo UPDATE.
+        // A transação também torna a movimentação inseparável da alteração do saldo.
+        var linhasAlteradas = await context.Sku
+            .Where(s => s.Id == skuId && s.SaldoAtual >= quantidade)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(s => s.SaldoAtual, s => s.SaldoAtual - quantidade));
         var sku = await context.Sku.Include(s => s.Produto)
             .FirstOrDefaultAsync(s => s.Id == skuId);
 
@@ -30,10 +36,9 @@ public static class SaidaEstoque
 
         // Um SKU já rastreado não pode fornecer um saldo antigo à transação.
         await context.Entry(sku).ReloadAsync();
-        if (quantidade > sku.SaldoAtual)
+        if (linhasAlteradas == 0)
             return new(sku, $"Saldo insuficiente para saída. Saldo disponível: {sku.SaldoAtual} par(es).", "Quantidade");
 
-        var saldoAnterior = sku.SaldoAtual;
         var movimentacao = new Movimentacao
         {
             Id = Guid.NewGuid(),
@@ -47,7 +52,6 @@ public static class SaidaEstoque
 
         try
         {
-            sku.SaldoAtual -= quantidade;
             context.Movimentacao.Add(movimentacao);
             await context.SaveChangesAsync();
             await transaction.CommitAsync();
@@ -57,8 +61,7 @@ public static class SaidaEstoque
         {
             await transaction.RollbackAsync();
             context.Entry(movimentacao).State = EntityState.Detached;
-            sku.SaldoAtual = saldoAnterior;
-            context.Entry(sku).Property(s => s.SaldoAtual).OriginalValue = saldoAnterior;
+            await context.Entry(sku).ReloadAsync();
             throw;
         }
     }

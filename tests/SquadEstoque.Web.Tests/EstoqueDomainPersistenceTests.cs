@@ -883,6 +883,60 @@ public sealed class EstoqueDomainPersistenceTests
         Assert.Empty(await database.Context.Movimentacao.ToListAsync());
     }
 
+    [Theory]
+    [InlineData(false, 1)]
+    [InlineData(true, 1)]
+    [InlineData(true, 3)]
+    public async Task Concurrent_saidas_sell_available_stock_only_once(bool administrativa, int quantidade)
+    {
+        // Conexões e contextos independentes disputam o mesmo SQLite em disco.
+        var path = Path.Combine(Path.GetTempPath(), $"estoque-concorrente-{Guid.NewGuid():N}.db");
+        var options = new DbContextOptionsBuilder<EstoqueContext>()
+            .UseSqlite($"Data Source={path};Pooling=False;Default Timeout=10").Options;
+        try
+        {
+            await using var seed = new EstoqueContext(options);
+            await seed.Database.EnsureCreatedAsync();
+            var data = await SeedAsync(seed, quantidade);
+            await using var first = new EstoqueContext(options);
+            await using var second = new EstoqueContext(options);
+            // Ambos enxergam o mesmo saldo antes de iniciar a disputa.
+            await first.Sku.SingleAsync();
+            await second.Sku.SingleAsync();
+            using var ready = new CountdownEvent(2);
+            var start = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            Task<ResultadoSaida> Sell(EstoqueContext context) => Task.Run(async () =>
+            {
+                ready.Signal();
+                await start.Task;
+                return administrativa
+                    ? await context.RegistrarSaidaAsync(data.Sku.Id, quantidade, data.Usuario.Id, "Venda concorrente")
+                    : await context.RegistrarVendaRapidaAsync(data.Sku.Id, data.Usuario.Id);
+            });
+            var sale1 = Sell(first);
+            var sale2 = Sell(second);
+            var bothReady = ready.Wait(TimeSpan.FromSeconds(10));
+            start.SetResult();
+            var results = await Task.WhenAll(sale1, sale2);
+            Assert.True(bothReady);
+            Assert.Single(results, r => r.Erro == null);
+            var rejected = Assert.Single(results, r => r.Erro != null);
+            Assert.Contains("Saldo insuficiente", rejected.Erro);
+            Assert.Equal("Quantidade", rejected.Campo);
+            Assert.Equal(0, await seed.Sku.AsNoTracking().Select(s => s.SaldoAtual).SingleAsync());
+            var movement = await seed.Movimentacao.AsNoTracking().SingleAsync();
+            Assert.Equal(quantidade, movement.Quantidade);
+            Assert.Equal(data.Usuario.Id, movement.UsuarioId);
+            Assert.Equal(TipoMovimentacao.SAIDA, movement.Tipo);
+        }
+        finally
+        {
+            File.Delete(path);
+            File.Delete(path + "-wal");
+            File.Delete(path + "-shm");
+        }
+    }
+
     private static MovimentacoesController CreateController(EstoqueContext context, Usuario usuario)
     {
         var claims = new[]
