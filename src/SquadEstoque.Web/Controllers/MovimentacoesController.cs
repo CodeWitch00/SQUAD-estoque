@@ -582,7 +582,7 @@ public class MovimentacoesController : Controller
         }
         catch (Exception)
         {
-            ModelState.AddModelError(string.Empty, "O saldo deste item foi alterado por outra operação. Por favor, tente novamente.");
+            ModelState.AddModelError(string.Empty, "Não foi possível registrar a saída de estoque. Operação cancelada. Tente novamente.");
             await PopulateSkusDropdownAsync(model.SkuId);
             return View(model);
         }

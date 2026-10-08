@@ -172,6 +172,8 @@ public sealed class EstoqueController : Controller
             var resultado = await _context.RegistrarVendaRapidaAsync(skuId, usuarioId.Value);
             if (resultado.Erro is not null)
             {
+                if (resultado.Conflito)
+                    return Conflict(new { mensagem = resultado.Erro });
                 return BadRequest(new { mensagem = resultado.Erro });
             }
 
