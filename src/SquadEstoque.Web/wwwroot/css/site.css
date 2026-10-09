@@ -989,6 +989,8 @@ body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
+  overflow-x: clip;
+  overscroll-behavior-x: none;
   color: #17202a;
   background: #f7fafd;
   font-family: var(--squad-font);
@@ -1777,6 +1779,7 @@ body {
 .consulta-grade {
   margin-top: 24px;
   padding: clamp(20px, 3.5vw, 28px);
+  scroll-margin-top: 24px;
   border: 1px solid #d8e2ee;
   border-radius: 14px;
   background: #fff;
@@ -1789,6 +1792,10 @@ body {
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
+}
+
+.consulta-grade-cabecalho > div {
+  min-width: 0;
 }
 
 .consulta-grade-etapa {
@@ -1850,6 +1857,7 @@ body {
   display: block;
   border-radius: 10px;
   cursor: pointer;
+  touch-action: manipulation;
 }
 
 .consulta-grade-card:focus-within {
@@ -2031,6 +2039,8 @@ body {
   background: #fff;
   font-size: 1.0625rem;
   font-weight: 700;
+  touch-action: manipulation;
+  white-space: normal;
   transition: background-color .15s ease, border-color .15s ease, color .15s ease, transform .1s ease;
 }
 
@@ -2118,6 +2128,7 @@ body {
   font-size: 1.0625rem;
   font-weight: 650;
   text-decoration: none;
+  touch-action: manipulation;
   transition: background-color .15s ease, border-color .15s ease, color .15s ease;
 }
 
@@ -2326,6 +2337,10 @@ body {
     width: auto;
     min-width: 170px;
   }
+
+  .consulta-grade-lista {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 @media (min-width: 1024px) {
@@ -2462,9 +2477,11 @@ body {
 
   .consulta-grade-contagem {
     padding: 8px 14px;
+    max-width: 100%;
   }
 
   .consulta-grade-lista {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 18px;
   }
 
@@ -2575,6 +2592,10 @@ body {
 
   .consulta-grade-card {
     padding: 10px 12px;
+  }
+
+  .consulta-grade-contagem {
+    max-width: 100%;
   }
 
   .consulta-grade-numero {
