@@ -31,17 +31,39 @@ public sealed class AdministrativeHttpTests : IClassFixture<SquadEstoqueWebAppli
             ("Nome", $"Tênis HTTP {marker}"),
             ("Marca", "Marca HTTP"),
             ("Categoria", "Esportivo"),
-            ("Cor", "Azul"),
-            ("NumeracoesGrade", "37, 38; 39 40"));
+            ("Cor", "Azul"));
 
-        var response = await client.PostAsync("/Produtos/Create", content);
+        var createResponse = await client.PostAsync("/Produtos/Create", content);
 
-        Assert.Equal(HttpStatusCode.Found, response.StatusCode);
-        Assert.Equal("/Produtos", response.Headers.Location?.OriginalString);
+        Assert.Equal(HttpStatusCode.Found, createResponse.StatusCode);
+        var gradePath = createResponse.Headers.Location?.OriginalString;
+        Assert.NotNull(gradePath);
+        Assert.StartsWith("/Produtos/AdicionarNumeracoes/", gradePath);
+        var productId = Guid.Parse(gradePath!.Split('/')[3].Split('?')[0]);
+
+        var gradePage = await client.GetAsync(gradePath);
+        var gradeToken = await ExtractAntiforgeryTokenAsync(gradePage);
+        var gradeValues = new List<(string Key, string Value)>();
+        for (var index = 0; index <= 10; index++)
+        {
+            var numeracao = (34 + index).ToString();
+            gradeValues.Add(($"Opcoes[{index}].Numeracao", numeracao));
+            gradeValues.Add(($"Opcoes[{index}].Quantidade", "0"));
+            if (numeracao is "37" or "38" or "39" or "40")
+            {
+                gradeValues.Add(($"Opcoes[{index}].Selecionada", "true"));
+            }
+        }
+        gradeValues.Add(("ProdutoId", productId.ToString()));
+        gradeValues.Add(("CadastroInicial", "true"));
+        using var gradeContent = Form(gradeToken, gradeValues.ToArray());
+        var gradeResponse = await client.PostAsync($"/Produtos/AdicionarNumeracoes/{productId}", gradeContent);
+
+        Assert.Equal(HttpStatusCode.Found, gradeResponse.StatusCode);
+        Assert.Equal($"/Produtos/Details/{productId}", gradeResponse.Headers.Location?.OriginalString);
         using var scope = _factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
-        var product = await context.Produto.Include(p => p.Skus)
-            .SingleAsync(p => p.Nome == $"Tênis HTTP {marker}");
+        var product = await context.Produto.Include(p => p.Skus).SingleAsync(p => p.Id == productId);
         Assert.True(product.Ativo);
         Assert.Equal(new[] { "37", "38", "39", "40" },
             product.Skus.OrderBy(s => s.Numeracao).Select(s => s.Numeracao));
@@ -119,7 +141,7 @@ public sealed class AdministrativeHttpTests : IClassFixture<SquadEstoqueWebAppli
         await LoginAsync(lojistaClient, "lojista@squad.com");
         var response = await lojistaClient.GetAsync("/Produtos/AdicionarNumeracoes/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Contains("Adicionar numerações", await response.Content.ReadAsStringAsync());
+        Assert.Contains("Numerações disponíveis", await response.Content.ReadAsStringAsync());
 
         using var vendedorClient = CreateClient();
         await LoginAsync(vendedorClient, "vendedor@squad.com");

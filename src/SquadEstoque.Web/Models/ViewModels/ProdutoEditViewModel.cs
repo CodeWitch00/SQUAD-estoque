@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace SquadEstoque.Web.Models;
 
@@ -23,4 +24,11 @@ public class ProdutoEditViewModel
     [Required(ErrorMessage = "Informe a cor")]
     [StringLength(80, ErrorMessage = "A cor não pode exceder 80 caracteres")]
     public string Cor { get; set; } = string.Empty;
+
+    public string? ImagemAtualUrl { get; set; }
+
+    [Display(Name = "Trocar foto")]
+    public IFormFile? Imagem { get; set; }
+
+    public bool RemoverImagem { get; set; }
 }

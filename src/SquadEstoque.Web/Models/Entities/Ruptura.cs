@@ -16,4 +16,7 @@ public class Ruptura
     public Usuario? Usuario { get; set; }
 
     public DateTime CriadoEm { get; set; } = DateTime.UtcNow;
+
+    public Guid? AtendimentoId { get; set; }
+    public Atendimento? Atendimento { get; set; }
 }

@@ -6,56 +6,71 @@
 
 <header class="admin-page-heading admin-form-heading product-form-heading">
     <div>
-        <h1>Cadastrar produto e grade</h1>
-        <p class="admin-page-intro">Informe o modelo e as numerações para criar os SKUs com saldo inicial zero.</p>
+        <a asp-action="Index" class="btn btn-link px-0 mb-2">← Voltar ao catálogo</a>
+        <h1>Novo produto</h1>
+        <p class="admin-page-intro">Preencha os dados do modelo. Depois, você cadastra as numerações e os saldos disponíveis.</p>
     </div>
 </header>
 
+<nav class="produto-cadastro-opcoes" aria-label="Opções de cadastro">
+    <a asp-controller="EntradasFiscais" asp-action="Importar" class="produto-cadastro-opcao">
+        <span class="produto-cadastro-opcao-icone" aria-hidden="true">⇧</span>
+        <span><strong>Importar XML da NF-e</strong><small>Preencha os produtos e quantidades a partir da nota</small></span>
+        <span aria-hidden="true">›</span>
+    </a>
+</nav>
+
 <div class="admin-form-layout">
-    <section class="admin-form-surface" aria-label="Formulário de cadastro de produto e grade">
-        <form asp-action="Create" method="post" class="admin-form">
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+    <section class="admin-form-surface" aria-label="Cadastro manual de produto">
+        <form asp-action="Create" method="post" enctype="multipart/form-data" class="admin-form produto-form-rapido">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
 
-                    <div class="mb-3">
-                        <label asp-for="Nome" class="form-label"></label>
-                        <input asp-for="Nome" class="form-control" placeholder="ex: Tênis Casual Run" autofocus />
-                        <span asp-validation-for="Nome" class="text-danger small"></span>
+            <fieldset class="produto-form-secao">
+                <legend>1. Dados do modelo</legend>
+                <div class="mb-3">
+                    <label asp-for="Nome" class="form-label"></label>
+                    <input asp-for="Nome" class="form-control form-control-lg" placeholder="Ex.: Tênis Casual Run" autofocus />
+                    <span asp-validation-for="Nome" class="text-danger small"></span>
+                </div>
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <label asp-for="Marca" class="form-label"></label>
+                        <input asp-for="Marca" class="form-control" placeholder="Ex.: Olympikus" list="marcas-sugeridas" />
+                        <datalist id="marcas-sugeridas">@foreach (string marca in ViewBag.MarcasSugeridas ?? new List<string>()) { <option value="@marca"></option> }</datalist>
+                        <span asp-validation-for="Marca" class="text-danger small"></span>
                     </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label asp-for="Marca" class="form-label"></label>
-                            <input asp-for="Marca" class="form-control" placeholder="ex: Olympikus" />
-                            <span asp-validation-for="Marca" class="text-danger small"></span>
-                        </div>
-                        <div class="col-md-6">
-                            <label asp-for="Categoria" class="form-label"></label>
-                            <input asp-for="Categoria" class="form-control" placeholder="ex: Tênis" />
-                            <span asp-validation-for="Categoria" class="text-danger small"></span>
-                        </div>
+                    <div class="col-12 col-md-6">
+                        <label asp-for="Categoria" class="form-label"></label>
+                        <input asp-for="Categoria" class="form-control" placeholder="Ex.: Tênis" list="categorias-sugeridas" />
+                        <datalist id="categorias-sugeridas">@foreach (string categoria in ViewBag.CategoriasSugeridas ?? new List<string>()) { <option value="@categoria"></option> }</datalist>
+                        <span asp-validation-for="Categoria" class="text-danger small"></span>
                     </div>
-
-                    <div class="mb-3">
+                    <div class="col-12">
                         <label asp-for="Cor" class="form-label"></label>
-                        <input asp-for="Cor" class="form-control" placeholder="ex: Preto/Cinza" />
+                        <input asp-for="Cor" class="form-control" placeholder="Ex.: Preto com branco" />
                         <span asp-validation-for="Cor" class="text-danger small"></span>
                     </div>
+                </div>
+            </fieldset>
 
-                    <div class="mb-4">
-                        <label asp-for="NumeracoesGrade" class="form-label"></label>
-                        <input asp-for="NumeracoesGrade" class="form-control" placeholder="ex: 37, 38, 39, 40, 41" />
-                        <div class="form-text">Informe as numerações da grade separadas por vírgula. O sistema gerará os SKUs automaticamente com saldo 0.</div>
-                        <span asp-validation-for="NumeracoesGrade" class="text-danger small"></span>
-                    </div>
+            <fieldset class="produto-form-secao">
+                <legend>2. Foto <span class="produto-opcional">opcional</span></legend>
+                <label asp-for="Imagem" class="form-label">Adicionar foto do calçado</label>
+                <input asp-for="Imagem" class="form-control form-control-lg" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="foto-produto-ajuda" data-preview-input="foto-produto-preview" />
+                <span asp-validation-for="Imagem" class="text-danger small"></span>
+                <div id="foto-produto-ajuda" class="form-text">Opcional. No celular, abra o seletor para tirar uma foto ou escolher uma imagem da galeria. JPG, PNG ou WebP · até 2 MB. Você verá a prévia antes de salvar.</div>
+                <img id="foto-produto-preview" class="produto-foto-preview" alt="Prévia da foto do produto" hidden />
+            </fieldset>
 
-                    <div class="admin-form-actions">
-                        <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
-                        <button type="submit" class="btn btn-primary">Salvar Produto e Grade</button>
-                    </div>
+            <div class="admin-form-actions">
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-primary btn-lg">Salvar e cadastrar grade</button>
+            </div>
         </form>
     </section>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/produto-form.js" asp-append-version="true"></script>
 }

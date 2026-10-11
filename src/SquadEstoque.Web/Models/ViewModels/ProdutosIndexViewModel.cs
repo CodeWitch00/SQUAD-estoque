@@ -5,6 +5,7 @@ namespace SquadEstoque.Web.Models;
 public class ProdutosIndexViewModel
 {
     public IReadOnlyList<Produto> Produtos { get; set; } = new List<Produto>();
+    public IReadOnlySet<Guid> ProdutosComHistorico { get; set; } = new HashSet<Guid>();
     public IReadOnlyList<string> Marcas { get; set; } = new List<string>();
     public IReadOnlyList<string> Categorias { get; set; } = new List<string>();
 

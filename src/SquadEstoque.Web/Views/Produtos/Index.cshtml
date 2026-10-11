@@ -13,8 +13,19 @@
         <h1>Catálogo de Produtos</h1>
         <p class="admin-page-intro">Consulte os modelos, as numerações e o estado de cada produto.</p>
     </div>
-    <a asp-action="Create" class="btn btn-primary product-create-button"><span aria-hidden="true">+</span> Novo produto</a>
+    <div class="d-flex flex-wrap gap-2">
+        <a asp-action="Create" class="btn btn-primary product-create-button"><span aria-hidden="true">+</span> Cadastro Produto</a>
+    </div>
 </div>
+
+@if (TempData["MensagemSucesso"] is string mensagemSucesso)
+{
+    <div class="alert alert-success" role="status">@mensagemSucesso</div>
+}
+@if (TempData["MensagemErro"] is string mensagemErro)
+{
+    <div class="alert alert-warning" role="alert">@mensagemErro</div>
+}
 
 <form asp-action="Index" method="get" class="product-filter-surface" aria-label="Buscar e filtrar produtos">
     <div class="product-filter-search">
@@ -102,7 +113,15 @@ else
                 @foreach (var item in Model.Produtos)
                 {
                     <tr class="@(!item.Ativo ? "text-muted opacity-75" : "")">
-                        <td class="product-model">@item.Nome</td>
+                        <td class="product-model">
+                            <div class="d-flex align-items-center gap-2">
+                                @if (!string.IsNullOrWhiteSpace(item.ImagemUrl))
+                                {
+                                    <img class="consulta-produto-foto consulta-produto-foto--mini" src="@item.ImagemUrl" alt="" loading="lazy" />
+                                }
+                                <span>@item.Nome</span>
+                            </div>
+                        </td>
                         <td>@item.Marca</td>
                         <td>@item.Categoria</td>
                         <td>@item.Cor</td>
@@ -131,6 +150,13 @@ else
                                         @(item.Ativo ? "Desativar" : "Ativar")
                                     </button>
                                 </form>
+                                @if (!Model.ProdutosComHistorico.Contains(item.Id))
+                                {
+                                    <form asp-action="Excluir" asp-route-id="@item.Id" method="post" class="d-inline"
+                                          onsubmit="return confirm('Excluir este produto e sua grade? Essa ação não pode ser desfeita.');">
+                                        <button type="submit" class="btn btn-sm product-action-delete">Excluir</button>
+                                    </form>
+                                }
                             </div>
                         </td>
                     </tr>

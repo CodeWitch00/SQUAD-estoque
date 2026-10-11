@@ -16,6 +16,10 @@ public class EstoqueContext : DbContext
     public DbSet<Sku> Sku { get; set; } = default!;
     public DbSet<Movimentacao> Movimentacao { get; set; } = default!;
     public DbSet<Ruptura> Ruptura { get; set; } = default!;
+    public DbSet<Atendimento> Atendimento { get; set; } = default!;
+    public DbSet<EntradaFiscal> EntradaFiscal { get; set; } = default!;
+    public DbSet<ItemEntradaFiscal> ItemEntradaFiscal { get; set; } = default!;
+    public DbSet<VinculoProdutoFornecedor> VinculoProdutoFornecedor { get; set; } = default!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -44,6 +48,38 @@ public class EstoqueContext : DbContext
 
         modelBuilder.Entity<Movimentacao>()
             .ToTable(t => t.HasCheckConstraint("chk_movimentacao_tipo", "Tipo IN (0, 1, 2)"));
+
+        modelBuilder.Entity<Atendimento>()
+            .ToTable(t =>
+            {
+                t.HasCheckConstraint("chk_atendimento_status", "Status IN (0, 1)");
+                t.HasCheckConstraint("chk_atendimento_resultado", "Resultado IS NULL OR Resultado IN (0, 1, 2)");
+                t.HasCheckConstraint("chk_atendimento_saldo", "SaldoConsultado IS NULL OR SaldoConsultado >= 0");
+                t.HasCheckConstraint("chk_atendimento_conclusao",
+                    "(Status = 0 AND Resultado IS NULL AND ConcluidoEm IS NULL) OR " +
+                    "(Status = 1 AND Resultado IS NOT NULL AND ConcluidoEm IS NOT NULL)");
+                t.HasCheckConstraint("chk_atendimento_sku_resultado",
+                    "Resultado IS NULL OR Resultado = 2 OR SkuId IS NOT NULL");
+            });
+
+        modelBuilder.Entity<Atendimento>()
+            .HasIndex(a => new { a.UsuarioId, a.Status, a.CriadoEm });
+
+        modelBuilder.Entity<Movimentacao>()
+            .HasIndex(m => m.AtendimentoId)
+            .IsUnique();
+
+        modelBuilder.Entity<Ruptura>()
+            .HasIndex(r => r.AtendimentoId)
+            .IsUnique();
+
+        modelBuilder.Entity<EntradaFiscal>()
+            .HasIndex(e => e.ChaveAcesso)
+            .IsUnique();
+
+        modelBuilder.Entity<VinculoProdutoFornecedor>()
+            .HasIndex(v => new { v.CnpjFornecedor, v.CodigoFornecedor })
+            .IsUnique();
 
         // Relacionamentos e chaves estrangeiras com deleção restritiva para preservar histórico (RN-03, RN-06)
         modelBuilder.Entity<Sku>()
@@ -74,6 +110,66 @@ public class EstoqueContext : DbContext
             .HasOne(r => r.Usuario)
             .WithMany()
             .HasForeignKey(r => r.UsuarioId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Atendimento>()
+            .HasOne(a => a.Usuario)
+            .WithMany()
+            .HasForeignKey(a => a.UsuarioId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Atendimento>()
+            .HasOne(a => a.Produto)
+            .WithMany()
+            .HasForeignKey(a => a.ProdutoId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Atendimento>()
+            .HasOne(a => a.Sku)
+            .WithMany()
+            .HasForeignKey(a => a.SkuId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Movimentacao>()
+            .HasOne(m => m.Atendimento)
+            .WithOne()
+            .HasForeignKey<Movimentacao>(m => m.AtendimentoId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Ruptura>()
+            .HasOne(r => r.Atendimento)
+            .WithOne()
+            .HasForeignKey<Ruptura>(r => r.AtendimentoId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<EntradaFiscal>()
+            .HasOne(e => e.Usuario)
+            .WithMany()
+            .HasForeignKey(e => e.UsuarioId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ItemEntradaFiscal>()
+            .HasOne(i => i.EntradaFiscal)
+            .WithMany(e => e.Itens)
+            .HasForeignKey(i => i.EntradaFiscalId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<ItemEntradaFiscal>()
+            .HasOne(i => i.Produto)
+            .WithMany()
+            .HasForeignKey(i => i.ProdutoId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ItemEntradaFiscal>()
+            .HasOne(i => i.Sku)
+            .WithMany()
+            .HasForeignKey(i => i.SkuId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<VinculoProdutoFornecedor>()
+            .HasOne(v => v.Sku)
+            .WithMany()
+            .HasForeignKey(v => v.SkuId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

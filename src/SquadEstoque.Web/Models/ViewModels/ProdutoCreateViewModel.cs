@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace SquadEstoque.Web.Models;
 
@@ -21,7 +22,6 @@ public class ProdutoCreateViewModel
     [StringLength(80, ErrorMessage = "A cor não pode exceder 80 caracteres")]
     public string Cor { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Informe as numerações da grade (ex: 37, 38, 39)")]
-    [Display(Name = "Grade de Numerações")]
-    public string NumeracoesGrade { get; set; } = string.Empty;
+    [Display(Name = "Foto do modelo")]
+    public IFormFile? Imagem { get; set; }
 }
