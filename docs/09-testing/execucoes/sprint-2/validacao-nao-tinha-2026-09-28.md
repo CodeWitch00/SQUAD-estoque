@@ -40,16 +40,16 @@ Nenhuma movimentação criada. Os registros são vinculados ao vendedor autentic
 
 ### Seleção mobile e foco
 
-![Seleção mobile e foco](evidencias/nao-tinha/01-mobile-selecao.png)
+![Seleção mobile e foco](../../evidencias/sprint-2/nao-tinha/01-mobile-selecao.png)
 ### Registro do número 39 com saldo positivo
 
-![Registro do número 39 com saldo positivo](evidencias/nao-tinha/02-mobile-registrado.png)
+![Registro do número 39 com saldo positivo](../../evidencias/sprint-2/nao-tinha/02-mobile-registrado.png)
 ### Registro do número 37 com saldo zero
 
-![Registro do número 37 com saldo zero](evidencias/nao-tinha/03-mobile-saldo-zero.png)
+![Registro do número 37 com saldo zero](../../evidencias/sprint-2/nao-tinha/03-mobile-saldo-zero.png)
 ### Desktop e foco de teclado
 
-![Desktop e foco de teclado](evidencias/nao-tinha/04-desktop-foco.png)
+![Desktop e foco de teclado](../../evidencias/sprint-2/nao-tinha/04-desktop-foco.png)
 ### Envio em processamento
 
-![Envio em processamento](evidencias/nao-tinha/05-mobile-processando.png)
+![Envio em processamento](../../evidencias/sprint-2/nao-tinha/05-mobile-processando.png)

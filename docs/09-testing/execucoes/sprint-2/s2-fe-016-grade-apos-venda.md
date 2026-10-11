@@ -39,9 +39,9 @@ Produto fictício Runner S2-FE-016, grade inicial: 37=0, 38=1, 39=3, 40=5.
 
 As capturas registram a aplicação real após as vendas:
 
-- [Saldo disponível no desktop](evidencias/s2-fe-016/desktop-saldo-disponivel.png)
-- [Último par no mobile](evidencias/s2-fe-016/mobile-ultimo-par.png)
-- [Saldo zero no mobile](evidencias/s2-fe-016/mobile-saldo-zero.png)
+- [Saldo disponível no desktop](../../evidencias/sprint-2/s2-fe-016/desktop-saldo-disponivel.png)
+- [Último par no mobile](../../evidencias/sprint-2/s2-fe-016/mobile-ultimo-par.png)
+- [Saldo zero no mobile](../../evidencias/sprint-2/s2-fe-016/mobile-saldo-zero.png)
 
 ## Testes automatizados
 

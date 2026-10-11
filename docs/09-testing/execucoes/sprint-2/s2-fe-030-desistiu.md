@@ -44,10 +44,10 @@ essa mesma suíte no job frontend-tests.
 
 ## Capturas
 
-![Produto em smartphone](evidencias/s2-fe-030/smartphone-produto.jpg)
-![Nova consulta em smartphone](evidencias/s2-fe-030/smartphone-nova-consulta.jpg)
-![Produto em desktop](evidencias/s2-fe-030/desktop-produto.jpg)
-![Nova consulta em desktop](evidencias/s2-fe-030/desktop-nova-consulta.jpg)
+![Produto em smartphone](../../evidencias/sprint-2/s2-fe-030/smartphone-produto.jpg)
+![Nova consulta em smartphone](../../evidencias/sprint-2/s2-fe-030/smartphone-nova-consulta.jpg)
+![Produto em desktop](../../evidencias/sprint-2/s2-fe-030/desktop-produto.jpg)
+![Nova consulta em desktop](../../evidencias/sprint-2/s2-fe-030/desktop-nova-consulta.jpg)
 
 ## Entrega
 

@@ -19,11 +19,11 @@ Especificar os cenários positivos, negativos, de permissão, concorrência e co
 
 Fontes:
 
-- [SRS](../02-requisitos/srs.md): RF-02, RF-03, RF-10 a RF-20, RNF-01, RNF-02, RNF-06, RNF-07 e RN-02, RN-05 a RN-07;
-- [casos de uso](../02-requisitos/casos-de-uso.md): UC-02 a UC-06 e UC-S2 a UC-S5;
-- [regras do domínio](../01-negocio/dominio.md): RN-02, RN-05, RN-06 e RN-07;
-- [inventário de telas e navegação](../05-ux/inventario-telas-e-mapa-navegacao.md): VEN-01 a VEN-06;
-- [plano de testes](plano-de-testes.md): UT-06 a UT-10, IT-18 a IT-29 e E2E-03 a E2E-05;
+- [SRS](../../02-requisitos/srs.md): RF-02, RF-03, RF-10 a RF-20, RNF-01, RNF-02, RNF-06, RNF-07 e RN-02, RN-05 a RN-07;
+- [casos de uso](../../02-requisitos/casos-de-uso.md): UC-02 a UC-06 e UC-S2 a UC-S5;
+- [regras do domínio](../../01-negocio/dominio.md): RN-02, RN-05, RN-06 e RN-07;
+- [inventário de telas e navegação](../../05-ux/inventario-telas-e-mapa-navegacao.md): VEN-01 a VEN-06;
+- [plano de testes](../plano-de-testes.md): UT-06 a UT-10, IT-18 a IT-29 e E2E-03 a E2E-05;
 - [testes não funcionais](especificacao-testes-nao-funcionais.md): NFT-MOB-01 a NFT-MOB-05 e NFT-PERF-01 a NFT-PERF-03.
 
 ## 3. Estado da implementação e limites
@@ -228,7 +228,7 @@ Cada teste automatizado deve criar sua própria massa, controlar data/hora e nã
 - **Saída esperada:** exatamente uma Ruptura é criada com SKU-05, USR-VEN-01 e data/hora; saldo permanece 5; nenhuma movimentação é criada; confirmação é exibida.
 - **Resultado obtido:** Para saldos iniciais 0, 1 e 3, exatamente uma Ruptura foi acrescentada com SKU, vendedor e data esperados; todos os SKUs e todas as movimentações permaneceram idênticos.
 - **Status de execução:** Aprovado em 29/09/2026.
-- **Evidência:** [S2-BE-021 — Preservar saldo na ruptura](s2-be-021-preservar-saldo-ruptura.md).
+- **Evidência:** [S2-BE-021 — Preservar saldo na ruptura](../execucoes/sprint-2/s2-be-021-preservar-saldo-ruptura.md).
 
 ### VEN-RUP-02 — Rejeitar ruptura sem SKU válido
 

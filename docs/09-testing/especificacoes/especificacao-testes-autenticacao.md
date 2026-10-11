@@ -4,13 +4,13 @@
 
 Esta especificação define os testes funcionais e de integração para autenticação,
 manutenção de sessão e autorização por perfil do SQUAD Estoque. Ela complementa o
-[plano de testes](plano-de-testes.md): descreve o comportamento verificável, mas não
+[plano de testes](../plano-de-testes.md): descreve o comportamento verificável, mas não
 reproduz a implementação dos testes automatizados.
 
 | Artefato de origem | Itens cobertos |
 |---|---|
-| [SRS](../02-requisitos/srs.md) | RF-01, RF-02, RF-03, RF-04 e RNF-04 |
-| [Casos de uso](../02-requisitos/casos-de-uso.md) | UC-01 — Realizar login |
+| [SRS](../../02-requisitos/srs.md) | RF-01, RF-02, RF-03, RF-04 e RNF-04 |
+| [Casos de uso](../../02-requisitos/casos-de-uso.md) | UC-01 — Realizar login |
 | Implementação atual | Cookie de autenticação, validade de 12 horas e perfis `LOJISTA` e `VENDEDOR` |
 
 **Fora do escopo:** cadastro de usuários, recuperação de senha, troca de senha e

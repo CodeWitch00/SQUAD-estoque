@@ -45,7 +45,7 @@ Login realizado com `vendedor@squad.com` em minúsculas. A busca por `Tênis` re
 
 ## Foto fornecida pelo solicitante
 
-![Venda não registrada por saldo indisponível](evidencias/venda-sem-saldo/venda-nao-registrada.jpeg)
+![Venda não registrada por saldo indisponível](../../evidencias/sprint-2/venda-sem-saldo/venda-nao-registrada.jpeg)
 
 A foto mostra a grade do Tênis Street Flex, SKU base STR-FLX-BR, o aviso **Venda não registrada** e a mensagem **Não foi possível registrar a venda: saldo indisponível.** Também mostra as ações Vendeu, Não tinha e Desistiu.
 

@@ -4,7 +4,7 @@
 
 Esta especificação detalha como avaliar os requisitos não funcionais do SQUAD
 Estoque relativos a compatibilidade mobile, desempenho e segurança. Ela complementa
-o [plano de testes](plano-de-testes.md) e não substitui os testes de autenticação e
+o [plano de testes](../plano-de-testes.md) e não substitui os testes de autenticação e
 perfis já documentados em
 [especificacao-testes-autenticacao.md](especificacao-testes-autenticacao.md).
 
@@ -55,7 +55,7 @@ sobreposição ou controle inacessível; os saldos e estados das numerações fo
 exibidos corretamente.
 
 O relatório completo está em
-[`validacao-fluxo-grade-smartphone-2026-09-18.md`](validacao-fluxo-grade-smartphone-2026-09-18.md).
+[`validacao-fluxo-grade-smartphone-2026-09-18.md`](../execucoes/sprint-2/validacao-fluxo-grade-smartphone-2026-09-18.md).
 Essa validação técnica não substitui a rodada com cinco vendedores sem treinamento
 prevista em NFT-MOB-05.
 
@@ -95,7 +95,7 @@ equivalem a uma auditoria completa ou teste de invasão.
 ## 6. Referências à automação existente e critérios de aceite
 
 O arquivo
-[`AuthenticationAuthorizationTests.cs`](../../tests/SquadEstoque.Web.Tests/AuthenticationAuthorizationTests.cs)
+[`AuthenticationAuthorizationTests.cs`](../../../tests/SquadEstoque.Web.Tests/AuthenticationAuthorizationTests.cs)
 já cobre o formulário de login, credenciais inválidas, autorização de `LOJISTA` e
 `VENDEDOR`, rota proibida, política BCrypt e logout. Ele é referência para
 NFT-SEG-01, NFT-SEG-02 e parte de NFT-SEG-06, sem duplicar seus cenários.

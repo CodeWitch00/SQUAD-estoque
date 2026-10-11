@@ -37,7 +37,7 @@ verificada para evitar confundir acesso negado com sessão anônima.
 - Revisão manual do diff: conferidos requisitos, POST real, identidade, token, redirecionamentos e leitura persistida; nenhum arquivo de produção modificado.
 - O cartão fornecido não especifica roteiro manual adicional. Não foi executado novo fluxo em navegador; a evidência abaixo é um resumo visual do TRX real.
 
-![Resultados locais](evidencias/s2-qa-025/resultados.png)
+![Resultados locais](../../evidencias/sprint-2/s2-qa-025/resultados.png)
 
 O TRX completo é gerado em `tests/SquadEstoque.Web.Tests/TestResults/s2-qa-025.trx`.
 A imagem contém apenas resultados, sem cookies ou credenciais.

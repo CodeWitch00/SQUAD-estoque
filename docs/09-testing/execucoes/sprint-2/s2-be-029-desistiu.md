@@ -64,7 +64,7 @@ em diretório temporário ignorado; sem usar Azure ou alterar o banco habitual.
    e saldos 0/1/5 preservados.
 7. Conferir diretamente o SQLite isolado: Movimentacao = 0 e Ruptura = 0.
 
-Evidência: [consulta vazia após Desistiu](evidencias/desistiu/nova-consulta.jpg).
+Evidência: [consulta vazia após Desistiu](../../evidencias/sprint-2/desistiu/nova-consulta.jpg).
 
 ## Revisão e integração
 

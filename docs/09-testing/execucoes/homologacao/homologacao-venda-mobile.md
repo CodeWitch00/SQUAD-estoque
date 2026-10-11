@@ -20,7 +20,7 @@
 | 7. Conferir foco e alvo de toque | Foco visível e ordem útil; campos, cards, ações e nova consulta acionáveis com o dedo | Não executado em aparelho com toque | Pendente |
 | 8. Conferir layout durante todos os estados | Sem sobreposição, cortes ou rolagem horizontal em busca, grade, mensagens e nova consulta | Apenas o login foi visto na captura; os demais estados não foram abertos | Pendente |
 
-**Evidência obtida:** [login em 390 × 844 px](evidencias/homologacao-venda-mobile/login-firefox-390x844.png).
+**Evidência obtida:** [login em 390 × 844 px](../../evidencias/homologacao-venda-mobile/login-firefox-390x844.png).
 
 ## Observação para a tentativa com saldo zero
 
