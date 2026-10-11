@@ -22,12 +22,62 @@ public sealed class EstoqueController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Consulta(string? termo, Guid? produtoId)
+    public async Task<IActionResult> Consulta(string? termo, Guid? produtoId, Guid? atendimentoId)
     {
+        var usuarioId = GetAuthenticatedUserId();
+        if (!usuarioId.HasValue)
+        {
+            return Challenge();
+        }
+
         var viewModel = new ConsultaEstoqueViewModel
         {
             Termo = termo?.Trim() ?? string.Empty
         };
+        await CarregarAtendimentosPendentesAsync(viewModel, usuarioId.Value);
+
+        if (atendimentoId.HasValue)
+        {
+            var atendimento = await _context.Atendimento
+                .AsNoTracking()
+                .Include(a => a.Produto)
+                .ThenInclude(p => p!.Skus)
+                .FirstOrDefaultAsync(a => a.Id == atendimentoId.Value &&
+                    a.UsuarioId == usuarioId.Value && a.Status == StatusAtendimento.PENDENTE);
+
+            if (atendimento?.Produto is null)
+            {
+                viewModel.MensagemEstado = "Atendimento pendente não encontrado.";
+                return View(viewModel);
+            }
+
+            var produto = new ProdutoConsultaResultadoViewModel
+            {
+                Id = atendimento.Produto.Id,
+                Nome = atendimento.Produto.Nome,
+                Marca = atendimento.Produto.Marca,
+                Categoria = atendimento.Produto.Categoria,
+                Cor = atendimento.Produto.Cor,
+                ImagemUrl = atendimento.Produto.ImagemUrl,
+                Skus = atendimento.Produto.Skus
+                    .Where(sku => sku.Ativo)
+                    .OrderBy(sku => sku.Numeracao)
+                    .Select(sku => new SkuConsultaResultadoViewModel
+                    {
+                        Id = sku.Id,
+                        Numeracao = sku.Numeracao,
+                        SaldoAtual = sku.SaldoAtual
+                    })
+                    .ToList()
+            };
+            viewModel.AtendimentoId = atendimento.Id;
+            viewModel.ProdutoSelecionadoId = produto.Id;
+            viewModel.SkuSelecionadoId = atendimento.SkuId;
+            viewModel.ModeloTotalmenteIndisponivel = produto.Skus.Count == 0 ||
+                produto.Skus.All(sku => sku.SaldoAtual == 0);
+            viewModel.Resultados.Add(produto);
+            return View(viewModel);
+        }
 
         if (viewModel.Termo.Length == 0)
         {
@@ -79,7 +129,8 @@ public sealed class EstoqueController : Controller
                 Nome = produto.Nome,
                 Marca = produto.Marca,
                 Categoria = produto.Categoria,
-                Cor = produto.Cor
+                Cor = produto.Cor,
+                ImagemUrl = produto.ImagemUrl
             })
             .ToListAsync();
 
@@ -102,7 +153,7 @@ public sealed class EstoqueController : Controller
 
         if (produtoSelecionado is not null)
         {
-            viewModel.ProdutoSelecionadoId = produtoId;
+            viewModel.ProdutoSelecionadoId = produtoSelecionado.Id;
             produtoSelecionado.Skus = await _context.Sku
                 .AsNoTracking()
                 .Where(sku => sku.ProdutoId == produtoSelecionado.Id && sku.Ativo)
@@ -114,6 +165,9 @@ public sealed class EstoqueController : Controller
                     SaldoAtual = sku.SaldoAtual
                 })
                 .ToListAsync();
+            viewModel.ModeloTotalmenteIndisponivel = produtoSelecionado.Skus.Count == 0 ||
+                produtoSelecionado.Skus.All(sku => sku.SaldoAtual == 0);
+
         }
 
         return View(viewModel);
@@ -121,12 +175,92 @@ public sealed class EstoqueController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult RegistrarDesistiu()
+    public async Task<IActionResult> SelecionarSku(Guid? atendimentoId, Guid skuId)
     {
-        if (!GetAuthenticatedUserId().HasValue)
+        var usuarioId = GetAuthenticatedUserId();
+        if (!usuarioId.HasValue)
         {
             return Challenge();
         }
+
+        var atendimento = atendimentoId.HasValue
+            ? await _context.Atendimento.FirstOrDefaultAsync(a =>
+                a.Id == atendimentoId.Value && a.UsuarioId == usuarioId.Value &&
+                a.Status == StatusAtendimento.PENDENTE)
+            : null;
+        if (atendimentoId.HasValue && atendimento is null)
+        {
+            return BadRequest(new { mensagem = "O atendimento não está pendente ou não pertence ao vendedor." });
+        }
+
+        var sku = await _context.Sku.AsNoTracking().FirstOrDefaultAsync(s =>
+            s.Id == skuId && (!atendimentoId.HasValue || s.ProdutoId == atendimento!.ProdutoId) && s.Ativo &&
+            s.Produto != null && s.Produto.Ativo);
+        if (sku is null)
+        {
+            return BadRequest(new { mensagem = "A numeração selecionada não pertence ao atendimento." });
+        }
+
+        if (sku.SaldoAtual <= 0)
+        {
+            return Ok(new
+            {
+                atendimentoId = atendimento?.Id,
+                skuId = sku.Id,
+                numeracao = sku.Numeracao,
+                saldoConsultado = sku.SaldoAtual,
+                persistido = false
+            });
+        }
+
+        if (atendimento is null)
+        {
+            atendimento = new Atendimento
+            {
+                Id = Guid.NewGuid(),
+                UsuarioId = usuarioId.Value,
+                ProdutoId = sku.ProdutoId,
+                Status = StatusAtendimento.PENDENTE,
+                CriadoEm = DateTime.UtcNow
+            };
+            _context.Atendimento.Add(atendimento);
+        }
+        atendimento.SkuId = sku.Id;
+        atendimento.SaldoConsultado = sku.SaldoAtual;
+        await _context.SaveChangesAsync();
+
+        return Ok(new
+        {
+            atendimentoId = atendimento.Id,
+            skuId = sku.Id,
+            numeracao = sku.Numeracao,
+            saldoConsultado = sku.SaldoAtual,
+            persistido = true
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RegistrarDesistiu(Guid atendimentoId)
+    {
+        var usuarioId = GetAuthenticatedUserId();
+        if (!usuarioId.HasValue)
+        {
+            return Challenge();
+        }
+
+        var atendimento = await _context.Atendimento.FirstOrDefaultAsync(a =>
+            a.Id == atendimentoId && a.UsuarioId == usuarioId.Value &&
+            a.Status == StatusAtendimento.PENDENTE);
+        if (atendimento is null)
+        {
+            return BadRequest(new { mensagem = "O atendimento não está pendente ou não pertence ao vendedor." });
+        }
+
+        atendimento.Status = StatusAtendimento.CONCLUIDO;
+        atendimento.Resultado = ResultadoAtendimento.DESISTIU;
+        atendimento.ConcluidoEm = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
 
         return Ok(new
         {
@@ -139,7 +273,7 @@ public sealed class EstoqueController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Vender(Guid skuId, Guid produtoId)
+    public async Task<IActionResult> Vender(Guid skuId, Guid produtoId, Guid atendimentoId)
     {
         var usuarioId = GetAuthenticatedUserId();
         if (!usuarioId.HasValue)
@@ -169,7 +303,14 @@ public sealed class EstoqueController : Controller
                 return BadRequest(new { mensagem = "O SKU selecionado não está disponível para venda." });
             }
 
-            var resultado = await _context.RegistrarVendaRapidaAsync(skuId, usuarioId.Value);
+            var atendimento = await ObterOuCriarAtendimentoPendenteAsync(
+                atendimentoId, usuarioId.Value, produtoId);
+            if (atendimento is null)
+            {
+                return BadRequest(new { mensagem = "O atendimento não está pendente ou não pertence ao vendedor." });
+            }
+
+            var resultado = await _context.RegistrarVendaRapidaAsync(skuId, usuarioId.Value, atendimento.Id);
             if (resultado.Erro is not null)
             {
                 if (resultado.Conflito)
@@ -195,7 +336,7 @@ public sealed class EstoqueController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> RegistrarNaoTinha(Guid skuId, Guid produtoId)
+    public async Task<IActionResult> RegistrarNaoTinha(Guid skuId, Guid produtoId, Guid? atendimentoId)
     {
         var usuarioId = GetAuthenticatedUserId();
         if (!usuarioId.HasValue)
@@ -214,12 +355,20 @@ public sealed class EstoqueController : Controller
         }
 
         var skuDisponivel = await _context.Sku
-            .AnyAsync(sku => sku.Id == skuId && sku.ProdutoId == produtoId &&
+            .AsNoTracking()
+            .FirstOrDefaultAsync(sku => sku.Id == skuId && sku.ProdutoId == produtoId &&
                 sku.Ativo && sku.Produto != null && sku.Produto.Ativo);
 
-        if (!skuDisponivel)
+        if (skuDisponivel is null)
         {
             return BadRequest(new { mensagem = "A numeração selecionada não está disponível para registro." });
+        }
+
+        var atendimento = await ObterOuCriarAtendimentoPendenteAsync(
+            atendimentoId, usuarioId.Value, produtoId);
+        if (atendimento is null)
+        {
+            return BadRequest(new { mensagem = "O atendimento não está pendente ou não pertence ao vendedor." });
         }
 
         var ruptura = new Ruptura
@@ -227,9 +376,15 @@ public sealed class EstoqueController : Controller
             Id = Guid.NewGuid(),
             SkuId = skuId,
             UsuarioId = usuarioId.Value,
-            CriadoEm = DateTime.UtcNow
+            CriadoEm = DateTime.UtcNow,
+            AtendimentoId = atendimento.Id
         };
 
+        atendimento.SkuId = skuId;
+        atendimento.SaldoConsultado = skuDisponivel.SaldoAtual;
+        atendimento.Status = StatusAtendimento.CONCLUIDO;
+        atendimento.Resultado = ResultadoAtendimento.NAO_TINHA;
+        atendimento.ConcluidoEm = DateTime.UtcNow;
         _context.Ruptura.Add(ruptura);
         await _context.SaveChangesAsync();
 
@@ -240,6 +395,52 @@ public sealed class EstoqueController : Controller
     {
         var claimValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
         return Guid.TryParse(claimValue, out var id) ? id : null;
+    }
+
+    private async Task CarregarAtendimentosPendentesAsync(
+        ConsultaEstoqueViewModel viewModel, Guid usuarioId)
+    {
+        viewModel.AtendimentosPendentes = await _context.Atendimento
+            .AsNoTracking()
+            .Where(a => a.UsuarioId == usuarioId && a.Status == StatusAtendimento.PENDENTE)
+            .OrderByDescending(a => a.CriadoEm)
+            .Select(a => new AtendimentoPendenteViewModel
+            {
+                Id = a.Id,
+                ProdutoNome = a.Produto!.Nome,
+                ProdutoDetalhes = a.Produto.Marca + " · " + a.Produto.Cor,
+                ImagemUrl = a.Produto.ImagemUrl,
+                Numeracao = a.Sku != null ? a.Sku.Numeracao : null,
+                CriadoEm = a.CriadoEm
+            })
+            .ToListAsync();
+    }
+
+    private async Task<Atendimento?> ObterOuCriarAtendimentoPendenteAsync(
+        Guid? atendimentoId, Guid usuarioId, Guid produtoId)
+    {
+        if (atendimentoId.HasValue && atendimentoId.Value != Guid.Empty)
+        {
+            return await _context.Atendimento.FirstOrDefaultAsync(a =>
+                a.Id == atendimentoId.Value && a.UsuarioId == usuarioId &&
+                a.ProdutoId == produtoId && a.Status == StatusAtendimento.PENDENTE);
+        }
+
+        var produtoAtivo = await _context.Produto.AsNoTracking()
+            .AnyAsync(p => p.Id == produtoId && p.Ativo);
+        if (!produtoAtivo) return null;
+
+        var atendimento = new Atendimento
+        {
+            Id = Guid.NewGuid(),
+            UsuarioId = usuarioId,
+            ProdutoId = produtoId,
+            Status = StatusAtendimento.PENDENTE,
+            CriadoEm = DateTime.UtcNow
+        };
+        _context.Atendimento.Add(atendimento);
+        await _context.SaveChangesAsync();
+        return atendimento;
     }
 
     private static bool CorrespondeAoTermo(ProdutoConsultaResultadoViewModel produto, string termo)

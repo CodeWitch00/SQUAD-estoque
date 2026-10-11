@@ -31,4 +31,7 @@ public class Movimentacao
     public DateTime CriadoEm { get; set; } = DateTime.UtcNow;
 
     public string? Motivo { get; set; }
+
+    public Guid? AtendimentoId { get; set; }
+    public Atendimento? Atendimento { get; set; }
 }

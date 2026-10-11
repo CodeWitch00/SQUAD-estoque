@@ -87,6 +87,10 @@ if (!app.Environment.IsDevelopment() && !app.Environment.IsEnvironment("Testing"
 
 app.UseRouting();
 
+// Arquivos enviados em tempo de execução, como fotos de produtos, não constam
+// do manifesto de assets gerado durante o build.
+app.UseStaticFiles();
+
 app.UseAuthentication();
 app.UseAuthorization();
 

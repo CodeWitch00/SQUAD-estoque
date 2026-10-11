@@ -114,7 +114,9 @@ O sistema:
 | RF-17 | Quando o vendedor registrar resultado Vendeu, o sistema deve decrementar em 1 o saldo do SKU que estava sendo consultado.| 🔴 Obrigatório |
 | RF-18 | Quando o vendedor registrar resultado Não tinha, o sistema deve criar um registro de ruptura associado ao SKU consultado, sem alterar o saldo.| 🔴 Obrigatório |
 | RF-19 | Quando o vendedor registrar resultado Desistiu, o sistema não deve realizar nenhuma movimentação de estoque.| 🔴 Obrigatório |
-| RF-20 | O sistema não deve bloquear o vendedor. O registro de resultado é uma ação disponível, mas não obrigatória para continuar usando o sistema.| 🔴 Obrigatório |
+| RF-20 | O sistema não deve bloquear uma nova consulta. Abrir um modelo ou sua grade é apenas consulta; selecionar uma numeração com saldo inicia um atendimento pendente, vinculado ao SKU e ao saldo consultado, até o vendedor registrar Vendeu, Não tinha ou Desistiu. Selecionar uma numeração sem saldo não cria pendência; se houver pedido específico, Não tinha registra e conclui a demanda diretamente.| 🔴 Obrigatório |
+| RF-24 | O sistema deve permitir múltiplos atendimentos pendentes por vendedor e restaurar modelo, numeração selecionada e saldo consultado após atualização da página ou novo login. Ao retomar uma pendência, deve exibir somente a numeração daquele atendimento. A seleção de outro SKU disponível na mesma consulta atualiza a pendência existente, sem criar duplicata; numeração sem saldo não é associada pelo toque isolado.| 🔴 Obrigatório |
+| RF-25 | O sistema deve permitir ao lojista consultar atendimentos pendentes e concluídos com vendedor, modelo, SKU quando aplicável, saldo consultado, resultado e horários.| 🔴 Obrigatório |
 
 ---
 
@@ -125,6 +127,16 @@ O sistema:
 | RF-21 | O sistema deve exibir ao lojista quais SKUs estão com saldo zerado, agrupados por modelo.| 🔴 Obrigatório |
 | RF-22 | O sistema deve exibir ao lojista o histórico de rupturas registradas, contendo: modelo, numeração e quantidade de ocorrências de 'Não tinha'.| 🟡 Importante |
 | RF-23 | O sistema deve permitir que o lojista realize ajuste manual de saldo de qualquer SKU, registrando o motivo da operação.| 🔴 Obrigatório |
+
+### 4.7 Entrada de mercadorias por NF-e
+
+| Código | Descrição | Prioridade |
+|--------|----------|-----------|
+| RF-26 | O sistema deve permitir ao lojista importar manualmente o XML de uma NF-e e manter seus itens em rascunho, sem alterar o estoque.| 🔴 Obrigatório |
+| RF-27 | O sistema deve impedir a confirmação repetida da mesma chave de acesso.| 🔴 Obrigatório |
+| RF-28 | O lojista deve conferir e associar cada item a produto e numeração antes de confirmar a entrada.| 🔴 Obrigatório |
+| RF-29 | A confirmação deve criar produtos/SKUs quando necessário, incrementar os saldos e registrar as movimentações na mesma transação.| 🔴 Obrigatório |
+| RF-30 | O lojista pode associar ou trocar foto opcional do modelo pela câmera ou galeria no cadastro manual, edição ou conferência da NF-e; ausência de foto não bloqueia o cadastro.| 🟡 Importante |
 
 ---
 
@@ -153,6 +165,10 @@ O sistema:
 | **RN-05** | **Ruptura por declaração** | Registro ocorre apenas quando o vendedor seleciona 'Não tinha'. Saldo zerado não implica ruptura automática. | Ruptura só é criada pela ação explícita do vendedor. |
 | **RN-06** | **Ruptura associada a SKU específico** | Todo registro de ruptura deve referenciar obrigatoriamente um SKU (produto + numeração específica).Registros de ruptura sem SKU associado são inválidos | Campo `sku_id` é NOT NULL no banco de dados. |
 | **RN-07** | **Atomicidade nas saídas** | Leitura + validação + decremento devem ocorrer em uma única transação de banco de dados com nível de isolamento adequado. | Sem race condition; sem race condition entre dois vendedores simultâneos. Saldo nunca resulta em valor negativo mesmo sob concorrência.|
+| **RN-08** | **Atendimento auditável** | A seleção de uma numeração com saldo inicia um atendimento pendente vinculado ao vendedor e ao SKU. Apenas abrir o modelo/grade ou tocar em numeração sem saldo não cria pendência. O atendimento não pode ser excluído pelo vendedor e só pode ser concluído uma vez, com Vendeu, Não tinha ou Desistiu. | Pendências persistem entre consultas e logins; resultado, horários, saldo consultado e vínculos permanecem registrados. |
+| **RN-09** | **Resultado coerente com o atendimento** | Vendeu e Não tinha exigem SKU pertencente ao produto consultado. Vendeu deve concluir o atendimento na mesma transação da saída; Não tinha deve concluí-lo junto da ruptura. Em modelo totalmente sem saldo, Não tinha pode criar e concluir o atendimento diretamente. | Atendimentos informados que pertençam a outro vendedor, já estejam concluídos ou tenham SKU divergente são rejeitados. |
+| **RN-10** | **Entrada fiscal em duas etapas** | Importar o XML cria somente um rascunho. Produtos, SKUs, saldos e movimentações só podem ser alterados após confirmação explícita do lojista. | Cancelamento ou erro na conferência não altera o estoque. |
+| **RN-11** | **Idempotência da NF-e** | A chave de acesso identifica unicamente a entrada fiscal e não pode ser confirmada novamente. | Índice único e validação rejeitam importação duplicada. |
 
 --- 
 
@@ -160,8 +176,8 @@ O sistema:
 
 | Classificação | Critério | Itens |
 |--------------|---------|------|
-| 🔴 Obrigatório | Sistema não funciona sem. Bloqueia o MVP| RF-01 a RF-11, RF-13 a RF-23, RNF-01 a RNF-06, RN-01 a RN07|
-| 🟡 Importante | Agrega valor significativo. Deve entrar no MVP se possível.| RF-12, RF-22, RNF-07 |
+| 🔴 Obrigatório | Sistema não funciona sem. Bloqueia o MVP| RF-01 a RF-11, RF-13 a RF-29, RNF-01 a RNF-06, RN-01 a RN-11|
+| 🟡 Importante | Agrega valor significativo. Deve entrar no MVP se possível.| RF-12, RF-22, RF-30, RNF-07 |
 | 🟢 Desejável |  Entra em versões futuras.| Histórico detalhado, SKUs parados |
-| ❌ Fora de Escopo | Não faz parte do sistema | NF-e, PDV, financeiro, ERP, multi-loja |
+| ❌ Fora de Escopo | Não faz parte do sistema | Emissão fiscal, download automático da NF-e, DANFE/PDF/OCR, PDV, financeiro, ERP, multi-loja |
 

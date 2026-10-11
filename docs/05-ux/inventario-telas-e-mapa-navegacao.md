@@ -1,7 +1,7 @@
 # Inventário de telas e mapa de navegação do MVP
 
 **Escopo:** P1 : VENDEDOR e LOJISTA  
-**Fontes normativas:** [SRS](../02-requisitos/srs.md) (RF-01 a RF-23), [casos de uso](../02-requisitos/casos-de-uso.md) (UC-01 a UC-12) e [user stories](../02-requisitos/user-stories.md) (US-01 a US-13)  
+**Fontes normativas:** [SRS](../02-requisitos/srs.md) (RF-01 a RF-25), [casos de uso](../02-requisitos/casos-de-uso.md) (UC-01 a UC-12) e [user stories](../02-requisitos/user-stories.md) (US-01 a US-13)
 **Mapa visual:** [mapa-navegacao-mvp.svg](mapa-navegacao-mvp.svg)
 
 ## 1. Critério de classificação
@@ -10,7 +10,7 @@
 | --- | --- |
 | **Existente** | Há action GET e Razor View utilizável na baseline. Uma regra implementada apenas no domínio não torna a tela existente. |
 | **Pendente** | A interface é exigida por RF, UC ou US, mas não há action/view correspondente. |
-| **Legado fora do fluxo** | Há rota ou view no repositório, mas ela não pertence aos fluxos RF-01 a RF-23, UC-01 a UC-12 ou US-01 a US-13. |
+| **Legado fora do fluxo** | Há rota ou view no repositório, mas ela não pertence aos fluxos RF-01 a RF-25, UC-01 a UC-12 ou US-01 a US-13. |
 | **Apoio técnico** | Estado de interface necessário a segurança/erro, sem constituir funcionalidade de negócio independente. |
 
 “Vendeu”, “Não tinha” e “Desistiu” são inventariados como estados de interação da grade, e não como páginas administrativas independentes. Podem ser modal, confirmação ou feedback na própria grade, desde que mantenham os destinos e efeitos descritos abaixo.
@@ -57,7 +57,7 @@ Esta matriz descreve o fluxo-alvo. “Voltar” deve preservar a origem quando a
 | VEN-03 | Selecionar SKU e “Não tinha” | VEN-05 confirmação/feedback | VENDEDOR | Pendente |
 | VEN-05 | Ruptura registrada ou dispensar resultado | VEN-02 nova consulta | VENDEDOR | Pendente |
 | VEN-03 | “Desistiu” | VEN-06 e retorno à consulta | VENDEDOR | Pendente |
-| VEN-03 | Nova consulta sem informar resultado | VEN-02 | VENDEDOR | Pendente; obrigatório não bloquear |
+| VEN-03 | Consultar outro modelo sem informar resultado | VEN-02 com pendência visível | VENDEDOR | Não bloqueia e não apaga o atendimento anterior |
 | LOJ-01 | Produtos | LOJ-02 Produtos | LOJISTA | Tela existente; origem pendente |
 | LOJ-02 | Novo produto com grade | LOJ-03 Novo produto e grade | LOJISTA | Existente |
 | LOJ-03 | Salvar | LOJ-02 Produtos | LOJISTA | Existente |
@@ -100,7 +100,7 @@ Esta matriz descreve o fluxo-alvo. “Voltar” deve preservar a origem quando a
 | RF-05, RF-06, RF-07, RF-08 / UC-07, UC-08 / US-08, US-09 | LOJ-02, LOJ-03, LOJ-04. A geração e unicidade do SKU são efeitos do salvamento, não telas. |
 | RF-09, RF-10, RF-11, RF-12 / UC-09, UC-10 / US-10, US-11 | LOJ-04, LOJ-06, LOJ-07, LOJ-08, LOJ-09 e estados de erro; RF-12 está pendente e deve aparecer em VEN-03. |
 | RF-13, RF-14, RF-15 / UC-02, UC-03 / US-02, US-03 | VEN-01, VEN-02 e VEN-03. |
-| RF-16, RF-17, RF-18, RF-19, RF-20 / UC-04, UC-05, UC-06 / US-04, US-05, US-06, US-07 | VEN-04, VEN-05, VEN-06 e retorno não bloqueante a VEN-02. |
+| RF-16 a RF-20, RF-24, RF-25 / UC-04, UC-05, UC-06 / US-04, US-05, US-06, US-07 | VEN-04, VEN-05, VEN-06, retorno não bloqueante a VEN-02 e manutenção auditável das pendências. |
 | RF-21 / UC-11 / US-12 | LOJ-10. |
 | RF-22 / UC-12 / US-13 | LOJ-11. |
 | RF-23 / UC-10 / US-11 | LOJ-08 e retorno a LOJ-04. |

@@ -441,7 +441,7 @@ public sealed class EstoqueDomainPersistenceTests
         var result = await controller.AdicionarNumeracoes(data.Produto.Id, new AdicionarNumeracoesViewModel
         {
             ProdutoId = data.Produto.Id,
-            NumeracoesGrade = "41"
+            NumeracoesExtras = "41"
         });
 
         var redirect = Assert.IsType<RedirectToActionResult>(result);
@@ -464,7 +464,7 @@ public sealed class EstoqueDomainPersistenceTests
         var result = await controller.AdicionarNumeracoes(data.Produto.Id, new AdicionarNumeracoesViewModel
         {
             ProdutoId = data.Produto.Id,
-            NumeracoesGrade = "40, 41, 42"
+            NumeracoesExtras = "40, 41, 42"
         });
 
         Assert.IsType<RedirectToActionResult>(result);
@@ -486,7 +486,7 @@ public sealed class EstoqueDomainPersistenceTests
         var result = await controller.AdicionarNumeracoes(data.Produto.Id, new AdicionarNumeracoesViewModel
         {
             ProdutoId = data.Produto.Id,
-            NumeracoesGrade = numeracoes
+            NumeracoesExtras = numeracoes
         });
 
         Assert.IsType<ViewResult>(result);
@@ -506,7 +506,7 @@ public sealed class EstoqueDomainPersistenceTests
         var result = await controller.AdicionarNumeracoes(data.Produto.Id, new AdicionarNumeracoesViewModel
         {
             ProdutoId = data.Produto.Id,
-            NumeracoesGrade = "41, 41"
+            NumeracoesExtras = "41, 41"
         });
 
         Assert.IsType<ViewResult>(result);
@@ -525,7 +525,7 @@ public sealed class EstoqueDomainPersistenceTests
         var result = await controller.AdicionarNumeracoes(data.Produto.Id, new AdicionarNumeracoesViewModel
         {
             ProdutoId = data.Produto.Id,
-            NumeracoesGrade = "   "
+            NumeracoesExtras = "   "
         });
 
         Assert.IsType<ViewResult>(result);
@@ -544,7 +544,7 @@ public sealed class EstoqueDomainPersistenceTests
         var result = await controller.AdicionarNumeracoes(Guid.NewGuid(), new AdicionarNumeracoesViewModel
         {
             ProdutoId = Guid.NewGuid(),
-            NumeracoesGrade = "41"
+            NumeracoesExtras = "41"
         });
 
         Assert.IsType<NotFoundResult>(result);
@@ -561,7 +561,7 @@ public sealed class EstoqueDomainPersistenceTests
         await produtosController.AdicionarNumeracoes(data.Produto.Id, new AdicionarNumeracoesViewModel
         {
             ProdutoId = data.Produto.Id,
-            NumeracoesGrade = "41"
+            NumeracoesExtras = "41"
         });
 
         database.Context.ChangeTracker.Clear();

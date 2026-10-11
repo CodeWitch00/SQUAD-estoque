@@ -9,7 +9,7 @@ Este registro evita que os protótipos introduzam comportamento não aprovado na
 | DI-03 | Consulta e grade podem ocupar estados da mesma experiência mobile. | Mantém o limite de fricção; não altera os casos de uso nem cria funcionalidade. |
 | DI-04 | “Vendeu”, “Não tinha” e “Desistiu” são ações contextuais do SKU consultado. | RF-16 a RF-20; evita uma operação sem SKU e mantém rastreabilidade. |
 | DI-05 | “Vendeu” sempre movimenta exatamente 1 par. | RF-17 e UC-04. O formulário genérico de saída não substitui essa ação. |
-| DI-06 | O vendedor pode iniciar outra consulta sem registrar resultado. | RF-20 e US-07 proíbem bloqueio do atendimento. |
+| DI-06 | O vendedor pode iniciar outra consulta sem registrar resultado, mantendo o atendimento anterior pendente e auditável. | RF-20, RF-24 e RN-08 evitam bloqueio sem perder rastreabilidade. |
 | DI-07 | Entrada, saída administrativa, ajuste e histórico pertencem ao LOJISTA. | Separa administração de estoque do atendimento. O acesso atual do vendedor à saída genérica é uma divergência a corrigir. |
 | DI-08 | Saldos zerados e rupturas são visões diferentes. | Saldo zero é estado de estoque; ruptura só nasce da declaração “Não tinha” (RF-18, RF-21 e RF-22). |
 | DI-09 | Os três estados usam texto além de cor. | “Disponível”, “Último par” e “Indisponível” precisam permanecer distinguíveis sem depender apenas da percepção cromática. |

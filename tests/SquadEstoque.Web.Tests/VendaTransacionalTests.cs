@@ -158,7 +158,7 @@ public sealed class VendaTransacionalTests
             {
                 var controller = Authenticate(new EstoqueController(database.Context), database.Usuario.Id);
                 var result = Assert.IsType<ConflictObjectResult>(
-                    await controller.Vender(database.Sku.Id, database.Sku.ProdutoId));
+                    await controller.Vender(database.Sku.Id, database.Sku.ProdutoId, database.Atendimento.Id));
                 Assert.Equal(StatusCodes.Status409Conflict, result.StatusCode);
                 var json = JsonSerializer.SerializeToElement(result.Value);
                 Assert.Equal("O estoque está sendo atualizado por outra operação. Tente novamente.",
@@ -192,14 +192,14 @@ public sealed class VendaTransacionalTests
         else
         {
             var controller = Authenticate(new EstoqueController(database.Context), missingUsuario);
-            var result = Assert.IsType<ObjectResult>(await controller.Vender(database.Sku.Id, database.Sku.ProdutoId));
-            Assert.Equal(StatusCodes.Status500InternalServerError, result.StatusCode);
+            var result = Assert.IsType<BadRequestObjectResult>(
+                await controller.Vender(database.Sku.Id, database.Sku.ProdutoId, database.Atendimento.Id));
             var json = JsonSerializer.SerializeToElement(result.Value);
-            Assert.Equal("Não foi possível registrar a venda. Tente novamente.",
+            Assert.Equal("O atendimento não está pendente ou não pertence ao vendedor.",
                 json.GetProperty("mensagem").GetString());
         }
-        Assert.Equal(1, observer.CommitAttempts);
-        Assert.Equal(1, observer.PendingExits);
+        Assert.Equal(administrativa ? 1 : 0, observer.CommitAttempts);
+        Assert.Equal(administrativa ? 1 : 0, observer.PendingExits);
         await database.AssertRolledBackAsync();
     }
 
@@ -281,6 +281,7 @@ public sealed class VendaTransacionalTests
         public EstoqueContext Context { get; private set; } = null!;
         public Sku Sku { get; private set; } = null!;
         public Usuario Usuario { get; private set; } = null!;
+        public Atendimento Atendimento { get; private set; } = null!;
         public EstoqueContext NewContext() => new(_options);
 
         public static async Task<SaleDatabase> CreateAsync(CommitObserver? observer = null)
@@ -309,6 +310,13 @@ public sealed class VendaTransacionalTests
                 Motivo = "Entrada anterior à venda"
             };
             database.Context.AddRange(produto, database.Sku, database.Usuario, historico);
+            await database.Context.SaveChangesAsync();
+            database.Atendimento = new Atendimento
+            {
+                Id = Guid.NewGuid(), UsuarioId = database.Usuario.Id, ProdutoId = produto.Id,
+                Status = StatusAtendimento.PENDENTE, CriadoEm = DateTime.UtcNow
+            };
+            database.Context.Atendimento.Add(database.Atendimento);
             await database.Context.SaveChangesAsync();
             database._history = HistorySnapshot.From(historico);
             return database;

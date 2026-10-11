@@ -1,0 +1,73 @@
+@model AtendimentosIndexViewModel
+
+@{
+    ViewData["Title"] = "Atendimentos";
+}
+
+<div class="d-flex flex-wrap align-items-start justify-content-between gap-3 mb-4">
+    <div>
+        <h1 class="mb-1">Atendimentos</h1>
+        <p class="text-secondary mb-0">Acompanhe pendências e resultados informados pelos vendedores.</p>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-4">
+        <div class="card h-100"><div class="card-body"><span class="text-secondary">Pendentes</span><strong class="d-block fs-3">@Model.TotalPendentes</strong></div></div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="card h-100"><div class="card-body"><span class="text-secondary">Concluídos</span><strong class="d-block fs-3">@Model.TotalConcluidos</strong></div></div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="card h-100"><div class="card-body"><span class="text-secondary">Alertas para revisar</span><strong class="d-block fs-3">@Model.TotalAlertas</strong></div></div>
+    </div>
+</div>
+
+<div class="table-responsive" tabindex="0" aria-label="Histórico auditável de atendimentos">
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th>Início</th>
+                <th>Vendedor</th>
+                <th>Modelo</th>
+                <th>Numeração</th>
+                <th>Resultado</th>
+                <th>Saldo consultado</th>
+                <th>Alerta</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Atendimentos.Count == 0)
+            {
+                <tr><td colspan="7" class="text-center text-secondary py-4">Nenhum atendimento registrado.</td></tr>
+            }
+            @foreach (var atendimento in Model.Atendimentos)
+            {
+                <tr>
+                    <td>@atendimento.CriadoEm.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@atendimento.Vendedor</td>
+                    <td>@atendimento.Produto</td>
+                    <td>@(atendimento.Numeracao ?? "—")</td>
+                    <td>@(atendimento.Status == StatusAtendimento.PENDENTE ? "Pendente" : atendimento.Resultado switch
+                        {
+                            ResultadoAtendimento.VENDEU => "Vendeu",
+                            ResultadoAtendimento.NAO_TINHA => "Não tinha",
+                            ResultadoAtendimento.DESISTIU => "Desistiu",
+                            _ => "—"
+                        })</td>
+                    <td>@(atendimento.SaldoConsultado.HasValue ? $"{atendimento.SaldoConsultado} par(es)" : "—")</td>
+                    <td>
+                        @if (atendimento.Alerta is not null)
+                        {
+                            <span class="badge text-bg-warning">@atendimento.Alerta</span>
+                        }
+                        else
+                        {
+                            <span class="text-secondary">—</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -9,12 +9,12 @@ public static class SaidaEstoque
 {
     // O futuro atendimento informa somente o SKU e o usuário autenticado.
     public static Task<ResultadoSaida> RegistrarVendaRapidaAsync(
-        this EstoqueContext context, Guid skuId, Guid usuarioId) =>
-        context.RegistrarSaidaAsync(skuId, 1, usuarioId);
+        this EstoqueContext context, Guid skuId, Guid usuarioId, Guid? atendimentoId = null) =>
+        context.RegistrarSaidaAsync(skuId, 1, usuarioId, atendimentoId: atendimentoId);
 
     public static async Task<ResultadoSaida> RegistrarSaidaAsync(
         this EstoqueContext context, Guid skuId, int quantidade, Guid usuarioId,
-        string? motivo = null)
+        string? motivo = null, Guid? atendimentoId = null)
     {
         if (usuarioId == Guid.Empty)
             throw new ArgumentException("Informe o usuário autenticado.", nameof(usuarioId));
@@ -24,7 +24,8 @@ public static class SaidaEstoque
 
         try
         {
-            return await RegistrarSaidaTransacionalAsync(context, skuId, quantidade, usuarioId, motivo);
+            return await RegistrarSaidaTransacionalAsync(
+                context, skuId, quantidade, usuarioId, motivo, atendimentoId);
         }
         catch (Exception exception) when (
             exception is DbUpdateConcurrencyException ||
@@ -36,14 +37,25 @@ public static class SaidaEstoque
     }
 
     private static async Task<ResultadoSaida> RegistrarSaidaTransacionalAsync(
-        EstoqueContext context, Guid skuId, int quantidade, Guid usuarioId, string? motivo)
+        EstoqueContext context, Guid skuId, int quantidade, Guid usuarioId,
+        string? motivo, Guid? atendimentoId)
     {
         await using var transaction = await context.Database.BeginTransactionAsync();
         Sku? sku = null;
         Movimentacao? movimentacao = null;
+        Atendimento? atendimento = null;
 
         try
         {
+            if (atendimentoId.HasValue)
+            {
+                atendimento = await context.Atendimento.FirstOrDefaultAsync(a =>
+                    a.Id == atendimentoId.Value && a.UsuarioId == usuarioId &&
+                    a.Status == StatusAtendimento.PENDENTE);
+                if (atendimento is null)
+                    return new(null, "O atendimento não está pendente ou não pertence ao vendedor.");
+            }
+
             // Saldo e movimentação só são confirmados juntos após o commit.
             var linhasAlteradas = await context.Sku
                 .Where(s => s.Id == skuId && s.SaldoAtual >= quantidade)
@@ -54,6 +66,9 @@ public static class SaidaEstoque
 
             if (sku == null || sku.Produto == null)
                 return new(null, "O item de estoque selecionado não foi encontrado.");
+
+            if (atendimento is not null && atendimento.ProdutoId != sku.ProdutoId)
+                return new(null, "O SKU selecionado não pertence ao atendimento.");
 
             // ExecuteUpdate não sincroniza entidades já rastreadas pelo EF.
             await context.Entry(sku).ReloadAsync();
@@ -68,8 +83,17 @@ public static class SaidaEstoque
                 Quantidade = quantidade,
                 UsuarioId = usuarioId,
                 CriadoEm = DateTime.UtcNow,
-                Motivo = string.IsNullOrWhiteSpace(motivo) ? null : motivo.Trim()
+                Motivo = string.IsNullOrWhiteSpace(motivo) ? null : motivo.Trim(),
+                AtendimentoId = atendimentoId
             };
+            if (atendimento is not null)
+            {
+                atendimento.SkuId = sku.Id;
+                atendimento.SaldoConsultado = sku.SaldoAtual + quantidade;
+                atendimento.Status = StatusAtendimento.CONCLUIDO;
+                atendimento.Resultado = ResultadoAtendimento.VENDEU;
+                atendimento.ConcluidoEm = DateTime.UtcNow;
+            }
             context.Movimentacao.Add(movimentacao);
             await context.SaveChangesAsync();
             await transaction.CommitAsync();

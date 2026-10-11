@@ -114,7 +114,7 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
             $"/Estoque/Consulta?termo={Uri.EscapeDataString(skuAtualizado.Produto!.Nome)}&produtoId={skuAtualizado.ProdutoId}");
         var gradeAtualizada = WebUtility.HtmlDecode(await consultaAtualizada.Content.ReadAsStringAsync());
         Assert.Equal(HttpStatusCode.OK, consultaAtualizada.StatusCode);
-        Assert.Contains("Grade disponível", gradeAtualizada);
+        Assert.Contains("Qual número?", gradeAtualizada);
         var quantidade = $"{saldoFinal} {(saldoFinal == 1 ? "par" : "pares")}";
         Assert.Contains($"aria-label=\"Nº 42, {quantidade}, {estado}\"", gradeAtualizada);
         Assert.Contains($"consulta-grade-item--{classe}", gradeAtualizada);

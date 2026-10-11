@@ -14,42 +14,64 @@ namespace SquadEstoque.Web.Tests;
 public sealed class DesistiuHttpTests
 {
     [Theory]
-    [InlineData(false, 0)]
     [InlineData(false, 1)]
     [InlineData(false, 2)]
-    [InlineData(true, 0)]
     [InlineData(true, 1)]
     [InlineData(true, 2)]
-    public async Task Desistiu_ends_context_without_persistence_and_allows_another_query(bool enviarSku, int saldo)
+    public async Task Desistiu_concludes_auditable_context_without_stock_changes_and_allows_another_query(bool enviarSku, int saldo)
     {
         using var factory = new SquadEstoqueWebApplicationFactory();
         using var client = CreateClient(factory);
         var produto = await AddProdutoAsync(factory, saldo);
         var proximoProduto = await AddProdutoAsync(factory, 3);
-        var before = await SnapshotAsync(factory);
         await LoginAsync(client, "vendedor@squad.com");
         using var grade = await client.GetAsync($"/Estoque/Consulta?termo={Uri.EscapeDataString(produto.Nome)}&produtoId={produto.Id}");
         var html = WebUtility.HtmlDecode(await grade.Content.ReadAsStringAsync());
         Assert.Contains($"data-sku-id=\"{produto.Skus.Single().Id}\"", html);
         Assert.Contains("data-desistiu-url=\"/Estoque/RegistrarDesistiu\"", html);
-        var values = new Dictionary<string, string> { ["__RequestVerificationToken"] = await TokenAsync(grade) };
-        // A selected SKU is optional context and must never trigger a stock operation.
-        if (enviarSku) values["skuId"] = produto.Skus.Single().Id.ToString();
-        string? novaConsultaUrl = null;
-        for (var tentativa = 0; tentativa < 2; tentativa++)
+        var skuId = produto.Skus.Single().Id;
+        using var selecaoForm = new FormUrlEncodedContent(new Dictionary<string, string>
         {
-            using var form = new FormUrlEncodedContent(values);
-            using var response = await client.PostAsync("/Estoque/RegistrarDesistiu", form);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            var payload = await response.Content.ReadFromJsonAsync<JsonElement>();
-            Assert.Equal("desistiu", payload.GetProperty("resultado").GetString());
-            Assert.True(payload.GetProperty("atendimentoEncerrado").GetBoolean());
-            Assert.Equal("Atendimento encerrado.", payload.GetProperty("mensagem").GetString());
-            novaConsultaUrl = payload.GetProperty("novaConsultaUrl").GetString();
-            Assert.Equal("/Estoque/Consulta", novaConsultaUrl);
-            await AssertUnchangedAsync(factory, before);
+            ["skuId"] = skuId.ToString(),
+            ["__RequestVerificationToken"] = await TokenAsync(grade)
+        });
+        using var selecao = await client.PostAsync("/Estoque/SelecionarSku", selecaoForm);
+        Assert.Equal(HttpStatusCode.OK, selecao.StatusCode);
+        var selecaoPayload = await selecao.Content.ReadFromJsonAsync<JsonElement>();
+        var atendimentoId = selecaoPayload.GetProperty("atendimentoId").GetGuid();
+        var before = await SnapshotAsync(factory);
+        var values = new Dictionary<string, string>
+        {
+            ["__RequestVerificationToken"] = await TokenAsync(grade),
+            ["atendimentoId"] = atendimentoId.ToString()
+        };
+        // A selected SKU is optional context and must never trigger a stock operation.
+        if (enviarSku) values["skuId"] = skuId.ToString();
+        using var form = new FormUrlEncodedContent(values);
+        using var response = await client.PostAsync("/Estoque/RegistrarDesistiu", form);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var payload = await response.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal("desistiu", payload.GetProperty("resultado").GetString());
+        Assert.True(payload.GetProperty("atendimentoEncerrado").GetBoolean());
+        Assert.Equal("Atendimento encerrado.", payload.GetProperty("mensagem").GetString());
+        var novaConsultaUrl = payload.GetProperty("novaConsultaUrl").GetString();
+        Assert.Equal("/Estoque/Consulta", novaConsultaUrl);
+        await AssertUnchangedAsync(factory, before);
+
+        using (var scope = factory.Services.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
+            var atendimento = await context.Atendimento.AsNoTracking().SingleAsync(a => a.Id == atendimentoId);
+            Assert.Equal(StatusAtendimento.CONCLUIDO, atendimento.Status);
+            Assert.Equal(ResultadoAtendimento.DESISTIU, atendimento.Resultado);
+            Assert.NotNull(atendimento.ConcluidoEm);
+            Assert.Equal(skuId, atendimento.SkuId);
         }
-        using var novaConsulta = await client.GetAsync(novaConsultaUrl);
+
+        using var repeticaoForm = new FormUrlEncodedContent(values);
+        using var repeticao = await client.PostAsync("/Estoque/RegistrarDesistiu", repeticaoForm);
+        Assert.Equal(HttpStatusCode.BadRequest, repeticao.StatusCode);
+        using var novaConsulta = await client.GetAsync(novaConsultaUrl!);
         var novaHtml = await novaConsulta.Content.ReadAsStringAsync();
         Assert.Equal(HttpStatusCode.OK, novaConsulta.StatusCode);
         Assert.DoesNotContain("id=\"grade\"", novaHtml);

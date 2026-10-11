@@ -24,6 +24,9 @@ public class Produto
     [StringLength(80)]
     public string Cor { get; set; } = string.Empty;
 
+    [StringLength(300)]
+    public string? ImagemUrl { get; set; }
+
     public bool Ativo { get; set; } = true;
 
     public ICollection<Sku> Skus { get; set; } = new List<Sku>();
