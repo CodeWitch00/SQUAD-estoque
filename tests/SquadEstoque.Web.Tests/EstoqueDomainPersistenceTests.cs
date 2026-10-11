@@ -9,6 +9,7 @@ using SquadEstoque.Web.Controllers;
 using SquadEstoque.Web.Data;
 using SquadEstoque.Web.Models;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace SquadEstoque.Web.Tests;
 
@@ -16,6 +17,10 @@ namespace SquadEstoque.Web.Tests;
 // A saída compartilhada e os controllers são verificados contra SQLite real.
 public sealed class EstoqueDomainPersistenceTests
 {
+    private readonly ITestOutputHelper _output;
+
+    public EstoqueDomainPersistenceTests(ITestOutputHelper output) => _output = output;
+
     [Fact]
     public void Produto_requires_identification_fields()
     {
@@ -883,11 +888,19 @@ public sealed class EstoqueDomainPersistenceTests
         Assert.Empty(await database.Context.Movimentacao.ToListAsync());
     }
 
+    public static IEnumerable<object[]> ConcurrentSaleCases()
+    {
+        for (var repeticao = 1; repeticao <= 10; repeticao++)
+        {
+            yield return new object[] { false, 1, repeticao };
+            yield return new object[] { true, 1, repeticao };
+            yield return new object[] { true, 3, repeticao };
+        }
+    }
+
     [Theory]
-    [InlineData(false, 1)]
-    [InlineData(true, 1)]
-    [InlineData(true, 3)]
-    public async Task Concurrent_saidas_sell_available_stock_only_once(bool administrativa, int quantidade)
+    [MemberData(nameof(ConcurrentSaleCases))]
+    public async Task Concurrent_saidas_sell_available_stock_only_once(bool administrativa, int quantidade, int repeticao)
     {
         // Conexões e contextos independentes disputam o mesmo SQLite em disco.
         var path = Path.Combine(Path.GetTempPath(), $"estoque-concorrente-{Guid.NewGuid():N}.db");
@@ -901,8 +914,8 @@ public sealed class EstoqueDomainPersistenceTests
             await using var first = new EstoqueContext(options);
             await using var second = new EstoqueContext(options);
             // Ambos enxergam o mesmo saldo antes de iniciar a disputa.
-            await first.Sku.SingleAsync();
-            await second.Sku.SingleAsync();
+            Assert.Equal(quantidade, (await first.Sku.SingleAsync()).SaldoAtual);
+            Assert.Equal(quantidade, (await second.Sku.SingleAsync()).SaldoAtual);
             using var ready = new CountdownEvent(2);
             var start = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
             Task<ResultadoSaida> Sell(EstoqueContext context) => Task.Run(async () =>
@@ -918,13 +931,26 @@ public sealed class EstoqueDomainPersistenceTests
             var bothReady = ready.Wait(TimeSpan.FromSeconds(10));
             start.SetResult();
             var results = await Task.WhenAll(sale1, sale2);
+            _output.WriteLine($"S3-QA-003: administrativa={administrativa}; quantidade={quantidade}; repeticao={repeticao}");
+            for (var i = 0; i < results.Length; i++)
+                _output.WriteLine($"Operacao {i + 1}: erro={results[i].Erro ?? "nenhum"}; conflito={results[i].Conflito}");
             Assert.True(bothReady);
-            Assert.Single(results, r => r.Erro == null);
+            var approved = Assert.Single(results, r => r.Erro == null);
+            Assert.False(approved.Conflito);
+            Assert.NotNull(approved.Sku);
+            Assert.Equal(data.Sku.Id, approved.Sku.Id);
             var rejected = Assert.Single(results, r => r.Erro != null);
-            Assert.Contains("Saldo insuficiente", rejected.Erro);
+            Assert.False(rejected.Conflito);
+            Assert.Equal("Saldo insuficiente para saída. Saldo disponível: 0 par(es).", rejected.Erro);
             Assert.Equal("Quantidade", rejected.Campo);
-            Assert.Equal(0, await seed.Sku.AsNoTracking().Select(s => s.SaldoAtual).SingleAsync());
-            var movement = await seed.Movimentacao.AsNoTracking().SingleAsync();
+            await using var persisted = new EstoqueContext(options);
+            var balance = await persisted.Sku.Select(s => s.SaldoAtual).SingleAsync();
+            var movements = await persisted.Movimentacao.AsNoTracking().ToListAsync();
+            _output.WriteLine($"Saldo final={balance}; movimentacoes={movements.Count}");
+            Assert.Equal(0, balance);
+            var movement = Assert.Single(movements);
+            _output.WriteLine($"Movimentacao: sku={movement.SkuId}; tipo={movement.Tipo}; quantidade={movement.Quantidade}; usuario={movement.UsuarioId}");
+            Assert.Equal(data.Sku.Id, movement.SkuId);
             Assert.Equal(quantidade, movement.Quantidade);
             Assert.Equal(data.Usuario.Id, movement.UsuarioId);
             Assert.Equal(TipoMovimentacao.SAIDA, movement.Tipo);
