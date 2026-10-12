@@ -237,4 +237,3 @@ Operacao 1: erro=nenhum; conflito=False
 Operacao 2: erro=Saldo insuficiente para saída. Saldo disponível: 0 par(es).; conflito=False
 Saldo final=0; movimentacoes=1
 Movimentacao: sku=554c9559-2cd3-4a73-8a02-a1e90c838f94; tipo=SAIDA; quantidade=3; usuario=6c463c43-df75-4c3e-baa5-5a19fb834abf
-
