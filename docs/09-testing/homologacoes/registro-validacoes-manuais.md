@@ -16,6 +16,7 @@ Este documento preserva somente resultados que não são demonstrados integralme
 | 09/10/2026 | Responsividade do vendedor em 360×800, 390×844, 430×932 e 1280×800 | Sem rolagem horizontal; alvos de toque, foco, grade e mensagens aprovados | Chromium/Playwright em viewports CSS; aparelho físico e teste com usuários permanecem pendentes. |
 | 09/10/2026 | Atendimentos pendentes e auditáveis, ambiente local | Continuidade de atendimentos, retomada, vínculo com resultado e controles anti-burla validados | Registro posterior ao período formal da Sprint 2. A cobertura automatizada e a migration devem ser consultadas no código e na CI. |
 | 09/10/2026 | Entrada fiscal por NF-e, ambiente local | Importação em rascunho, conferência, confirmação, vínculo e bloqueio de duplicidade validados | Registro posterior ao período formal da Sprint 2; nenhuma atualização manual do banco local foi executada. |
+| 14/10/2026 | RN-03, imutabilidade; dev/emmy baseada em 1dacf4d, .NET 10.0.400, Kestrel local em HTTP e SQLite descartável | Produto, grade e entrada criados pela aplicação; 12 tentativas de Edit/Delete por GET/POST como LOJISTA, VENDEDOR e anônimo recusadas (404/405); todos os campos conferidos por leitura e preservados; histórico 200 para lojista e 302 para acesso negado/login nos demais perfis | Smoke HTTP fora do TestServer; nenhuma escrita direta no banco; sem homologação no Azure ou teste visual. |
 
 ## Homologação publicada pendente
 
