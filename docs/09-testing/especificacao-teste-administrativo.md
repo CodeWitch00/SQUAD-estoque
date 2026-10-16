@@ -270,7 +270,7 @@ O contrato implementado recebe `SkuId`, `NovoSaldoApurado` e `Motivo`. A direç�
 - **Nível:** inspeção de rotas e integração HTTP.
 - **Entrada:** tentar localizar/acessar rotas públicas de edição e exclusão de movimentações usando um ID existente.
 - **Resultado esperado:** não há actions públicas de `Edit`, `Delete`, `PUT` ou `DELETE`; o registro original permanece inalterado e continua no histórico.
-- **Situação:** planejado. A imutabilidade é garantida pelo desenho da aplicação e pela ausência de endpoints; acesso administrativo direto ao banco não faz parte desse fluxo.
+- **Situação:** implementado em `MovimentacaoSomenteLeituraHttpTests.cs`. A imutabilidade é garantida pelo desenho da aplicação e pela ausência de endpoints; acesso administrativo direto ao banco não faz parte desse fluxo.
 
 ## 10. Controle transversal de segurança
 

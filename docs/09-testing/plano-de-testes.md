@@ -354,7 +354,7 @@ O destino pós-login ainda possui uma divergência: o UC-01 exige uma tela inici
 | IT-11 | RF-11, RN-02, UC-S4 | Saída insuficiente | saldo 1; saída 2 | Erro claro; saldo 1; nenhuma movimentação | **Existente:** `Saida_with_insufficient_balance_is_rejected_by_controller` |
 | IT-12 | RN-02 | Constraint de saldo | tentar persistir SKU com saldo -1 | Banco rejeita a gravação | **Existente:** `Sku_with_negative_balance_cannot_be_persisted` |
 | IT-13 | RF-12 | Última atualização | efetuar entrada ou saída com tempo controlado | Data/hora do SKU corresponde à operação e é exibida | Dependente da implementação completa de RF-12 |
-| IT-14 | RN-03 | Imutabilidade | tentar localizar endpoints de edição/exclusão e alterar registro diretamente pelo fluxo público | Não existem operações públicas de edição/exclusão; histórico original permanece | Planejado |
+| IT-14 | RN-03 | Imutabilidade | tentar localizar endpoints de edição/exclusão e alterar registro diretamente pelo fluxo público | Não existem operações públicas de edição/exclusão; histórico original permanece | **Existente:** `MovimentacaoSomenteLeituraHttpTests` |
 | IT-15 | RF-23, RN-04, UC-10 | Ajuste válido | saldo 2; novo saldo 6; motivo “Contagem física”; `LOJISTA` | Saldo 6; movimentação `AJUSTE`, diferença 4, motivo e responsável | **Parcial:** `Ajuste_registers_movement_and_updates_balance` |
 | IT-16 | RF-23, UC-10 | Ajuste sem motivo | saldo 2; novo saldo 6; motivo vazio | Rejeição; saldo 2; nenhuma movimentação | **Existente:** `Ajuste_without_reason_is_rejected_by_controller` |
 | IT-17 | RF-23, RN-02 | Ajuste para saldo negativo | novo saldo apurado menor que 0 | Rejeição; nenhuma alteração ou movimentação | Planejado |
