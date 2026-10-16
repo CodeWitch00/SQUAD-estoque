@@ -35,7 +35,7 @@
 | LOJ-07 | Saída de estoque | `/Movimentacoes/Saida[?skuId=...]` | **LOJISTA no fluxo-alvo** | **Existente com divergência** | Saída administrativa, com quantidade e validação de saldo. RF-10, RF-11. Não substitui “Vendeu”, que é uma ação operacional de exatamente 1 par ligada à consulta. |
 | LOJ-08 | Ajuste manual | `/Movimentacoes/Ajuste[?skuId=...]` | LOJISTA | **Existente** | Define novo saldo, exige motivo e registra ajuste imutável. RF-10, RF-11, RF-23; UC-10; US-11. |
 | LOJ-09 | Histórico de movimentações | `/Movimentacoes` | LOJISTA | **Existente** | Lista data/hora, produto, numeração, tipo, quantidade, responsável e motivo; sem editar/excluir. RF-10; apoio ao controle de estoque. |
-| LOJ-10 | Saldos zerados | a definir na implementação | LOJISTA | **Pendente** | Lista somente SKUs com saldo zero, agrupados por modelo. RF-21; UC-11; US-12. |
+| LOJ-10 | Saldos zerados | `/SaldosZerados` | LOJISTA | **Existente** | Lista somente SKUs com saldo zero, agrupados por modelo. RF-21; UC-11; US-12. |
 | LOJ-11 | Histórico de rupturas | a definir na implementação | LOJISTA | **Pendente** | Agrupa “Não tinha” por modelo e numeração e mostra a quantidade de ocorrências. RF-22; UC-12; US-13. |
 
 ## 3. Origem, destino e permissão
@@ -69,7 +69,7 @@ Esta matriz descreve o fluxo-alvo. “Voltar” deve preservar a origem quando a
 | LOJ-06 / LOJ-07 / LOJ-08 | Salvar operação | LOJ-04 Detalhe/grade atualizado | LOJISTA | Existente |
 | LOJ-01 | Movimentações | LOJ-09 Histórico | LOJISTA | Tela existente; origem pendente |
 | LOJ-09 | Nova entrada / saída / ajuste | LOJ-06 / LOJ-07 / LOJ-08 | LOJISTA | Existente |
-| LOJ-01 | Saldos zerados | LOJ-10 Saldos zerados | LOJISTA | Pendente |
+| LOJ-01 | Saldos zerados | LOJ-10 Saldos zerados | LOJISTA | Existente |
 | LOJ-01 | Rupturas | LOJ-11 Histórico de rupturas | LOJISTA | Pendente |
 | Qualquer tela autenticada | Sair | AUT-01 Login | VENDEDOR ou LOJISTA | Existente |
 | Rota sem permissão | Autorização negada | SUP-01 Acesso negado | Usuário autenticado sem papel exigido | Existente |
@@ -81,7 +81,7 @@ Esta matriz descreve o fluxo-alvo. “Voltar” deve preservar a origem quando a
 3. **A grade existente não é a grade do vendedor.** `/Produtos/Details/{id}` mostra saldos e estados, porém todo `ProdutosController` exige LOJISTA. O bloco da view que testa `User.IsInRole("VENDEDOR")` é inalcançável na configuração atual.
 4. **“Saída” não é “Vendeu”.** `/Movimentacoes/Saida` aceita quantidade livre, pode ser aberta sem consulta anterior e redireciona o vendedor para a Home provisória. VEN-04 exige um SKU consultado, decremento fixo de 1 e continuidade do atendimento.
 5. **Permissão da saída genérica está ampla.** O controller permite `LOJISTA,VENDEDOR`, embora o fluxo-alvo reserve a operação administrativa ao LOJISTA e dê ao VENDEDOR apenas “Vendeu”. A equipe deve corrigir essa autorização quando VEN-04 for implementada.
-6. **Saldos zerados e rupturas não têm endpoints ou views.** São pendências diretas de RF-21/UC-11/US-12 e RF-22/UC-12/US-13.
+6. **Rupturas ainda não têm endpoint ou view.** Saldos zerados já estão disponíveis em `/SaldosZerados`; a visão de rupturas permanece pendente de RF-22/UC-12/US-13.
 7. **A navegação global é restrita ao MVP.** Produtos e Movimentações aparecem apenas para LOJISTA, o que está correto para as áreas administrativas.
 8. **A última atualização do SKU não aparece.** A grade existente mostra o saldo, mas não data/hora de atualização; RF-12 continua pendente para a grade operacional.
 

@@ -13,7 +13,7 @@ Esta pasta concentra o inventário de interface e os protótipos navegacionais d
 | Ajuste | [Protótipo do lojista](prototipos/prototipo-lojista.html) | Implementado |
 | Movimentações | [Protótipo do lojista](prototipos/prototipo-lojista.html) | Implementado |
 | Início do lojista | [Protótipo do lojista](prototipos/prototipo-lojista.html) | Planejado |
-| Saldos zerados | [Protótipo do lojista](prototipos/prototipo-lojista.html) | Planejado para Sprint 3 |
+| Saldos zerados | [Protótipo do lojista](prototipos/prototipo-lojista.html) | Implementado em `/SaldosZerados` |
 | Rupturas | [Protótipo do lojista](prototipos/prototipo-lojista.html) | Planejado para Sprint 3 |
 | Início e consulta do vendedor | [Protótipo do vendedor](prototipos/prototipo-vendedor.html) | Planejado no módulo operacional do vendedor |
 | Grade do vendedor | [Protótipo do vendedor](prototipos/prototipo-vendedor.html) | Planejado no módulo operacional do vendedor |

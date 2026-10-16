@@ -44,6 +44,10 @@
                                    aria-current="@(controllerAtual == "Movimentacoes" ? "page" : null)">Movimentações</a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link @(controllerAtual == "SaldosZerados" ? "active" : "")" asp-controller="SaldosZerados" asp-action="Index"
+                                   aria-current="@(controllerAtual == "SaldosZerados" ? "page" : null)">Saldos zerados</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link @(controllerAtual == "Atendimentos" ? "active" : "")" asp-controller="Atendimentos" asp-action="Index"
                                    aria-current="@(controllerAtual == "Atendimentos" ? "page" : null)">Atendimentos</a>
                             </li>
