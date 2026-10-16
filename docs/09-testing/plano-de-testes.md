@@ -379,8 +379,8 @@ Os casos detalhados, incluindo pré-condições, passos e resultados esperados, 
 
 | ID | Requisitos | Cenário | Entradas/ações | Resultado esperado | Situação |
 |---|---|---|---|---|---|
-| IT-30 | RF-21, UC-11 | Saldos zerados | Produtos com SKUs 0, 1 e 2 | Somente saldo 0 é listado, agrupado por modelo | Dependente da visão |
-| IT-31 | RF-21, RF-02 | Vendedor tenta abrir saldos zerados | Login `VENDEDOR`; URL direta | Acesso negado | Dependente da rota |
+| IT-30 | RF-21, UC-11 | Saldos zerados | Produtos com SKUs 0, 1 e 2 | Somente saldo 0 é listado, agrupado por modelo | Automatizado: [SaldosZeradosViewModelTests](../../tests/SquadEstoque.Web.Tests/SaldosZeradosViewModelTests.cs) e [SaldosZeradosAuthorizationHttpTests](../../tests/SquadEstoque.Web.Tests/SaldosZeradosAuthorizationHttpTests.cs) |
+| IT-31 | RF-21, RF-02 | Vendedor tenta abrir saldos zerados | Login `VENDEDOR`; URL direta | Acesso negado, sem dados de estoque | Automatizado: [SaldosZeradosAuthorizationHttpTests](../../tests/SquadEstoque.Web.Tests/SaldosZeradosAuthorizationHttpTests.cs) |
 | IT-32 | RF-22, UC-12 | Histórico de rupturas | Rupturas repetidas para diferentes SKUs | Modelo, numeração e frequência corretos | Dependente da visão |
 | IT-33 | RF-22, RF-02 | Vendedor tenta abrir histórico | Login `VENDEDOR`; URL direta | Acesso negado | Dependente da rota |
 
