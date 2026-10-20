@@ -1,0 +1,67 @@
+@model SquadEstoque.Web.Models.RupturasIndexViewModel
+@{
+    ViewData["Title"] = "Histórico de rupturas";
+}
+
+<div class="admin-page-heading mb-4">
+    <div>
+        <h1>Histórico de rupturas</h1>
+        <p class="admin-page-intro">Consulte a demanda não atendida por modelo e numeração para apoiar suas compras.</p>
+    </div>
+</div>
+
+<div class="alert alert-info rupture-explanation">
+    <strong>Rupturas são registros históricos de falta no atendimento.</strong>
+    As ocorrências não representam o saldo atual e permanecem após a reposição.
+    <a asp-controller="SaldosZerados" asp-action="Index" class="alert-link">Consultar saldos zerados</a>
+</div>
+
+@if (Model.Rupturas.Count == 0)
+{
+    <div class="card">
+        <div class="card-body p-4" role="status">
+            <h2 class="h5">Nenhuma ruptura registrada</h2>
+            <p class="mb-0">Quando uma falta for registrada no atendimento, o histórico aparecerá aqui.</p>
+        </div>
+    </div>
+}
+else
+{
+    <p id="rupture-order" class="text-secondary">Mais ocorrências primeiro; em caso de empate, a ruptura mais recente.</p>
+    <div class="rupture-table-shell">
+        <table class="table rupture-table mb-0" aria-describedby="rupture-order">
+            <caption class="visually-hidden">Histórico de rupturas por modelo e numeração. Datas e horários em UTC.</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Modelo</th>
+                    <th scope="col">Numeração</th>
+                    <th scope="col">Ocorrências</th>
+                    <th scope="col">Última ruptura <span class="fw-normal">(UTC)</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ruptura in Model.Rupturas)
+                {
+                    <tr>
+                        <th scope="row" data-label="Modelo">
+                            <span class="d-block">@ruptura.Produto</span>
+                            <span class="d-block fw-normal text-secondary small">@ruptura.Marca · @ruptura.Cor</span>
+                        </th>
+                        <td data-label="Numeração">@ruptura.Numeracao</td>
+                        <td data-label="Ocorrências"><strong>@ruptura.QuantidadeOcorrencias</strong></td>
+                        <td data-label="Última ruptura (UTC)">
+                            @if (ruptura.UltimaOcorrencia is DateTime ultima)
+                            {
+                                <time datetime="@(ultima.ToString("yyyy-MM-dd'T'HH:mm:ss'Z'"))">@ultima.ToString("dd/MM/yyyy HH:mm")</time>
+                            }
+                            else
+                            {
+                                <span>Data não disponível</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
