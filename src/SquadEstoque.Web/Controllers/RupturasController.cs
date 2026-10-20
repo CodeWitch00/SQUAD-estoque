@@ -13,7 +13,7 @@ public sealed class RupturasController(EstoqueContext context) : Controller
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
         var rupturas = await context.Ruptura.AsNoTracking()
-            .GroupBy(r => new { r.Sku!.ProdutoId, r.Sku.Produto!.Nome,
+            .GroupBy(r => new { r.SkuId, r.Sku!.Produto!.Nome,
                 r.Sku.Produto.Marca, r.Sku.Produto.Cor, r.Sku.Numeracao })
             .Select(g => new RupturaHistoricoViewModel
             {
