@@ -214,12 +214,33 @@ Todos os casos foram preparados para execução em Desktop e Mobile. Onde há ev
 
   <img width="515" height="1027" alt="Mobile Acesso Negado - Movimentações Ajuste" src="https://github.com/user-attachments/assets/6eb735b9-c18c-4d63-a80d-0f61eb0f8739" />
 
-### VNP-05 — Menu por perfil
-
+### VNP-05 — Histórico de Rupturas
 - **Requisito:** RF-02
 - **Forma de execução:** Manual
 - **Nível:** Aceite
-- **Pré-condição:** USR-VEN-01 e USR-LOJ-01, cada um em sessão própria.
+- **Pré-condição:** USR-LOJ-01
+- **Passos:**
+  1. Autenticar com cada perfil.
+  2. Conferir o menu superior (Desktop) e o menu retrátil (Mobile).
+- **Entrada:** navegação pelo menu.
+- **Saída esperada:** Lojista vê "Histórico de Rupturas", "Movimentações" e "Sair", além da identificação do perfil.
+- **Resultado obtido:**  menu completo para o Lojista, em Desktop e Mobile.
+- **Status de execução:** Aprovado
+- **Evidências:
+
+**Desktop — `/Histórico de Rupturas`:**
+
+<img width="1440" height="1000" alt="desktop-historico" src="https://github.com/user-attachments/assets/29168836-950d-4bfd-9e4f-02346977e088" />
+
+**Mobile  — `/Histórico de Rupturas`:**
+<img width="390" height="1331" alt="smartphone-historico" src="https://github.com/user-attachments/assets/ff3363b8-ebff-45f8-ad79-f0d882a30b15" />
+
+### VNP-06 — Menu por perfil
+
+- **Requisito:** UC-S3
+- **Forma de execução:** Manual
+- **Nível:** Aceite
+- **Pré-condição:** U
 - **Passos:**
   1. Autenticar com cada perfil.
   2. Conferir o menu superior (Desktop) e o menu retrátil (Mobile).
@@ -245,7 +266,7 @@ Todos os casos foram preparados para execução em Desktop e Mobile. Onde há ev
 
   <img width="421" height="911" alt="Catálogo de Produtos - Mobile" src="https://github.com/user-attachments/assets/7742bbcb-1506-4da7-8bc6-c2d237516f82" />
 
-### VNP-06 — Catálogo de Produtos com filtros combinados
+### VNP-07 — Catálogo de Produtos com filtros combinados
 
 - **Requisito:** RF-02; requisito do catálogo _[confirmar no SRS]_
 - **Forma de execução:** Manual
@@ -269,7 +290,7 @@ Todos os casos foram preparados para execução em Desktop e Mobile. Onde há ev
 
   <img width="421" height="911" alt="Catálogo de Produtos - Mobile" src="https://github.com/user-attachments/assets/7742bbcb-1506-4da7-8bc6-c2d237516f82" />
 
-### VNP-07 — Cadastro de produto com geração automática de SKUs
+### VNP-08 — Cadastro de produto com geração automática de SKUs
 
 - **Requisito:** RF-05, RF-06, RF-07, UC-07, UC-08
 - **Forma de execução:** Manual
@@ -294,7 +315,7 @@ Todos os casos foram preparados para execução em Desktop e Mobile. Onde há ev
 
   <img width="426" height="912" alt="Cadastro do Novo Produto - Mobile" src="https://github.com/user-attachments/assets/245f274a-af87-40f5-8007-f17c22e07011" />
 
-### VNP-08 — Histórico de movimentações (auditoria)
+### VNP-09 — Histórico de movimentações (auditoria)
 
 - **Requisito:** RF-10 _[confirmar no SRS]_, RF-02
 - **Forma de execução:** Manual
@@ -318,7 +339,7 @@ Todos os casos foram preparados para execução em Desktop e Mobile. Onde há ev
 
   <img width="421" height="916" alt="Histórico de Movimentações - Mobile" src="https://github.com/user-attachments/assets/82e4a9bd-86f9-47fa-b00d-0d90eaea22df" />
 
-### VNP-09 — Registro de entrada de estoque
+### VNP-10 — Registro de entrada de estoque
 
 - **Requisito:** RF-09, RF-10, UC-09
 - **Forma de execução:** Manual
@@ -342,7 +363,7 @@ Todos os casos foram preparados para execução em Desktop e Mobile. Onde há ev
 
   <img width="421" height="913" alt="Registrar Nova Entrada - Mobile" src="https://github.com/user-attachments/assets/456cfd2a-5ba6-4b42-a817-5e9fb31cb2c7" />
 
-### VNP-10 — Registro de saída de estoque
+### VNP-11 — Registro de saída de estoque
 
 - **Requisito:** RF-11, RN-02
 - **Forma de execução:** Manual
@@ -365,7 +386,7 @@ Todos os casos foram preparados para execução em Desktop e Mobile. Onde há ev
 
   <img width="415" height="902" alt="Registrar Nova Saída - Mobile" src="https://github.com/user-attachments/assets/79519583-3eba-4662-b0c6-7d8e8ae8caf0" />
 
-### VNP-11 — Ajuste manual com justificativa obrigatória
+### VNP-12 — Ajuste manual com justificativa obrigatória
 
 - **Requisito:** RF-23, UC-10, RN-02; relacionado a UT-11
 - **Forma de execução:** Manual
@@ -391,7 +412,7 @@ Todos os casos foram preparados para execução em Desktop e Mobile. Onde há ev
 
   Captura da mensagem de validação: _[anexar, se houver]_.
 
-### VNP-12 — Anônimo bloqueado nas rotas protegidas
+### VNP-13 — Anônimo bloqueado nas rotas protegidas
 
 - **Requisito:** RF-02; relacionado a CT-AUT-09 e CT-AUT-10
 - **Forma de execução:** Manual
@@ -439,7 +460,7 @@ Todos os casos foram preparados para execução em Desktop e Mobile. Onde há ev
 
   <img width="390" height="844" alt="Anônimo - Movimentações - Mobile" src="https://github.com/user-attachments/assets/7f204a5f-1b25-430e-bbf6-72747a63e6af" />
 
-### VNP-13 — Lojista acessa a consulta de estoque
+### VNP-14 — Lojista acessa a consulta de estoque
 
 - **Requisito:** RF-02
 - **Forma de execução:** Manual
@@ -461,7 +482,7 @@ Todos os casos foram preparados para execução em Desktop e Mobile. Onde há ev
 
   <img width="390" height="844" alt="Estoque Consulta - Lojista - Mobile" src="https://github.com/user-attachments/assets/c20b6d39-3923-4782-b33a-575340021902" />
 
-### VNP-14 — Encerramento de sessão
+### VNP-15 — Encerramento de sessão
 
 - **Requisito:** RF-03; relacionado a CT-AUT-18
 - **Forma de execução:** Manual
