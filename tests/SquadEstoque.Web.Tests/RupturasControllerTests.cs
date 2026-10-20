@@ -52,7 +52,7 @@ public sealed class RupturasControllerTests
         await context.SaveChangesAsync();
         context.ChangeTracker.Clear();
 
-        var resultado = Assert.IsType<ViewResult>(await new RupturasController(context).Index());
+        var resultado = Assert.IsType<ViewResult>(await new RupturasController(context).Index(CancellationToken.None));
         var historico = Assert.IsType<RupturasIndexViewModel>(resultado.Model).Rupturas;
 
         Assert.Equal(3, historico.Count);
@@ -77,7 +77,7 @@ public sealed class RupturasControllerTests
         using var scope = factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
 
-        var resultado = Assert.IsType<ViewResult>(await new RupturasController(context).Index());
+        var resultado = Assert.IsType<ViewResult>(await new RupturasController(context).Index(CancellationToken.None));
 
         Assert.Empty(Assert.IsType<RupturasIndexViewModel>(resultado.Model).Rupturas);
     }

@@ -36,6 +36,10 @@
                         @if (lojista)
                         {
                             <li class="nav-item">
+                                <a class="nav-link @(controllerAtual == "Rupturas" ? "active" : "")" asp-controller="Rupturas" asp-action="Index"
+                                   aria-current="@(controllerAtual == "Rupturas" ? "page" : null)">Histórico de rupturas</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link @(controllerAtual == "Produtos" ? "active" : "")" asp-controller="Produtos" asp-action="Index"
                                    aria-current="@(controllerAtual == "Produtos" ? "page" : null)">Produtos</a>
                             </li>

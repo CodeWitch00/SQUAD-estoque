@@ -7,38 +7,28 @@ using SquadEstoque.Web.Models;
 namespace SquadEstoque.Web.Controllers;
 
 [Authorize(Roles = "LOJISTA")]
-public class RupturasController : Controller
+public sealed class RupturasController(EstoqueContext context) : Controller
 {
-    private readonly EstoqueContext _context;
-
-    public RupturasController(EstoqueContext context)
-    {
-        _context = context;
-    }
-
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
-        var rupturas = await _context.Ruptura
-            .AsNoTracking()
-            .GroupBy(ruptura => new
+        var rupturas = await context.Ruptura.AsNoTracking()
+            .GroupBy(r => new { r.SkuId, r.Sku!.Produto!.Nome,
+                r.Sku.Produto.Marca, r.Sku.Produto.Cor, r.Sku.Numeracao })
+            .Select(g => new RupturaHistoricoViewModel
             {
-                ruptura.SkuId,
-                ruptura.Sku!.Numeracao,
-                Produto = ruptura.Sku.Produto!.Nome,
-                ruptura.Sku.Produto.Marca,
-                ruptura.Sku.Produto.Cor
+                Produto = g.Key.Nome,
+                Marca = g.Key.Marca,
+                Cor = g.Key.Cor,
+                Numeracao = g.Key.Numeracao,
+                QuantidadeOcorrencias = g.Count(),
+                UltimaOcorrencia = g.Max(r => (DateTime?)r.CriadoEm)
             })
-            .Select(grupo => new RupturaHistoricoViewModel
-            {
-                Produto = grupo.Key.Produto,
-                Marca = grupo.Key.Marca,
-                Cor = grupo.Key.Cor,
-                Numeracao = grupo.Key.Numeracao,
-                QuantidadeOcorrencias = grupo.Count(),
-                UltimaOcorrencia = grupo.Max(ruptura => ruptura.CriadoEm)
-            })
-            .ToListAsync();
+            .OrderByDescending(r => r.QuantidadeOcorrencias)
+            .ThenByDescending(r => r.UltimaOcorrencia)
+            .ThenBy(r => r.Produto).ThenBy(r => r.Marca)
+            .ThenBy(r => r.Cor).ThenBy(r => r.Numeracao)
+            .ToListAsync(cancellationToken);
 
         return View(new RupturasIndexViewModel { Rupturas = rupturas });
     }
