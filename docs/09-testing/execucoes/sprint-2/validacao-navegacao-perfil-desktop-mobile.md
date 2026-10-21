@@ -514,7 +514,7 @@ Todos os casos foram preparados para execução em Desktop e Mobile. Onde há ev
 | VNP-11 | Ajuste manual | Lojista | RF-23 | Aprovado |
 | VNP-12 | Bloqueio de anônimo | Anônimo | RF-02 | Aprovado |
 | VNP-13 | Consulta pelo Lojista | Lojista | RF-02 | Aprovado |
-| VNP-14 | Logout | Vendedor e Lojista | RF-03 | Não executado |
+| VNP-14 | Logout | Vendedor e Lojista | RF-03 | Aprovado |
 
 ## 10. Evidências
 
@@ -636,7 +636,7 @@ Todos os casos foram preparados para execução em Desktop e Mobile. Onde há ev
 | VNP-12 | Anônimo | `/Produtos/Create` | _[https://github.com/user-attachments/assets/0daaaac3-6588-4ba6-926e-ca814192de8c]_ |
 | VNP-12 | Anônimo | `/Movimentacoes` | _[https://github.com/user-attachments/assets/5e3952d4-9664-47e2-9cfb-ae1ab3ee28d5]_ |
 | VNP-13 | Lojista | `/Estoque/Consulta` | _[https://github.com/user-attachments/assets/325f723f-3e32-4233-843a-2ffc4d3d3de0]_ |
-| VNP-14 | Vendedor e Lojista | `/Account/Logout` | _[]_ |
+| VNP-14 | Vendedor e Lojista | `/Account/Logout` | _[https://github.com/user-attachments/assets/c0542fa6-672d-4fb3-8a98-3b8fbedac949]_ |
 
 ## 11. Cobertura de cenários
 
