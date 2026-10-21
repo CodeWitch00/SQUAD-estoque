@@ -86,11 +86,6 @@ Este relatório segue a seção 8.3 do plano. Somente **Aprovado** ou **Reprovad
 
 ## 8. Casos de teste
 
-Todos os casos foram preparados para execução em Desktop e Mobile. Onde há evidência, o resultado foi o mesmo nas duas resoluções.
-
-
-## 8. Casos de teste
-
 ### VNP-01 — Login do Vendedor com direcionamento ao perfil
 
 - **Requisito:** RF-01, RF-02, UC-01
