@@ -268,7 +268,7 @@ Todos os casos foram preparados para execução em Desktop e Mobile. Onde há ev
 
 ### VNP-07 — Catálogo de Produtos com filtros combinados
 
-- **Requisito:** RF-02; requisito do catálogo _[confirmar no SRS]_
+- **Requisito:** RF-02; RF-05; RF-06; RF-07
 - **Forma de execução:** Manual
 - **Nível:** Aceite
 - **Pré-condição:** USR-LOJ-01 autenticado; catálogo com produtos ativos e inativos.
@@ -317,7 +317,7 @@ Todos os casos foram preparados para execução em Desktop e Mobile. Onde há ev
 
 ### VNP-09 — Histórico de movimentações (auditoria)
 
-- **Requisito:** RF-10 _[confirmar no SRS]_, RF-02
+- **Requisito:** RF-10; RF-23; RF-02 e RNF-07
 - **Forma de execução:** Manual
 - **Nível:** Aceite
 - **Pré-condição:** USR-LOJ-01 autenticado; movimentações existentes.
@@ -636,6 +636,7 @@ Todos os casos foram preparados para execução em Desktop e Mobile. Onde há ev
 | VNP-12 | Anônimo | `/Produtos/Create` | _[https://github.com/user-attachments/assets/0daaaac3-6588-4ba6-926e-ca814192de8c]_ |
 | VNP-12 | Anônimo | `/Movimentacoes` | _[https://github.com/user-attachments/assets/5e3952d4-9664-47e2-9cfb-ae1ab3ee28d5]_ |
 | VNP-13 | Lojista | `/Estoque/Consulta` | _[https://github.com/user-attachments/assets/325f723f-3e32-4233-843a-2ffc4d3d3de0]_ |
+| VNP-14 | Vendedor e Lojista | `/Account/Logout` | _[]_ |
 
 ## 11. Cobertura de cenários
 
