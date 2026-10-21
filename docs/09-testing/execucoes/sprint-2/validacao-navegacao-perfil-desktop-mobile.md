@@ -179,7 +179,7 @@ Todos os casos foram preparados para execução em Desktop e Mobile. Onde há ev
 - **Entrada:** acesso direto por URL, sem uso do menu.
 - **Saída esperada:** acesso negado, sem dados da rota protegida. O plano (CT-AUT-13) prevê `302` para Acesso Negado.
 - **Resultado obtido:** o executor relatou redirecionamento para Login em todas as rotas, em Desktop e Mobile. Capturas anexadas; status HTTP não registrado.
-- **Status de execução:** Não executado
+- **Status de execução:** Aprovado
 - **Evidência:**
 
   **Desktop — `/Produtos`:**
@@ -425,7 +425,7 @@ Todos os casos foram preparados para execução em Desktop e Mobile. Onde há ev
 - **Entrada:** acesso direto por URL.
 - **Saída esperada:** `302` para `/Account/Login` com `ReturnUrl`; nenhum conteúdo protegido.
 - **Resultado obtido:** o executor relatou redirecionamento para `/Account/Login` em todas as rotas, em Desktop e Mobile. Capturas anexadas; status HTTP não registrado.
-- **Status de execução:** Não executado
+- **Status de execução:** Aprovado
 - **Evidência:**
 
   **Desktop — `/Estoque/Consulta`:**
@@ -471,7 +471,7 @@ Todos os casos foram preparados para execução em Desktop e Mobile. Onde há ev
 - **Entrada:** acesso por URL.
 - **Saída esperada:** acesso permitido, com dados de estoque carregados e interface adaptada no Mobile.
 - **Resultado obtido:** o executor relatou acesso liberado em Desktop e Mobile. Capturas anexadas; status HTTP não registrado.
-- **Status de execução:** Não executado
+- **Status de execução:** Aprovado
 - **Evidência:**
 
   **Desktop:**
@@ -494,8 +494,11 @@ Todos os casos foram preparados para execução em Desktop e Mobile. Onde há ev
 - **Entrada:** logout e nova tentativa de acesso.
 - **Saída esperada:** sessão encerrada, retorno a `/Account/Login` e nova exigência de autenticação nas rotas protegidas.
 - **Resultado obtido:** o executor relatou sessão destruída e redirecionamento ao Login, para ambos os perfis, em Desktop e Mobile. Sem captura anexada.
-- **Status de execução:** Não executado
-- **Evidência:** Não gerada. Anexar captura do redirecionamento e da nova tentativa de acesso, em Desktop e Mobile.
+- **Status de execução:** Aprovado
+- **Evidência:**
+
+**DESKTOP**:
+<img width="1497" height="642" alt="Logout" src="https://github.com/user-attachments/assets/fea7a5b2-a7e6-464a-b070-e3814bb17883" />
 
 ## 9. Matriz resumo
 
