@@ -14,7 +14,6 @@
 | Data de execução | 12/10/2026 |
 | Commit testado | `729b28f` |
 | Executor | _[Nícolas Amorim Araújo]_ |
-| Conferido por | _[preencher: nome do outro integrante]_ em _[20/10/2026]_ |
 | Plano de referência | [Plano de testes](docs/09-testing/plano-de-testes.md), versão 2.0 |
 | Alteração no repositório | Nenhuma além deste relatório (validação manual, sem alteração de código da aplicação) |
 
@@ -183,31 +182,31 @@ Este relatório segue a seção 8.3 do plano. Somente **Aprovado** ou **Reprovad
 
   **Desktop — `/Produtos/Create`:**
 
-  <img width="1915" height="1093" alt="Acesso Negado - Produtos Create" src="https://github.com/user-attachments/assets/117fbfa9-c041-4b93-9155-481d2f3c403d" />
+  <img width="1915" height="1093" alt="Acesso Negado - Produtos Create" src="https://github.com/user-attachments/assets/117fbfa9-c041-4b93-9155-481d2f3c403d" /> 
 
   **Desktop — `/Movimentacoes`:**
 
   <img width="1915" height="1087" alt="Acesso Negado - Movimentações" src="https://github.com/user-attachments/assets/7fb40415-d918-444e-a7aa-c6d2b4a2aaf6" />
 
-  **Desktop — `/Movimentacoes/Ajuste`:**
+  **Desktop — `/Movimentacoes/Ajuste`:*
 
-  <img width="1917" height="1083" alt="Acesso Negado - Movimentações - Ajuste" src="https://github.com/user-attachments/assets/aa554338-2fb3-4752-b961-304f2621f4eb" />
+<img width="1917" height="1083" alt="Acesso Negado - Movimentações - Ajuste" src="https://github.com/user-attachments/assets/aa554338-2fb3-4752-b961-304f2621f4eb" />
 
   **Mobile — `/Produtos`:**
 
-  <img width="517" height="1030" alt="Mobile Acesso Negado - Produtos" src="https://github.com/user-attachments/assets/3996a40d-2fca-4d49-a2c7-3f7b5353b252" />
+ <img width="780" height="1688" alt="Acesso_Negado_-_Produtos_mobile" src="https://github.com/user-attachments/assets/bc5df116-ad38-4b2d-866a-d65c94d8225f" />
 
   **Mobile — `/Produtos/Create`:**
 
-  <img width="505" height="1022" alt="Mobile Acesso Negado - ProdutosCreate" src="https://github.com/user-attachments/assets/0f20a277-ca2c-44d1-8638-a26825627aa4" />
+<img width="780" height="1688" alt="Acesso_Negado_-_Produtos_Create_mobile" src="https://github.com/user-attachments/assets/10903a39-d799-4a93-af00-8c56911357c4" />
 
   **Mobile — `/Movimentacoes`:**
 
-  <img width="520" height="1022" alt="Mobile Acesso Negado - Movimentações" src="https://github.com/user-attachments/assets/e7679534-6a91-4ab0-a627-9ff8a743409f" />
+ <img width="780" height="1688" alt="Acesso Negado- Movimentações Mobile" src="https://github.com/user-attachments/assets/4e6e8018-d86a-42bf-9578-5d88f8f1d83e" />
 
   **Mobile — `/Movimentacoes/Ajuste`:**
 
-  <img width="515" height="1027" alt="Mobile Acesso Negado - Movimentações Ajuste" src="https://github.com/user-attachments/assets/6eb735b9-c18c-4d63-a80d-0f61eb0f8739" />
+<img width="780" height="1688" alt="Acesso Negado -Movimentações Ajuste Mobile" src="https://github.com/user-attachments/assets/0a519046-6a4a-41af-a025-7bfea85c334e" />
 
 ### VNP-05 — Histórico de Rupturas
 - **Requisito:** RF-02
@@ -662,5 +661,5 @@ Este relatório segue a seção 8.3 do plano. Somente **Aprovado** ou **Reprovad
 3. **Vendedor em rota proibida:** o plano prevê `302` para Acesso Negado (CT-AUT-13); o executor relatou redirecionamento para Login. Registrar o comportamento observado.
 4. **Justificativa do ajuste:** o mínimo de cinco caracteres consta no relato da atividade e não aparece no plano. Confirmar no SRS ou no código.
 5. **Requisitos:** conferir no SRS os RF do catálogo (VNP-06) e da auditoria (VNP-08).
-6. **Data e commit:** `12/10/2026` e `729b28f` vêm do registro anterior do PR. Confirmar.
+6. **Data e commit:** `20/10/2026` e `729b28f` vêm do registro anterior do PR. Confirmar.
 
