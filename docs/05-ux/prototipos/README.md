@@ -19,17 +19,17 @@ Essa demonstração é estática: não autentica na aplicação MVC nem altera o
 ## Arquivos
 
 - [Login compartilhado](login.html)
-- [Protótipo do vendedor](vendedor/prototipo-vendedor.html)
-- [Protótipo do lojista](lojista/prototipo-lojista.html)
+- [Protótipo do vendedor](prototipo-vendedor.html)
+- [Protótipo do lojista](prototipo-lojista.html)
 
-Links diretos publicados: [login](https://codewitch00.github.io/SQUAD-estoque/05-ux/prototipos/login.html), [vendedor](https://codewitch00.github.io/SQUAD-estoque/05-ux/prototipos/vendedor/prototipo-vendedor.html) e [lojista](https://codewitch00.github.io/SQUAD-estoque/05-ux/prototipos/lojista/prototipo-lojista.html).
+Links diretos publicados: [login](https://codewitch00.github.io/SQUAD-estoque/05-ux/prototipos/login.html), [vendedor](https://codewitch00.github.io/SQUAD-estoque/05-ux/prototipos/prototipo-vendedor.html) e [lojista](https://codewitch00.github.io/SQUAD-estoque/05-ux/prototipos/prototipo-lojista.html).
 
 O arquivo `docs/index.html` abre automaticamente o login compartilhado.
 
 ## Observações
 
 - O fluxo depende dos caminhos relativos entre as páginas.
-- O protótipo do vendedor deve permanecer em `vendedor/prototipo-vendedor.html`.
+- Os protótipos do lojista e do vendedor permanecem diretamente nesta pasta.
 - Evidências e capturas ficam em [../evidencias/README.md](../evidencias/README.md).
 
 ## Referências

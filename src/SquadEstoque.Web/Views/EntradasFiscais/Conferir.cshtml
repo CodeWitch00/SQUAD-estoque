@@ -1,0 +1,125 @@
+@model ConferirEntradaFiscalViewModel
+@{
+    ViewData["Title"] = "Conferir NF-e";
+    var confirmada = Model.Status == StatusEntradaFiscal.CONFIRMADA;
+}
+
+<div class="entrada-fiscal-pagina">
+    <a asp-action="Index" class="btn btn-link px-0 mb-3">← Entradas por NF-e</a>
+    <div class="d-flex flex-wrap justify-content-between gap-3 mb-4">
+        <div>
+            <h1 class="mb-1">NF-e @Model.Numero</h1>
+            <p class="mb-0">@Model.FornecedorNome · @Model.CnpjFornecedor</p>
+            <small class="text-muted">Chave @Model.ChaveAcesso</small>
+        </div>
+        <span class="badge align-self-start @(confirmada ? "text-bg-success" : "text-bg-warning")">@Model.Status</span>
+    </div>
+
+    @if (confirmada)
+    {
+        <div class="alert alert-success">Entrada confirmada. Os produtos e saldos abaixo já foram atualizados.</div>
+    }
+    else
+    {
+        <div class="alert alert-info">Revise modelo, numeração e quantidade. A foto é opcional e pode ser tirada agora pelo celular.</div>
+    }
+
+    <form asp-action="Confirmar" method="post" enctype="multipart/form-data">
+        <input asp-for="EntradaId" type="hidden" />
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+        <div class="entrada-fiscal-itens">
+        @for (var i = 0; i < Model.Itens.Count; i++)
+        {
+            <article class="card entrada-fiscal-item">
+                <div class="card-header bg-white">
+                    <div>
+                        <strong>Item @Model.Itens[i].NumeroItem · @Model.Itens[i].Descricao</strong>
+                        <small class="d-block text-muted">Código @Model.Itens[i].CodigoFornecedor · @Model.Itens[i].Quantidade pares · @Model.Itens[i].ValorUnitario.ToString("C") cada</small>
+                    </div>
+                    @if (Model.Itens[i].AssociadoAutomaticamente)
+                    {
+                        <span class="badge text-bg-success">Reconhecido</span>
+                    }
+                </div>
+                <div class="card-body">
+                    <input asp-for="Itens[i].ItemId" type="hidden" />
+                    <input asp-for="Itens[i].NumeroItem" type="hidden" />
+                    <input asp-for="Itens[i].CodigoFornecedor" type="hidden" />
+                    <input asp-for="Itens[i].Descricao" type="hidden" />
+                    <input asp-for="Itens[i].Quantidade" type="hidden" />
+                    <input asp-for="Itens[i].ValorUnitario" type="hidden" />
+                    <input asp-for="Itens[i].AssociadoAutomaticamente" type="hidden" />
+
+                    <div class="row g-3">
+                        <div class="col-12 col-lg-8">
+                            <label asp-for="Itens[i].ProdutoId" class="form-label">Usar produto cadastrado</label>
+                            <select asp-for="Itens[i].ProdutoId" asp-items="Model.Produtos" class="form-select entrada-produto-existente">
+                                <option value="">Cadastrar produto novo</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-sm-4 col-lg-4">
+                            <label asp-for="Itens[i].Numeracao" class="form-label"></label>
+                            <input asp-for="Itens[i].Numeracao" class="form-control" inputmode="numeric" />
+                            <span asp-validation-for="Itens[i].Numeracao" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <fieldset class="entrada-produto-novo mt-3">
+                        <legend class="h6">Dados do novo modelo</legend>
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6"><label asp-for="Itens[i].NomeModelo" class="form-label"></label><input asp-for="Itens[i].NomeModelo" class="form-control" /><span asp-validation-for="Itens[i].NomeModelo" class="text-danger"></span></div>
+                            <div class="col-12 col-md-6"><label asp-for="Itens[i].Marca" class="form-label"></label><input asp-for="Itens[i].Marca" class="form-control" /><span asp-validation-for="Itens[i].Marca" class="text-danger"></span></div>
+                            <div class="col-12 col-md-6"><label asp-for="Itens[i].Categoria" class="form-label"></label><input asp-for="Itens[i].Categoria" class="form-control" /><span asp-validation-for="Itens[i].Categoria" class="text-danger"></span></div>
+                            <div class="col-12 col-md-6"><label asp-for="Itens[i].Cor" class="form-label"></label><input asp-for="Itens[i].Cor" class="form-control" /><span asp-validation-for="Itens[i].Cor" class="text-danger"></span></div>
+                            <div class="col-12">
+                                <label asp-for="Itens[i].Imagem" class="form-label">Foto opcional</label>
+                                <input asp-for="Itens[i].Imagem" class="form-control form-control-lg entrada-imagem" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="entrada-imagem-ajuda-@i" />
+                                <span asp-validation-for="Itens[i].Imagem" class="text-danger"></span>
+                                <small id="entrada-imagem-ajuda-@i" class="form-text">Opcional. No celular, abra o seletor para tirar uma foto ou escolher da galeria. JPG, PNG ou WebP, até 2 MB.</small>
+                                <img class="produto-foto-preview entrada-imagem-preview" alt="Prévia da foto do produto" hidden />
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </article>
+        }
+        </div>
+
+        @if (!confirmada)
+        {
+            <div class="entrada-fiscal-confirmar">
+                <p><strong>@Model.Itens.Sum(i => i.Quantidade) pares</strong> serão adicionados ao estoque.</p>
+                <button class="btn btn-success btn-lg" type="submit">Confirmar entrada</button>
+            </div>
+        }
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.querySelectorAll('.entrada-fiscal-item').forEach(item => {
+            const select = item.querySelector('.entrada-produto-existente');
+            const novo = item.querySelector('.entrada-produto-novo');
+            const atualizar = () => novo.hidden = Boolean(select.value);
+            select.addEventListener('change', atualizar);
+            atualizar();
+
+            const imagemInput = item.querySelector('.entrada-imagem');
+            const preview = item.querySelector('.entrada-imagem-preview');
+            let urlAnterior;
+            imagemInput?.addEventListener('change', () => {
+                if (urlAnterior) URL.revokeObjectURL(urlAnterior);
+                const arquivo = imagemInput.files?.[0];
+                if (!arquivo || !preview) {
+                    if (preview) { preview.hidden = true; preview.removeAttribute('src'); }
+                    return;
+                }
+                urlAnterior = URL.createObjectURL(arquivo);
+                preview.src = urlAnterior;
+                preview.hidden = false;
+            });
+        });
+    </script>
+}

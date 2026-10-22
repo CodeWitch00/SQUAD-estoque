@@ -1,146 +1,125 @@
-# DER Modelo Físico 
+# DER físico implementado - Sistema SQUAD
 
-Foco: A implementação técnica e o armazenamento real dos dados.
-Componentes: Define os tipos exatos de dados (VARCHAR, INT, DATE), restrições (constraints), índices e o tamanho de cada campo. 
+## Identificação da auditoria
 
-### Legenda
-| Notação     | Significado            |
-| ----------- | ---------------------- |
-| PK          | Primary Key            |
-| FK          | Foreign Key            |
-| UNIQUE      | Valor único            |
-| CHECK       | Restrição de validação |
-| NOT NULL    | Campo obrigatório      |
-| DEFAULT     | Valor padrão           |
-| UUID        | Identificador único    |
-| VARCHAR     | Texto com limite       |
-| INTEGER     | Número inteiro         |
-| BOOLEAN     | Verdadeiro/Falso       |
-| TIMESTAMPTZ | Data/Hora com timezone |
-| ENUM        | Tipo enumerado         |
+| Item              | Resultado                                                                  |
+| ----------------- | -------------------------------------------------------------------------- |
+| Branch            | `main`                                                                   |
+| Commit de referência do modelo | `dca1bc5bb0ab87b7cd1274da11e8c5522bea49e7`                 |
+| Última migration | `20260901000759_AddEnumDomainConstraints`                                |
+| ModelSnapshot     | `src/SquadEstoque.Web/Migrations/Estoque/EstoqueContextModelSnapshot.cs` |
+| Banco             | SQLite —`src/SquadEstoque.Web/Estoque.db`                               |
+| Fonte do diagrama | [`DER-fisicom.md`](DER-fisicom.md) e [`DER_fisico_SQUAD_final.svg`](DER_fisico_SQUAD_final.svg) |
 
-## ENUMs do Sistema
+## Diagrama
 
-```mermaid
-classDiagram
+O código-fonte Mermaid está em [`DER-fisicom.md`](DER-fisicom.md), e a versão renderizada aprovada está em [`DER_fisico_SQUAD_final.svg`](DER_fisico_SQUAD_final.svg).
 
-class perfil_usuario {
-    VENDEDOR
-    LOJISTA
-}
+O desenho contém somente as tabelas realmente implementadas:
 
-class tipo_movimentacao {
-    ENTRADA
-    SAIDA
-    AJUSTE
-}
-```
+- `Usuario`
+- `Produto`
+- `Sku`
+- `Movimentacao`
+- `Ruptura`
 
+O SVG foi conferido estruturalmente com o modelo EF Core e contém as mesmas cinco entidades e cinco relacionamentos implementados.
 
+### Cardinalidades e relacionamentos
 
-```mermaid
+| Relacionamento | Cardinalidade | FK obrigatória |
+| --- | --- | --- |
+| `Produto` → `Sku` | `1 : 0..N` | `Sku.ProdutoId -> Produto.Id` |
+| `Sku` → `Movimentacao` | `1 : 0..N` | `Movimentacao.SkuId -> Sku.Id` |
+| `Sku` → `Ruptura` | `1 : 0..N` | `Ruptura.SkuId -> Sku.Id` |
+| `Usuario` → `Movimentacao` | `1 : 0..N` | `Movimentacao.UsuarioId -> Usuario.Id` |
+| `Usuario` → `Ruptura` | `1 : 0..N` | `Ruptura.UsuarioId -> Usuario.Id` |
 
+Cada registro dependente possui exatamente um registro principal, porque as FKs são `NOT NULL`. Um `Produto`, `Sku` ou `Usuario` pode existir sem registros dependentes, por isso o lado principal é `0..N`. Nos relacionamentos com `Usuario`, a entidade não possui coleção de navegação no C#, mas a cardinalidade física continua sendo 1:N por causa da FK repetível na tabela dependente.
 
-classDiagram
+## Restrições e índices
 
+### Chaves e FKs
 
-    class usuario {
-        PK id : UUID
-        nome : VARCHAR(150)
-        email : VARCHAR(255)
-        senha_hash : VARCHAR(255)
-        perfil : perfil_usuario
+- PK em `Usuario.Id`, `Produto.Id`, `Sku.Id`, `Movimentacao.Id` e `Ruptura.Id`.
+- `Sku.ProdutoId -> Produto.Id`.
+- `Movimentacao.SkuId -> Sku.Id`.
+- `Movimentacao.UsuarioId -> Usuario.Id`.
+- `Ruptura.SkuId -> Sku.Id`.
+- `Ruptura.UsuarioId -> Usuario.Id`.
+- Todas as FKs usam `ON DELETE RESTRICT`.
 
-        UNIQUE(email)
-    }
+### Checks
 
-    class produto {
-        PK id : UUID
-        nome : VARCHAR(200)
-        marca : VARCHAR(100)
-        categoria : VARCHAR(100)
-        cor : VARCHAR(80)
-        ativo : BOOLEAN DEFAULT TRUE
-    }
+- `Usuario.Perfil IN (0, 1)`.
+- `Sku.SaldoAtual >= 0`.
+- `Movimentacao.Quantidade > 0`.
+- `Movimentacao.Tipo IN (0, 1, 2)`.
 
-    class sku {
-        PK id : UUID
-        FK produto_id : UUID
-        numeracao : VARCHAR(10)
-        saldo_atual : INTEGER DEFAULT 0
-        ativo : BOOLEAN DEFAULT TRUE
+### Índices
 
-        UNIQUE(produto_id, numeracao)
-        CHECK(saldo_atual >= 0)
-    }
+| Nome                           | Tabela           | Colunas                  | Único |
+| ------------------------------ | ---------------- | ------------------------ | -----: |
+| `IX_Usuario_Email`           | `Usuario`      | `Email`                |    Sim |
+| `IX_Sku_ProdutoId_Numeracao` | `Sku`          | `ProdutoId, Numeracao` |    Sim |
+| `IX_Movimentacao_SkuId`      | `Movimentacao` | `SkuId`                |   Não |
+| `IX_Movimentacao_UsuarioId`  | `Movimentacao` | `UsuarioId`            |   Não |
+| `IX_Ruptura_SkuId`           | `Ruptura`      | `SkuId`                |   Não |
+| `IX_Ruptura_UsuarioId`       | `Ruptura`      | `UsuarioId`            |   Não |
 
-    class movimentacao {
-        PK id : UUID
-        FK sku_id : UUID
-        tipo : tipo_movimentacao
-        quantidade : INTEGER
-        FK usuario_id : UUID
-        criado_em : TIMESTAMPTZ
-        motivo : TEXT
+Não foram incluídos índices planejados ou ausentes, como índices sobre `Ativo`, `SaldoAtual` ou índice parcial de saldo zero.
 
-        CHECK(quantidade > 0)
-    }
+## Tipos físicos
 
-    class ruptura {
-        PK id : UUID
-        FK sku_id : UUID
-        FK usuario_id : UUID
-        criado_em : TIMESTAMPTZ
-    }
+| Tipo C#      | Tipo SQLite |
+| ------------ | ----------- |
+| `Guid`     | `TEXT`    |
+| `string`   | `TEXT`    |
+| `DateTime` | `TEXT`    |
+| `int`      | `INTEGER` |
+| `bool`     | `INTEGER` |
+| `enum`     | `INTEGER` |
 
-    produto "0..N" --> "1..1" sku : produto_id
+Não foram utilizados `UUID`, `VARCHAR`, `TIMESTAMPTZ`, `BOOLEAN` nativo ou `ENUM` nativo.
 
-    sku "0..N" --> "1..1" movimentacao : sku_id
-    usuario "0..N" --> "1..1" movimentacao : usuario_id
+## Verificação do SKU
 
-    sku "0..N" --> "1..1" ruptura : sku_id
-    usuario "0..N" --> "1..1" ruptura : usuario_id
-```
+**O modelo físico atualmente implementado não possui atributo de data de última atualização na entidade `Sku`.**
 
-### Relacionamentos Físicos
+Não existem `UpdatedAt`, `AtualizadoEm`, `UltimaAtualizacao` ou campo equivalente em `Models/Entities/Sku.cs`, nas migrations, no ModelSnapshot ou no schema SQLite.
 
-| Tabela Origem | Tabela Destino | FK         | Participação                         |
-| ------------- | -------------- | ---------- | ------------------------------------ |
-| produto       | sku            | produto_id | PRODUTO (0..N) → SKU (1..1)          |
-| sku           | movimentacao   | sku_id     | SKU (0..N) → MOVIMENTACAO (1..1)     |
-| usuario       | movimentacao   | usuario_id | USUARIO (0..N) → MOVIMENTACAO (1..1) |
-| sku           | ruptura        | sku_id     | SKU (0..N) → RUPTURA (1..1)          |
-| usuario       | ruptura        | usuario_id | USUARIO (0..N) → RUPTURA (1..1)      |
+## Evidências conferidas
 
-```
-```
+- `src/SquadEstoque.Web/Models/Entities/Usuario.cs`
+- `src/SquadEstoque.Web/Models/Entities/Produto.cs`
+- `src/SquadEstoque.Web/Models/Entities/Sku.cs`
+- `src/SquadEstoque.Web/Models/Entities/Movimentacao.cs`
+- `src/SquadEstoque.Web/Models/Entities/Ruptura.cs`
+- `src/SquadEstoque.Web/Data/EstoqueContext.cs`
+- `src/SquadEstoque.Web/Migrations/Estoque/20260817120442_InitialSquadSchema.cs`
+- `src/SquadEstoque.Web/Migrations/Estoque/20260901000759_AddEnumDomainConstraints.cs`
+- `src/SquadEstoque.Web/Migrations/Estoque/EstoqueContextModelSnapshot.cs`
+- Schema SQLite de `src/SquadEstoque.Web/Estoque.db`
 
+## Validação
 
+| Item                          | Situação                                      |
+| ----------------------------- | ----------------------------------------------- |
+| Entidades conferidas          | 5 entidades confirmadas                         |
+| Campos conferidos             | Models, migrations, snapshot e SQLite coerentes |
+| Relacionamentos conferidos    | 5 relações 1:N confirmadas                    |
+| Cardinalidades conferidas     | 5 relações `1 : 0..N` confirmadas              |
+| Constraints conferidas        | PK, FK, UNIQUE e CHECK confirmadas              |
+| Índices conferidos           | 6 índices confirmados                          |
+| Campo de atualização do SKU | Não existe                                     |
+| Migration mais recente        | `20260901000759_AddEnumDomainConstraints`     |
+| ModelSnapshot                 | Coerente com a migration mais recente           |
+| Commit de referência utilizado | `dca1bc5bb0ab87b7cd1274da11e8c5522bea49e7`   |
 
-### Legenda de Cardinalidade
+## Legenda para a monografia
 
-| Notação | Significado    |
-| ------- | -------------- |
-| 0..1    | Zero ou um     |
-| 1..1    | Exatamente um  |
-| 0..N    | Zero ou muitos |
-| 1..N    | Um ou muitos   |
+Figura X — Diagrama Entidade-Relacionamento do modelo implementado do Sistema SQUAD
 
-### Constraints Aplicadas
-| Tabela       | Constraint                    | Objetivo                    |
-| ------------ | ----------------------------- | --------------------------- |
-| usuario      | UNIQUE(email)                 | impedir e-mails duplicados  |
-| sku          | UNIQUE(produto_id, numeracao) | impedir SKU duplicado       |
-| sku          | CHECK(saldo_atual >= 0)       | impedir saldo negativo      |
-| movimentacao | CHECK(quantidade > 0)         | impedir quantidade inválida |
+Fonte: Elaborado pelos autores (2026).
 
-### Regras Físicas 
-| Regra | Implementação Física                       |
-| ----- | ------------------------------------------ |
-| RN-01 | UNIQUE(produto_id, numeracao)              |
-| RN-02 | CHECK(saldo_atual >= 0)                    |
-| RN-03 | ausência de UPDATE/DELETE em movimentacao  |
-| RN-04 | validado pela aplicação via perfil_usuario |
-| RN-05 | ruptura não possui saldo                   |
-| RN-06 | sku_id obrigatório em ruptura              |
-
+**DER APROVADO PARA A MONOGRAFIA: SIM**

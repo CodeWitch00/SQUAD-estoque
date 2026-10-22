@@ -22,20 +22,17 @@ Este documento é um índice de resultados e evidências.
 ### Protótipos e UX
 
 - [Login navegável](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/05-ux/prototipos/login.html)
-- [Fluxo do vendedor](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/05-ux/prototipos/vendedor/prototipo-vendedor.html)
-- [Fluxo do lojista](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/05-ux/prototipos/lojista/prototipo-lojista.html)
+- [Fluxo do vendedor](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/05-ux/prototipos/prototipo-vendedor.html)
+- [Fluxo do lojista](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/05-ux/prototipos/prototipo-lojista.html)
 - [Inventário de telas e mapa de navegação](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/05-ux/inventario-telas-e-mapa-navegacao.md)
 - [Mapa visual de navegação](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/05-ux/mapa-navegacao-mvp.svg)
 - [Decisões de interface](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/05-ux/decisoes/decisoes-de-interface.md)
 - [Evidências de UX](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/05-ux/evidencias/README.md)
 
-### Planejamento e especificação dos testes
+### Planejamento dos testes
 
 - [Plano geral de testes](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/09-testing/plano-de-testes.md)
-- [Especificação de autenticação, sessão e perfis](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/09-testing/especificacao-testes-autenticacao.md)
-- [Especificação dos testes administrativos](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/09-testing/especificacao-teste-administrativo.md)
-- [Especificação dos testes do vendedor](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/09-testing/especificacao-testes-vendedor.md)
-- [Especificação dos testes não funcionais](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/09-testing/especificacao-testes-nao-funcionais.md)
+- [Registro consolidado de validações manuais](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/09-testing/homologacoes/registro-validacoes-manuais.md)
 
 ### Testes automatizados
 
@@ -64,12 +61,7 @@ O workflow está configurado para `push` em qualquer branch e `pull_request` dir
 
 ### Validações manuais
 
-- [Roteiro administrativo executado](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/09-testing/roteiro-executado-baseline-administrativa-2026-08-30.md)
-- [Homologação da baseline administrativa](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/09-testing/relatorio-homologacao-baseline-administrativa-2026-08-30.md)
-- [Validação responsiva da consulta do vendedor](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/09-testing/validacao-consulta-vendedor-2026-08-31.md)
-- [Validação da navegação por perfil](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/09-testing/validacao-navegacao-por-perfil-2026-09-03.md)
-
-As validações são datadas e representam o escopo existente no momento de cada execução. A validação responsiva de 31/08 registra uma limitação do navegador headless e recomenda conferência visual final em navegador gráfico.
+As homologações administrativa, responsiva e de navegação por perfil foram resumidas no [registro consolidado de validações manuais](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/09-testing/homologacoes/registro-validacoes-manuais.md). Os relatórios detalhados anteriores permanecem recuperáveis pelo histórico do Git.
 
 ## Registro para dailies
 
@@ -79,7 +71,7 @@ Para as dailies, este relatório pode ser usado no formato “feito, evidência,
 - **Evidência:** links das seções anteriores e resultado local da suíte.
 - **Pendências de conferência:** execução remota mais recente da CI e validação visual final em navegador/dispositivo gráfico.
 
-O calendário e a organização das reuniões estão em [Dailies da Sprint](criterios-obrigatorios/Dailies-Sprint.md).
+O calendário e a organização das reuniões estão em [Dailies da Sprint](Dailies-Sprint.md).
 
 ## Referência para futura atualização da monografia
 

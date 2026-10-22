@@ -11,7 +11,7 @@
 ### 1.1 Contexto e Objetivo
 O sistema SQUAD é uma ferramenta focada em resolver o problema de chão de loja no varejo de calçados (consulta rápida de estoque pelo vendedor e rastreamento estruturado de rupturas para o lojista).
 
-O projeto **não é construído do zero**. Ele aproveita o projeto `SquadEstoque.Web` como esqueleto e base arquitetural, substituindo integralmente o domínio de *Filmes* pelo domínio de *Estoque de Calçados*.
+O projeto usa `SquadEstoque.Web` como base estrutural e tecnológica para o domínio de estoque de calçados.
 
 ### 1.2 Princípio de Projeto
 > **"Reaproveitar o esqueleto existente e substituir o domínio, não reconstruir o sistema usando uma arquitetura nova."**
@@ -60,14 +60,14 @@ src/SquadEstoque.Web/
 │   ├── ProdutosController.cs      # Catálogo de modelos e definição de grades
 │   ├── EstoqueController.cs       # Consulta rápida (vendedor), entradas e ajustes (lojista)
 │   ├── MovimentacoesController.cs # Histórico e auditoria de entradas, saídas e ajustes
-│   └── RupturasController.cs      # Relatório e histórico de demandas não atendidas ("Não tinha")
 ├── Models/
-│   ├── Usuario.cs                 # Usuário autenticado e enum PerfilUsuario (VENDEDOR, LOJISTA)
-│   ├── Produto.cs                 # Modelo comercial de calçado
-│   ├── Sku.cs                     # Unidade mínima de estoque (Produto + Numeração)
-│   ├── Movimentacao.cs            # Registro imutável de movimentação e enum TipoMovimentacao
-│   ├── Ruptura.cs                 # Registro de demanda não atendida vinculada a SKU
-│   └── ErrorViewModel.cs          # Modelo padrão para exibição de erros
+│   ├── Entities/                  # Entidades persistidas do domínio do estoque
+│   │   ├── Usuario.cs             # Usuário autenticado e enum PerfilUsuario
+│   │   ├── Produto.cs             # Modelo comercial de calçado
+│   │   ├── Sku.cs                 # Unidade mínima de estoque (Produto + Numeração)
+│   │   ├── Movimentacao.cs        # Registro imutável e enum TipoMovimentacao
+│   │   └── Ruptura.cs             # Demanda não atendida vinculada a SKU
+│   └── ViewModels/                # Modelos de tela, entrada e mensagens de erro
 ├── Views/
 │   ├── Account/                   # Telas de Login e Acesso Negado
 │   ├── Produtos/                  # Telas de listagem e cadastro de modelos
@@ -83,7 +83,7 @@ src/SquadEstoque.Web/
 ├── wwwroot/                       # Arquivos estáticos (CSS, JS, Bootstrap, jQuery)
 ├── Program.cs                     # Configuração de serviços, autenticação e pipeline HTTP
 ├── appsettings.json               # Connection string do SQLite e configurações
-└── squad_estoque.db               # Base física de dados SQLite
+└── Estoque.db                     # Base física de dados SQLite local
 ```
 
 ---
@@ -107,12 +107,11 @@ flowchart TD
         PC["ProdutosController"]
         EC["EstoqueController"]
         MC["MovimentacoesController"]
-        RC["RupturasController"]
     end
 
     subgraph DataLayer ["Acesso a Dados"]
         CTX["EstoqueContext (DbContext)"]
-        DB[(SQLite: squad_estoque.db)]
+        DB[(SQLite: Estoque.db)]
     end
 
     subgraph ViewsLayer ["Views Razor"]
@@ -158,6 +157,7 @@ flowchart TD
 | **DA-06** | **Desacoplamento de Ruptura (RN-05, RN-06)** | A tabela `ruptura` não armazena saldo nem quantidade, sendo gerada exclusivamente pelo clique em "Não tinha". | Ruptura é dado de inteligência comercial, não afeta estoque físico. |
 | **DA-07** | **Atomicidade de Venda (RN-07)** | Operações de saída executadas em transação de escrita imediata no SQLite com `CHECK (saldo_atual >= 0)`. | Garante que dois vendedores concorrentes não vendam o último par simultaneamente. |
 | **DA-08** | **Autenticação e Sessão** | Cookie Authentication nativo do ASP.NET Core com perfis `VENDEDOR` e `LOJISTA`. | Leve, integrado ao framework e sem a sobrecarga de tabelas do Identity completo. |
+| **DA-09** | **Persistência do domínio de estoque** | `EstoqueContext` mantém as migrations e o banco SQLite do estoque. | A aplicação possui somente a persistência necessária ao produto. |
 
 ---
 
@@ -167,6 +167,5 @@ flowchart TD
 | :--- | :--- | :--- | :--- |
 | **DP-01** | **Algoritmo / Pacote de Hash de Senha** | - Opção A: `BCrypt.Net-Next` (atende estritamente o RNF-04 que cita bcrypt custo $\ge 12$).<br>- Opção B: `PasswordHasher<T>` nativo do ASP.NET Core (usa PBKDF2). | Definição da dependência externa no `.csproj`. |
 | **DP-02** | **Estratégia de Seed de Dados** | - Opção A: Criar usuários (`vendedor@loja.com` e `lojista@loja.com`) e produtos padrão automaticamente na inicialização caso a base esteja vazia.<br>- Opção B: Não realizar carga inicial automática. | Facilidade de testes manuais e homologação local. |
-| **DP-03** | **Estratégia de Migrações do EF Core** | - Opção A: Resetar histórico de migrações de filmes e gerar migração inicial única `InitialSquadSchema`.<br>- Opção B: Adicionar nova migração incremental sobre o schema de filmes. | Limpeza do histórico de migrations do EF Core. |
 
 ---

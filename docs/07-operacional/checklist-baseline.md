@@ -25,7 +25,6 @@
 - `/Account/Login` respondeu `200`
 - `/Produtos` respondeu `302` para login
 - `/Movimentacoes` respondeu `302` para login
-- `/Movies` respondeu `200` como legado mantido
 - Login do lojista com `lojista@squad.com` funcionou
 - Lojista acessou Produtos
 - Lojista acessou Movimentações
@@ -37,9 +36,8 @@
 
 ## Observações
 
-- Os arquivos locais de banco `Estoque.db` e `LegacyMovie.db` são ignorados pelo Git
+- O arquivo local de banco `Estoque.db` é ignorado pelo Git
 - O teste manual completo dos fluxos ainda está pendente
-- O legado `Movie` ainda existe e não deve ser removido nesta fase
 
 ## Checklist pendente
 

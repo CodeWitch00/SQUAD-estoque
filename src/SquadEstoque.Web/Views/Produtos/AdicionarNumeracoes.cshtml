@@ -1,0 +1,100 @@
+@model SquadEstoque.Web.Models.AdicionarNumeracoesViewModel
+
+@{
+    ViewData["Title"] = Model.CadastroInicial ? "Cadastrar grade" : "Adicionar numerações";
+}
+
+<header class="admin-page-heading admin-form-heading product-form-heading">
+    <div>
+        @if (Model.CadastroInicial)
+        {
+            <a asp-action="Edit" asp-route-id="@Model.ProdutoId" class="btn btn-link px-0 mb-2">← Voltar aos dados do produto</a>
+        }
+        else
+        {
+            <a asp-action="Details" asp-route-id="@Model.ProdutoId" class="btn btn-link px-0 mb-2">← Voltar ao produto</a>
+        }
+        <h1>@(Model.CadastroInicial ? "Cadastrar grade" : "Adicionar numerações")</h1>
+        <p class="admin-page-intro">@(Model.CadastroInicial ? "Quais numerações estão disponíveis? Informe o saldo de cada uma." : "Inclua novos tamanhos e, se necessário, informe o saldo de entrada.")</p>
+    </div>
+</header>
+
+<div class="admin-form-layout grade-form-layout">
+    <section class="admin-form-surface" aria-label="Formulário para adicionar numerações">
+        <form asp-action="AdicionarNumeracoes" asp-route-id="@Model.ProdutoId" method="post" class="admin-form" id="grade-produto-form">
+            <input type="hidden" asp-for="ProdutoId" />
+            <input type="hidden" asp-for="CadastroInicial" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+
+            <div class="movement-context grade-context">
+                <p class="movement-context-label">Produto selecionado</p>
+                <p class="movement-context-product">@Model.NomeProduto</p>
+                @if (!string.IsNullOrWhiteSpace(Model.ImagemUrl))
+                {
+                    <img src="@Model.ImagemUrl" alt="Foto de @Model.NomeProduto" class="produto-foto-preview" />
+                }
+                <div class="movement-context-details">
+                    <span>@Model.Marca</span>
+                    <span>@Model.Categoria</span>
+                    <span>@Model.Cor</span>
+                </div>
+            </div>
+
+            <div class="grade-current-sizes" aria-labelledby="grade-current-sizes-title">
+                <h2 id="grade-current-sizes-title">Grade atual</h2>
+                <div class="grade-current-size-list">
+                    @if (Model.NumeracoesAtuais.Any())
+                    {
+                        foreach (var numeracao in Model.NumeracoesAtuais)
+                        {
+                            <span class="badge product-size-chip">@numeracao</span>
+                        }
+                    }
+                    else
+                    {
+                        <span class="grade-current-empty">Nenhuma numeração ativa cadastrada.</span>
+                    }
+                </div>
+            </div>
+
+            <fieldset class="produto-form-secao">
+                <legend>Numerações disponíveis</legend>
+                <div class="row g-3">
+                    @for (var i = 0; i < Model.Opcoes.Count; i++)
+                    {
+                        <div class="col-6 col-md-4">
+                            <div class="border rounded p-2 h-100">
+                                <input type="hidden" asp-for="Opcoes[i].Numeracao" />
+                                <div class="form-check">
+                                    <input asp-for="Opcoes[i].Selecionada" class="form-check-input grade-tamanho-check" />
+                                    <label asp-for="Opcoes[i].Selecionada" class="form-check-label">@Model.Opcoes[i].Numeracao</label>
+                                </div>
+                                <label asp-for="Opcoes[i].Quantidade" class="form-label small mb-1">Quantidade em estoque</label>
+                                <div class="input-group input-group-sm">
+                                    <button type="button" class="btn btn-outline-secondary grade-quantidade-ajuste" data-delta="-1" aria-label="Diminuir quantidade">−</button>
+                                    <input asp-for="Opcoes[i].Quantidade" class="form-control text-center" min="0" inputmode="numeric" />
+                                    <button type="button" class="btn btn-outline-secondary grade-quantidade-ajuste" data-delta="1" aria-label="Aumentar quantidade">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="mt-3">
+                    <label asp-for="NumeracoesExtras" class="form-label"></label>
+                    <input asp-for="NumeracoesExtras" class="form-control" placeholder="Ex.: 45, 46" />
+                    <div class="form-text">Numerações extras são cadastradas com saldo zero.</div>
+                </div>
+            </fieldset>
+
+            <div class="admin-form-actions">
+                <a asp-action="@(Model.CadastroInicial ? "Edit" : "Details")" asp-route-id="@Model.ProdutoId" class="btn btn-outline-secondary">Voltar</a>
+                <button type="submit" class="btn btn-primary">Salvar grade</button>
+            </div>
+        </form>
+    </section>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/grade-produto.js" asp-append-version="true"></script>
+}

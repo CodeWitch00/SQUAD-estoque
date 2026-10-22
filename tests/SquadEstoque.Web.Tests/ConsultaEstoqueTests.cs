@@ -154,9 +154,9 @@ public sealed class ConsultaEstoqueTests : IClassFixture<SquadEstoqueWebApplicat
         var html = WebUtility.HtmlDecode(await response.Content.ReadAsStringAsync());
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Contains("Grade disponível", html);
+        Assert.Contains("Qual número?", html);
         Assert.Contains("Grade completa de numerações", html);
-        Assert.Contains("Nº</span>\n                                        36", html);
+        Assert.Matches(@"Nº</span>\s+36", html);
         Assert.Contains("3 pares", html);
         Assert.Contains("Último par", html);
         Assert.Contains("Indisponível", html);

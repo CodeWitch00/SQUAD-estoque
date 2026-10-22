@@ -4,11 +4,11 @@ Esta pasta receberá capturas reais dos fluxos HTML após revisão. Não devem s
 
 | Arquivo esperado | Origem | Viewport mínimo | Estado |
 | --- | --- | --- | --- |
-| `lojista-desktop.png` | `../prototipos/lojista/prototipo-lojista.html` | 1440 × 900 | Pendente de captura e revisão |
-| `lojista-tablet.png` | `../prototipos/lojista/prototipo-lojista.html` | 768 × 1024 | Pendente de captura e revisão |
-| `vendedor-mobile.png` | `../prototipos/vendedor/prototipo-vendedor.html` | 390 × 844 | Pendente de captura e revisão |
-| `vendedor-s2-atendimento-mobile.png` | `../prototipos/vendedor/prototipo-vendedor.html` | Moldura de 414 px | Captura registrada: confirmação de Vendeu para o SKU RUN-PRO-PT-37. A imagem documenta somente este estado visual. |
-| `vendedor-s2-desistiu-sem-sku-mobile.png` | `../prototipos/vendedor/prototipo-vendedor.html` | Moldura de 414 px | Captura registrada: Desistiu iniciado na grade sem numeração selecionada; a confirmação identifica somente o modelo consultado. |
+| `lojista-desktop.png` | `../prototipos/prototipo-lojista.html` | 1440 × 900 | Pendente de captura e revisão |
+| `lojista-tablet.png` | `../prototipos/prototipo-lojista.html` | 768 × 1024 | Pendente de captura e revisão |
+| `vendedor-mobile.png` | `../prototipos/prototipo-vendedor.html` | 390 × 844 | Pendente de captura e revisão |
+| `vendedor-s2-atendimento-mobile.png` | `../prototipos/prototipo-vendedor.html` | Moldura de 414 px | Captura registrada: confirmação de Vendeu para o SKU RUN-PRO-PT-37. A imagem documenta somente este estado visual. |
+| `vendedor-s2-desistiu-sem-sku-mobile.png` | `../prototipos/prototipo-vendedor.html` | Moldura de 414 px | Captura registrada: Desistiu iniciado na grade sem numeração selecionada; a confirmação identifica somente o modelo consultado. |
 
 ## Procedimento
 

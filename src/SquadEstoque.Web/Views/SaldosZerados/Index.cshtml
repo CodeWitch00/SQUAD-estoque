@@ -1,0 +1,40 @@
+@model SquadEstoque.Web.Models.SaldosZeradosViewModel
+
+@{
+    ViewData["Title"] = "Saldos zerados para reposição";
+}
+
+<div class="admin-page-heading mb-4">
+    <div>
+        <h1>Saldos zerados para reposição</h1>
+        <p class="admin-page-intro">Numerações sem saldo, agrupadas por produto, para apoiar a reposição.</p>
+    </div>
+</div>
+
+@if (Model.Produtos.Count == 0)
+{
+    <div class="alert alert-info" role="status">Nenhum produto possui numerações com saldo zerado no momento.</div>
+}
+else
+{
+    <div class="row g-3">
+        @foreach (var produto in Model.Produtos)
+        {
+            <div class="col-12 col-md-6 col-xl-4">
+                <section class="card h-100" aria-label="@produto.Nome">
+                    <div class="card-body">
+                        <h2 class="h5 card-title">@produto.Nome</h2>
+                        <p class="text-secondary mb-2">@produto.Marca · @produto.Cor</p>
+                        <p class="mb-2">Numerações sem saldo:</p>
+                        <ul class="list-inline mb-0">
+                            @foreach (var numeracao in produto.NumeracoesZeradas)
+                            {
+                                <li class="list-inline-item"><span class="badge text-bg-secondary">@numeracao</span></li>
+                            }
+                        </ul>
+                    </div>
+                </section>
+            </div>
+        }
+    </div>
+}

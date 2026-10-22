@@ -75,17 +75,22 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
         Assert.DoesNotContain("Tênis Runner", html);
     }
 
-    [Fact]
-    public async Task Vendedor_can_post_venda_for_sku_and_records_authenticated_user()
+    [Theory]
+    [InlineData(3, 2, "Disponível", "disponivel")]
+    [InlineData(2, 1, "Último par", "ultimo-par")]
+    [InlineData(1, 0, "Indisponível", "indisponivel")]
+    public async Task Vendedor_can_post_venda_for_sku_and_records_authenticated_user(
+        int saldoInicial, int saldoFinal, string estado, string classe)
     {
         using var client = CreateClient();
         await LoginAsync(client, "vendedor@squad.com");
-        var (skuId, usuarioId) = await AddSkuAsync(3);
+        var (skuId, usuarioId, produtoId) = await AddSkuAsync(saldoInicial);
         var token = await ExtractAntiforgeryTokenAsync(client);
 
         using var form = new FormUrlEncodedContent(new Dictionary<string, string>
         {
             ["SkuId"] = skuId.ToString(),
+            ["produtoId"] = produtoId.ToString(),
             ["__RequestVerificationToken"] = token
         });
 
@@ -95,10 +100,10 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Contains("Venda registrada com sucesso", body);
         Assert.Contains($"\"skuId\":\"{skuId}\"", body);
-        Assert.Contains("\"saldoAtual\":2", body);
+        Assert.Contains($"\"saldoAtual\":{saldoFinal}", body);
         using var scope = _factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
-        Assert.Equal(2, (await context.Sku.FindAsync(skuId))!.SaldoAtual);
+        Assert.Equal(saldoFinal, (await context.Sku.FindAsync(skuId))!.SaldoAtual);
         var movement = await context.Movimentacao.SingleAsync(m => m.SkuId == skuId);
         Assert.Equal(1, movement.Quantidade);
         Assert.Equal(TipoMovimentacao.SAIDA, movement.Tipo);
@@ -109,8 +114,11 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
             $"/Estoque/Consulta?termo={Uri.EscapeDataString(skuAtualizado.Produto!.Nome)}&produtoId={skuAtualizado.ProdutoId}");
         var gradeAtualizada = WebUtility.HtmlDecode(await consultaAtualizada.Content.ReadAsStringAsync());
         Assert.Equal(HttpStatusCode.OK, consultaAtualizada.StatusCode);
-        Assert.Contains("Grade disponível", gradeAtualizada);
-        Assert.Contains("2 pares", gradeAtualizada);
+        Assert.Contains("Qual número?", gradeAtualizada);
+        var quantidade = $"{saldoFinal} {(saldoFinal == 1 ? "par" : "pares")}";
+        Assert.Contains($"aria-label=\"Nº 42, {quantidade}, {estado}\"", gradeAtualizada);
+        Assert.Contains($"consulta-grade-item--{classe}", gradeAtualizada);
+        Assert.Contains($"data-numeracao=\"42\" data-saldo=\"{saldoFinal}\"", gradeAtualizada);
     }
 
     [Fact]
@@ -123,6 +131,7 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
         using var form = new FormUrlEncodedContent(new Dictionary<string, string>
         {
             ["SkuId"] = Guid.NewGuid().ToString(),
+            ["produtoId"] = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa").ToString(),
             ["__RequestVerificationToken"] = token
         });
 
@@ -138,12 +147,13 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
     {
         using var client = CreateClient();
         await LoginAsync(client, "vendedor@squad.com");
-        var (skuId, _) = await AddSkuAsync(0);
+        var (skuId, _, produtoId) = await AddSkuAsync(0);
         var token = await ExtractAntiforgeryTokenAsync(client);
 
         using var form = new FormUrlEncodedContent(new Dictionary<string, string>
         {
             ["skuId"] = skuId.ToString(),
+            ["produtoId"] = produtoId.ToString(),
             ["__RequestVerificationToken"] = token
         });
 
@@ -157,18 +167,28 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
         Assert.Empty(await context.Ruptura.Where(r => r.SkuId == skuId).ToListAsync());
     }
 
-    [Fact]
-    public async Task Vendedor_can_register_rupture_for_selected_sku_without_changing_stock()
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(3)]
+    public async Task Registrar_nao_tinha_creates_rupture_without_changing_any_stock_or_movement(
+        int saldoInicial)
     {
         using var client = CreateClient();
         await LoginAsync(client, "vendedor@squad.com");
-        var (skuId, usuarioId) = await AddSkuAsync(3);
+        var (skuId, usuarioId, _) = await AddSkuAsync(saldoInicial);
         var token = await ExtractAntiforgeryTokenAsync(client);
+        var before = await ReadStockStateAsync();
+        var rupturesBefore = await ReadRuptureStateAsync();
+        using var productScope = _factory.Services.CreateScope();
+        var produtoId = await productScope.ServiceProvider.GetRequiredService<EstoqueContext>()
+            .Sku.Where(s => s.Id == skuId).Select(s => s.ProdutoId).SingleAsync();
 
         using var form = new FormUrlEncodedContent(new Dictionary<string, string>
         {
             ["skuId"] = skuId.ToString(),
             ["usuarioId"] = Guid.NewGuid().ToString(),
+            ["produtoId"] = produtoId.ToString(),
             ["__RequestVerificationToken"] = token
         });
 
@@ -179,9 +199,13 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         using var scope = _factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
-        Assert.Equal(3, (await context.Sku.FindAsync(skuId))!.SaldoAtual);
-        Assert.Empty(await context.Movimentacao.Where(m => m.SkuId == skuId).ToListAsync());
-        var ruptura = await context.Ruptura.SingleAsync(r => r.SkuId == skuId);
+        Assert.Equal(saldoInicial, (await context.Sku.FindAsync(skuId))!.SaldoAtual);
+        var after = await ReadStockStateAsync();
+        Assert.Equal(before.Skus, after.Skus);
+        Assert.Equal(before.Movements, after.Movements);
+        var rupturesAfter = await ReadRuptureStateAsync();
+        Assert.Equal(rupturesBefore.Length + 1, rupturesAfter.Length);
+        var ruptura = Assert.Single(rupturesAfter.Except(rupturesBefore));
         Assert.Equal(skuId, ruptura.SkuId);
         Assert.Equal(usuarioId, ruptura.UsuarioId);
         Assert.InRange(ruptura.CriadoEm, antesDoPost, depoisDoPost);
@@ -229,7 +253,7 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
             await LoginAsync(client, email);
         }
 
-        var (skuId, _) = await AddSkuAsync(3);
+        var (skuId, _, _) = await AddSkuAsync(3);
         using var form = new FormUrlEncodedContent(new Dictionary<string, string>
         {
             ["skuId"] = skuId.ToString()
@@ -269,9 +293,10 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
     }
 
     [Theory]
-    [InlineData("lojista@squad.com", HttpStatusCode.Found)]
-    [InlineData(null, HttpStatusCode.Found)]
-    public async Task Vender_requires_authenticated_vendedor(string? email, HttpStatusCode expectedStatus)
+    [InlineData("lojista@squad.com", "/Produtos", "/Account/AccessDenied?ReturnUrl=%2FEstoque%2FVender")]
+    [InlineData(null, "/Account/Login", "/Account/Login?ReturnUrl=%2FEstoque%2FVender")]
+    public async Task Vender_denies_unauthorized_access_without_changing_stock_or_movements(
+        string? email, string tokenPage, string expectedRedirect)
     {
         using var client = CreateClient();
         if (email is not null)
@@ -279,12 +304,68 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
             await LoginAsync(client, email);
         }
 
-        var response = await client.PostAsync("/Estoque/Vender", new FormUrlEncodedContent(
-            new Dictionary<string, string> { ["SkuId"] = Guid.NewGuid().ToString() }));
+        // Use a sellable SKU and a token issued to this session so an invalid
+        // request cannot mask a missing authorization check.
+        var (skuId, usuarioId, produtoId) = await AddSkuAsync(3);
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
+            context.Movimentacao.Add(new Movimentacao
+            {
+                Id = Guid.NewGuid(), SkuId = skuId, UsuarioId = usuarioId,
+                Tipo = TipoMovimentacao.ENTRADA, Quantidade = 3,
+                Motivo = "Saldo inicial para verificar preservação do histórico"
+            });
+            await context.SaveChangesAsync();
+        }
+        using var page = await client.GetAsync(tokenPage);
+        Assert.Equal(HttpStatusCode.OK, page.StatusCode);
+        var token = ExtractAntiforgeryToken(await page.Content.ReadAsStringAsync());
+        var before = await ReadStockStateAsync();
+        using var form = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["SkuId"] = skuId.ToString(),
+            ["produtoId"] = produtoId.ToString(),
+            ["__RequestVerificationToken"] = token
+        });
+        using var response = await client.PostAsync("/Estoque/Vender", form);
 
-        Assert.Equal(expectedStatus, response.StatusCode);
-        Assert.NotEqual(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Found, response.StatusCode);
+        Assert.Equal(expectedRedirect, response.Headers.Location?.PathAndQuery);
+        var after = await ReadStockStateAsync();
+        Assert.Equal(before.Skus, after.Skus);
+        Assert.Equal(before.Movements, after.Movements);
     }
+
+    private async Task<(SkuState[] Skus, MovementState[] Movements)> ReadStockStateAsync()
+    {
+        // A fresh context verifies persisted rows, including existing history,
+        // rather than entities cached by the request or setup change tracker.
+        using var scope = _factory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
+        var skus = await context.Sku.AsNoTracking().OrderBy(s => s.Id)
+            .Select(s => new SkuState(s.Id, s.ProdutoId, s.Numeracao, s.SaldoAtual, s.Ativo))
+            .ToArrayAsync();
+        var movements = await context.Movimentacao.AsNoTracking().OrderBy(m => m.Id)
+            .Select(m => new MovementState(m.Id, m.SkuId, m.Tipo, m.Quantidade,
+                m.UsuarioId, m.CriadoEm, m.Motivo))
+            .ToArrayAsync();
+        return (skus, movements);
+    }
+
+    private async Task<RuptureState[]> ReadRuptureStateAsync()
+    {
+        using var scope = _factory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
+        return await context.Ruptura.AsNoTracking().OrderBy(r => r.Id)
+            .Select(r => new RuptureState(r.Id, r.SkuId, r.UsuarioId, r.CriadoEm))
+            .ToArrayAsync();
+    }
+
+    private sealed record SkuState(Guid Id, Guid ProdutoId, string Numeracao, int SaldoAtual, bool Ativo);
+    private sealed record MovementState(Guid Id, Guid SkuId, TipoMovimentacao Tipo,
+        int Quantidade, Guid UsuarioId, DateTime CriadoEm, string? Motivo);
+    private sealed record RuptureState(Guid Id, Guid SkuId, Guid UsuarioId, DateTime CriadoEm);
 
     [Fact]
     public async Task Consulta_without_results_shows_not_found_message()
@@ -357,7 +438,7 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
         return ExtractAntiforgeryToken(await response.Content.ReadAsStringAsync());
     }
 
-    private async Task<(Guid SkuId, Guid UsuarioId)> AddSkuAsync(int saldo)
+    private async Task<(Guid SkuId, Guid UsuarioId, Guid ProdutoId)> AddSkuAsync(int saldo)
     {
         using var scope = _factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
@@ -384,7 +465,7 @@ public sealed class EstoqueControllerHttpTests : IClassFixture<SquadEstoqueWebAp
             .Where(usuario => usuario.Email == "vendedor@squad.com")
             .Select(usuario => usuario.Id)
             .SingleAsync();
-        return (sku.Id, usuarioId);
+        return (sku.Id, usuarioId, produto.Id);
     }
 
     private static string ExtractAntiforgeryToken(string html)

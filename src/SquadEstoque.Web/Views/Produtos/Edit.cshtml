@@ -4,18 +4,17 @@
     ViewData["Title"] = "Editar Produto";
 }
 
-<header class="admin-page-heading admin-form-heading mb-4">
+<header class="admin-page-heading admin-form-heading product-form-heading">
     <div>
+        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-link px-0 mb-2">← Voltar ao produto</a>
         <h1>Editar produto</h1>
         <p class="admin-page-intro">Atualize os dados do modelo cadastrado.</p>
     </div>
 </header>
 
-<div class="row justify-content-center">
-    <div class="col-12 col-md-10 col-lg-9 col-xl-8">
-        <div class="card shadow-sm border-0">
-            <div class="card-body p-4">
-                <form asp-action="Edit" method="post">
+<div class="admin-form-layout">
+    <section class="admin-form-surface" aria-label="Formulário de edição de produto">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data" class="admin-form">
                     <input type="hidden" asp-for="Id" />
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
@@ -44,16 +43,32 @@
                         <span asp-validation-for="Cor" class="text-danger small"></span>
                     </div>
 
+                    <fieldset class="produto-form-secao">
+                        <legend>Foto do modelo</legend>
+                        @if (!string.IsNullOrWhiteSpace(Model.ImagemAtualUrl))
+                        {
+                            <img class="produto-foto-preview" src="@Model.ImagemAtualUrl" alt="Foto atual de @Model.Nome" />
+                            <div class="form-check my-2">
+                                <input asp-for="RemoverImagem" class="form-check-input" />
+                                <label asp-for="RemoverImagem" class="form-check-label">Remover foto atual</label>
+                            </div>
+                        }
+                        <label asp-for="Imagem" class="form-label">Trocar foto (opcional)</label>
+                        <input asp-for="Imagem" class="form-control form-control-lg" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="foto-edicao-ajuda" data-preview-input="foto-produto-preview" />
+                        <span asp-validation-for="Imagem" class="text-danger small"></span>
+                        <div id="foto-edicao-ajuda" class="form-text">No celular, abra o seletor para tirar uma foto ou escolher da galeria. JPG, PNG ou WebP · até 2 MB.</div>
+                        <img id="foto-produto-preview" class="produto-foto-preview" alt="Prévia da nova foto" hidden />
+                    </fieldset>
+
                     <div class="admin-form-actions">
                         <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
                         <button type="submit" class="btn btn-primary">Salvar Alterações</button>
                     </div>
-                </form>
-            </div>
-        </div>
-    </div>
+        </form>
+    </section>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/produto-form.js" asp-append-version="true"></script>
 }

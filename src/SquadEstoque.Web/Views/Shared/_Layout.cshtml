@@ -36,12 +36,24 @@
                         @if (lojista)
                         {
                             <li class="nav-item">
+                                <a class="nav-link @(controllerAtual == "Rupturas" ? "active" : "")" asp-controller="Rupturas" asp-action="Index"
+                                   aria-current="@(controllerAtual == "Rupturas" ? "page" : null)">Histórico de rupturas</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link @(controllerAtual == "Produtos" ? "active" : "")" asp-controller="Produtos" asp-action="Index"
                                    aria-current="@(controllerAtual == "Produtos" ? "page" : null)">Produtos</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link @(controllerAtual == "Movimentacoes" ? "active" : "")" asp-controller="Movimentacoes" asp-action="Index"
                                    aria-current="@(controllerAtual == "Movimentacoes" ? "page" : null)">Movimentações</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(controllerAtual == "SaldosZerados" ? "active" : "")" asp-controller="SaldosZerados" asp-action="Index"
+                                   aria-current="@(controllerAtual == "SaldosZerados" ? "page" : null)">Saldos zerados</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(controllerAtual == "Atendimentos" ? "active" : "")" asp-controller="Atendimentos" asp-action="Index"
+                                   aria-current="@(controllerAtual == "Atendimentos" ? "page" : null)">Atendimentos</a>
                             </li>
                         }
                     </ul>

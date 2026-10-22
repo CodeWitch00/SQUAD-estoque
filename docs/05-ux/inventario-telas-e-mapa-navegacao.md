@@ -1,7 +1,7 @@
 # Inventário de telas e mapa de navegação do MVP
 
 **Escopo:** P1 : VENDEDOR e LOJISTA  
-**Fontes normativas:** [SRS](../02-requisitos/srs.md) (RF-01 a RF-23), [casos de uso](../02-requisitos/casos-de-uso.md) (UC-01 a UC-12) e [user stories](../02-requisitos/user-stories.md) (US-01 a US-13)  
+**Fontes normativas:** [SRS](../02-requisitos/srs.md) (RF-01 a RF-25), [casos de uso](../02-requisitos/casos-de-uso.md) (UC-01 a UC-12) e [user stories](../02-requisitos/user-stories.md) (US-01 a US-13)
 **Mapa visual:** [mapa-navegacao-mvp.svg](mapa-navegacao-mvp.svg)
 
 ## 1. Critério de classificação
@@ -10,7 +10,7 @@
 | --- | --- |
 | **Existente** | Há action GET e Razor View utilizável na baseline. Uma regra implementada apenas no domínio não torna a tela existente. |
 | **Pendente** | A interface é exigida por RF, UC ou US, mas não há action/view correspondente. |
-| **Legado fora do fluxo** | Há rota ou view no repositório, mas ela não pertence aos fluxos RF-01 a RF-23, UC-01 a UC-12 ou US-01 a US-13. |
+| **Legado fora do fluxo** | Há rota ou view no repositório, mas ela não pertence aos fluxos RF-01 a RF-25, UC-01 a UC-12 ou US-01 a US-13. |
 | **Apoio técnico** | Estado de interface necessário a segurança/erro, sem constituir funcionalidade de negócio independente. |
 
 “Vendeu”, “Não tinha” e “Desistiu” são inventariados como estados de interação da grade, e não como páginas administrativas independentes. Podem ser modal, confirmação ou feedback na própria grade, desde que mantenham os destinos e efeitos descritos abaixo.
@@ -35,7 +35,7 @@
 | LOJ-07 | Saída de estoque | `/Movimentacoes/Saida[?skuId=...]` | **LOJISTA no fluxo-alvo** | **Existente com divergência** | Saída administrativa, com quantidade e validação de saldo. RF-10, RF-11. Não substitui “Vendeu”, que é uma ação operacional de exatamente 1 par ligada à consulta. |
 | LOJ-08 | Ajuste manual | `/Movimentacoes/Ajuste[?skuId=...]` | LOJISTA | **Existente** | Define novo saldo, exige motivo e registra ajuste imutável. RF-10, RF-11, RF-23; UC-10; US-11. |
 | LOJ-09 | Histórico de movimentações | `/Movimentacoes` | LOJISTA | **Existente** | Lista data/hora, produto, numeração, tipo, quantidade, responsável e motivo; sem editar/excluir. RF-10; apoio ao controle de estoque. |
-| LOJ-10 | Saldos zerados | a definir na implementação | LOJISTA | **Pendente** | Lista somente SKUs com saldo zero, agrupados por modelo. RF-21; UC-11; US-12. |
+| LOJ-10 | Saldos zerados | `/SaldosZerados` | LOJISTA | **Existente** | Lista somente SKUs com saldo zero, agrupados por modelo. RF-21; UC-11; US-12. |
 | LOJ-11 | Histórico de rupturas | a definir na implementação | LOJISTA | **Pendente** | Agrupa “Não tinha” por modelo e numeração e mostra a quantidade de ocorrências. RF-22; UC-12; US-13. |
 
 ## 3. Origem, destino e permissão
@@ -57,7 +57,7 @@ Esta matriz descreve o fluxo-alvo. “Voltar” deve preservar a origem quando a
 | VEN-03 | Selecionar SKU e “Não tinha” | VEN-05 confirmação/feedback | VENDEDOR | Pendente |
 | VEN-05 | Ruptura registrada ou dispensar resultado | VEN-02 nova consulta | VENDEDOR | Pendente |
 | VEN-03 | “Desistiu” | VEN-06 e retorno à consulta | VENDEDOR | Pendente |
-| VEN-03 | Nova consulta sem informar resultado | VEN-02 | VENDEDOR | Pendente; obrigatório não bloquear |
+| VEN-03 | Consultar outro modelo sem informar resultado | VEN-02 com pendência visível | VENDEDOR | Não bloqueia e não apaga o atendimento anterior |
 | LOJ-01 | Produtos | LOJ-02 Produtos | LOJISTA | Tela existente; origem pendente |
 | LOJ-02 | Novo produto com grade | LOJ-03 Novo produto e grade | LOJISTA | Existente |
 | LOJ-03 | Salvar | LOJ-02 Produtos | LOJISTA | Existente |
@@ -69,7 +69,7 @@ Esta matriz descreve o fluxo-alvo. “Voltar” deve preservar a origem quando a
 | LOJ-06 / LOJ-07 / LOJ-08 | Salvar operação | LOJ-04 Detalhe/grade atualizado | LOJISTA | Existente |
 | LOJ-01 | Movimentações | LOJ-09 Histórico | LOJISTA | Tela existente; origem pendente |
 | LOJ-09 | Nova entrada / saída / ajuste | LOJ-06 / LOJ-07 / LOJ-08 | LOJISTA | Existente |
-| LOJ-01 | Saldos zerados | LOJ-10 Saldos zerados | LOJISTA | Pendente |
+| LOJ-01 | Saldos zerados | LOJ-10 Saldos zerados | LOJISTA | Existente |
 | LOJ-01 | Rupturas | LOJ-11 Histórico de rupturas | LOJISTA | Pendente |
 | Qualquer tela autenticada | Sair | AUT-01 Login | VENDEDOR ou LOJISTA | Existente |
 | Rota sem permissão | Autorização negada | SUP-01 Acesso negado | Usuário autenticado sem papel exigido | Existente |
@@ -81,27 +81,16 @@ Esta matriz descreve o fluxo-alvo. “Voltar” deve preservar a origem quando a
 3. **A grade existente não é a grade do vendedor.** `/Produtos/Details/{id}` mostra saldos e estados, porém todo `ProdutosController` exige LOJISTA. O bloco da view que testa `User.IsInRole("VENDEDOR")` é inalcançável na configuração atual.
 4. **“Saída” não é “Vendeu”.** `/Movimentacoes/Saida` aceita quantidade livre, pode ser aberta sem consulta anterior e redireciona o vendedor para a Home provisória. VEN-04 exige um SKU consultado, decremento fixo de 1 e continuidade do atendimento.
 5. **Permissão da saída genérica está ampla.** O controller permite `LOJISTA,VENDEDOR`, embora o fluxo-alvo reserve a operação administrativa ao LOJISTA e dê ao VENDEDOR apenas “Vendeu”. A equipe deve corrigir essa autorização quando VEN-04 for implementada.
-6. **Saldos zerados e rupturas não têm endpoints ou views.** São pendências diretas de RF-21/UC-11/US-12 e RF-22/UC-12/US-13.
-7. **A navegação global contém itens fora do MVP.** “Privacy” está no menu e rodapé; deve sair do fluxo principal. Produtos e Movimentações aparecem apenas para LOJISTA, o que está correto para as áreas administrativas.
+6. **Rupturas ainda não têm endpoint ou view.** Saldos zerados já estão disponíveis em `/SaldosZerados`; a visão de rupturas permanece pendente de RF-22/UC-12/US-13.
+7. **A navegação global é restrita ao MVP.** Produtos e Movimentações aparecem apenas para LOJISTA, o que está correto para as áreas administrativas.
 8. **A última atualização do SKU não aparece.** A grade existente mostra o saldo, mas não data/hora de atualização; RF-12 continua pendente para a grade operacional.
 
-## 5. Telas de apoio e legado fora do fluxo
+## 5. Telas de apoio
 
 | ID | Rota | Classificação | Decisão para os protótipos e testes P1 |
 | --- | --- | --- | --- |
 | SUP-01 | `/Account/AccessDenied` | Apoio técnico existente | Manter como estado de autorização; testar retorno seguro ao início do perfil. |
 | SUP-02 | `/Home/Error` | Apoio técnico existente | Não entra no caminho feliz; cobrir apenas em teste técnico de erro. |
-| LEG-01 | `/` (`Home/Index` atual) | Legado/provisório | Substituir pelos inícios por perfil; não usar como referência visual. |
-| LEG-02 | `/Home/Privacy` | Legado de template | Fora do MVP e do mapa principal. |
-| LEG-03 | `/Movies` | Legado de tutorial | Fora do MVP; inclui lista de filmes. |
-| LEG-04 | `/Movies/Details/{id}` | Legado de tutorial | Fora do MVP. |
-| LEG-05 | `/Movies/Create` | Legado de tutorial | Fora do MVP. |
-| LEG-06 | `/Movies/Edit/{id}` | Legado de tutorial | Fora do MVP. |
-| LEG-07 | `/Movies/Delete/{id}` | Legado de tutorial | Fora do MVP. |
-| LEG-08 | `/HelloWorld` | Legado de tutorial | Fora do MVP. |
-| LEG-09 | `/HelloWorld/Welcome` | Legado de tutorial | Fora do MVP. |
-
-As rotas de Movies e HelloWorld não possuem `[Authorize]`; embora estejam fora do fluxo, essa exposição deve constar no plano técnico de remoção do legado, sem ampliar o escopo funcional do MVP.
 
 ## 6. Cobertura das fontes
 
@@ -111,7 +100,7 @@ As rotas de Movies e HelloWorld não possuem `[Authorize]`; embora estejam fora 
 | RF-05, RF-06, RF-07, RF-08 / UC-07, UC-08 / US-08, US-09 | LOJ-02, LOJ-03, LOJ-04. A geração e unicidade do SKU são efeitos do salvamento, não telas. |
 | RF-09, RF-10, RF-11, RF-12 / UC-09, UC-10 / US-10, US-11 | LOJ-04, LOJ-06, LOJ-07, LOJ-08, LOJ-09 e estados de erro; RF-12 está pendente e deve aparecer em VEN-03. |
 | RF-13, RF-14, RF-15 / UC-02, UC-03 / US-02, US-03 | VEN-01, VEN-02 e VEN-03. |
-| RF-16, RF-17, RF-18, RF-19, RF-20 / UC-04, UC-05, UC-06 / US-04, US-05, US-06, US-07 | VEN-04, VEN-05, VEN-06 e retorno não bloqueante a VEN-02. |
+| RF-16 a RF-20, RF-24, RF-25 / UC-04, UC-05, UC-06 / US-04, US-05, US-06, US-07 | VEN-04, VEN-05, VEN-06, retorno não bloqueante a VEN-02 e manutenção auditável das pendências. |
 | RF-21 / UC-11 / US-12 | LOJ-10. |
 | RF-22 / UC-12 / US-13 | LOJ-11. |
 | RF-23 / UC-10 / US-11 | LOJ-08 e retorno a LOJ-04. |
@@ -129,5 +118,3 @@ As rotas de Movies e HelloWorld não possuem `[Authorize]`; embora estejam fora 
 | Entrada, saída e ajuste | Permissão; saldo atualizado; histórico; rejeição de saldo negativo; motivo obrigatório no ajuste; inexistência de editar/excluir movimentação. |
 | Saldos zerados | Somente saldo 0; agrupamento por modelo; estado vazio. |
 | Rupturas | Modelo, numeração e contagem corretos; agrupamento; estado vazio; acesso exclusivo do lojista. |
-
-
