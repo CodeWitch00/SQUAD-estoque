@@ -100,7 +100,7 @@ As regras abaixo definem o comportamento lógico do sistema e devem ser respeita
 | ID | Definição | Descrição Detalhada |
 | :--- | :--- | :--- |
 | **RN-01** |  SKU é a unidade mínima | O SKU é a combinação única de Produto + Numeração. <br> Não podem existir dois SKUs iguais no sistema. |
-| **RN-02** |  Saldo nunca negativo | O sistema deve rejeitar qualquer operação de saída (venda) ou O ajuste manual de estoque deve ser sempre do tipo DELTA (adição ou subtração de quantidade), nunca substituição direta do saldo. |
+| **RN-02** | Saldo nunca negativo | O sistema deve rejeitar saídas que resultem em saldo negativo. No ajuste manual, o lojista informa o novo saldo apurado, que deve ser não negativo e diferente do saldo atual. O sistema substitui o saldo pelo valor apurado e registra uma movimentação AJUSTE com a diferença absoluta entre os saldos, motivo, usuário autenticado e data do servidor, na mesma transação. |
 | **RN-03** |  Imutabilidade | Toda movimentação de estoque é permanente. <br> Erros se corrigem com nova movimentação de sentido contrário, nunca editando a original. |
 | **RN-04** |  Ajuste manual restrito | Somente o perfil **LOJISTA** pode realizar ajuste manual de saldo.<br> O perfil **VENDEDOR** não tem acesso. |
 | **RN-05** |  Ruptura explícita | Ruptura é registrada apenas quando o vendedor informa 'Não tinha'. <br> O sistema não gera ruptura automática por saldo zero. |
@@ -108,6 +108,8 @@ As regras abaixo definem o comportamento lógico do sistema e devem ser respeita
 | **RN-07** |  Atomicidade | Saídas devem ser atômicas (leitura + validação + atualização) em uma única transação para evitar erro de concorrência. |
 
 ---
+Decisão de homologação aprovada por Felipe em 25/10/2026 no contexto do [PR #69](https://github.com/CodeWitch00/SQUAD-estoque/pull/69): manter o comportamento atual de saldo apurado e diferença absoluta. Uma redução de 10 para 7 registra `Quantidade = 3`; um aumento de 10 para 15 registra `Quantidade = 5`. A quantidade do movimento AJUSTE não possui sinal e, isoladamente, não informa se houve aumento ou redução. Essa limitação permanece explícita; esta decisão não introduz delta assinado nem altera a aplicação.
+
 > [!IMPORTANTE]
 > A conformidade com a **RN-07** é vital para o Passo 9 (Testes) e Passo 10 (CI/CD) do nosso planejamento.
 
