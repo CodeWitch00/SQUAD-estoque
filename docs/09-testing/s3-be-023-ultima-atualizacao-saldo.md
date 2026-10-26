@@ -28,4 +28,4 @@ O teste `SkuUltimaAtualizacaoMigrationTests` aplica a versão anterior, insere S
 - `dotnet ef migrations has-pending-model-changes`: nenhuma mudança pendente.
 - Cobertura funcional: operações confirmadas e rejeitadas, rollback transacional, entrada fiscal, lote com quantidades vazias/zero, atendimento Desistiu e migração de dados existentes.
 
-A exibição da data nas telas não integra este cartão. A revisão de CodeWitch00 será solicitada no PR para `dev/emmy`. A aprovação depende da revisão no GitHub.
+A exibição da data nas telas não integra este cartão. PR: https://github.com/CodeWitch00/SQUAD-estoque/pull/72, destino `dev/emmy`, com revisão solicitada a CodeWitch00. A aprovação depende da revisão no GitHub.
