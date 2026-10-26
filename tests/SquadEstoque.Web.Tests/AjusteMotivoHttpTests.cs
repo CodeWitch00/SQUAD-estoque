@@ -20,7 +20,10 @@ public sealed class AjusteMotivoHttpTests
     [InlineData("", "O motivo do ajuste é obrigatório.")]
     [InlineData("     ", "O motivo do ajuste é obrigatório.")]
     [InlineData("abcd", "O motivo deve conter pelo menos 5 caracteres.")]
-    [InlineData("  abcd  ", "O motivo do ajuste é obrigatório e deve possuir pelo menos 5 caracteres.")]
+    [InlineData("  abcd  ", "O motivo deve conter pelo menos 5 caracteres.")]
+    [InlineData(" \t\r\n\u00a0 ", "O motivo do ajuste é obrigatório.")]
+    [InlineData(" a   b ", "O motivo deve conter pelo menos 5 caracteres.")]
+    [MemberData(nameof(MotivosAcimaDoLimite))]
     public async Task Motivo_invalido_rejeita_ajuste_sem_alterar_saldos_ou_historico(string? motivo, string erroEsperado)
     {
         using var factory = new SquadEstoqueWebApplicationFactory();
@@ -41,10 +44,21 @@ public sealed class AjusteMotivoHttpTests
         Assert.Equal(before.Movimentos, after.Movimentos);
     }
 
+    public static IEnumerable<object[]> MotivosAcimaDoLimite =>
+        new[] { new object[] { new string('a', 501), "O motivo não pode exceder 500 caracteres." } };
+
+    public static IEnumerable<object[]> MotivosNoLimite => new[]
+    {
+        new object[] { new string('a', 500), new string('a', 500), 15, 5 },
+        new object[] { "  " + new string('a', 500) + "  ", new string('a', 500), 15, 5 }
+    };
+
     [Theory]
     [InlineData("  abcde  ", "abcde", 15, 5)]
     [InlineData("  Contagem física  ", "Contagem física", 15, 5)]
     [InlineData("  Correção de inventário  ", "Correção de inventário", 7, 3)]
+    [InlineData(" \tContagem   física\r\n de\u00a0 estoque  ", "Contagem física de estoque", 15, 5)]
+    [MemberData(nameof(MotivosNoLimite))]
     public async Task Motivo_valido_persiste_normalizado_com_diferenca_usuario_e_data(
         string motivo, string esperado, int novoSaldo, int diferenca)
     {
@@ -74,6 +88,27 @@ public sealed class AjusteMotivoHttpTests
         Assert.Equal(esperado, movimento.Motivo);
         Assert.Equal(lojistaId, movimento.UsuarioId);
         Assert.InRange(movimento.CriadoEm, inicio, fim);
+    }
+
+    [Fact]
+    public async Task Saldo_inalterado_rejeita_ajuste_mesmo_com_motivo_valido()
+    {
+        using var factory = new SquadEstoqueWebApplicationFactory();
+        await SeedAsync(factory);
+        using var client = CreateClient(factory);
+        await LoginAsync(client);
+        var before = await ReadStateAsync(factory);
+        var token = await GetTokenAsync(client, $"{Route}?skuId={SkuId}");
+        using var form = AdjustmentForm(token, "Contagem física", 10);
+
+        using var response = await client.PostAsync(Route, form);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("Não há alteração de saldo a ser registrada.",
+            WebUtility.HtmlDecode(await response.Content.ReadAsStringAsync()));
+        var after = await ReadStateAsync(factory);
+        Assert.Equal(before.Saldos, after.Saldos);
+        Assert.Equal(before.Movimentos, after.Movimentos);
     }
 
     private static FormUrlEncodedContent AdjustmentForm(string token, string? motivo, int saldo, Guid? usuarioEnviado = null)
