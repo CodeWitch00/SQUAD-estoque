@@ -19,7 +19,7 @@ public sealed class ConsultaOperacionalHttpTests : IClassFixture<SquadEstoqueWeb
     }
 
     [Fact]
-    public async Task Consulta_renders_selected_product_with_complete_sorted_grade_and_visible_stock_states()
+    public async Task Consulta_renders_complete_grade_grouped_by_availability_with_visible_stock_states()
     {
         var produto = await AddProdutoAsync(true, ("40", 5), ("37", 0), ("39", 2), ("38", 1));
         var saldosEsperados = produto.Skus.ToDictionary(s => s.Id, s => s.SaldoAtual);
@@ -32,16 +32,16 @@ public sealed class ConsultaOperacionalHttpTests : IClassFixture<SquadEstoqueWeb
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Contains("Grade completa de numerações", visibleHtml);
-        Assert.Contains("Grade disponível", visibleHtml);
+        Assert.Contains("Qual número?", visibleHtml);
         Assert.Matches(NumberPattern("37"), visibleHtml);
         Assert.Matches(NumberPattern("38"), visibleHtml);
         Assert.Matches(NumberPattern("39"), visibleHtml);
         Assert.Matches(NumberPattern("40"), visibleHtml);
-        Assert.True(IndexOfPattern(visibleHtml, NumberPattern("37")) < IndexOfPattern(visibleHtml, NumberPattern("38")));
         Assert.True(IndexOfPattern(visibleHtml, NumberPattern("38")) < IndexOfPattern(visibleHtml, NumberPattern("39")));
         Assert.True(IndexOfPattern(visibleHtml, NumberPattern("39")) < IndexOfPattern(visibleHtml, NumberPattern("40")));
-        Assert.Matches(@"0\s*pares", visibleHtml);
-        Assert.Matches(@"1\s*par", visibleHtml);
+        Assert.True(IndexOfPattern(visibleHtml, NumberPattern("40")) < IndexOfPattern(visibleHtml, NumberPattern("37")));
+        Assert.Contains("Sem estoque", visibleHtml);
+        Assert.Contains("Último par", visibleHtml);
         Assert.Matches(@"2\s*pares", visibleHtml);
         Assert.Matches(@"5\s*pares", visibleHtml);
         Assert.Contains("Indisponível", visibleHtml);
@@ -64,13 +64,13 @@ public sealed class ConsultaOperacionalHttpTests : IClassFixture<SquadEstoqueWeb
         Assert.Contains("data-nao-tinha-url=\"/Estoque/RegistrarNaoTinha\"", visibleHtml);
         Assert.Contains("data-resultado=\"desistiu\"", visibleHtml);
         Assert.Contains("Selecione a numeração solicitada pelo cliente.", visibleHtml);
-        Assert.Contains("Nova consulta sem registrar resultado", visibleHtml);
+        Assert.Contains("Voltar para a busca", visibleHtml);
         Assert.DoesNotContain("/Movimentacoes/Saida", visibleHtml, StringComparison.OrdinalIgnoreCase);
         await AssertSkuBalancesAsync(saldosEsperados);
     }
 
     [Fact]
-    public async Task Nova_consulta_sem_desfecho_retorna_a_busca_inicial_sem_persistir_resultado()
+    public async Task Consultar_outro_modelo_retorna_a_busca_e_mantem_atendimento_pendente()
     {
         var produto = await AddProdutoAsync(true, ("38", 2));
         var skuId = produto.Skus.Single().Id;
@@ -94,20 +94,32 @@ public sealed class ConsultaOperacionalHttpTests : IClassFixture<SquadEstoqueWeb
         var atendimentoHtml = WebUtility.HtmlDecode(await atendimentoResponse.Content.ReadAsStringAsync());
         Assert.Equal(HttpStatusCode.OK, atendimentoResponse.StatusCode);
         Assert.Contains($"data-sku-id=\"{skuId}\"", atendimentoHtml);
+        using (var selecao = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["skuId"] = skuId.ToString(),
+            ["__RequestVerificationToken"] = ExtractAntiforgeryToken(atendimentoHtml)
+        }))
+        using (var respostaSelecao = await client.PostAsync("/Estoque/SelecionarSku", selecao))
+        {
+            Assert.Equal(HttpStatusCode.OK, respostaSelecao.StatusCode);
+        }
         var link = Regex.Match(atendimentoHtml,
-            "<a[^>]*class=\"[^\"]*consulta-nova-consulta--contexto[^\"]*\"[^>]*href=\"([^\"]+)\"[^>]*>← Nova consulta</a>");
-        Assert.True(link.Success, "O atendimento deve oferecer a ação de nova consulta sem desfecho.");
+            "<a[^>]*class=\"[^\"]*consulta-nova-consulta--contexto[^\"]*\"[^>]*href=\"([^\"]+)\"[^>]*>← Busca</a>");
+        Assert.True(link.Success, "O atendimento deve permitir consultar outro modelo sem apagar a pendência.");
 
         var novaConsultaResponse = await client.GetAsync(link.Groups[1].Value);
         var novaConsultaHtml = WebUtility.HtmlDecode(await novaConsultaResponse.Content.ReadAsStringAsync());
         Assert.Equal(HttpStatusCode.OK, novaConsultaResponse.StatusCode);
         Assert.Contains("Qual modelo o cliente procura?", novaConsultaHtml);
         Assert.Contains("placeholder=\"Buscar modelo...\"", novaConsultaHtml);
-        Assert.Matches(@">\s*Buscar\s*<", novaConsultaHtml);
+        Assert.Contains("aria-label=\"Buscar\"", novaConsultaHtml);
+        Assert.Contains("<svg", novaConsultaHtml);
         Assert.DoesNotContain("<h2 id=\"titulo-estado-inicial\">Pronto para consultar</h2>", novaConsultaHtml);
         Assert.DoesNotContain("id=\"grade\"", novaConsultaHtml);
         Assert.DoesNotContain("consulta-atendimento-acoes", novaConsultaHtml);
         Assert.Matches("<input(?=[^>]*id=\"Termo\")(?=[^>]*value=\"\")[^>]*>", novaConsultaHtml);
+        Assert.Contains("Atendimentos pendentes", novaConsultaHtml);
+        Assert.Contains(produto.Nome, novaConsultaHtml);
 
         using (var scope = _factory.Services.CreateScope())
         {
@@ -117,6 +129,9 @@ public sealed class ConsultaOperacionalHttpTests : IClassFixture<SquadEstoqueWeb
             Assert.Equal(saldosAntes, saldosDepois);
             Assert.Equal(movimentacoesAntes, await context.Movimentacao.CountAsync());
             Assert.Equal(rupturasAntes, await context.Ruptura.CountAsync());
+            var pendente = await context.Atendimento.AsNoTracking().SingleAsync();
+            Assert.Equal(StatusAtendimento.PENDENTE, pendente.Status);
+            Assert.Equal(produto.Id, pendente.ProdutoId);
         }
     }
     [Fact]

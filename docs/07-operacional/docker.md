@@ -10,7 +10,7 @@ O `Dockerfile` produz uma imagem com a aplicação publicada e o runtime do .NET
 Um container é uma execução dessa imagem. A imagem é imutável: alterações feitas
 na camada interna do container desaparecem quando ele é substituído.
 
-Os bancos SQLite e as chaves que protegem os cookies não ficam nessa camada. O
+O banco SQLite e as chaves que protegem os cookies não ficam nessa camada. O
 `compose.yaml` monta o volume nomeado `squad-estoque-data` em `/app/data`:
 
 ```text
@@ -18,12 +18,11 @@ container /app
 ├── SquadEstoque.Web.dll       imagem imutável
 └── data/                      volume persistente
     ├── Estoque.db
-    ├── LegacyMovie.db
     └── keys/                  chaves de proteção dos cookies
 ```
 
-Recriar ou atualizar o container preserva o volume. Excluir o volume remove os
-bancos e as chaves.
+Recriar ou atualizar o container preserva o volume. Excluir o volume remove o
+banco e as chaves.
 
 ## Construir e iniciar
 

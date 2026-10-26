@@ -13,7 +13,7 @@ Esta pasta concentra o inventário de interface e os protótipos navegacionais d
 | Ajuste | [Protótipo do lojista](prototipos/prototipo-lojista.html) | Implementado |
 | Movimentações | [Protótipo do lojista](prototipos/prototipo-lojista.html) | Implementado |
 | Início do lojista | [Protótipo do lojista](prototipos/prototipo-lojista.html) | Planejado |
-| Saldos zerados | [Protótipo do lojista](prototipos/prototipo-lojista.html) | Planejado para Sprint 3 |
+| Saldos zerados | [Protótipo do lojista](prototipos/prototipo-lojista.html) | Implementado em `/SaldosZerados` |
 | Rupturas | [Protótipo do lojista](prototipos/prototipo-lojista.html) | Planejado para Sprint 3 |
 | Início e consulta do vendedor | [Protótipo do vendedor](prototipos/prototipo-vendedor.html) | Planejado no módulo operacional do vendedor |
 | Grade do vendedor | [Protótipo do vendedor](prototipos/prototipo-vendedor.html) | Planejado no módulo operacional do vendedor |
@@ -37,4 +37,4 @@ Esta pasta concentra o inventário de interface e os protótipos navegacionais d
 - Laranja tracejado: tela ou estado pendente.
 - Cinza: legado fora do fluxo do MVP.
 - Os HTMLs representam a interface proposta para implementação, mas não substituem os requisitos e as especificações.
-- Nenhuma funcionalidade além de RF-01 a RF-23, UC-01 a UC-12 e US-01 a US-13 deve ser adicionada aos protótipos.
+- Nenhuma funcionalidade além de RF-01 a RF-25, UC-01 a UC-12 e US-01 a US-13 deve ser adicionada aos protótipos.

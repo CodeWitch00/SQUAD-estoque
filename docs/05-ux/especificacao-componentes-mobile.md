@@ -20,9 +20,10 @@ A unidade operacional das ações de estoque é o **SKU**, correspondente à com
 * Cada SKU deve apresentar numeração, saldo, estado de disponibilidade e última atualização do saldo.
 * Uma numeração deve ser selecionada antes da execução de `Vendeu` ou `Não tinha`.
 * `Vendeu` e `Não tinha` devem permanecer indisponíveis enquanto nenhum SKU estiver selecionado.
-* `Desistiu` não exige seleção de SKU.
-* O resultado do atendimento é opcional.
-* O vendedor deve conseguir iniciar uma nova consulta sem registrar um resultado.
+* Abrir o modelo/grade não cria atendimento pendente; selecionar uma numeração com saldo cria a pendência vinculada ao SKU e ao saldo consultado.
+* O toque em numeração sem saldo não cria pendência; `Não tinha` registra e conclui a demanda diretamente.
+* O resultado do atendimento pode ser informado depois, mas a pendência iniciada pela seleção do SKU permanece até sua conclusão.
+* O vendedor deve conseguir iniciar uma nova consulta sem apagar ou concluir artificialmente o atendimento anterior.
 * Os estados de estoque não devem depender exclusivamente de cores.
 * Os componentes devem possuir foco visível e áreas de toque confortáveis.
 * A implementação deve utilizar Bootstrap, já existente no projeto.
@@ -46,17 +47,17 @@ Resultado da busca
   ↓
 Selecionar modelo
   ↓
-Visualizar grade
+Visualizar grade (sem criar pendência)
   ↓
-Selecionar SKU
+Selecionar SKU disponível (cria/atualiza pendência)
   ↓
-Vendeu / Não tinha
+Vendeu / Não tinha / Desistiu
 ```
 
-O fluxo de `Desistiu` pode ser iniciado após a exibição da grade, sem seleção de SKU:
+`Desistiu` só pode ser iniciado após a seleção de um SKU disponível, que cria a pendência:
 
 ```text
-Grade consultada
+SKU disponível selecionado e pendência salva
   ↓
 Desistiu
   ↓
@@ -349,7 +350,7 @@ SKU selecionado: Nº 36
 
 `Vendeu` e `Não tinha` exigem SKU selecionado.
 
-`Desistiu` fica disponível após a exibição da grade e pode ser executado independentemente da seleção de SKU.
+`Desistiu` fica disponível após a pendência ser criada pela seleção de um SKU disponível. Não exige uma nova seleção no momento de concluir.
 
 ---
 
@@ -526,17 +527,19 @@ O fluxo deve permitir a continuidade do atendimento após qualquer resultado.
 
 ```text
 Venda registrada. Saldo atualizado.
-
-[ Nova consulta ]
+Voltando para a busca…
 ```
+
+Após uma breve exibição da confirmação, o sistema retorna automaticamente para a busca, sem exibir botão de nova consulta.
 
 ## 15.2 Após Não tinha
 
 ```text
-Ruptura registrada.
-
-[ Nova consulta ]
+Ruptura registrada. O saldo não foi alterado.
+Voltando para a busca…
 ```
+
+Após uma breve exibição da confirmação, o sistema retorna automaticamente para a busca, sem exigir outro toque.
 
 ## 15.3 Após Desistiu
 
@@ -548,13 +551,14 @@ Buscar modelo...
 
 ## 15.4 Sem registrar resultado
 
-O vendedor pode sair da consulta atual e iniciar outra sem registrar `Vendeu`, `Não tinha` ou `Desistiu`.
+O vendedor pode sair da consulta atual e iniciar outra sem registrar `Vendeu`, `Não tinha` ou `Desistiu`, mas o atendimento permanece pendente e auditável.
 
 ```text
-[ Nova consulta ]
+[ Consultar outro modelo ]
+[ 2 atendimentos pendentes — Ver ]
 ```
 
-Essa ação não altera estoque, não registra movimentação e não cria ruptura.
+Essa ação não altera estoque, não registra movimentação e não cria ruptura. A pendência não pode ser apagada pelo vendedor e reaparece após atualização da página ou novo login.
 
 ---
 
@@ -905,7 +909,7 @@ A tela `/Produtos/Details` pertence ao fluxo administrativo do lojista e não de
 | RF-17          | Decremento de exatamente uma unidade em Vendeu                                                          |
 | RF-18          | Registro de ruptura vinculada ao SKU selecionado                                                        |
 | RF-19          | Desistiu sem alteração de estoque                                                                       |
-| RF-20          | Resultado opcional e possibilidade de nova consulta                                                     |
+| RF-20          | Nova consulta permitida com atendimento anterior mantido como pendência auditável                      |
 | RN-02          | Saldo não pode ser negativo                                                                             |
 | RN-05          | Ruptura depende de declaração explícita do vendedor                                                     |
 | RN-06          | Ruptura vinculada ao SKU e ao vendedor                                                                  |
@@ -918,7 +922,7 @@ A tela `/Produtos/Details` pertence ao fluxo administrativo do lojista e não de
 | US-04          | Registro de Vendeu sobre o SKU selecionado                                                              |
 | US-05          | Registro de Não tinha sobre o SKU selecionado                                                          |
 | US-06          | Registro de Desistiu                                                                                    |
-| US-07          | Resultado opcional e continuidade sem registro                                                         |
+| US-07          | Continuidade com atendimento anterior mantido como pendência auditável                                |
 | VEN-01         | Início do vendedor com acesso imediato à consulta                                                       |
 | VEN-02         | Busca de modelos e apresentação dos resultados                                                         |
 | VEN-03         | Visualização do saldo e última atualização                                                              |
@@ -972,7 +976,7 @@ A tela `/Produtos/Details` pertence ao fluxo administrativo do lojista e não de
 * [x] Retorno à consulta após Desistiu definido.
 * [x] Continuidade após Vendeu definida.
 * [x] Continuidade após Não tinha definida.
-* [x] Nova consulta sem registrar resultado definida.
+* [x] Nova consulta com atendimento anterior mantido como pendência definida.
 * [x] RNF-02 incluído.
 * [x] RNF-06 incluído e explicado.
 * [x] Rastreabilidade completa.

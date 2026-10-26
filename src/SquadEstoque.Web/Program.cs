@@ -17,9 +17,6 @@ if (!string.IsNullOrWhiteSpace(dataProtectionKeysPath))
         .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionKeysPath));
 }
 
-builder.Services.AddDbContext<LegacyMovieContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("LegacyMovieContext") ?? throw new InvalidOperationException("Connection string 'LegacyMovieContext' not found.")));
-
 builder.Services.AddDbContext<EstoqueContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("EstoqueContext") ?? throw new InvalidOperationException("Connection string 'EstoqueContext' not found.")));
 
@@ -50,10 +47,6 @@ if (!app.Environment.IsEnvironment("Testing"))
     var services = scope.ServiceProvider;
 
     // Garante que um ambiente novo possua o schema antes de consultar ou popular dados.
-    var legacyMovieContext = services.GetRequiredService<LegacyMovieContext>();
-    legacyMovieContext.Database.Migrate();
-    SeedData.Initialize(services);
-
     var estoqueContext = services.GetRequiredService<EstoqueContext>();
     estoqueContext.Database.Migrate();
 
@@ -93,6 +86,10 @@ if (!app.Environment.IsDevelopment() && !app.Environment.IsEnvironment("Testing"
 }
 
 app.UseRouting();
+
+// Arquivos enviados em tempo de execução, como fotos de produtos, não constam
+// do manifesto de assets gerado durante o build.
+app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();

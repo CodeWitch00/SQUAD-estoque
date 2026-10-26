@@ -17,10 +17,162 @@ namespace SquadEstoque.Web.Migrations.Estoque
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.11");
 
+            modelBuilder.Entity("SquadEstoque.Web.Models.Atendimento", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ConcluidoEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CriadoEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ProdutoId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("Resultado")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("SaldoConsultado")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid?>("SkuId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProdutoId");
+
+                    b.HasIndex("SkuId");
+
+                    b.HasIndex("UsuarioId", "Status", "CriadoEm");
+
+                    b.ToTable("Atendimento", t =>
+                        {
+                            t.HasCheckConstraint("chk_atendimento_conclusao", "(Status = 0 AND Resultado IS NULL AND ConcluidoEm IS NULL) OR (Status = 1 AND Resultado IS NOT NULL AND ConcluidoEm IS NOT NULL)");
+
+                            t.HasCheckConstraint("chk_atendimento_resultado", "Resultado IS NULL OR Resultado IN (0, 1, 2)");
+
+                            t.HasCheckConstraint("chk_atendimento_saldo", "SaldoConsultado IS NULL OR SaldoConsultado >= 0");
+
+                            t.HasCheckConstraint("chk_atendimento_sku_resultado", "Resultado IS NULL OR Resultado = 2 OR SkuId IS NOT NULL");
+
+                            t.HasCheckConstraint("chk_atendimento_status", "Status IN (0, 1)");
+                        });
+                });
+
+            modelBuilder.Entity("SquadEstoque.Web.Models.EntradaFiscal", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ChaveAcesso")
+                        .IsRequired()
+                        .HasMaxLength(44)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CnpjFornecedor")
+                        .IsRequired()
+                        .HasMaxLength(14)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ConfirmadoEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CriadoEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FornecedorNome")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Numero")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChaveAcesso")
+                        .IsUnique();
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("EntradaFiscal");
+                });
+
+            modelBuilder.Entity("SquadEstoque.Web.Models.ItemEntradaFiscal", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CodigoFornecedor")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("EntradaFiscalId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Gtin")
+                        .HasMaxLength(14)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("NumeroItem")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid?>("ProdutoId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Quantidade")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid?>("SkuId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("ValorUnitario")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntradaFiscalId");
+
+                    b.HasIndex("ProdutoId");
+
+                    b.HasIndex("SkuId");
+
+                    b.ToTable("ItemEntradaFiscal");
+                });
+
             modelBuilder.Entity("SquadEstoque.Web.Models.Movimentacao", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("AtendimentoId")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CriadoEm")
@@ -42,6 +194,9 @@ namespace SquadEstoque.Web.Migrations.Estoque
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AtendimentoId")
+                        .IsUnique();
 
                     b.HasIndex("SkuId");
 
@@ -74,6 +229,10 @@ namespace SquadEstoque.Web.Migrations.Estoque
                         .HasMaxLength(80)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("ImagemUrl")
+                        .HasMaxLength(300)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Marca")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -95,6 +254,9 @@ namespace SquadEstoque.Web.Migrations.Estoque
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("AtendimentoId")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("CriadoEm")
                         .HasColumnType("TEXT");
 
@@ -105,6 +267,9 @@ namespace SquadEstoque.Web.Migrations.Estoque
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AtendimentoId")
+                        .IsUnique();
 
                     b.HasIndex("SkuId");
 
@@ -179,8 +344,104 @@ namespace SquadEstoque.Web.Migrations.Estoque
                         });
                 });
 
+            modelBuilder.Entity("SquadEstoque.Web.Models.VinculoProdutoFornecedor", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CnpjFornecedor")
+                        .IsRequired()
+                        .HasMaxLength(14)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CodigoFornecedor")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("SkuId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SkuId");
+
+                    b.HasIndex("CnpjFornecedor", "CodigoFornecedor")
+                        .IsUnique();
+
+                    b.ToTable("VinculoProdutoFornecedor");
+                });
+
+            modelBuilder.Entity("SquadEstoque.Web.Models.Atendimento", b =>
+                {
+                    b.HasOne("SquadEstoque.Web.Models.Produto", "Produto")
+                        .WithMany()
+                        .HasForeignKey("ProdutoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SquadEstoque.Web.Models.Sku", "Sku")
+                        .WithMany()
+                        .HasForeignKey("SkuId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SquadEstoque.Web.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Produto");
+
+                    b.Navigation("Sku");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("SquadEstoque.Web.Models.EntradaFiscal", b =>
+                {
+                    b.HasOne("SquadEstoque.Web.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("SquadEstoque.Web.Models.ItemEntradaFiscal", b =>
+                {
+                    b.HasOne("SquadEstoque.Web.Models.EntradaFiscal", "EntradaFiscal")
+                        .WithMany("Itens")
+                        .HasForeignKey("EntradaFiscalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SquadEstoque.Web.Models.Produto", "Produto")
+                        .WithMany()
+                        .HasForeignKey("ProdutoId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SquadEstoque.Web.Models.Sku", "Sku")
+                        .WithMany()
+                        .HasForeignKey("SkuId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("EntradaFiscal");
+
+                    b.Navigation("Produto");
+
+                    b.Navigation("Sku");
+                });
+
             modelBuilder.Entity("SquadEstoque.Web.Models.Movimentacao", b =>
                 {
+                    b.HasOne("SquadEstoque.Web.Models.Atendimento", "Atendimento")
+                        .WithOne()
+                        .HasForeignKey("SquadEstoque.Web.Models.Movimentacao", "AtendimentoId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("SquadEstoque.Web.Models.Sku", "Sku")
                         .WithMany("Movimentacoes")
                         .HasForeignKey("SkuId")
@@ -193,6 +454,8 @@ namespace SquadEstoque.Web.Migrations.Estoque
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.Navigation("Atendimento");
+
                     b.Navigation("Sku");
 
                     b.Navigation("Usuario");
@@ -200,6 +463,11 @@ namespace SquadEstoque.Web.Migrations.Estoque
 
             modelBuilder.Entity("SquadEstoque.Web.Models.Ruptura", b =>
                 {
+                    b.HasOne("SquadEstoque.Web.Models.Atendimento", "Atendimento")
+                        .WithOne()
+                        .HasForeignKey("SquadEstoque.Web.Models.Ruptura", "AtendimentoId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("SquadEstoque.Web.Models.Sku", "Sku")
                         .WithMany("Rupturas")
                         .HasForeignKey("SkuId")
@@ -211,6 +479,8 @@ namespace SquadEstoque.Web.Migrations.Estoque
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Atendimento");
 
                     b.Navigation("Sku");
 
@@ -226,6 +496,22 @@ namespace SquadEstoque.Web.Migrations.Estoque
                         .IsRequired();
 
                     b.Navigation("Produto");
+                });
+
+            modelBuilder.Entity("SquadEstoque.Web.Models.VinculoProdutoFornecedor", b =>
+                {
+                    b.HasOne("SquadEstoque.Web.Models.Sku", "Sku")
+                        .WithMany()
+                        .HasForeignKey("SkuId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Sku");
+                });
+
+            modelBuilder.Entity("SquadEstoque.Web.Models.EntradaFiscal", b =>
+                {
+                    b.Navigation("Itens");
                 });
 
             modelBuilder.Entity("SquadEstoque.Web.Models.Produto", b =>

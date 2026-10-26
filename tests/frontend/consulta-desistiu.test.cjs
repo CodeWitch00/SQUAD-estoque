@@ -7,7 +7,7 @@ before(async()=>{browser=await chromium.launch({headless:true});});
 after(async()=>{await browser?.close();});
 async function open(t,width=390){
  const page=await browser.newPage({viewport:{width,height:844}});t.after(()=>page.close());
- await page.route('http://consulta.test/**',route=>route.fulfill({contentType:'text/html',body:`<div class="consulta-vendedor"><div id="consulta-antiforgery"><input name="__RequestVerificationToken" value="token"></div><section class="consulta-grade"><h1>Runner</h1><div class="consulta-grade-item"><input type="radio" name="skuSelecionado" value="sku" data-numeracao="39" data-saldo="3"></div></section><section class="consulta-atendimento-acoes"><p id="consulta-atendimento-resumo"></p><button class="consulta-acao" data-resultado="desistiu" data-desistiu-url="/Estoque/RegistrarDesistiu">Desistiu</button><p id="consulta-venda-retorno" hidden></p><p id="consulta-acao-feedback" tabindex="-1" role="status" hidden></p><a class="consulta-nova-consulta--conclusao" href="/Estoque/Consulta" hidden>Nova consulta</a></section></div>`}));
+ await page.route('http://consulta.test/**',route=>route.fulfill({contentType:'text/html',body:`<div class="consulta-vendedor"><div id="consulta-antiforgery"><input name="__RequestVerificationToken" value="token"></div><section class="consulta-grade" data-atendimento-id="atendimento-1"><h1>Runner</h1><div class="consulta-grade-item"><input type="radio" name="skuSelecionado" value="sku" data-numeracao="39" data-saldo="3"></div></section><section class="consulta-atendimento-acoes"><p id="consulta-atendimento-resumo"></p><button class="consulta-acao" data-resultado="desistiu" data-desistiu-url="/Estoque/RegistrarDesistiu" data-atendimento-id="atendimento-1">Desistiu</button><p id="consulta-venda-retorno" hidden></p><p id="consulta-acao-feedback" tabindex="-1" role="status" hidden></p></section></div>`}));
  await page.goto('http://consulta.test/Estoque/Consulta?termo=Runner&produtoId=produto#grade');
  await page.addStyleTag({path:path.resolve(__dirname,'../../src/SquadEstoque.Web/wwwroot/css/site.css')});
  await page.evaluate(()=>{
@@ -33,7 +33,7 @@ for(const width of [390,1280])for(const selected of [false,true])test(`Desistiu 
  assert.equal(await page.locator('#consulta-desistiu-retorno strong').innerText(), 'Atendimento encerrado.');
  assert.equal(await page.locator('#consulta-desistiu-retorno span').innerText(), 'Nenhuma movimentação foi registrada.');
  assert.equal(new URL(page.url()).search,'');assert.equal(new URL(page.url()).hash,'');
- assert.deepEqual(await page.evaluate(()=>window.requests[0].fields),[['__RequestVerificationToken','token']]);
+ assert.deepEqual(await page.evaluate(()=>window.requests[0].fields),[['atendimentoId','atendimento-1'],['__RequestVerificationToken','token']]);
  await page.keyboard.press('Tab');assert.equal(await page.evaluate(()=>document.activeElement.textContent),'Buscar');
 });
 test('resposta inválida preserva contexto e permite repetir sem sucesso fictício',async t=>{
@@ -41,7 +41,7 @@ test('resposta inválida preserva contexto e permite repetir sem sucesso fictíc
  await page.evaluate(()=>window.respond({resultado:'outro'}));await page.waitForFunction(()=>!document.querySelector('#consulta-acao-feedback').hidden);
  assert.match(await page.locator('#consulta-acao-feedback').innerText(),/Não foi possível/);assert.equal(await page.locator('[name=skuSelecionado]').isChecked(),true);assert.equal(await page.getByRole('button',{name:'Desistiu'}).isEnabled(),true);
 });
-test('falha na nova busca após confirmação mantém link e não repete POST',async t=>{
+test('falha na nova busca após confirmação mantém mensagem e não repete POST',async t=>{
  const page=await open(t);await page.evaluate(()=>window.failGet=true);await page.getByRole('button',{name:'Desistiu'}).click();await page.evaluate(()=>window.respond({resultado:'desistiu',atendimentoEncerrado:true,novaConsultaUrl:'/Estoque/Consulta'}));
- await page.waitForFunction(()=>document.activeElement?.textContent==='Nova consulta');assert.equal(await page.getByRole('button',{name:'Desistiu'}).isDisabled(),true);assert.equal(await page.evaluate(()=>window.requests.filter(r=>r.method==='POST').length),1);
+ await page.waitForFunction(()=>document.activeElement?.id==='consulta-acao-feedback');assert.equal(await page.getByRole('button',{name:'Desistiu'}).isDisabled(),true);assert.equal(await page.evaluate(()=>window.requests.filter(r=>r.method==='POST').length),1);
 });

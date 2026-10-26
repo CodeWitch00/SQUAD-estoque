@@ -229,9 +229,11 @@ Estoque atualizado
 #### Fluxo Principal
 
 1. Lojista seleciona o SKU a ajustar
-2. Informa quantidade e motivo 
-3. Sistema valida: saldo resultante >= 0 (RN-02)
-4. Sistema aciona UC-S5 do tipo AJUSTE
+2. Informa o novo saldo apurado e o motivo
+3. Sistema valida: novo saldo apurado >= 0 e diferente do saldo atual (RN-02)
+4. Sistema substitui o saldo pelo valor apurado e registra movimentação do tipo AJUSTE com a diferença absoluta entre os saldos, motivo, usuário autenticado e data do servidor, na mesma transação
+
+Na redução de 10 para 7, a quantidade registrada é 3. O movimento AJUSTE não armazena o sinal da diferença; sua quantidade isolada não distingue aumento de redução, conforme a decisão registrada na RN-02 do domínio e no PR #69.
 
 #### Fluxos Alternativos
 

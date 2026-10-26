@@ -5,8 +5,8 @@
 | Campo | Valor |
 |---|---|
 | Projeto | SQUAD Estoque |
-| Versão do documento | 1.5 |
-| Status | Atualizado com a execução real do fluxo de venda; homologação mobile publicada pendente |
+| Versão do documento | 2.0 |
+| Status | Estratégia vigente; resultados automáticos consultados na CI e homologação publicada pendente |
 | Tipo | Aplicação web ASP.NET Core MVC |
 | Estratégia | Pirâmide de testes |
 | Perfis | `LOJISTA` e `VENDEDOR` |
@@ -18,7 +18,7 @@ Este é o plano geral de qualidade do projeto e reúne também os casos de auten
 
 ## 2. Objetivo
 
-Criar e manter a estrutura oficial para planejar, escrever, executar e registrar os testes do SQUAD Estoque, garantindo rastreabilidade entre requisitos, cenários, pré-condições, passos, entradas, resultados esperados, resultados obtidos e evidências.
+Definir a estratégia oficial para planejar e executar os testes do SQUAD Estoque, garantindo rastreabilidade entre requisitos, cenários, entradas e resultados esperados sem duplicar no repositório os resultados já preservados pela CI e pelo histórico Git.
 
 O documento atende ao critério da P1 de plano de testes estruturado, com casos, entradas, saídas esperadas e cenários, e acrescenta controles de execução e revisão para evitar resultados presumidos.
 
@@ -39,13 +39,10 @@ O plano procura responder:
 - [Arquitetura](../04-arquitetura/arquitetura.md)
 - [Inventário de telas e navegação](../05-ux/inventario-telas-e-mapa-navegacao.md)
 - [Preparação e fluxo de desenvolvimento](../../CONTRIBUTING.md)
-- [Especificação dos testes do vendedor](especificacao-testes-vendedor.md)
-- [Validação da venda rápida com saldo disponível](validacao-venda-rapida-saldo-disponivel-2026-09-22.md)
-- [Validação da venda rápida sem saldo](validacao-venda-rapida-sem-saldo-2026-09-22.md)
-- [Persistência da movimentação de venda](validacao-movimentacao-venda-2026-09-24.md)
-- [Autorização da venda rápida](s2-qa-013-autorizacao-venda.md)
-- [Grade após a venda](s2-fe-016-grade-apos-venda.md)
-- [Homologação da venda rápida no mobile](homologacao-venda-mobile.md)
+- [Registro consolidado de validações manuais](homologacoes/registro-validacoes-manuais.md)
+- [Relatório da Sprint 1](../10-planejamento/relatorio-sprint-1.md)
+- [Relatório da Sprint 2](../10-planejamento/relatorio-sprint-2.md)
+- [GitHub Actions](https://github.com/CodeWitch00/SQUAD-estoque/actions)
 - [Testes automatizados](../../tests/SquadEstoque.Web.Tests/)
 
 ## 4. Escopo
@@ -73,7 +70,6 @@ Conforme o SRS, não serão testados como funcionalidades do SQUAD:
 - funções de PDV, financeiro ou ERP;
 - integração automática com sistemas externos;
 - operação multi-loja;
-- funcionalidades legadas de `Movies` e `HelloWorld`, exceto enquanto um teste de inicialização precisar detectar regressão técnica global.
 
 ## 5. Estratégia em pirâmide
 
@@ -145,7 +141,7 @@ Nível de teste e forma de execução são classificações diferentes. Um teste
 | Testes de integração | Nível `Integração`; forma `Automatizado` ou `Manual assistido` | MVC, HTTP, autenticação, persistência, banco e colaboração entre componentes | Resposta, efeitos persistidos e ausência de alteração parcial em falhas |
 | Validações manuais | Forma `Manual`; níveis `E2E`, `Aceite` ou `Não funcional` | Usabilidade, inspeção visual, responsividade, compatibilidade e smoke de publicação | Executor, ambiente, passos, observado e evidência anexada |
 
-Os casos unitários estão no catálogo UT; os casos de integração, nos catálogos CT, IT e ADM; as jornadas E2E, na seção 11; e as validações manuais e não funcionais, na seção 12 e na [especificação de testes não funcionais](especificacao-testes-nao-funcionais.md). A existência de automação não dispensa uma validação manual quando o critério depender de percepção visual, dispositivo real ou ambiente publicado.
+Os casos unitários estão no catálogo UT; os casos de integração, nos catálogos CT, IT e ADM; as jornadas E2E, na seção 11; e as validações manuais e não funcionais, na seção 12 e no [registro consolidado](homologacoes/registro-validacoes-manuais.md). A existência de automação não dispensa uma validação manual quando o critério depender de percepção visual, dispositivo real ou ambiente publicado.
 
 ## 6. Ferramentas
 
@@ -297,7 +293,7 @@ Legenda:
 | UT-09 | RF-17, RN-02 | Venda de um par | saldos 2, 1 e 0 | Novos saldos 1, 0 e rejeição | Dependente do módulo do vendedor |
 | UT-10 | RF-19, RF-20 | Desistência | atendimento iniciado e ação `Desistiu` | Nenhuma mudança; nova consulta continua permitida | Dependente do módulo do vendedor |
 | UT-11 | RF-23, UC-10 | Validação do motivo de ajuste | motivo vazio, espaços e texto válido | Vazios são rejeitados; texto válido é aceito | **Parcial:** existe rejeição de vazio no controller; ampliar cobertura do ViewModel |
-| UT-12 | RF-23, RN-02 | Cálculo do ajuste | saldo atual 2; novo saldo 6, 0 e valor negativo | Diferenças +4 e -2 são válidas; negativo é rejeitado | Planejado |
+| UT-12 | RF-23, RN-02 | Cálculo do ajuste | saldo atual 2; novo saldo 6, 0 e valor negativo | Saldos finais 6 e 0; quantidades absolutas 4 e 2 no movimento AJUSTE, respectivamente; novo saldo negativo é rejeitado | Planejado |
 | UT-13 | RF-21, UC-11 | Filtro de saldo zerado | SKUs com saldos 0, 1 e 3 | Somente saldo 0 compõe o resultado | Dependente da visão do lojista |
 | UT-14 | RF-22, UC-12 | Agrupamento de rupturas | ocorrências repetidas por produto/SKU | Frequência correta por modelo e numeração | Dependente do relatório de rupturas |
 | UT-15 | RF-04, RNF-04 | Política de hash | hash bcrypt de custo 12 e hash de custo inferior | Custo 12 é aceito; custo inferior é reprovado | Planejado |
@@ -355,7 +351,7 @@ O destino pós-login ainda possui uma divergência: o UC-01 exige uma tela inici
 | IT-11 | RF-11, RN-02, UC-S4 | Saída insuficiente | saldo 1; saída 2 | Erro claro; saldo 1; nenhuma movimentação | **Existente:** `Saida_with_insufficient_balance_is_rejected_by_controller` |
 | IT-12 | RN-02 | Constraint de saldo | tentar persistir SKU com saldo -1 | Banco rejeita a gravação | **Existente:** `Sku_with_negative_balance_cannot_be_persisted` |
 | IT-13 | RF-12 | Última atualização | efetuar entrada ou saída com tempo controlado | Data/hora do SKU corresponde à operação e é exibida | Dependente da implementação completa de RF-12 |
-| IT-14 | RN-03 | Imutabilidade | tentar localizar endpoints de edição/exclusão e alterar registro diretamente pelo fluxo público | Não existem operações públicas de edição/exclusão; histórico original permanece | Planejado |
+| IT-14 | RN-03 | Imutabilidade | GET/POST de edição e exclusão por LOJISTA, VENDEDOR e anônimo; PUT/PATCH/DELETE nas rotas de alteração por LOJISTA | Ações ausentes no MVC; HTTP 404 ou 405; campos preservados após cada tentativa; histórico disponível ao lojista | Automatizado: [MovimentacaoImutabilidadeHttpTests](../../tests/SquadEstoque.Web.Tests/MovimentacaoImutabilidadeHttpTests.cs) e [MovimentacaoSomenteLeituraHttpTests](../../tests/SquadEstoque.Web.Tests/MovimentacaoSomenteLeituraHttpTests.cs) |
 | IT-15 | RF-23, RN-04, UC-10 | Ajuste válido | saldo 2; novo saldo 6; motivo “Contagem física”; `LOJISTA` | Saldo 6; movimentação `AJUSTE`, diferença 4, motivo e responsável | **Parcial:** `Ajuste_registers_movement_and_updates_balance` |
 | IT-16 | RF-23, UC-10 | Ajuste sem motivo | saldo 2; novo saldo 6; motivo vazio | Rejeição; saldo 2; nenhuma movimentação | **Existente:** `Ajuste_without_reason_is_rejected_by_controller` |
 | IT-17 | RF-23, RN-02 | Ajuste para saldo negativo | novo saldo apurado menor que 0 | Rejeição; nenhuma alteração ou movimentação | Planejado |
@@ -363,7 +359,7 @@ O destino pós-login ainda possui uma divergência: o UC-01 exige uma tela inici
 
 ### 10.4 Consulta e atendimento do vendedor
 
-Os casos detalhados, incluindo pré-condições, passos e campos de execução, estão na [especificação dos testes do vendedor](especificacao-testes-vendedor.md).
+Os casos detalhados, incluindo pré-condições, passos e resultados esperados, estão nas tabelas desta seção. A implementação automatizada correspondente permanece em [`tests/`](../../tests/).
 
 | ID | Requisitos | Cenário | Entradas/ações | Resultado esperado | Situação |
 |---|---|---|---|---|---|
@@ -383,8 +379,8 @@ Os casos detalhados, incluindo pré-condições, passos e campos de execução, 
 
 | ID | Requisitos | Cenário | Entradas/ações | Resultado esperado | Situação |
 |---|---|---|---|---|---|
-| IT-30 | RF-21, UC-11 | Saldos zerados | Produtos com SKUs 0, 1 e 2 | Somente saldo 0 é listado, agrupado por modelo | Dependente da visão |
-| IT-31 | RF-21, RF-02 | Vendedor tenta abrir saldos zerados | Login `VENDEDOR`; URL direta | Acesso negado | Dependente da rota |
+| IT-30 | RF-21, UC-11 | Saldos zerados | Produtos com SKUs 0, 1 e 2 | Somente saldo 0 é listado, agrupado por modelo | Automatizado: [SaldosZeradosViewModelTests](../../tests/SquadEstoque.Web.Tests/SaldosZeradosViewModelTests.cs) e [SaldosZeradosAuthorizationHttpTests](../../tests/SquadEstoque.Web.Tests/SaldosZeradosAuthorizationHttpTests.cs) |
+| IT-31 | RF-21, RF-02 | Vendedor tenta abrir saldos zerados | Login `VENDEDOR`; URL direta | Acesso negado, sem dados de estoque | Automatizado: [SaldosZeradosAuthorizationHttpTests](../../tests/SquadEstoque.Web.Tests/SaldosZeradosAuthorizationHttpTests.cs) |
 | IT-32 | RF-22, UC-12 | Histórico de rupturas | Rupturas repetidas para diferentes SKUs | Modelo, numeração e frequência corretos | Dependente da visão |
 | IT-33 | RF-22, RF-02 | Vendedor tenta abrir histórico | Login `VENDEDOR`; URL direta | Acesso negado | Dependente da rota |
 
@@ -458,68 +454,25 @@ Para NFT-02, documentar volume de dados, número de usuários virtuais, duraçã
 | UC-S4 — Rejeitar saída inválida | UT-05, IT-11, IT-12, IT-25 |
 | UC-S5 — Registrar movimentação | IT-07, IT-09, IT-10, IT-15 |
 
-### 13.2 Matriz de execução real do fluxo de venda
+### 13.2 Evidência de execução
 
-Execução automatizada realizada em 29/09/2026, na branch `dev/rayana`, sobre a base [`72893af`](https://github.com/CodeWitch00/SQUAD-estoque/commit/72893af89346121f144c9e64606c028309070029) atualizada de `origin/main`, em Linux com .NET 10, SQLite em memória e `WebApplicationFactory`. Comando: `dotnet test tests/SquadEstoque.Web.Tests/SquadEstoque.Web.Tests.csproj --configuration Release --no-restore`. Resultado: **94 aprovados, 0 falhas e 0 ignorados**. A execução manual indicada nas linhas mobile ocorreu nas datas e ambientes dos relatórios vinculados.
+Este plano não mantém resultados por commit nem contagens de testes. O estado executável está em [`tests/`](../../tests/), e o resultado de cada revisão está nos checks do Pull Request e no [GitHub Actions](https://github.com/CodeWitch00/SQUAD-estoque/actions). Validações que dependem de percepção visual, dispositivo ou ambiente publicado ficam no [registro consolidado](homologacoes/registro-validacoes-manuais.md).
 
-| ID e cenário | Requisito | Pré-condição | Entrada | Resultado esperado | Resultado obtido | Status | Evidência |
-|---|---|---|---|---|---|---|---|
-| EXEC-VEN-01 — Venda com saldo | RF-10, RF-17; UC-04, UC-S2, UC-S5; IT-24 | `VENDEDOR` autenticado; SKU ativo com saldo 5; outro SKU do mesmo produto com saldo 7 | `POST /Estoque/Vender` com o ID do SKU de saldo 5 e token antiforgery | HTTP 200; saldo 5→4; demais SKUs inalterados; confirmação de sucesso | Teste aprovado; JSON retornou saldo 4, o SKU selecionado passou a 4 e todos os demais snapshots permaneceram iguais | Aprovado | [`VendaRapidaHttpTests`](../../tests/SquadEstoque.Web.Tests/VendaRapidaHttpTests.cs), [relatório de 22/09](validacao-venda-rapida-saldo-disponivel-2026-09-22.md), [PR #31](https://github.com/CodeWitch00/SQUAD-estoque/pull/31) |
-| EXEC-VEN-02 — Venda até saldo zero | RF-14, RF-15, RF-17; RN-02; UC-03, UC-04; IT-22, IT-24 | `VENDEDOR` autenticado; execuções isoladas com saldos 3, 2 e 1 | Uma venda para cada saldo inicial | Transições 3→2 `Disponível`, 2→1 `Último par` e 1→0 `Indisponível`; grade posterior coerente | Os três casos foram aprovados; JSON, persistência e HTML posterior apresentaram os saldos e estados esperados | Aprovado | [`Vendedor_can_post_venda_for_sku_and_records_authenticated_user`](../../tests/SquadEstoque.Web.Tests/EstoqueControllerHttpTests.cs), [PR #35](https://github.com/CodeWitch00/SQUAD-estoque/pull/35), [capturas e relatório](s2-fe-016-grade-apos-venda.md) |
-| EXEC-VEN-03 — Tentativa com saldo zero | RF-17; RN-02; UC-04, UC-S4; IT-25 | `VENDEDOR` autenticado; SKU ativo com saldo 0 | `POST /Estoque/Vender` com o ID do SKU sem saldo e token antiforgery | HTTP 400; saldo permanece 0; nenhuma movimentação ou ruptura é criada | Os testes HTTP e de domínio foram aprovados; saldo 0 preservado e coleções de movimentação e ruptura vazias | Aprovado | [`Vendedor_cannot_sell_zero_stock_and_creates_no_movement`](../../tests/SquadEstoque.Web.Tests/VendaRapidaHttpTests.cs), [relatório](validacao-venda-rapida-sem-saldo-2026-09-22.md), [captura](evidencias/venda-sem-saldo/venda-nao-registrada.jpeg), [PR #32](https://github.com/CodeWitch00/SQUAD-estoque/pull/32) |
-| EXEC-VEN-04 — Autorização | RF-01, RF-02, RF-16, RF-17; UC-04 | Mesmo SKU vendável com saldo 3; sessões separadas de `VENDEDOR`, `LOJISTA` e anônimo; token válido de cada sessão | `POST /Estoque/Vender` pelos três perfis | Vendedor conclui a venda; lojista recebe acesso negado; anônimo é enviado ao login; recusas não alteram estoque nem histórico | Venda do vendedor aprovada; casos de lojista e anônimo aprovados com HTTP 302 para os destinos esperados e snapshots persistidos idênticos | Aprovado | [`Vender_denies_unauthorized_access_without_changing_stock_or_movements`](../../tests/SquadEstoque.Web.Tests/EstoqueControllerHttpTests.cs), [relatório S2-QA-013](s2-qa-013-autorizacao-venda.md), [PR #34](https://github.com/CodeWitch00/SQUAD-estoque/pull/34) |
-| EXEC-VEN-05 — Movimentação da venda | RF-10, RF-17; UC-S5; IT-09, IT-24 | `VENDEDOR` autenticado; nenhuma movimentação anterior; SKU com saldo 2 | Uma venda do SKU selecionado | Exatamente uma `SAIDA` de quantidade 1, com ID, data, SKU e usuário autenticado rastreáveis | Teste aprovado; foi persistida uma única movimentação global, com ID não vazio, `CriadoEm` dentro da janela do POST, `SkuId` e `UsuarioId` esperados, tipo `SAIDA` e quantidade 1 | Aprovado | [`Completed_sale_persists_one_traceable_exit_for_authenticated_seller`](../../tests/SquadEstoque.Web.Tests/VendaRapidaHttpTests.cs), [relatório](validacao-movimentacao-venda-2026-09-24.md), [PR #32](https://github.com/CodeWitch00/SQUAD-estoque/pull/32) |
-| EXEC-VEN-06 — Vínculo Produto–SKU | RF-06, RF-07; RN-01; UC-08, UC-S1; IT-04 | `LOJISTA` autenticado para criar a grade; produto com SKUs controlados na venda | Cadastro das numerações 37–40 e venda posterior de um SKU pertencente a um produto | SKUs persistidos na grade do produto; venda altera somente o saldo do SKU selecionado e preserva `ProdutoId`, numeração, atividade e demais SKUs | Testes aprovados; a grade foi recuperada pelo produto com quatro SKUs e o snapshot da venda preservou o vínculo e todos os campos não afetados | Aprovado | [`Lojista_creates_complete_product_and_grade_via_http`](../../tests/SquadEstoque.Web.Tests/AdministrativeHttpTests.cs), [`VendaRapidaHttpTests`](../../tests/SquadEstoque.Web.Tests/VendaRapidaHttpTests.cs) |
-| EXEC-MOB-01 — Venda em viewport mobile local | RF-14, RF-15, RF-17; RNF-01, RNF-07; UC-03, UC-04; E2E-03, NFT-01, NFT-07 | Aplicação local real em Windows; viewport 390×844; produto fictício com grade 37=0, 38=1, 39=3 e 40=5 | Vendas sequenciais do nº 39 até saldo 0 e nova consulta | Estados, confirmação e saldo atualizados; ação bloqueada em zero; sem rolagem horizontal; nova consulta disponível | Vendas 3→2→1→0 observadas; cartões mudaram para `Disponível`, `Último par` e `Indisponível`; três saídas persistidas; demais SKUs preservados; layout sem rolagem horizontal | Aprovado no ambiente local | [relatório](s2-fe-016-grade-apos-venda.md), capturas de [último par](evidencias/s2-fe-016/mobile-ultimo-par.png) e [saldo zero](evidencias/s2-fe-016/mobile-saldo-zero.png), [PR #35](https://github.com/CodeWitch00/SQUAD-estoque/pull/35) |
-| EXEC-MOB-02 — Homologação mobile publicada | RF-14 a RF-17; RNF-01, RNF-07; UC-03, UC-04; E2E-03, NFT-01, NFT-07 | Azure; Firefox 156 em Linux sem interface; viewport 390×844; conta de vendedor; massa publicada encontrada apenas com saldo 0 | Login, consulta por termos documentados e tentativa de localizar o fluxo `Vendeu` | Versão publicada contém seleção, `Vendeu` e `Nova consulta`; massa permite validar saldo disponível, último par e saldo zero | Login e consulta responderam; a grade antiga exibiu somente um SKU indisponível e não continha `Vendeu`, seleção ou `Nova consulta`; nenhuma venda foi enviada | Bloqueado — `DEF-VEN-MOB-01` aberto | [registro da homologação e da divergência](homologacao-venda-mobile.md), [captura do login 390×844](evidencias/homologacao-venda-mobile/login-firefox-390x844.png) |
+## 14. Automação existente
 
-#### Pendências abertas
+| Arquivo | Responsabilidade principal |
+|---|---|
+| [BasicRoutesTests.cs](../../tests/SquadEstoque.Web.Tests/BasicRoutesTests.cs) | inicialização, rotas básicas e acesso anônimo |
+| [AuthenticationAuthorizationTests.cs](../../tests/SquadEstoque.Web.Tests/AuthenticationAuthorizationTests.cs) | login, perfis, navegação, autorização, BCrypt e logout |
+| [AdministrativeHttpTests.cs](../../tests/SquadEstoque.Web.Tests/AdministrativeHttpTests.cs) | fluxos administrativos e autorização HTTP |
+| [ConsultaEstoqueTests.cs](../../tests/SquadEstoque.Web.Tests/ConsultaEstoqueTests.cs) | busca, seleção, grade, saldos e estados visuais |
+| [ConsultaOperacionalHttpTests.cs](../../tests/SquadEstoque.Web.Tests/ConsultaOperacionalHttpTests.cs) | consulta operacional e controles de atendimento |
+| [EstoqueControllerHttpTests.cs](../../tests/SquadEstoque.Web.Tests/EstoqueControllerHttpTests.cs) | venda, ruptura, autorização, antiforgery e renderização |
+| [EstoqueDomainPersistenceTests.cs](../../tests/SquadEstoque.Web.Tests/EstoqueDomainPersistenceTests.cs) | persistência, estoque, movimentações, concorrência e rollback |
+| [VendaRapidaHttpTests.cs](../../tests/SquadEstoque.Web.Tests/VendaRapidaHttpTests.cs) | venda de uma unidade e movimentação rastreável |
+| [`tests/frontend/`](../../tests/frontend/) | comportamento de interface isolado e regressões frontend |
 
-| ID | Estado | Registro | Condição de retomada |
-|---|---|---|---|
-| DEF-VEN-MOB-01 | Aberto; bloqueia o aceite mobile publicado | O Azure consultado apresentou a grade anterior, sem `Vendeu`, seleção de SKU ou `Nova consulta`. A divergência está registrada na [homologação mobile](homologacao-venda-mobile.md#divergência-do-ambiente-publicado); não há issue externa vinculada no repositório. | Publicar uma versão identificada que contenha o fluxo atual e preparar SKUs com saldos maior que 1, igual a 1 e igual a 0. |
-| PEND-MOB-TOQUE-01 | Pendente; não executado | A execução disponível usou viewport mobile sem dispositivo físico e sem entrada por toque. | Homologar foco, ordem e alvos de toque em aparelho físico, ou registrar o aceite formal da emulação pela equipe. |
-
-Os resultados locais não aprovam `EXEC-MOB-02`. Também não houve execução de venda concorrente do último par (`IT-18`), que permanece planejada e fora desta matriz de resultados.
-
-## 14. Baseline automatizada existente
-
-A execução de 29/09/2026 descobriu 94 casos .NET na baseline `72893af`. Não duplicar estas implementações; ampliar os testes existentes ou adicionar novas classes por domínio.
-
-| Arquivo | Quantidade | Cobertura atual |
-|---|---:|---|
-| [BasicRoutesTests.cs](../../tests/SquadEstoque.Web.Tests/BasicRoutesTests.cs) | 5 | inicialização, Home, Login e acesso anônimo |
-| [AuthenticationAuthorizationTests.cs](../../tests/SquadEstoque.Web.Tests/AuthenticationAuthorizationTests.cs) | 15 | login, perfis, navegação, rota permitida/proibida, credenciais, BCrypt, logout e saída existente |
-| [AdministrativeHttpTests.cs](../../tests/SquadEstoque.Web.Tests/AdministrativeHttpTests.cs) | 13 | cadastro e edição de Produto/grade e autorização dos endpoints administrativos |
-| [ConsultaEstoqueTests.cs](../../tests/SquadEstoque.Web.Tests/ConsultaEstoqueTests.cs) | 8 | autorização, busca, seleção, grade, saldos e estados visuais |
-| [ConsultaOperacionalHttpTests.cs](../../tests/SquadEstoque.Web.Tests/ConsultaOperacionalHttpTests.cs) | 7 | grade completa, produto ativo, busca tolerante e controles do atendimento |
-| [EnumDomainMigrationTests.cs](../../tests/SquadEstoque.Web.Tests/EnumDomainMigrationTests.cs) | 1 | valores documentados dos enums na migration |
-| [EstoqueControllerHttpTests.cs](../../tests/SquadEstoque.Web.Tests/EstoqueControllerHttpTests.cs) | 23 | consulta, venda, saldo zero, autorização, antiforgery, ruptura e renderização da grade |
-| [EstoqueDomainPersistenceTests.cs](../../tests/SquadEstoque.Web.Tests/EstoqueDomainPersistenceTests.cs) | 19 | Produto, constraints de SKU/saldo, movimentações, venda, rollback, ajuste e Ruptura |
-| [VendaRapidaHttpTests.cs](../../tests/SquadEstoque.Web.Tests/VendaRapidaHttpTests.cs) | 3 | venda de uma unidade, saldo zero, preservação dos demais SKUs e movimentação rastreável |
-
-Validação complementar após atualizar a branch: `node --test tests/frontend/consulta-nao-tinha.test.cjs`, com Playwright e Chromium instalados somente em diretório temporário: **6 aprovados e 0 falhas**. O repositório ainda não declara a dependência `playwright`; por isso, a execução direta sem preparação do ambiente falha antes de descobrir os casos JavaScript.
-
-Infraestrutura compartilhada: [SquadEstoqueWebApplicationFactory.cs](../../tests/SquadEstoque.Web.Tests/SquadEstoqueWebApplicationFactory.cs).
-
-Estrutura futura sugerida, criada somente quando houver testes correspondentes:
-
-```text
-tests/SquadEstoque.Web.Tests/
-├── Unit/
-│   ├── Models/
-│   └── Regras/
-├── Integration/
-│   ├── Authentication/
-│   ├── Produtos/
-│   ├── Estoque/
-│   └── Atendimento/
-├── E2E/                       # projeto separado quando Playwright for adotado
-├── Fixtures/
-└── SquadEstoqueWebApplicationFactory.cs
-```
-
-Não mover a baseline apenas para produzir essa árvore. A reorganização deve ocorrer de forma incremental, junto de valor real e sem misturar uma mudança estrutural ampla com funcionalidade.
+As classes podem crescer ou ser reorganizadas sem exigir atualização de contagens neste plano. Novos domínios só precisam ser citados aqui quando alterarem a estratégia ou a cobertura obrigatória.
 
 ## 15. Priorização por risco
 
@@ -555,10 +508,9 @@ dotnet test tests/SquadEstoque.Web.Tests/SquadEstoque.Web.Tests.csproj \
   --collect:"XPlat Code Coverage"
 ```
 
-O CI exige inicialmente cobertura de linhas igual ou superior a 50% e publica o
-arquivo `coverage.cobertura.xml`. A baseline medida antes deste lote era 52,81% de
-linhas e 32,65% de branches; o percentual deve ser medido novamente pela suíte
-completa, sem transformar esse registro histórico em resultado do commit atual.
+O CI exige cobertura de linhas igual ou superior a 50% e publica o arquivo
+`coverage.cobertura.xml`. O percentual vigente deve ser consultado no artefato da
+execução correspondente, sem manter uma cópia manual no plano.
 
 Com `mise`:
 
@@ -622,45 +574,26 @@ A suspensão deve registrar causa, casos afetados e condição para retomada.
 - desempenho e compatibilidade dentro dos critérios;
 - evidências e limitações conhecidas registradas.
 
-## 18. Evidências e relatório
+## 18. Evidências e resultados
 
-Para cada execução registrar:
+As evidências devem permanecer na fonte que as produz:
 
-- data, commit e ambiente;
-- executor e ferramenta;
-- casos executados, aprovados, falhos, bloqueados e não aplicáveis;
-- entrada relevante e resultado observado;
-- log ou screenshot sem dados sensíveis;
-- defeito associado e severidade;
-- decisão de aceite de risco, quando houver.
+- testes automatizados: código em `tests/` e resultado no check do PR ou no GitHub Actions;
+- revisão e integração: conversa, checks, commits e decisão no Pull Request;
+- defeitos: issue ou cartão associado, quando aplicável;
+- validações manuais, visuais, em dispositivo ou ambiente publicado: [registro consolidado de validações manuais](homologacoes/registro-validacoes-manuais.md);
+- síntese do período: relatório da sprint em `docs/10-planejamento/`.
 
-Modelo resumido:
+Não deve ser criado um relatório Markdown para cada teste automatizado, cartão ou execução local. Logs, arquivos TRX, saídas de console, percentuais e contagens pertencem à execução da CI e não devem ser copiados para a documentação.
 
-| Campo | Exemplo |
-|---|---|
-| Data/hora | 2026-08-30 14:00 BRT |
-| Commit | hash curto do commit testado |
-| Ambiente | CI / homologação Chrome mobile |
-| Executor | integrante ou agente responsável pela execução |
-| Caso | IT-18 |
-| Requisito | RN-07, UC-S2 |
-| Pré-condição | SKU com saldo 1 e duas sessões autenticadas |
-| Passos | disparar simultaneamente duas saídas de uma unidade |
-| Entrada | duas confirmações concorrentes para o mesmo SKU |
-| Saída esperada | saldo 0 e uma única saída |
-| Resultado obtido | duas saídas concorrentes |
-| Status de execução | Reprovado |
-| Evidência | link do job ou artefato protegido |
-| Defeito | BUG-123, severidade P0 |
-
-O registro acima é apenas um exemplo de preenchimento. Não representa uma execução real do IT-18.
+Quando uma validação manual for necessária, registrar apenas data, commit, ambiente, escopo, resultado, limitações e o link da evidência externa relevante. Capturas anexadas somente ao Trello permanecem no cartão; entram no repositório apenas quando forem necessárias para homologação ou entrega acadêmica duradoura.
 
 ## 19. Manutenção do plano
 
 - requisito novo deve entrar na matriz antes de ser considerado pronto;
 - requisito removido deve ter os casos marcados como obsoletos, preservando histórico no Git;
 - teste automatizado novo deve atualizar a situação do caso correspondente;
-- quantidade de testes no texto é apenas uma baseline datada; o resultado do runner é a fonte operacional;
+- não manter contagens ou percentuais de execução no plano; o runner e a CI são as fontes operacionais;
 - divergências entre SRS, UX e implementação devem ser resolvidas, não escondidas alterando a expectativa do teste;
 - este plano deve ser revisado no planejamento de cada sprint e antes de cada release.
 
@@ -675,5 +608,6 @@ O registro acima é apenas um exemplo de preenchimento. Não representa uma exec
 | 1.3 | 2026-09-02 | Automação | Codex, em execução assistida solicitada pela equipe | Cobertura automatizada no CI; cadastro, edição, inativação, autorização POST, limpeza de senha, BCrypt e auditoria atualizados conforme testes executados |
 | 1.4 | 2026-09-29 | Execução e rastreabilidade | Codex, em execução solicitada pela equipe | Resultados reais da venda com saldo, saldo zero, autorização, movimentação, vínculo Produto–SKU e validação mobile registrados; divergência do Azure e validação por toque mantidas abertas |
 | 1.5 | 2026-09-29 | Ruptura | Codex, em execução solicitada pela equipe | IT-26 atualizado com a execução HTTP que comprova uma ruptura, saldos integralmente preservados e nenhuma alteração na tabela de movimentações |
+| 2.0 | 2026-10-12 | Simplificação documental | Equipe do projeto | Evidências automáticas direcionadas à CI e validações manuais reunidas em registro único; relatórios repetitivos removidos |
 
 Revisões assistidas não substituem o aceite do responsável de QA ou do produto quando esse aceite for exigido para release. A próxima alteração funcional ou de requisito deve gerar uma nova linha, com versão, data, tipo, revisor e resultado.

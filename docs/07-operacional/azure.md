@@ -31,12 +31,11 @@ As configurações de aplicativo usadas no App Service são:
 ASPNETCORE_ENVIRONMENT=Production
 WEBSITES_ENABLE_APP_SERVICE_STORAGE=true
 ConnectionStrings__EstoqueContext=Data Source=/home/data/Estoque.db
-ConnectionStrings__LegacyMovieContext=Data Source=/home/data/LegacyMovie.db
 DataProtection__KeysPath=/home/data/keys
 Demo__SeedUsers=true
 ```
 
-Os bancos e as chaves de cookies ficam em `/home/data`, fora de
+O banco do estoque e as chaves de cookies ficam em `/home/data`, fora de
 `/home/site/wwwroot`, onde o pacote é implantado. O seed demonstrativo permanece
 temporariamente habilitado somente para a equipe e será revisto no cartão
 `S4-BE-003` antes da demonstração final ou de qualquer uso real.

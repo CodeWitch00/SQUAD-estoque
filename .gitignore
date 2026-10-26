@@ -55,3 +55,6 @@ gestao_privada/
 
 # Frontend test dependencies
 node_modules/
+
+# Imagens enviadas em tempo de execução
+src/SquadEstoque.Web/wwwroot/uploads/

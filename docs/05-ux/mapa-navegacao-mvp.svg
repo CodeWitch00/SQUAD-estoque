@@ -6,7 +6,7 @@
     <style>
       .title{font:700 28px Arial,sans-serif;fill:#0f172a}.subtitle{font:400 15px Arial,sans-serif;fill:#475569}
       .lane{fill:#f8fafc;stroke:#cbd5e1;stroke-width:2}.lane-title{font:700 21px Arial,sans-serif;fill:#0f172a}
-      .node{stroke-width:3;rx:10}.existing{fill:#dcfce7;stroke:#15803d}.pending{fill:#ffedd5;stroke:#c2410c;stroke-dasharray:8 5}.legacy{fill:#e2e8f0;stroke:#64748b}
+      .node{stroke-width:3;rx:10}.existing{fill:#dcfce7;stroke:#15803d}.pending{fill:#ffedd5;stroke:#c2410c;stroke-dasharray:8 5}
       .label{font:700 15px Arial,sans-serif;fill:#0f172a;text-anchor:middle}.small{font:400 13px Arial,sans-serif;fill:#334155;text-anchor:middle}
       .edge{fill:none;stroke:#475569;stroke-width:2;marker-end:url(#arrow)}.edge-dash{fill:none;stroke:#475569;stroke-width:2;stroke-dasharray:7 5;marker-end:url(#arrow)}
       .edge-label{font:400 12px Arial,sans-serif;fill:#334155;text-anchor:middle}.legend{font:400 14px Arial,sans-serif;fill:#334155}
@@ -66,6 +66,5 @@
   <rect x="50" y="940" width="1500" height="85" class="lane" rx="14"/>
   <rect x="80" y="965" width="42" height="25" class="node existing"/><text x="135" y="983" class="legend">Existente</text>
   <rect x="250" y="965" width="42" height="25" class="node pending"/><text x="305" y="983" class="legend">Pendente</text>
-  <rect x="420" y="965" width="42" height="25" class="node legacy"/><text x="475" y="983" class="legend">Legado fora do fluxo (não desenhado no caminho principal)</text>
   <text x="910" y="982" class="legend">Todas as telas administrativas: LOJISTA · Atendimento: VENDEDOR</text>
 </svg>

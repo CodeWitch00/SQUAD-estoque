@@ -7,6 +7,10 @@
 <a asp-action="Index" class="details-back-link">← Voltar para produtos</a>
 
 <header class="admin-page-heading product-details-heading">
+    @if (!string.IsNullOrWhiteSpace(Model.ImagemUrl))
+    {
+        <img class="consulta-produto-foto product-details-photo" src="@Model.ImagemUrl" alt="Foto de @Model.Nome" />
+    }
     <div>
         <p class="product-details-kicker">Detalhes do produto</p>
         <h1>@Model.Nome</h1>

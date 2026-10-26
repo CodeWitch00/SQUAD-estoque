@@ -80,8 +80,8 @@ Formato utilizado:
 ### US-07
 
 **Como** vendedor  
-**Quero** poder ignorar o registro de resultado  
-**Para** não travar o fluxo de atendimento  
+**Quero** iniciar outra consulta mantendo o atendimento anterior pendente
+**Para** atender mais de um cliente sem perder o registro obrigatório do resultado
 
 **Prioridade:** Obrigatório
 
@@ -146,6 +146,18 @@ Formato utilizado:
 **Para** tomar decisões de compra baseadas em demanda real  
 
 **Prioridade:** Importante
+
+---
+
+### US-14
+
+**Como** lojista
+
+**Quero** importar o XML da NF-e, conferir seus itens e associar fotos aos modelos novos
+
+**Para** cadastrar a mercadoria recebida e atualizar o estoque sem digitar cada entrada separadamente
+
+**Prioridade:** Obrigatório
 
 ---
 

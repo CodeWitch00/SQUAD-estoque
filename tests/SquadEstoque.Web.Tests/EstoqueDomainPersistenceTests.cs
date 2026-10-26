@@ -9,6 +9,7 @@ using SquadEstoque.Web.Controllers;
 using SquadEstoque.Web.Data;
 using SquadEstoque.Web.Models;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace SquadEstoque.Web.Tests;
 
@@ -16,6 +17,10 @@ namespace SquadEstoque.Web.Tests;
 // A saída compartilhada e os controllers são verificados contra SQLite real.
 public sealed class EstoqueDomainPersistenceTests
 {
+    private readonly ITestOutputHelper _output;
+
+    public EstoqueDomainPersistenceTests(ITestOutputHelper output) => _output = output;
+
     [Fact]
     public void Produto_requires_identification_fields()
     {
@@ -441,7 +446,7 @@ public sealed class EstoqueDomainPersistenceTests
         var result = await controller.AdicionarNumeracoes(data.Produto.Id, new AdicionarNumeracoesViewModel
         {
             ProdutoId = data.Produto.Id,
-            NumeracoesGrade = "41"
+            NumeracoesExtras = "41"
         });
 
         var redirect = Assert.IsType<RedirectToActionResult>(result);
@@ -464,7 +469,7 @@ public sealed class EstoqueDomainPersistenceTests
         var result = await controller.AdicionarNumeracoes(data.Produto.Id, new AdicionarNumeracoesViewModel
         {
             ProdutoId = data.Produto.Id,
-            NumeracoesGrade = "40, 41, 42"
+            NumeracoesExtras = "40, 41, 42"
         });
 
         Assert.IsType<RedirectToActionResult>(result);
@@ -486,7 +491,7 @@ public sealed class EstoqueDomainPersistenceTests
         var result = await controller.AdicionarNumeracoes(data.Produto.Id, new AdicionarNumeracoesViewModel
         {
             ProdutoId = data.Produto.Id,
-            NumeracoesGrade = numeracoes
+            NumeracoesExtras = numeracoes
         });
 
         Assert.IsType<ViewResult>(result);
@@ -506,7 +511,7 @@ public sealed class EstoqueDomainPersistenceTests
         var result = await controller.AdicionarNumeracoes(data.Produto.Id, new AdicionarNumeracoesViewModel
         {
             ProdutoId = data.Produto.Id,
-            NumeracoesGrade = "41, 41"
+            NumeracoesExtras = "41, 41"
         });
 
         Assert.IsType<ViewResult>(result);
@@ -525,7 +530,7 @@ public sealed class EstoqueDomainPersistenceTests
         var result = await controller.AdicionarNumeracoes(data.Produto.Id, new AdicionarNumeracoesViewModel
         {
             ProdutoId = data.Produto.Id,
-            NumeracoesGrade = "   "
+            NumeracoesExtras = "   "
         });
 
         Assert.IsType<ViewResult>(result);
@@ -544,7 +549,7 @@ public sealed class EstoqueDomainPersistenceTests
         var result = await controller.AdicionarNumeracoes(Guid.NewGuid(), new AdicionarNumeracoesViewModel
         {
             ProdutoId = Guid.NewGuid(),
-            NumeracoesGrade = "41"
+            NumeracoesExtras = "41"
         });
 
         Assert.IsType<NotFoundResult>(result);
@@ -561,7 +566,7 @@ public sealed class EstoqueDomainPersistenceTests
         await produtosController.AdicionarNumeracoes(data.Produto.Id, new AdicionarNumeracoesViewModel
         {
             ProdutoId = data.Produto.Id,
-            NumeracoesGrade = "41"
+            NumeracoesExtras = "41"
         });
 
         database.Context.ChangeTracker.Clear();
@@ -881,6 +886,81 @@ public sealed class EstoqueDomainPersistenceTests
         Assert.IsType<ViewResult>(result);
         Assert.Equal(1, data.Sku36.SaldoAtual);
         Assert.Empty(await database.Context.Movimentacao.ToListAsync());
+    }
+
+    public static IEnumerable<object[]> ConcurrentSaleCases()
+    {
+        for (var repeticao = 1; repeticao <= 10; repeticao++)
+        {
+            yield return new object[] { false, 1, repeticao };
+            yield return new object[] { true, 1, repeticao };
+            yield return new object[] { true, 3, repeticao };
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(ConcurrentSaleCases))]
+    public async Task Concurrent_saidas_sell_available_stock_only_once(bool administrativa, int quantidade, int repeticao)
+    {
+        // Conexões e contextos independentes disputam o mesmo SQLite em disco.
+        var path = Path.Combine(Path.GetTempPath(), $"estoque-concorrente-{Guid.NewGuid():N}.db");
+        var options = new DbContextOptionsBuilder<EstoqueContext>()
+            .UseSqlite($"Data Source={path};Pooling=False;Default Timeout=10").Options;
+        try
+        {
+            await using var seed = new EstoqueContext(options);
+            await seed.Database.EnsureCreatedAsync();
+            var data = await SeedAsync(seed, quantidade);
+            await using var first = new EstoqueContext(options);
+            await using var second = new EstoqueContext(options);
+            // Ambos enxergam o mesmo saldo antes de iniciar a disputa.
+            Assert.Equal(quantidade, (await first.Sku.SingleAsync()).SaldoAtual);
+            Assert.Equal(quantidade, (await second.Sku.SingleAsync()).SaldoAtual);
+            using var ready = new CountdownEvent(2);
+            var start = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            Task<ResultadoSaida> Sell(EstoqueContext context) => Task.Run(async () =>
+            {
+                ready.Signal();
+                await start.Task;
+                return administrativa
+                    ? await context.RegistrarSaidaAsync(data.Sku.Id, quantidade, data.Usuario.Id, "Venda concorrente")
+                    : await context.RegistrarVendaRapidaAsync(data.Sku.Id, data.Usuario.Id);
+            });
+            var sale1 = Sell(first);
+            var sale2 = Sell(second);
+            var bothReady = ready.Wait(TimeSpan.FromSeconds(10));
+            start.SetResult();
+            var results = await Task.WhenAll(sale1, sale2);
+            _output.WriteLine($"S3-QA-003: administrativa={administrativa}; quantidade={quantidade}; repeticao={repeticao}");
+            for (var i = 0; i < results.Length; i++)
+                _output.WriteLine($"Operacao {i + 1}: erro={results[i].Erro ?? "nenhum"}; conflito={results[i].Conflito}");
+            Assert.True(bothReady);
+            var approved = Assert.Single(results, r => r.Erro == null);
+            Assert.False(approved.Conflito);
+            Assert.NotNull(approved.Sku);
+            Assert.Equal(data.Sku.Id, approved.Sku.Id);
+            var rejected = Assert.Single(results, r => r.Erro != null);
+            Assert.False(rejected.Conflito);
+            Assert.Equal("Saldo insuficiente para saída. Saldo disponível: 0 par(es).", rejected.Erro);
+            Assert.Equal("Quantidade", rejected.Campo);
+            await using var persisted = new EstoqueContext(options);
+            var balance = await persisted.Sku.Select(s => s.SaldoAtual).SingleAsync();
+            var movements = await persisted.Movimentacao.AsNoTracking().ToListAsync();
+            _output.WriteLine($"Saldo final={balance}; movimentacoes={movements.Count}");
+            Assert.Equal(0, balance);
+            var movement = Assert.Single(movements);
+            _output.WriteLine($"Movimentacao: sku={movement.SkuId}; tipo={movement.Tipo}; quantidade={movement.Quantidade}; usuario={movement.UsuarioId}");
+            Assert.Equal(data.Sku.Id, movement.SkuId);
+            Assert.Equal(quantidade, movement.Quantidade);
+            Assert.Equal(data.Usuario.Id, movement.UsuarioId);
+            Assert.Equal(TipoMovimentacao.SAIDA, movement.Tipo);
+        }
+        finally
+        {
+            File.Delete(path);
+            File.Delete(path + "-wal");
+            File.Delete(path + "-shm");
+        }
     }
 
     private static MovimentacoesController CreateController(EstoqueContext context, Usuario usuario)
