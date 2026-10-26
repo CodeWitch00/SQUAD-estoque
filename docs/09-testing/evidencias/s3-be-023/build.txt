@@ -1,0 +1,7 @@
+  SquadEstoque.Web -> C:\Users\Usuario\Documents\ChatGPT\estoque\tmp\s3-be-023\src\SquadEstoque.Web\bin\Debug\net10.0\SquadEstoque.Web.dll
+
+Compilação com êxito.
+    0 Aviso(s)
+    0 Erro(s)
+
+Tempo Decorrido 00:00:01.62
