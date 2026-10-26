@@ -30,6 +30,14 @@ public class EstoqueContext : DbContext
             .HasIndex(s => new { s.ProdutoId, s.Numeracao })
             .IsUnique();
 
+        modelBuilder.Entity<Sku>()
+            .Property(s => s.UltimaAtualizacaoSaldoEm)
+            .HasConversion(
+                value => value,
+                value => value.HasValue
+                    ? DateTime.SpecifyKind(value.Value, DateTimeKind.Utc)
+                    : (DateTime?)null);
+
         // RF-01 / RF-04: E-mail único para usuário
         modelBuilder.Entity<Usuario>()
             .HasIndex(u => u.Email)
