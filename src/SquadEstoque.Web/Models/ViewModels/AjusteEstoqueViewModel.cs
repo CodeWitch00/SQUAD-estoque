@@ -5,6 +5,10 @@ namespace SquadEstoque.Web.Models;
 
 public class AjusteEstoqueViewModel
 {
+    public const int MotivoComprimentoMinimo = 5;
+    public const int MotivoComprimentoMaximo = 500;
+    private string _motivo = string.Empty;
+
     [Required(ErrorMessage = "Selecione o SKU.")]
     public Guid SkuId { get; set; }
 
@@ -18,8 +22,13 @@ public class AjusteEstoqueViewModel
     public int NovoSaldoApurado { get; set; }
 
     [Required(ErrorMessage = "O motivo do ajuste é obrigatório.")]
-    [MinLength(5, ErrorMessage = "O motivo deve conter pelo menos 5 caracteres.")]
-    [StringLength(500, ErrorMessage = "O motivo não pode exceder 500 caracteres.")]
+    [MinLength(MotivoComprimentoMinimo, ErrorMessage = "O motivo deve conter pelo menos 5 caracteres.")]
+    [StringLength(MotivoComprimentoMaximo, ErrorMessage = "O motivo não pode exceder 500 caracteres.")]
     [Display(Name = "Motivo do Ajuste")]
-    public string Motivo { get; set; } = string.Empty;
+    public string Motivo
+    {
+        get => _motivo;
+        set => _motivo = string.Join(" ", (value ?? string.Empty)
+            .Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
+    }
 }
