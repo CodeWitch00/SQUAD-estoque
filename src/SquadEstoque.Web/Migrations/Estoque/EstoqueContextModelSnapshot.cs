@@ -298,6 +298,9 @@ namespace SquadEstoque.Web.Migrations.Estoque
                     b.Property<int>("SaldoAtual")
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime?>("UltimaAtualizacaoSaldoEm")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ProdutoId", "Numeracao")

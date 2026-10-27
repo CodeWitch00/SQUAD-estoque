@@ -232,6 +232,7 @@ public sealed class EntradasFiscaisController : Controller
                 }
 
                 sku.SaldoAtual += item.Quantidade;
+                sku.UltimaAtualizacaoSaldoEm = DateTime.UtcNow;
                 _context.Movimentacao.Add(new Movimentacao
                 {
                     Id = Guid.NewGuid(), SkuId = sku.Id, Tipo = TipoMovimentacao.ENTRADA,
