@@ -122,12 +122,12 @@ Este documento consolida o pacote de evidências da P1 em um único índice vers
 | CT-007 | Venda rápida (saída de estoque) | ✅ Aprovado |
 | CT-008 | Registro de ruptura com SKU inválido | ✅ Aprovado |
 | CT-009 | Registro de desistência de atendimento | ✅ Aprovado |
-| CT-010 | Importação de NF-e | ⚠️ Não executado (tela pós-formal) |
+| CT-010 | Importação de NF-e | 🕐 Executado só após o período formal (11/10) |
 | CT-011 | Movimentação de entrada em lote | ✅ Aprovado |
 | CT-012 | Ajuste de saldo | ✅ Aprovado |
-| CT-013 | Responsividade (mobile 390×844) | ✅ Aprovado |
+| CT-013 | Responsividade (mobile 390×844) | ✅ Aprovado (capturas no período; teste automatizado de 09/10, pós-formal) |
 | CT-014 | Não-funcionais (desempenho/acessibilidade) | ⚠️ Parcial |
-| CT-015 | Telas de saldos zerados | ⚠️ Não executado (tela pós-formal) |
+| CT-015 | Telas de saldos zerados | 🕐 Executado só após o período formal (13–16/10) |
 
 ### 4.2 Casos detalhados
 
@@ -196,10 +196,10 @@ Este documento consolida o pacote de evidências da P1 em um único índice vers
 
 #### CT-010 — Importação de NF-e
 
-- **Entrada:** arquivo XML de NF-e válido.
-- **Esperado:** importação e criação de entrada.
-- **Obtido:** **não executado no período formal** — a tela `/EntradasFiscais/Importar` só foi criada em 11/10/2026 (pós-formal). Caso mantido como pendente e registrado na Seção 9.
-- **Evidência (pendência):** [`Views/EntradasFiscais/Importar.cshtml`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/src/SquadEstoque.Web/Views/EntradasFiscais/Importar.cshtml) (histórico de criação 11/10/2026).
+- **Entrada:** arquivo XML de NF-e válido (`Xml_cria_rascunho_e_confirmacao_cadastra_produto_sku_movimento_e_vinculo`) e tentativa de importação como perfil que não é lojista (`Entrada_fiscal_e_exclusiva_do_lojista`).
+- **Esperado:** rascunho criado, confirmação cadastrando produto/SKU/movimento/vínculo, e acesso negado a quem não é `LOJISTA`.
+- **Obtido:** aprovado **apenas após o período formal** — não havia cobertura em 07/10/2026. A tela `/EntradasFiscais/Importar` foi criada em 11/10/2026 e os testes no mesmo dia.
+- **Evidência:** [`tests/SquadEstoque.Web.Tests/EntradaFiscalHttpTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/EntradaFiscalHttpTests.cs) (criado **11/10/2026**, **após o período formal**) + [`Views/EntradasFiscais/Importar.cshtml`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/src/SquadEstoque.Web/Views/EntradasFiscais/Importar.cshtml) (criada 11/10/2026). Registro manual de 09/10/2026 em [`registro-validacoes-manuais.md`](../09-testing/homologacoes/registro-validacoes-manuais.md) também marcado como posterior ao período.
 
 #### CT-011 — Movimentação de entrada em lote
 
@@ -213,7 +213,7 @@ Este documento consolida o pacote de evidências da P1 em um único índice vers
 - **Entrada:** SKU com saldo existente e ajuste informado, sessão `LOJISTA`.
 - **Esperado:** saldo ajustado e movimentação de ajuste registrada.
 - **Obtido:** ajuste aplicado conforme esperado.
-- **Evidência:** [`AdministrativeHttpTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/AdministrativeHttpTests.cs).
+- **Evidência:** [`AdministrativeHttpTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/AdministrativeHttpTests.cs) + (pós-formal) [`AjusteMotivoHttpTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/AjusteMotivoHttpTests.cs), criado **22/10/2026** — casos `Motivo_invalido_rejeita_ajuste_sem_alterar_saldos_ou_historico` e `Motivo_valido_persiste_normalizado_com_diferenca_usuario_e_data`. Cobertura ampliada pelo PR [#71](https://github.com/CodeWitch00/SQUAD-estoque/pull/71) (abrindo, ver Seção 9.3c).
 
 #### CT-013 — Responsividade (mobile 390×844)
 
@@ -231,10 +231,10 @@ Este documento consolida o pacote de evidências da P1 em um único índice vers
 
 #### CT-015 — Telas de saldos zerados
 
-- **Entrada:** estado com produtos de saldo zero.
-- **Esperado:** listagem correta dos itens zerados.
-- **Obtido:** **não executado no período formal** — a tela `/SaldosZerados` só foi criada em 16/10/2026 (pós-formal).
-- **Evidência (pendência):** [`Views/SaldosZerados/Index.cshtml`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/src/SquadEstoque.Web/Views/SaldosZerados/Index.cshtml) (histórico de criação 16/10/2026).
+- **Entrada:** produtos com saldo exatamente zero, agrupados por produto/SKU; e sessão de `VENDEDOR`/anônimo tentando acessar a visão.
+- **Esperado:** listagem apenas de saldos zero (sem expor SKUs com saldo), mensagem clara quando não há resultados, e acesso negado a quem não é `LOJISTA`.
+- **Obtido:** aprovado **apenas após o período formal** — não havia cobertura em 07/10/2026 (ViewModel criado 13/10, autorização testada 16/10).
+- **Evidência:** [`tests/SquadEstoque.Web.Tests/SaldosZeradosViewModelTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/SaldosZeradosViewModelTests.cs) (criado **13/10/2026**) e [`tests/SquadEstoque.Web.Tests/SaldosZeradosAuthorizationHttpTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/SaldosZeradosAuthorizationHttpTests.cs) (criado **16/10/2026**) — ambos **após o período formal** + [`Views/SaldosZerados/Index.cshtml`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/src/SquadEstoque.Web/Views/SaldosZerados/Index.cshtml) (criada 16/10/2026).
 
 ---
 
@@ -296,8 +296,19 @@ As capturas mobile da Seção 5 são o registro mobile canônico deste pacote (v
 
 ### 6.5 Pendências de captura
 
-1. Três capturas de protótipo (`lojista-desktop.png`, `lojista-tablet.png`, `vendedor-mobile.png`) — [`evidencias/README.md`](evidencias/README.md).
-2. Capturas das telas pós-formais (`Atendimentos`, `EntradasFiscais/Importar`, `SaldosZerados`, `Rupturas/Index`).
+Conforme [`evidencias/README.md`](evidencias/README.md) (5 registros — **correção desta versão**: a revisão anterior citava só as 3 pendentes):
+
+| Arquivo | Origem | Viewport | Estado |
+|---|---|---|---|
+| `lojista-desktop.png` | `prototipo-lojista.html` | 1440×900 | ⬜ Pendente de captura e revisão |
+| `lojista-tablet.png` | `prototipo-lojista.html` | 768×1024 | ⬜ Pendente de captura e revisão |
+| `vendedor-mobile.png` | `prototipo-vendedor.html` | 390×844 | ⬜ Pendente de captura e revisão |
+| [`vendedor-s2-atendimento-mobile.png`](evidencias/vendedor-s2-atendimento-mobile.png) | `prototipo-vendedor.html` | moldura 414 px | ✅ Registrada (confirmação "Vendeu" SKU RUN-PRO-PT-37) |
+| [`vendedor-s2-desistiu-sem-sku-mobile.png`](evidencias/vendedor-s2-desistiu-sem-sku-mobile.png) | `prototipo-vendedor.html` | moldura 414 px | ✅ Registrada ("Desistiu" sem numeração) |
+
+> As duas capturas registradas usam **moldura de 414 px**, diferente do 390×844 padrão da Seção 5 — viewport de protótipo ≠ viewport de implementação; não misturar os números.
+
+Também seguem pendentes: capturas das telas pós-formais (`Atendimentos`, `EntradasFiscais/Importar`, `SaldosZerados`, `Rupturas/Index`).
 
 ---
 
@@ -306,31 +317,81 @@ As capturas mobile da Seção 5 são o registro mobile canônico deste pacote (v
 ### 7.1 Comandos oficiais de execução
 
 ```bash
-dotnet test              # testes de backend (tests/SquadEstoque.Web.Tests)
-npm run test:frontend    # testes de frontend/responsividade (tests/frontend)
+# Backend (sem .sln no repositório — a CI aponta os projetos diretamente)
+dotnet build src/SquadEstoque.Web/SquadEstoque.Web.csproj --configuration Release
+dotnet test tests/SquadEstoque.Web.Tests/SquadEstoque.Web.Tests.csproj --configuration Release
+
+# Frontend
+npm ci
+npx playwright install --with-deps chromium
+npm run test:frontend
 ```
 
-> **Correção:** o `package.json` do repositório possui apenas o script `test:frontend`. Não existem `pytest`, `npm run build` nem diretório `docs/03-testes/`.
+> **Correções:** (1) não existe `.sln` na raiz — `dotnet test` puro falha com `MSB1003`; os caminhos acima são os da CI. (2) O `package.json` possui apenas o script `test:frontend`. Não existem `pytest`, `npm run build` nem diretório `docs/03-testes/`.
 
-### 7.2 Arquivos de teste existentes
+### 7.2 Arquivos de teste existentes na `main` (`298b850`) — inventário completo
 
-| Arquivo | Camada | Criado em |
+> **Correção desta versão:** a revisão anterior listava só 8 arquivos; a `main` contém **25 classes de teste de backend** + infraestrutura e **3 testes frontend**. Coluna "Período": **base** = anterior à Sprint 2 (até 09/09/2026), **formal** = 10/09 a 07/10/2026, **pós** = após 07/10/2026.
+
+**Backend — `tests/SquadEstoque.Web.Tests/`**
+
+| Arquivo | Criado em | Período |
 |---|---|---|
-| [`AuthenticationAuthorizationTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/AuthenticationAuthorizationTests.cs) | Backend (autorização) | 17/08/2026 |
-| [`AdministrativeHttpTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/AdministrativeHttpTests.cs) | Backend HTTP (lojista) | — |
-| [`ConsultaEstoqueTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/ConsultaEstoqueTests.cs) | Backend (consulta) | — |
-| [`ConsultaOperacionalHttpTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/ConsultaOperacionalHttpTests.cs) | Backend HTTP (operacional) | — |
-| [`VendaRapidaHttpTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/VendaRapidaHttpTests.cs) | Backend HTTP (venda) | 22/09/2026 |
-| [`RupturaHttpTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/RupturaHttpTests.cs) | Backend HTTP (ruptura) | — |
-| [`RupturaInvalidSkuHttpTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/RupturaInvalidSkuHttpTests.cs) | Backend HTTP (validação) | 01/10/2026 |
-| [`DesistiuHttpTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/DesistiuHttpTests.cs) | Backend HTTP (desistência) | 01/10/2026 |
-| [`tests/frontend/consulta-responsividade.test.cjs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/frontend/consulta-responsividade.test.cjs) | Frontend (responsividade) | 09/10/2026 (pós-formal) |
+| [`AuthenticationAuthorizationTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/AuthenticationAuthorizationTests.cs) | 17/08/2026 | base |
+| [`BasicRoutesTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/BasicRoutesTests.cs) | 17/08/2026 | base |
+| [`EstoqueDomainPersistenceTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/EstoqueDomainPersistenceTests.cs) | 17/08/2026 | base |
+| [`ConsultaEstoqueTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/ConsultaEstoqueTests.cs) | 31/08/2026 | base |
+| [`EnumDomainMigrationTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/EnumDomainMigrationTests.cs) | 31/08/2026 | base |
+| [`AdministrativeHttpTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/AdministrativeHttpTests.cs) | 02/09/2026 | base |
+| [`ConsultaOperacionalHttpTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/ConsultaOperacionalHttpTests.cs) | 03/09/2026 | base |
+| [`EstoqueControllerHttpTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/EstoqueControllerHttpTests.cs) | 03/09/2026 | base |
+| [`VendaRapidaHttpTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/VendaRapidaHttpTests.cs) | 22/09/2026 | ✅ formal |
+| [`RupturaHttpTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/RupturaHttpTests.cs) | 30/09/2026 | ✅ formal |
+| [`RupturaPersistenceHttpTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/RupturaPersistenceHttpTests.cs) | 30/09/2026 | ✅ formal |
+| [`DesistiuHttpTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/DesistiuHttpTests.cs) | 01/10/2026 | ✅ formal |
+| [`RupturaInvalidSkuHttpTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/RupturaInvalidSkuHttpTests.cs) | 01/10/2026 | ✅ formal |
+| [`VendaTransacionalTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/VendaTransacionalTests.cs) | 08/10/2026 | 🕐 pós |
+| [`AtendimentoAuditavelHttpTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/AtendimentoAuditavelHttpTests.cs) | 11/10/2026 | 🕐 pós |
+| [`EntradaFiscalHttpTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/EntradaFiscalHttpTests.cs) | 11/10/2026 | 🕐 pós |
+| [`AjusteAuthorizationHttpTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/AjusteAuthorizationHttpTests.cs) | 12/10/2026 | 🕐 pós |
+| [`RollbackVendaTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/RollbackVendaTests.cs) | 12/10/2026 | 🕐 pós |
+| [`SaldosZeradosViewModelTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/SaldosZeradosViewModelTests.cs) | 13/10/2026 | 🕐 pós |
+| [`MovimentacaoImutabilidadeHttpTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/MovimentacaoImutabilidadeHttpTests.cs) | 14/10/2026 | 🕐 pós |
+| [`MovimentacaoSomenteLeituraHttpTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/MovimentacaoSomenteLeituraHttpTests.cs) | 16/10/2026 | 🕐 pós |
+| [`SaldosZeradosAuthorizationHttpTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/SaldosZeradosAuthorizationHttpTests.cs) | 16/10/2026 | 🕐 pós |
+| [`RupturasControllerTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/RupturasControllerTests.cs) | 20/10/2026 | 🕐 pós |
+| [`RupturasHistoricoHttpTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/RupturasHistoricoHttpTests.cs) | 20/10/2026 | 🕐 pós |
+| [`AjusteMotivoHttpTests.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/AjusteMotivoHttpTests.cs) | 22/10/2026 | 🕐 pós |
+
+Infraestrutura (não é caso de teste): [`SquadEstoqueWebApplicationFactory.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/SquadEstoqueWebApplicationFactory.cs) (17/08/2026) + [`test.runsettings`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/SquadEstoque.Web.Tests/test.runsettings).
+
+**Frontend — `tests/frontend/`**
+
+| Arquivo | Criado em | Período | Casos |
+|---|---|---|---|
+| [`consulta-nao-tinha.test.cjs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/frontend/consulta-nao-tinha.test.cjs) | 28/09/2026 | ✅ formal | 5 testes (busca, seleção de numeração, venda, "Não tinha", bloqueio de envio) |
+| [`consulta-desistiu.test.cjs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/frontend/consulta-desistiu.test.cjs) | 02/10/2026 | ✅ formal | 2 testes (resposta inválida, falha na nova busca) |
+| [`consulta-responsividade.test.cjs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/tests/frontend/consulta-responsividade.test.cjs) | 09/10/2026 | 🕐 pós | CT-013 (responsividade) |
+
+**Resumo:** 149 atributos `[Fact]`/`[Theory]` no backend + 7 casos frontend. Apenas **7 arquivos** (5 backend + 2 frontend) foram criados **dentro do período formal**; a maior parte da suíte é de base anterior ou de evolução pós-07/10 — transparência registrada para não confundir cobertura atual com cobertura da P1.
 
 ### 7.3 CI
 
-- Workflow: [`.github/workflows/dotnet.yml`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/.github/workflows/dotnet.yml)
+- Workflow: [`.github/workflows/dotnet.yml`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/.github/workflows/dotnet.yml) — dispara em **push para qualquer branch** e em PR para `main`/`dev/emmy`.
+- Jobs reais: `build-and-test` (.NET 10, `dotnet build` + `dotnet test` com coleta de cobertura e **piso de 50% de line coverage**) e `frontend-tests` (Node 22, `npm ci`, Chromium do Playwright, `npm run test:frontend`); `deploy-azure` só na `main` com `AZURE_CD_ENABLED=true`.
 - Execução citada no [relatório da sprint 2](../10-planejamento/relatorio-sprint-2.md): runs `e9d553a` / `38156810379`.
-- Comando executado na CI: `dotnet test` (build + testes do backend).
+
+### 7.4 Conferência local deste pacote (26/10/2026)
+
+Comando: `dotnet test tests/SquadEstoque.Web.Tests/SquadEstoque.Web.Tests.csproj --configuration Release` (.NET SDK **10.0.402**, `main` @ `298b850`):
+
+```
+Aprovado! – Com falha: 0, Aprovado: 252, Ignorado: 0, Total: 252, Duração: 52 s
+```
+
+- **252/252 aprovados, 0 falhas, 0 ignorados.**
+- Observação honesta: os 252 incluem os testes criados **após** 07/10/2026 (Seção 7.2) — a suíte atual **não** equivale à cobertura da P1 em 07/10; usar a coluna *Período* para separar o que existia na entrega formal.
+- Testes frontend (`npm run test:frontend`) não executados nesta conferência local (exigem Chromium do Playwright); cobertos pelo job `frontend-tests` da CI.
 
 ---
 
@@ -356,7 +417,17 @@ npm run test:frontend    # testes de frontend/responsividade (tests/frontend)
 | [#46](https://github.com/CodeWitch00/SQUAD-estoque/pull/46) | Índices e navegação da documentação | 04/10/2026 | Sustenta o índice da Seção 2 |
 | [#49](https://github.com/CodeWitch00/SQUAD-estoque/pull/49) | Ajustes finais da P1 | 04/10/2026 | Conferência prévia do pacote |
 | [#61](https://github.com/CodeWitch00/SQUAD-estoque/pull/61) | Tentativa anterior do S2-DOC-038 | fechado sem merge | Contexto: branch reutilizada nesta entrega |
-| [#73](https://github.com/CodeWitch00/SQUAD-estoque/pull/73) | Cenários VNP-12/14/15 (aberto) | — | Seus cenários seguem **não executados** (Seção 9) |
+
+**PRs pós-período formal (contexto — fora da janela da P1):**
+
+| PR | Título | Merge/Estado | Relação com o S2-DOC-038 |
+|---|---|---|---|
+| [#69](https://github.com/CodeWitch00/SQUAD-estoque/pull/69) | Testes do motivo de ajuste (S3-QA-020) | merge 25/10/2026 (na `main`) | Trouxe `AjusteMotivoHttpTests.cs` e ajustou `plano-de-testes.md` (UT-11/UT-12) — fonte da Seção 4 atualizada |
+| [#70](https://github.com/CodeWitch00/SQUAD-estoque/pull/70) | Evidências do histórico de rupturas | merge 25/10/2026 (na `main`) | Atualizou `registro-validacoes-manuais.md` (linha de 20/10 agora aponta para capturas no commit `381224d`) |
+| [#71](https://github.com/CodeWitch00/SQUAD-estoque/pull/71) | Validação do motivo de ajuste | **aberto** | Evidência adicional de CT-012 (Seção 9.3c) — arquivos só existem no branch |
+| [#73](https://github.com/CodeWitch00/SQUAD-estoque/pull/73) | Validação de navegação por perfil (S2-QA-035) | **aberto** | 12/15 cenários aprovados; VNP-12/14/15 não executados (Seções 9.3/9.3b) |
+
+> **Estado da `main` em 26/10/2026:** `298b850` (último merge: #69). A branch deste PR está **0 commits atrás** da `main` — sem rebase necessário. Verificado via `git ls-remote`, `fetch` e API do GitHub.
 
 ---
 
@@ -367,12 +438,14 @@ npm run test:frontend    # testes de frontend/responsividade (tests/frontend)
 | # | Item | Status | Evidência |
 |---|---|---|---|
 | 1 | Homologação em ambiente Azure publicado | **Bloqueada** — homologação travada por versão de grade desatualizada | [`registro-validacoes-manuais.md`](../09-testing/homologacoes/registro-validacoes-manuais.md) |
-| 2 | 3 capturas de protótipo pendentes (`lojista-desktop.png`, `lojista-tablet.png`, `vendedor-mobile.png`) | Pendente | [`docs/05-ux/evidencias/README.md`](evidencias/README.md) |
+| 2 | 3 capturas de protótipo ainda pendentes (`lojista-desktop.png`, `lojista-tablet.png`, `vendedor-mobile.png`); 2 já registradas (`vendedor-s2-*`) | Parcial — 2 de 5 concluídas | [`docs/05-ux/evidencias/README.md`](evidencias/README.md) |
 | 2b | Protótipos de supervisor, gerente e funcionário (`prototipo-supervisor.html`, `prototipo-gerente.html`, `prototipo-funcionario.html`) **não existem** no repositório | Pendente | `docs/05-ux/prototipos/` contém apenas `login.html`, `prototipo-lojista.html`, `prototipo-vendedor.html` |
-| 3 | Cenários VNP-12, VNP-14 e VNP-15 não executados | Pendente — PR [#73](https://github.com/CodeWitch00/SQUAD-estoque/pull/73) aberto | PR #73 |
+| 3 | Cenários VNP-12, VNP-14 e VNP-15 não executados — o PR [#73](https://github.com/CodeWitch00/SQUAD-estoque/pull/73) (abrindo) reporta **15 cenários: 12 aprovados, 3 não executados**, com 47 capturas e relatório `docs/09-testing/execucoes/sprint-2/validacao-navegacao-perfil-desktop-mobile.md` **versionados apenas no branch do PR (não na `main`)** | Pendente — PR #73 aberto | PR #73 (corpo do PR) |
+| 3b | Divergência de viewport no PR #73: desktop 1920×1080 e mobile **375×812**, enquanto o [`registro-validacoes-manuais.md`](../09-testing/homologacoes/registro-validacoes-manuais.md) e a Seção 5 deste pacote usam **390×844** | Registrada — não padronizada entre artefatos | PR #73 (Seção 5 do relatório do PR) |
+| 3c | CT-012 ganha cobertura adicional no PR [#71](https://github.com/CodeWitch00/SQUAD-estoque/pull/71) (abrindo): `docs/09-testing/ajuste-motivo.md` + JSONs de evidência (`evidencias/ajuste-motivo/*.json`) + novos casos em `AjusteMotivoHttpTests.cs` (normalização de motivo) — **relatório e JSONs não existem na `main` até o merge**; a classe `AjusteMotivoHttpTests.cs` em si já está na `main` desde o #69 (22/10) | Pendente — PR #71 aberto | PR #71 (corpo do PR) |
 | 4 | Teste em dispositivo físico (não apenas viewport/emulador) | Não realizado | [`registro-validacoes-manuais.md`](../09-testing/homologacoes/registro-validacoes-manuais.md) |
 | 5 | CT-014 — especificação de testes não-funcionais inexistente (`especificacao-testes-nao-funcionais.md` não existe no repo) | Parcial — evidência restrita a responsividade + registro manual | Seção 4.2, CT-014 |
-| 6 | CT-010 (importação de NF-e) e CT-015 (saldos zerados) não executados no período formal | Pendente — telas criadas após 07/10/2026 | Seções 3.4 e 4.2 |
+| 6 | CT-010 (NF-e) e CT-015 (saldos zerados) **foram executados apenas após o período formal** (11/10 a 16/10) — não havia cobertura em 07/10/2026 | 🕐 Pós-formal — evidência existe, fora da janela da P1 | Seções 3.4/4.2 e Seção 7.2 |
 | 7 | AUT-02 (recuperar senha) sem tela | Não implementada | `Views/Account/` não possui `RecuperarSenha.cshtml` |
 | 8 | Perfil `SUP` (supervisor) sem autorização dedicada e SUP-02 (relatórios) inexistente | Não implementado | Seção 3.5 |
 | 9 | Divergência VEN-02: `/Movimentacoes/Saida` aceita `LOJISTA,VENDEDOR` (não é exclusiva do vendedor) | Registrada, não corrigida | [`MovimentacoesController.cs`](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/src/SquadEstoque.Web/Controllers/MovimentacoesController.cs) |
@@ -386,7 +459,9 @@ npm run test:frontend    # testes de frontend/responsividade (tests/frontend)
 - [x] Inventário de todas as telas MVP com rota real verificada no código
 - [x] Telas pós-período formal (após 07/10) classificadas como 🕐 e não como entrega da P1
 - [x] Casos CT-001..CT-015 com entrada, esperado, obtido e evidência
-- [x] CT-010 e CT-015 declarados **não executados** (não como aprovados)
+- [x] CT-010 e CT-015 declarados **executados apenas após o período formal** (evidência datada de 11/10 a 16/10, fora da janela da P1)
+- [x] Inventário de testes completo (25 classes backend + 3 frontend) com data e rótulo *base*/*formal*/*pós* — corrigido de 8 arquivos incompletos
+- [x] PRs #69/#70 (merge pós-formal) e #71/#73 (abertos) incluídos com estado real; nenhum arquivo de PR aberto citado como existente na `main`
 - [x] CT-014 declarado **parcial** com a inexistência do artefato citada
 - [x] Viewport mobile padronizado em 390×844
 - [x] Capturas mobile apontam para as imagens mobile reais (não reutilizam as desktop)
@@ -407,6 +482,9 @@ npm run test:frontend    # testes de frontend/responsividade (tests/frontend)
 | Auditoria do rascunho × código real (rotas, views, datas) | Integrante de documentação | 26/10/2026 | ✅ Concluída |
 | Correção de inventário, casos de teste e links | Integrante de documentação | 26/10/2026 | ✅ Concluída |
 | Commit na branch `docs/s2-doc-038-integrante` | Integrante de documentação | 26/10/2026 | ✅ `9ffc0f9` |
+| Re-sincronização com a `main` (`298b850`, 0 commits atrás) | Integrante de documentação | 26/10/2026 | ✅ Verificado via `ls-remote`, `fetch` e API |
+| 2ª revisão: inventário completo de testes, CT-010/CT-015 pós-formais, capturas de protótipo, PRs #69/#70/#71/#73 | Integrante de documentação | 26/10/2026 | ✅ Concluída (correções a–f) |
+| Conferência local da suíte (`252/252 aprovados`) | Integrante de documentação | 26/10/2026 | ✅ Seção 7.4 |
 | Revisão no PR de documentação ([#74](https://github.com/CodeWitch00/SQUAD-estoque/pull/74)) | Equipe | 26/10/2026 | ⏳ Aguardando revisão do PR #74 |
 | Conferência final e merge | Equipe | — | ⏳ Pendente |
 
