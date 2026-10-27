@@ -764,6 +764,9 @@ public sealed class EstoqueDomainPersistenceTests
         Assert.Equal(3, data.Sku36.SaldoAtual);
         Assert.Equal(2, data.Sku38.SaldoAtual);
         Assert.Equal(0, data.Sku40.SaldoAtual);
+        Assert.NotNull(data.Sku36.UltimaAtualizacaoSaldoEm);
+        Assert.Null(data.Sku38.UltimaAtualizacaoSaldoEm);
+        Assert.Null(data.Sku40.UltimaAtualizacaoSaldoEm);
         Assert.Single(await database.Context.Movimentacao.ToListAsync());
     }
 
@@ -961,6 +964,77 @@ public sealed class EstoqueDomainPersistenceTests
             File.Delete(path + "-wal");
             File.Delete(path + "-shm");
         }
+    }
+
+    [Theory]
+    [InlineData("entrada", true)]
+    [InlineData("saida", true)]
+    [InlineData("venda", true)]
+    [InlineData("ajuste", true)]
+    [InlineData("semSaldo", false)]
+    [InlineData("ajusteIgual", false)]
+    [InlineData("ajusteSemMotivo", false)]
+    [InlineData("ruptura", false)]
+    public async Task Ultima_atualizacao_registra_somente_alteracao_efetiva(string operacao, bool altera)
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var context = database.Context;
+        var data = await SeedAsync(context, 3);
+        var anterior = new DateTime(2026, 1, 1, 12, 0, 0, DateTimeKind.Utc);
+        data.Sku.UltimaAtualizacaoSaldoEm = anterior;
+        await context.SaveChangesAsync();
+        var controller = CreateController(context, data.Usuario);
+        var inicio = DateTime.UtcNow;
+        switch (operacao)
+        {
+            case "entrada":
+                await controller.Entrada(new MovimentacaoCreateViewModel { SkuId = data.Sku.Id, Quantidade = 2 });
+                break;
+            case "saida":
+                await controller.Saida(new MovimentacaoCreateViewModel { SkuId = data.Sku.Id, Quantidade = 2 });
+                break;
+            case "venda":
+                Assert.Null((await context.RegistrarVendaRapidaAsync(data.Sku.Id, data.Usuario.Id)).Erro);
+                break;
+            case "semSaldo":
+                Assert.NotNull((await context.RegistrarSaidaAsync(data.Sku.Id, 4, data.Usuario.Id)).Erro);
+                break;
+            case "ruptura":
+                context.Ruptura.Add(new Ruptura { Id = Guid.NewGuid(), SkuId = data.Sku.Id, UsuarioId = data.Usuario.Id, CriadoEm = DateTime.UtcNow });
+                await context.SaveChangesAsync();
+                break;
+            default:
+                await controller.Ajuste(new AjusteEstoqueViewModel {
+                    SkuId = data.Sku.Id, NovoSaldoApurado = operacao == "ajusteIgual" ? 3 : 6,
+                    Motivo = operacao == "ajusteSemMotivo" ? "" : "Contagem física"
+                });
+                break;
+        }
+        context.ChangeTracker.Clear();
+        var persistido = await context.Sku.SingleAsync(s => s.Id == data.Sku.Id);
+        Assert.NotNull(persistido.UltimaAtualizacaoSaldoEm);
+        Assert.Equal(DateTimeKind.Utc, persistido.UltimaAtualizacaoSaldoEm.Value.Kind);
+        if (altera)
+            Assert.InRange(persistido.UltimaAtualizacaoSaldoEm.Value, inicio, DateTime.UtcNow);
+        else
+            Assert.Equal(anterior, persistido.UltimaAtualizacaoSaldoEm);
+    }
+
+    [Fact]
+    public async Task Saida_com_falha_de_persistencia_reverte_saldo_e_data()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var data = await SeedAsync(database.Context, 3);
+        var anterior = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        data.Sku.UltimaAtualizacaoSaldoEm = anterior;
+        await database.Context.SaveChangesAsync();
+        await Assert.ThrowsAsync<DbUpdateException>(() =>
+            database.Context.RegistrarVendaRapidaAsync(data.Sku.Id, Guid.NewGuid()));
+        database.Context.ChangeTracker.Clear();
+        var sku = await database.Context.Sku.SingleAsync();
+        Assert.Equal(3, sku.SaldoAtual);
+        Assert.Equal(anterior, sku.UltimaAtualizacaoSaldoEm);
+        Assert.Empty(await database.Context.Movimentacao.ToListAsync());
     }
 
     private static MovimentacoesController CreateController(EstoqueContext context, Usuario usuario)

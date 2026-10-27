@@ -255,6 +255,7 @@ public class MovimentacoesController : Controller
             }
 
             sku.SaldoAtual += model.Quantidade;
+            sku.UltimaAtualizacaoSaldoEm = DateTime.UtcNow;
 
             var movimentacao = new Movimentacao
             {
@@ -423,6 +424,7 @@ public class MovimentacoesController : Controller
                 }
 
                 sku.SaldoAtual += quantidade;
+                sku.UltimaAtualizacaoSaldoEm = DateTime.UtcNow;
                 _context.Movimentacao.Add(new Movimentacao
                 {
                     Id = Guid.NewGuid(),
@@ -683,6 +685,7 @@ public class MovimentacoesController : Controller
 
             int diferenca = Math.Abs(model.NovoSaldoApurado - sku.SaldoAtual);
             sku.SaldoAtual = model.NovoSaldoApurado;
+            sku.UltimaAtualizacaoSaldoEm = DateTime.UtcNow;
 
             var movimentacao = new Movimentacao
             {
