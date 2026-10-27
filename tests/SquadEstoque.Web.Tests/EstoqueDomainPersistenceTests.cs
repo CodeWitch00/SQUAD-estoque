@@ -236,30 +236,35 @@ public sealed class EstoqueDomainPersistenceTests
         Assert.Empty(await database.Context.Movimentacao.ToListAsync());
     }
 
-    [Fact]
-    public async Task Ajuste_registers_movement_and_updates_balance()
+    [Theory]
+    [InlineData(2, 6, 4)]
+    [InlineData(8, 3, 5)]
+    public async Task Ajuste_registers_one_traceable_movement_and_updates_balance(
+        int saldoInicial, int novoSaldo, int diferencaEsperada)
     {
         await using var database = await TestDatabase.CreateAsync();
-        var data = await SeedAsync(database.Context, initialBalance: 2);
+        var data = await SeedAsync(database.Context, initialBalance: saldoInicial);
         var controller = CreateController(database.Context, data.Usuario);
 
         var before = DateTime.UtcNow;
         var result = await controller.Ajuste(new AjusteEstoqueViewModel
         {
             SkuId = data.Sku.Id,
-            NovoSaldoApurado = 6,
-            Motivo = "Contagem física"
+            NovoSaldoApurado = novoSaldo,
+            Motivo = "  Contagem física  "
         });
+        var after = DateTime.UtcNow;
 
         Assert.IsType<RedirectToActionResult>(result);
-        Assert.Equal(6, data.Sku.SaldoAtual);
+        database.Context.ChangeTracker.Clear();
+        Assert.Equal(novoSaldo, (await database.Context.Sku.SingleAsync(s => s.Id == data.Sku.Id)).SaldoAtual);
         var movimentacao = await database.Context.Movimentacao.SingleAsync();
         Assert.NotEqual(Guid.Empty, movimentacao.Id);
         Assert.Equal(data.Sku.Id, movimentacao.SkuId);
         Assert.Equal(TipoMovimentacao.AJUSTE, movimentacao.Tipo);
-        Assert.Equal(4, movimentacao.Quantidade);
+        Assert.Equal(diferencaEsperada, movimentacao.Quantidade);
         Assert.Equal(data.Usuario.Id, movimentacao.UsuarioId);
-        Assert.InRange(movimentacao.CriadoEm, before, DateTime.UtcNow);
+        Assert.InRange(movimentacao.CriadoEm, before, after);
         Assert.Equal("Contagem física", movimentacao.Motivo);
     }
 
