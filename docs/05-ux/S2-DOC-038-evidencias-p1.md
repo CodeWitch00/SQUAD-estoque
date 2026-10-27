@@ -406,8 +406,8 @@ npm run test:frontend    # testes de frontend/responsividade (tests/frontend)
 |---|---|---|---|
 | Auditoria do rascunho × código real (rotas, views, datas) | Integrante de documentação | 26/10/2026 | ✅ Concluída |
 | Correção de inventário, casos de teste e links | Integrante de documentação | 26/10/2026 | ✅ Concluída |
-| Commit na branch `docs/s2-doc-038-integrante` | Integrante de documentação | 26/10/2026 | ✅ Registrado no histórico do PR |
-| Revisão no PR de documentação | Equipe | 26/10/2026 | ⏳ Aguardando revisão do PR |
+| Commit na branch `docs/s2-doc-038-integrante` | Integrante de documentação | 26/10/2026 | ✅ `9ffc0f9` |
+| Revisão no PR de documentação ([#74](https://github.com/CodeWitch00/SQUAD-estoque/pull/74)) | Equipe | 26/10/2026 | ⏳ Aguardando revisão do PR #74 |
 | Conferência final e merge | Equipe | — | ⏳ Pendente |
 
 **Conferência final:** o pacote P1 está consolidado neste índice versionado, com divergências e pendências declaradas nas Seções 3.6 e 9. Nenhuma funcionalidade planejada foi declarada como implementada; nenhuma monografia foi duplicada neste card.
