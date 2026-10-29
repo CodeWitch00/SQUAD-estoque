@@ -137,7 +137,7 @@ A matriz abaixo consolida os acessos diretos por URL documentados neste relatór
 | Anônimo | Desktop | `/Movimentacoes` | Redirecionar para `/Account/Login?ReturnUrl=…`; sem conteúdo protegido | Captura documenta a tela de login; HTTP não registrado | [Anônimo — Desktop](../../evidencias/s2-qa-035/anonimo-movimentacoes-5e3952d4.png) |
 | Anônimo | Mobile | `/Movimentacoes` | Redirecionar para `/Account/Login?ReturnUrl=…`; sem conteúdo protegido | Captura documenta a tela de login; HTTP não registrado | [Anônimo — Mobile](../../evidencias/s2-qa-035/anonimo-movimentacoes-mobile-7f204a5f.png) |
 
-**Pendência resolvida na execução complementar:** os status HTTP dos bloqueios (VNP-04 e VNP-13), do destino pós-login (VNP-01 e VNP-02), do salvamento da grade (VNP-08), do ajuste (VNP-12), do acesso negado ao Lojista (VNP-14) e do logout (VNP-15) foram registrados no log `http-log-complementar-s2-qa-035.json` (seção 5.1) e são afirmados neste relatório apenas com base nele.
+**Cobertura de status HTTP na execução complementar:** o log `http-log-complementar-s2-qa-035.json` (seção 5.1) registra status do destino pós-login (VNP-01 e VNP-02), dos bloqueios de VNP-04 e VNP-13, do salvamento da grade (VNP-08) e do ajuste (VNP-12) **somente no Desktop**, do acesso negado ao Lojista (VNP-14) e do logout (VNP-15); em VNP-04 e VNP-13, a cobertura Mobile é parcial e está detalhada em cada caso. **Os casos VNP-03 e VNP-05 a VNP-11 não tiveram status HTTP coletado**; nesses casos a evidência é exclusivamente a captura de tela, e nenhum código de resposta é afirmado.
 
 ## 7. Estados de execução
 
@@ -240,7 +240,9 @@ Este relatório segue a seção 8.3 do plano. Somente **Aprovado** ou **Reprovad
   3. Repetir em Desktop e em Mobile.
 - **Entrada:** acesso direto por URL, sem uso do menu.
 - **Saída esperada:** acesso negado, sem dados da rota protegida. O plano (CT-AUT-13) prevê `302` para Acesso Negado.
-- **Resultado obtido:** em todas as quatro rotas, em Desktop e Mobile, o destino final foi `/Account/AccessDenied?ReturnUrl=…`, exibindo a página "Acesso Não Autorizado" com a sessão `VENDEDOR` ainda ativa no cabeçalho; nenhum dado protegido foi exibido. Os status HTTP foram registrados na execução complementar (seção 5.1): cada rota respondeu `302` e o destino `/Account/AccessDenied` foi servido com `200`, confirmando o previsto no CT-AUT-13:
+- **Resultado obtido:** nas quatro rotas, em Desktop e Mobile, o destino final exibido foi `/Account/AccessDenied?ReturnUrl=…`, com a página "Acesso Não Autorizado" e a sessão `VENDEDOR` ainda ativa no cabeçalho; nenhum dado protegido foi exibido. Na execução complementar (seção 5.1), o Desktop teve status HTTP registrado para as quatro rotas. No Mobile, o log registrou status apenas para `/Produtos` e `/Movimentacoes/Ajuste`; `/Produtos/Create` e `/Movimentacoes` têm somente captura da execução inicial, sem código de resposta no log:
+
+  **Desktop — status HTTP registrados na execução complementar:**
 
   | Rota (perfil `VENDEDOR`) | Resposta à rota | Destino | Status do destino |
   |---|---|---|---|
@@ -248,6 +250,15 @@ Este relatório segue a seção 8.3 do plano. Somente **Aprovado** ou **Reprovad
   | `/Produtos/Create` | `302` | `/Account/AccessDenied?ReturnUrl=%2FProdutos%2FCreate` | `200` |
   | `/Movimentacoes` | `302` | `/Account/AccessDenied?ReturnUrl=%2FMovimentacoes` | `200` |
   | `/Movimentacoes/Ajuste` | `302` | `/Account/AccessDenied?ReturnUrl=%2FMovimentacoes%2FAjuste` | `200` |
+
+  **Mobile — cobertura das rotas:**
+
+  | Rota (perfil `VENDEDOR`) | Destino exibido | Status HTTP |
+  |---|---|---|
+  | `/Produtos` | `/Account/AccessDenied?ReturnUrl=%2FProdutos` | `302` → `200` |
+  | `/Produtos/Create` | `/Account/AccessDenied?ReturnUrl=%2FProdutos%2FCreate` | não registrado (apenas captura) |
+  | `/Movimentacoes` | `/Account/AccessDenied?ReturnUrl=%2FMovimentacoes` | não registrado (apenas captura) |
+  | `/Movimentacoes/Ajuste` | `/Account/AccessDenied?ReturnUrl=%2FMovimentacoes%2FAjuste` | `302` → `200` |
 
   O comportamento observado corresponde ao previsto no plano (Acesso Negado), e não ao "redirecionamento para Login" registrado na versão anterior deste relatório; ver seção 13, item 3.
 - **Status de execução:** Aprovado
@@ -309,8 +320,9 @@ Este relatório segue a seção 8.3 do plano. Somente **Aprovado** ou **Reprovad
   3. Conferir a tela exibida e o status HTTP.
 - **Entrada:** navegação pelo menu.
 - **Saída esperada:** acesso permitido ao Lojista (`RupturasController` exige `LOJISTA`); histórico simples com modelo, numeração e quantidade de ocorrências; interface sem quebra de layout no Mobile.
-- **Resultado obtido:** tela de Histórico de Rupturas acessada pelo Lojista em Desktop e Mobile, conforme capturas. Contagem de ocorrências não conferida contra os registros; status HTTP não registrado.
-- **Status de execução:** Aprovado
+- **Resultado obtido:** tela de Histórico de Rupturas acessada pelo Lojista em Desktop e Mobile, conforme capturas. A tela exibe modelo, numeração e quantidade de ocorrências, mas **a contagem não foi conferida contra os registros de ruptura** e o status HTTP de `/Rupturas` não foi registrado no log da execução complementar. Como a saída esperada inclui a quantidade de ocorrências, o caso não é considerado concluído.
+- **Status de execução:** Em execução — acesso e interface evidenciados por captura; pendentes a conferência da contagem de ocorrências contra os registros e o registro do status HTTP.
+- **Pendência:** confrontar as ocorrências exibidas na captura com os registros persistidos e registrar o status HTTP de `/Rupturas`.
 - **Evidência:**
 
   **Desktop — Histórico de Rupturas:**
@@ -389,7 +401,7 @@ Este relatório segue a seção 8.3 do plano. Somente **Aprovado** ou **Reprovad
   4. Salvar e conferir a grade criada.
 - **Entrada:** tamanhos `37, 38, 39, 40, 41`.
 - **Saída esperada:** produto cadastrado e uma opção de SKU por numeração, cada uma com saldo inicial zero.
-- **Resultado obtido:** formulário aberto e operável em Desktop e Mobile. A execução complementar (seção 5.1) cadastrou o produto "Tênis Evidência S2QA035" com as numerações `37, 38, 39, 40, 41` informadas no campo "Outras numerações": o salvamento respondeu `302` para `/Produtos/Details/{id}`, servida com `200`, e a captura da tela de detalhes mostra a **grade de numerações com as cinco opções de SKU geradas, cada uma com saldo zero** (estado "Indisponível") — em Desktop e em Mobile. Ver seção 13, item 13, sobre o comportamento do campo "Outras numerações".
+- **Resultado obtido:** formulário aberto e operável em Desktop e Mobile. A execução complementar (seção 5.1) cadastrou o produto "Tênis Evidência S2QA035" com as numerações `37, 38, 39, 40, 41` informadas no campo "Outras numerações". No **Desktop**, o salvamento respondeu `302` para `/Produtos/Details/{id}`, servida com `200`, e a captura da tela de detalhes mostra a **grade de numerações com as cinco opções de SKU geradas, cada uma com saldo zero** (estado "Indisponível"). No **Mobile**, a captura complementar mostra a mesma grade; o log da execução complementar não contém respostas HTTP do fluxo Mobile, portanto os status não são afirmados para esse viewport. Ver seção 13, item 13, sobre o comportamento do campo "Outras numerações".
 - **Status de execução:** Aprovado
 - **Evidência:**
 
@@ -403,7 +415,7 @@ Este relatório segue a seção 8.3 do plano. Somente **Aprovado** ou **Reprovad
 
   <img width="426" height="912" alt="Cadastro do Novo Produto - Mobile" src="../../evidencias/s2-qa-035/cadastro-do-novo-produto-mobile-245f274a.png" />
 
-  **Mobile — grade após salvar (complementar, seção 5.1):** [Captura — detalhes do produto com grade 37–41 e saldo zero](../../evidencias/s2-qa-035/complemento-cadastro-produto-grade-pos-salvar-mobile-602c76c8.png) — `POST /Produtos/AdicionarNumeracoes/{id}` → `302`; `GET /Produtos/Details/{id}` → `200`.
+  **Mobile — grade após salvar (complementar, seção 5.1):** [Captura — detalhes do produto com grade 37–41 e saldo zero](../../evidencias/s2-qa-035/complemento-cadastro-produto-grade-pos-salvar-mobile-602c76c8.png) — captura evidencia a grade; status HTTP do fluxo Mobile não registrado no log.
 
 ### VNP-09 — Histórico de movimentações (auditoria)
 
@@ -488,7 +500,7 @@ Este relatório segue a seção 8.3 do plano. Somente **Aprovado** ou **Reprovad
   3. Informar uma justificativa válida e salvar.
 - **Entrada:** justificativa vazia, curta e válida.
 - **Saída esperada:** justificativa inválida é rejeitada; o mínimo de cinco caracteres foi confirmado no código (`[MinLength(5)]` em `AjusteEstoqueViewModel.cs` e validação equivalente em `MovimentacoesController.Ajuste`).
-- **Resultado obtido:** executado na íntegra na execução complementar (seção 5.1), em Desktop e Mobile. Com justificativa **vazia**, o formulário exibiu a mensagem "O motivo do ajuste é obrigatório." e não enviou a requisição. Com justificativa **curta** (`ab`), exibiu "O motivo deve conter pelo menos 5 caracteres." e não enviou a requisição. Com justificativa **válida** ("Recontagem de inventário complementar S2-QA-035"), o envio respondeu `302` e a movimentação foi registrada, com redirecionamento para `/Produtos/Details/{id}` servido com `200`. As mensagens de validação são as mesmas declaradas no cliente e no servidor.
+- **Resultado obtido:** no **Desktop**, executado na íntegra na execução complementar (seção 5.1). Com justificativa **vazia**, o formulário exibiu a mensagem "O motivo do ajuste é obrigatório." e não enviou a requisição. Com justificativa **curta** (`ab`), exibiu "O motivo deve conter pelo menos 5 caracteres." e não enviou a requisição. Com justificativa **válida** ("Recontagem de inventário complementar S2-QA-035"), o envio respondeu `302` e a movimentação foi registrada, com redirecionamento para `/Produtos/Details/{id}` servido com `200`. No **Mobile**, foi exercitada apenas a justificativa **curta**, com a mesma mensagem; justificativa vazia e justificativa válida não foram executadas nesse viewport, e o log não contém respostas HTTP do fluxo Mobile. As mensagens de validação são as mesmas declaradas no cliente e no servidor.
 - **Status de execução:** Aprovado
 - **Evidência:**
 
@@ -520,7 +532,9 @@ Este relatório segue a seção 8.3 do plano. Somente **Aprovado** ou **Reprovad
   3. Repetir em Desktop e em Mobile.
 - **Entrada:** acesso direto por URL.
 - **Saída esperada:** `302` para `/Account/Login` com `ReturnUrl`; nenhum conteúdo protegido.
-- **Resultado obtido:** redirecionamento para `/Account/Login` com `ReturnUrl` em todas as rotas, em Desktop e Mobile, sem exibição de conteúdo protegido. Os status HTTP foram registrados na execução complementar (seção 5.1): cada rota respondeu `302` e a página de login foi servida com `200`, conforme o previsto no caso:
+- **Resultado obtido:** redirecionamento para `/Account/Login` com `ReturnUrl` em todas as rotas, em Desktop e Mobile, sem exibição de conteúdo protegido. Na execução complementar (seção 5.1), o Desktop teve status HTTP registrado para as quatro rotas. No Mobile, o log registrou status apenas para `/Estoque/Consulta` e `/Produtos`; `/Produtos/Create` e `/Movimentacoes` têm somente captura da execução inicial, sem código de resposta no log:
+
+  **Desktop — status HTTP registrados na execução complementar:**
 
   | Rota (anônimo) | Resposta à rota | Destino | Status do destino |
   |---|---|---|---|
@@ -528,6 +542,15 @@ Este relatório segue a seção 8.3 do plano. Somente **Aprovado** ou **Reprovad
   | `/Produtos` | `302` | `/Account/Login?ReturnUrl=%2FProdutos` | `200` |
   | `/Produtos/Create` | `302` | `/Account/Login?ReturnUrl=%2FProdutos%2FCreate` | `200` |
   | `/Movimentacoes` | `302` | `/Account/Login?ReturnUrl=%2FMovimentacoes` | `200` |
+
+  **Mobile — cobertura das rotas:**
+
+  | Rota (anônimo) | Destino exibido | Status HTTP |
+  |---|---|---|
+  | `/Estoque/Consulta` | `/Account/Login?ReturnUrl=%2FEstoque%2FConsulta` | `302` → `200` |
+  | `/Produtos` | `/Account/Login?ReturnUrl=%2FProdutos` | `302` → `200` |
+  | `/Produtos/Create` | `/Account/Login?ReturnUrl=%2FProdutos%2FCreate` | não registrado (apenas captura) |
+  | `/Movimentacoes` | `/Account/Login?ReturnUrl=%2FMovimentacoes` | não registrado (apenas captura) |
 
 - **Status de execução:** Aprovado
 - **Evidência:**
@@ -634,7 +657,7 @@ Este relatório segue a seção 8.3 do plano. Somente **Aprovado** ou **Reprovad
 | VNP-02 | Login e direcionamento | Lojista | RF-01, RF-02 | Aprovado |
 | VNP-03 | Consulta, status e desfechos | Vendedor | RF-13, RF-15, RF-16 | Aprovado |
 | VNP-04 | Bloqueio das rotas administrativas | Vendedor | RF-02, RN-04 | Aprovado |
-| VNP-05 | Histórico de Rupturas | Lojista | RF-02, RF-22 | Aprovado |
+| VNP-05 | Histórico de Rupturas | Lojista | RF-02, RF-22 | Em execução |
 | VNP-06 | Menu por perfil | Vendedor e Lojista | RF-02, RF-03 | Aprovado |
 | VNP-07 | Catálogo e filtros | Lojista | RF-02, RF-05 a RF-07 | Aprovado |
 | VNP-08 | Cadastro e grade de SKUs | Lojista | RF-05 a RF-07 | Aprovado |
@@ -646,7 +669,7 @@ Este relatório segue a seção 8.3 do plano. Somente **Aprovado** ou **Reprovad
 | VNP-14 | Consulta pelo Lojista | Lojista | RF-02 | Aprovado |
 | VNP-15 | Logout | Vendedor e Lojista | RF-03 | Aprovado |
 
-**Totais:** 15 casos; 15 Aprovados; 0 Reprovados; 0 Não executados. Os casos VNP-12, VNP-14 e VNP-15, antes "Não executado", foram concluídos na execução complementar (seção 5.1) com evidências de captura e de status HTTP.
+**Totais:** 15 casos; 14 Aprovados; 0 Reprovados; 0 Não executados; 1 Em execução (VNP-05). Os casos VNP-12, VNP-14 e VNP-15, antes "Não executado", foram concluídos na execução complementar (seção 5.1) com evidências de captura e de status HTTP. O VNP-05 permanece em execução porque a contagem de ocorrências não foi conferida contra os registros, embora o acesso e a interface estejam evidenciados por captura.
 
 ## 10. Evidências
 
@@ -764,7 +787,7 @@ Este relatório segue a seção 8.3 do plano. Somente **Aprovado** ou **Reprovad
 
 ### 10.3 Rastreabilidade das evidências de acesso e sessão
 
-Capturas indexadas por caso. A coluna "Status HTTP" traz os códigos registrados na execução complementar (seção 5.1), extraídos de `http-log-complementar-s2-qa-035.json`; "n/r" significa que a rota não foi reexecutada na complementar e o status permanece não registrado.
+Capturas indexadas por caso. A coluna "Status HTTP" traz os códigos registrados na execução complementar (seção 5.1), extraídos de `http-log-complementar-s2-qa-035.json`; "n/r" significa que a rota não foi reexecutada na complementar e o status permanece não registrado. As linhas de VNP-04 e VNP-13 referem-se ao **Desktop**; no Mobile, o log cobre apenas as rotas indicadas nas tabelas dos respectivos casos. **VNP-03 e VNP-05 a VNP-11 não têm status HTTP registrado** — a evidência desses casos é exclusivamente visual.
 
 | Caso | Perfil | Rota ou ação | Captura | Status HTTP |
 |---|---|---|---|---|
@@ -789,9 +812,9 @@ Capturas indexadas por caso. A coluna "Status HTTP" traz os códigos registrados
 
 | Categoria (plano, seção 8.4) | Cobertura neste relatório |
 |---|---|
-| Positivos | VNP-01 a VNP-03 e VNP-05 a VNP-11 aprovados; VNP-12 aprovado após a execução complementar, com mensagens de validação e sucesso do ajuste |
-| Permissão e segurança | VNP-04, VNP-06 e VNP-13 aprovados com capturas e status HTTP registrados na execução complementar; VNP-14 aprovado com sessão `LOJISTA` genuína e status HTTP; VNP-15 aprovado com logout e nova tentativa de acesso em Desktop e Mobile |
-| Responsividade e compatibilidade | Todos os casos em D e M; compatibilidade do navegador coberta por Chrome e Edge; a execução complementar usou exclusivamente Chromium (Playwright) |
+| Positivos | VNP-01 a VNP-03 e VNP-06 a VNP-11 aprovados; VNP-05 em execução (acesso e interface evidenciados, contagem de ocorrências pendente); VNP-12 aprovado no Desktop, com mensagens de validação e sucesso do ajuste, e com validação curta no Mobile |
+| Permissão e segurança | VNP-04, VNP-06 e VNP-13 aprovados com capturas; em VNP-04 e VNP-13, os status HTTP foram registrados para as quatro rotas no Desktop e de forma parcial no Mobile. VNP-14 aprovado com sessão `LOJISTA` genuína e status HTTP; VNP-15 aprovado com logout e nova tentativa de acesso em Desktop e Mobile |
+| Responsividade e compatibilidade | Todos os casos têm captura em D e M; compatibilidade do navegador coberta por Chrome e Edge; a execução complementar usou exclusivamente Chromium (Playwright) |
 | Negativos e limites | Cobertos por CT-AUT-04 a CT-AUT-06, UT-05 e UT-11. A justificativa inválida do ajuste (VNP-12) foi exercitada e evidenciada na execução complementar; os demais casos negativos não foram exercitados neste relatório |
 | Desempenho e concorrência | Não aplicável a esta validação de navegação |
 
@@ -800,10 +823,10 @@ Capturas indexadas por caso. A coluna "Status HTTP" traz os códigos registrados
 - O Mobile foi validado em viewport emulado, não em dispositivo físico. Toque, teclado virtual e renderização nativa não foram cobertos. A execução inicial usou o emulador do Chrome DevTools (390 × 844 px); a complementar usou emulação real do Playwright (375 × 812 px, `deviceScaleFactor` 2).
 - A execução inicial cobriu Chrome e Edge (v118.0), em Windows 11 Pro e macOS Ventura; a execução complementar (seção 5.1) usou exclusivamente Chromium via Playwright em Windows, sobre aplicação local.
 - Apenas duas resoluções foram testadas. As dimensões das capturas iniciais (Mobile entre 390 e 435 px de largura; Desktop do Histórico de Rupturas e do acesso anônimo abaixo de 1920 px) não coincidem exatamente com as resoluções declaradas na seção 5; as capturas complementares (`complemento-*`) têm viewport exata.
-- O status HTTP dos casos VNP-03, VNP-05 a VNP-11 (rotas de consulta e formulários permitidos) não foi registrado; a execução complementar concentrou-se nos itens solicitados na revisão (VNP-01, VNP-02, VNP-04, VNP-08, VNP-12, VNP-13, VNP-14 e VNP-15).
+- O status HTTP dos casos VNP-03, VNP-05 a VNP-11 (rotas de consulta e formulários permitidos) não foi registrado; a execução complementar concentrou-se nos itens solicitados na revisão (VNP-01, VNP-02, VNP-04, VNP-08, VNP-12, VNP-13, VNP-14 e VNP-15). Nesses casos, a aprovação (exceto VNP-05) apoia-se exclusivamente nas capturas de tela, conforme a seção 7.
 - A execução complementar foi feita contra a aplicação em ambiente local (seção 5.1), com massa de dados de demonstração, e não contra o App Service em produção usado na execução inicial; os comportamentos validados (autorização, redirecionamentos e validações) são os mesmos conferidos no código.
 - Os fluxos de entrada e saída (VNP-10 e VNP-11) não tiveram o saldo final conferido neste relatório; o ajuste (VNP-12) teve o redirecionamento de sucesso confirmado, sem conferência de saldo.
-- O Histórico de Rupturas (VNP-05) não teve a contagem de ocorrências conferida contra os registros.
+- O Histórico de Rupturas (VNP-05) não teve a contagem de ocorrências conferida contra os registros; por isso o caso permanece **Em execução**, embora o acesso e a interface estejam evidenciados por captura.
 - A validação é manual (execução inicial), complementada por script Playwright reproduzindo os mesmos passos; não há suíte de automação versionada para este cartão.
 
 ## 13. Divergências e itens a confirmar
@@ -821,3 +844,5 @@ Capturas indexadas por caso. A coluna "Status HTTP" traz os códigos registrados
 11. **VNP-08:** resolvido. A grade de SKUs após salvar foi capturada na execução complementar (`complemento-cadastro-produto-grade-pos-salvar-desktop-9f11479c.png` e `-mobile-602c76c8.png`), com as numerações 37–41 e saldo zero em cada SKU.
 12. **Status alterados:** VNP-12, VNP-14 e VNP-15 estavam como **Não executado** e voltaram a **Aprovado** após a execução complementar (seção 5.1), com evidências de captura e de status HTTP anexadas, conforme a regra da seção 7.
 13. **Campo "Outras numerações" (observação da execução complementar):** em `AdicionarNumeracoesViewModel`, a propriedade `NumeracoesExtras` é `string` não-anulável em projeto com `<Nullable>enable</Nullable>`, o que gera `[Required]` implícito no servidor. Um envio apenas com as caixas de numeração marcadas (sem preencher "Outras numerações") é rejeitado silenciosamente: o servidor responde `200` com o formulário novamente, sem mensagem no resumo de validação `ModelOnly` da view. Pelo fluxo normal (botão "Salvar grade"), a validação client-side bloqueia o envio e exibe o aviso de campo obrigatório. No caso VNP-08, a execução preencheu o campo "Outras numerações" com `37, 38, 39, 40, 41` e o salvamento foi concluído com sucesso. Registrar card separado para avaliar a remoção do `[Required]` implícito, já que a regra de negócio aceita cadastrar a grade apenas pelas caixas de seleção.
+14. **Cobertura desigual entre Desktop e Mobile (correção de superdeclaração):** a execução complementar não repetiu todas as rotas em ambos os viewports. VNP-04 e VNP-13 têm status HTTP das quatro rotas no Desktop, mas no Mobile o log cobre duas rotas em cada caso; VNP-08 e VNP-12 têm status HTTP apenas no Desktop (no Mobile, VNP-08 tem captura da grade e VNP-12 tem apenas a validação curta). O relatório agora declara essa diferença em cada caso e na seção 12, em vez de afirmar cobertura uniforme.
+15. **VNP-05:** o status passou de **Aprovado** para **Em execução**. O acesso e a interface foram evidenciados por captura em Desktop e Mobile, mas a saída esperada inclui a quantidade de ocorrências, que não foi conferida contra os registros; o status HTTP de `/Rupturas` também não foi coletado. A conclusão exige confrontar a contagem exibida com os registros persistidos.
