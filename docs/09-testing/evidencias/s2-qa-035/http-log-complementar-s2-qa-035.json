@@ -1,0 +1,2502 @@
+{
+  "registros": {
+    "VNP-01-D": {
+      "destino": "http://localhost:5200/Estoque/Consulta",
+      "captura": "complemento-login-vendedor-pos-login-destino-desktop-f337250b.png"
+    },
+    "VNP-04-D": {
+      "rotas": [
+        {
+          "rota": "/Produtos",
+          "final": "http://localhost:5200/Account/AccessDenied?ReturnUrl=%2FProdutos",
+          "captura": "complemento-vendedor-bloqueado-produtos-desktop-60706ff3.png"
+        },
+        {
+          "rota": "/Produtos/Create",
+          "final": "http://localhost:5200/Account/AccessDenied?ReturnUrl=%2FProdutos%2FCreate",
+          "captura": "complemento-vendedor-bloqueado-produtos-create-desktop-565d30d9.png"
+        },
+        {
+          "rota": "/Movimentacoes",
+          "final": "http://localhost:5200/Account/AccessDenied?ReturnUrl=%2FMovimentacoes",
+          "captura": "complemento-vendedor-bloqueado-movimentacoes-desktop-04663b28.png"
+        },
+        {
+          "rota": "/Movimentacoes/Ajuste",
+          "final": "http://localhost:5200/Account/AccessDenied?ReturnUrl=%2FMovimentacoes%2FAjuste",
+          "captura": "complemento-vendedor-bloqueado-movimentacoes-ajuste-desktop-a92e66f1.png"
+        }
+      ]
+    },
+    "VNP-02-D": {
+      "destino": "http://localhost:5200/Produtos",
+      "captura": "complemento-login-lojista-pos-login-destino-desktop-018acf50.png"
+    },
+    "VNP-08-D": {
+      "produto": "Tênis Evidência S2QA035 1793145883542",
+      "final": "http://localhost:5200/Produtos/Details/8b39c0d3-2397-40f0-bb70-92257a88f855",
+      "grade": null,
+      "captura": "complemento-cadastro-produto-grade-pos-salvar-desktop-9f11479c.png"
+    },
+    "VNP-12-D": {
+      "vazia": "O motivo do ajuste é obrigatório.",
+      "vaziaCaptura": "complemento-ajuste-justificativa-vazia-validacao-desktop-8eae5140.png",
+      "curta": "O motivo deve conter pelo menos 5 caracteres.",
+      "curtaCaptura": "complemento-ajuste-justificativa-curta-validacao-desktop-8878f99a.png",
+      "validaFinal": "http://localhost:5200/Produtos/Details/c380ade2-ba0b-48d1-b87e-0699b8ee7f6a",
+      "validaCaptura": "complemento-ajuste-justificativa-valida-sucesso-desktop-131d4f0f.png"
+    },
+    "VNP-14-D": {
+      "final": "http://localhost:5200/Account/AccessDenied?ReturnUrl=%2FEstoque%2FConsulta",
+      "captura": "complemento-lojista-negado-estoque-consulta-desktop-c1649bd0.png"
+    },
+    "VNP-15-D": {
+      "posLogout": "http://localhost:5200/Account/Login",
+      "tentativaAposLogout": "http://localhost:5200/Account/Login?ReturnUrl=%2FProdutos",
+      "capturaLogout": "complemento-logout-lojista-destino-desktop-b39b9ed5.png",
+      "capturaTentativa": "complemento-apos-logout-tentativa-produtos-desktop-e7d4b9d7.png"
+    },
+    "VNP-13-D": {
+      "rotas": [
+        {
+          "rota": "/Estoque/Consulta",
+          "final": "http://localhost:5200/Account/Login?ReturnUrl=%2FEstoque%2FConsulta"
+        },
+        {
+          "rota": "/Produtos",
+          "final": "http://localhost:5200/Account/Login?ReturnUrl=%2FProdutos"
+        },
+        {
+          "rota": "/Produtos/Create",
+          "final": "http://localhost:5200/Account/Login?ReturnUrl=%2FProdutos%2FCreate"
+        },
+        {
+          "rota": "/Movimentacoes",
+          "final": "http://localhost:5200/Account/Login?ReturnUrl=%2FMovimentacoes"
+        }
+      ],
+      "captura": "complemento-anonimo-bloqueado-destino-desktop-590411b5.png"
+    },
+    "VNP-01-M": {
+      "destino": "http://localhost:5200/Estoque/Consulta",
+      "captura": "complemento-login-vendedor-pos-login-destino-mobile-21a4f46e.png"
+    },
+    "VNP-04-M": {
+      "rotas": [
+        {
+          "rota": "/Produtos",
+          "final": "http://localhost:5200/Account/AccessDenied?ReturnUrl=%2FProdutos",
+          "captura": "complemento-vendedor-bloqueado-produtos-mobile-ef1e75c2.png"
+        },
+        {
+          "rota": "/Movimentacoes/Ajuste",
+          "final": "http://localhost:5200/Account/AccessDenied?ReturnUrl=%2FMovimentacoes%2FAjuste",
+          "captura": "complemento-vendedor-bloqueado-movimentacoes-ajuste-mobile-87dc946e.png"
+        }
+      ]
+    },
+    "VNP-02-M": {
+      "destino": "http://localhost:5200/Produtos",
+      "captura": "complemento-login-lojista-pos-login-destino-mobile-35ff951c.png"
+    },
+    "VNP-08-M": {
+      "produto": "Tênis Evidência Mobile S2QA035 1793145907779",
+      "final": "http://localhost:5200/Produtos/Details/f6ec7c22-716a-42ac-b060-e9a3d79f1033",
+      "captura": "complemento-cadastro-produto-grade-pos-salvar-mobile-602c76c8.png"
+    },
+    "VNP-12-M": {
+      "curta": "O motivo deve conter pelo menos 5 caracteres.",
+      "captura": "complemento-ajuste-justificativa-curta-validacao-mobile-df4d9f05.png"
+    },
+    "VNP-14-M": {
+      "final": "http://localhost:5200/Account/AccessDenied?ReturnUrl=%2FEstoque%2FConsulta",
+      "captura": "complemento-lojista-negado-estoque-consulta-mobile-1d74ee1c.png"
+    },
+    "VNP-15-M": {
+      "posLogout": "http://localhost:5200/Account/Login",
+      "tentativaAposLogout": "http://localhost:5200/Account/Login?ReturnUrl=%2FEstoque%2FConsulta",
+      "capturaLogout": "complemento-logout-vendedor-destino-mobile-bc6ae245.png",
+      "capturaTentativa": "complemento-apos-logout-tentativa-consulta-mobile-b6f31584.png"
+    },
+    "VNP-13-M": {
+      "rotas": [
+        {
+          "rota": "/Estoque/Consulta",
+          "final": "http://localhost:5200/Account/Login?ReturnUrl=%2FEstoque%2FConsulta"
+        },
+        {
+          "rota": "/Produtos",
+          "final": "http://localhost:5200/Account/Login?ReturnUrl=%2FProdutos"
+        }
+      ],
+      "captura": "complemento-anonimo-bloqueado-destino-mobile-3e1533bf.png"
+    }
+  },
+  "httpLog": [
+    {
+      "caso": "VNP-01-D",
+      "url": "/Account/Login",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-D",
+      "url": "/css/login.css?v=WwqdB2EyoO1EfcEgue59_spnLWMazCrOn-NeNnb-E68",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-D",
+      "url": "/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-D",
+      "url": "/lib/jquery-validation/dist/jquery.validate.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-D",
+      "url": "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-D",
+      "url": "/images/login-shoe-stock.jpg",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-D",
+      "url": "https://fonts.gstatic.com/l/font?kit=UcCB3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfU5NJeWUdIOjBeTGiXZdND2M&skey=c491285d6722e4fa&v=v20",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-D",
+      "url": "https://fonts.gstatic.com/l/font?kit=xMQ9uFFYT72X5wkB_18qmnndmSdSnh2BAfO5mnuyOo1lGSQwV6-x&skey=f471733f169f3f71&v=v17",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-D",
+      "url": "/Account/Login",
+      "status": 302
+    },
+    {
+      "caso": "VNP-01-D",
+      "url": "/Estoque/Consulta",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-D",
+      "url": "/css/site.css?v=aS4CiPaLRoUIlYcLgUBwYAF9MeNEPTt6tQq-QTvCqCQ",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-D",
+      "url": "/SquadEstoque.Web.styles.css?v=PFELi-yZddxA7F6lPLBch7KTJJ-USLDJELEtTQMX4yo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-01-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-D",
+      "url": "/js/site.js?v=hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-D",
+      "url": "/js/consulta.js?v=GAMFbIfSbP2T2dl3unGaSaNu8EUyWyQmpnldY7lWpxU",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-D",
+      "url": "/lib/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/Produtos",
+      "status": 302
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/Account/AccessDenied?ReturnUrl=%2FProdutos",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/SquadEstoque.Web.styles.css?v=PFELi-yZddxA7F6lPLBch7KTJJ-USLDJELEtTQMX4yo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/css/site.css?v=aS4CiPaLRoUIlYcLgUBwYAF9MeNEPTt6tQq-QTvCqCQ",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/js/site.js?v=hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/Produtos/Create",
+      "status": 302
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/Produtos/Create",
+      "status": 302
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/Account/AccessDenied?ReturnUrl=%2FProdutos%2FCreate",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/Account/AccessDenied?ReturnUrl=%2FProdutos%2FCreate",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/SquadEstoque.Web.styles.css?v=PFELi-yZddxA7F6lPLBch7KTJJ-USLDJELEtTQMX4yo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/SquadEstoque.Web.styles.css?v=PFELi-yZddxA7F6lPLBch7KTJJ-USLDJELEtTQMX4yo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/css/site.css?v=aS4CiPaLRoUIlYcLgUBwYAF9MeNEPTt6tQq-QTvCqCQ",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/css/site.css?v=aS4CiPaLRoUIlYcLgUBwYAF9MeNEPTt6tQq-QTvCqCQ",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/js/site.js?v=hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/js/site.js?v=hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/Movimentacoes",
+      "status": 302
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/Movimentacoes",
+      "status": 302
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/Movimentacoes",
+      "status": 302
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/Account/AccessDenied?ReturnUrl=%2FMovimentacoes",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/Account/AccessDenied?ReturnUrl=%2FMovimentacoes",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/Account/AccessDenied?ReturnUrl=%2FMovimentacoes",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/SquadEstoque.Web.styles.css?v=PFELi-yZddxA7F6lPLBch7KTJJ-USLDJELEtTQMX4yo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/SquadEstoque.Web.styles.css?v=PFELi-yZddxA7F6lPLBch7KTJJ-USLDJELEtTQMX4yo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/SquadEstoque.Web.styles.css?v=PFELi-yZddxA7F6lPLBch7KTJJ-USLDJELEtTQMX4yo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/css/site.css?v=aS4CiPaLRoUIlYcLgUBwYAF9MeNEPTt6tQq-QTvCqCQ",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/css/site.css?v=aS4CiPaLRoUIlYcLgUBwYAF9MeNEPTt6tQq-QTvCqCQ",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/css/site.css?v=aS4CiPaLRoUIlYcLgUBwYAF9MeNEPTt6tQq-QTvCqCQ",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/js/site.js?v=hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/js/site.js?v=hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/js/site.js?v=hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/Movimentacoes/Ajuste",
+      "status": 302
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/Movimentacoes/Ajuste",
+      "status": 302
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/Movimentacoes/Ajuste",
+      "status": 302
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/Movimentacoes/Ajuste",
+      "status": 302
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/Account/AccessDenied?ReturnUrl=%2FMovimentacoes%2FAjuste",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/Account/AccessDenied?ReturnUrl=%2FMovimentacoes%2FAjuste",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/Account/AccessDenied?ReturnUrl=%2FMovimentacoes%2FAjuste",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/Account/AccessDenied?ReturnUrl=%2FMovimentacoes%2FAjuste",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/css/site.css?v=aS4CiPaLRoUIlYcLgUBwYAF9MeNEPTt6tQq-QTvCqCQ",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/css/site.css?v=aS4CiPaLRoUIlYcLgUBwYAF9MeNEPTt6tQq-QTvCqCQ",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/css/site.css?v=aS4CiPaLRoUIlYcLgUBwYAF9MeNEPTt6tQq-QTvCqCQ",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/css/site.css?v=aS4CiPaLRoUIlYcLgUBwYAF9MeNEPTt6tQq-QTvCqCQ",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/SquadEstoque.Web.styles.css?v=PFELi-yZddxA7F6lPLBch7KTJJ-USLDJELEtTQMX4yo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/SquadEstoque.Web.styles.css?v=PFELi-yZddxA7F6lPLBch7KTJJ-USLDJELEtTQMX4yo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/SquadEstoque.Web.styles.css?v=PFELi-yZddxA7F6lPLBch7KTJJ-USLDJELEtTQMX4yo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/SquadEstoque.Web.styles.css?v=PFELi-yZddxA7F6lPLBch7KTJJ-USLDJELEtTQMX4yo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/js/site.js?v=hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/js/site.js?v=hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/js/site.js?v=hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/js/site.js?v=hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-D",
+      "url": "/lib/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-D",
+      "url": "/Account/Login",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-D",
+      "url": "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-D",
+      "url": "/css/login.css?v=WwqdB2EyoO1EfcEgue59_spnLWMazCrOn-NeNnb-E68",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-D",
+      "url": "/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-D",
+      "url": "/lib/jquery-validation/dist/jquery.validate.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-D",
+      "url": "/images/login-shoe-stock.jpg",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-D",
+      "url": "https://fonts.gstatic.com/l/font?kit=UcCB3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfU5NJeWUdIOjBeTGiXZdND2M&skey=c491285d6722e4fa&v=v20",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-D",
+      "url": "https://fonts.gstatic.com/l/font?kit=xMQ9uFFYT72X5wkB_18qmnndmSdSnh2BAfO5mnuyOo1lGSQwV6-x&skey=f471733f169f3f71&v=v17",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-D",
+      "url": "/Account/Login",
+      "status": 302
+    },
+    {
+      "caso": "VNP-02-D",
+      "url": "/Produtos",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-D",
+      "url": "/css/site.css?v=aS4CiPaLRoUIlYcLgUBwYAF9MeNEPTt6tQq-QTvCqCQ",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-D",
+      "url": "/SquadEstoque.Web.styles.css?v=PFELi-yZddxA7F6lPLBch7KTJJ-USLDJELEtTQMX4yo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-02-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-D",
+      "url": "/js/site.js?v=hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-D",
+      "url": "/lib/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/Produtos/Create",
+      "status": 200
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/SquadEstoque.Web.styles.css?v=PFELi-yZddxA7F6lPLBch7KTJJ-USLDJELEtTQMX4yo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/css/site.css?v=aS4CiPaLRoUIlYcLgUBwYAF9MeNEPTt6tQq-QTvCqCQ",
+      "status": 200
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/lib/jquery-validation/dist/jquery.validate.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/js/site.js?v=hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/lib/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/js/produto-form.js?v=Z5-6YySMDPOy0vlnbgqYWRgY8-L-9rUE2mqAf2HcztE",
+      "status": 200
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/Produtos/Create",
+      "status": 302
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/Produtos/AdicionarNumeracoes/8b39c0d3-2397-40f0-bb70-92257a88f855?cadastroInicial=True",
+      "status": 200
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/SquadEstoque.Web.styles.css?v=PFELi-yZddxA7F6lPLBch7KTJJ-USLDJELEtTQMX4yo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/css/site.css?v=aS4CiPaLRoUIlYcLgUBwYAF9MeNEPTt6tQq-QTvCqCQ",
+      "status": 200
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/js/site.js?v=hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/lib/jquery-validation/dist/jquery.validate.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/lib/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/js/grade-produto.js?v=EVa-lpREFYzahJB8He6JOErz3nCW5zAyv3E8j_a7uco",
+      "status": 200
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/Produtos/AdicionarNumeracoes/8b39c0d3-2397-40f0-bb70-92257a88f855",
+      "status": 302
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/Produtos/Details/8b39c0d3-2397-40f0-bb70-92257a88f855",
+      "status": 200
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/css/site.css?v=aS4CiPaLRoUIlYcLgUBwYAF9MeNEPTt6tQq-QTvCqCQ",
+      "status": 200
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/SquadEstoque.Web.styles.css?v=PFELi-yZddxA7F6lPLBch7KTJJ-USLDJELEtTQMX4yo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/lib/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/js/site.js?v=hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-08-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-12-D",
+      "url": "/Movimentacoes/Ajuste",
+      "status": 200
+    },
+    {
+      "caso": "VNP-12-D",
+      "url": "/css/site.css?v=aS4CiPaLRoUIlYcLgUBwYAF9MeNEPTt6tQq-QTvCqCQ",
+      "status": 200
+    },
+    {
+      "caso": "VNP-12-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-12-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-12-D",
+      "url": "/SquadEstoque.Web.styles.css?v=PFELi-yZddxA7F6lPLBch7KTJJ-USLDJELEtTQMX4yo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-12-D",
+      "url": "/js/site.js?v=hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-12-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-12-D",
+      "url": "/lib/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-12-D",
+      "url": "/lib/jquery-validation/dist/jquery.validate.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-12-D",
+      "url": "/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-12-D",
+      "url": "/js/ajuste.js?v=q-qJK8Prg_Wgsk2K5Pu3zQQwaDXsd3HNUbYyB62DKoY",
+      "status": 200
+    },
+    {
+      "caso": "VNP-12-D",
+      "url": "/Movimentacoes/Ajuste",
+      "status": 302
+    },
+    {
+      "caso": "VNP-12-D",
+      "url": "/Produtos/Details/c380ade2-ba0b-48d1-b87e-0699b8ee7f6a",
+      "status": 200
+    },
+    {
+      "caso": "VNP-12-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-12-D",
+      "url": "/css/site.css?v=aS4CiPaLRoUIlYcLgUBwYAF9MeNEPTt6tQq-QTvCqCQ",
+      "status": 200
+    },
+    {
+      "caso": "VNP-12-D",
+      "url": "/SquadEstoque.Web.styles.css?v=PFELi-yZddxA7F6lPLBch7KTJJ-USLDJELEtTQMX4yo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-12-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-12-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-12-D",
+      "url": "/lib/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-12-D",
+      "url": "/js/site.js?v=hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-14-D",
+      "url": "/Estoque/Consulta",
+      "status": 302
+    },
+    {
+      "caso": "VNP-14-D",
+      "url": "/Account/AccessDenied?ReturnUrl=%2FEstoque%2FConsulta",
+      "status": 200
+    },
+    {
+      "caso": "VNP-14-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-14-D",
+      "url": "/css/site.css?v=aS4CiPaLRoUIlYcLgUBwYAF9MeNEPTt6tQq-QTvCqCQ",
+      "status": 200
+    },
+    {
+      "caso": "VNP-14-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-14-D",
+      "url": "/SquadEstoque.Web.styles.css?v=PFELi-yZddxA7F6lPLBch7KTJJ-USLDJELEtTQMX4yo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-14-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-14-D",
+      "url": "/js/site.js?v=hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-14-D",
+      "url": "/lib/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-D",
+      "url": "/Account/Logout",
+      "status": 302
+    },
+    {
+      "caso": "VNP-15-D",
+      "url": "/Account/Login",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-D",
+      "url": "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-15-D",
+      "url": "/css/login.css?v=WwqdB2EyoO1EfcEgue59_spnLWMazCrOn-NeNnb-E68",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-D",
+      "url": "/lib/jquery-validation/dist/jquery.validate.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-D",
+      "url": "/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-D",
+      "url": "https://fonts.gstatic.com/l/font?kit=UcCB3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfU5NJeWUdIOjBeTGiXZdND2M&skey=c491285d6722e4fa&v=v20",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-D",
+      "url": "https://fonts.gstatic.com/l/font?kit=xMQ9uFFYT72X5wkB_18qmnndmSdSnh2BAfO5mnuyOo1lGSQwV6-x&skey=f471733f169f3f71&v=v17",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-D",
+      "url": "/images/login-shoe-stock.jpg",
+      "status": 304
+    },
+    {
+      "caso": "VNP-15-D",
+      "url": "/Produtos",
+      "status": 302
+    },
+    {
+      "caso": "VNP-15-D",
+      "url": "/Account/Login?ReturnUrl=%2FProdutos",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-D",
+      "url": "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-15-D",
+      "url": "/css/login.css?v=WwqdB2EyoO1EfcEgue59_spnLWMazCrOn-NeNnb-E68",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-D",
+      "url": "/lib/jquery-validation/dist/jquery.validate.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-D",
+      "url": "/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-D",
+      "url": "https://fonts.gstatic.com/l/font?kit=UcCB3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfU5NJeWUdIOjBeTGiXZdND2M&skey=c491285d6722e4fa&v=v20",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-D",
+      "url": "https://fonts.gstatic.com/l/font?kit=xMQ9uFFYT72X5wkB_18qmnndmSdSnh2BAfO5mnuyOo1lGSQwV6-x&skey=f471733f169f3f71&v=v17",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-D",
+      "url": "/images/login-shoe-stock.jpg",
+      "status": 304
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/Estoque/Consulta",
+      "status": 302
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/Account/Login?ReturnUrl=%2FEstoque%2FConsulta",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/css/login.css?v=WwqdB2EyoO1EfcEgue59_spnLWMazCrOn-NeNnb-E68",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery-validation/dist/jquery.validate.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/images/login-shoe-stock.jpg",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.gstatic.com/s/sora/v17/xMQ9uFFYT72X5wkB_18qmnndmSdSnh2BAfO5mnuyOo1lfiQwV6-x.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/Produtos",
+      "status": 302
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/Produtos",
+      "status": 302
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/Account/Login?ReturnUrl=%2FProdutos",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/Account/Login?ReturnUrl=%2FProdutos",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/css/login.css?v=WwqdB2EyoO1EfcEgue59_spnLWMazCrOn-NeNnb-E68",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/css/login.css?v=WwqdB2EyoO1EfcEgue59_spnLWMazCrOn-NeNnb-E68",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery-validation/dist/jquery.validate.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery-validation/dist/jquery.validate.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.gstatic.com/s/sora/v17/xMQ9uFFYT72X5wkB_18qmnndmSdSnh2BAfO5mnuyOo1lfiQwV6-x.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.gstatic.com/s/sora/v17/xMQ9uFFYT72X5wkB_18qmnndmSdSnh2BAfO5mnuyOo1lfiQwV6-x.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/images/login-shoe-stock.jpg",
+      "status": 304
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/images/login-shoe-stock.jpg",
+      "status": 304
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/Produtos/Create",
+      "status": 302
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/Produtos/Create",
+      "status": 302
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/Produtos/Create",
+      "status": 302
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/Account/Login?ReturnUrl=%2FProdutos%2FCreate",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/Account/Login?ReturnUrl=%2FProdutos%2FCreate",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/Account/Login?ReturnUrl=%2FProdutos%2FCreate",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/css/login.css?v=WwqdB2EyoO1EfcEgue59_spnLWMazCrOn-NeNnb-E68",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/css/login.css?v=WwqdB2EyoO1EfcEgue59_spnLWMazCrOn-NeNnb-E68",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/css/login.css?v=WwqdB2EyoO1EfcEgue59_spnLWMazCrOn-NeNnb-E68",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.gstatic.com/s/sora/v17/xMQ9uFFYT72X5wkB_18qmnndmSdSnh2BAfO5mnuyOo1lfiQwV6-x.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.gstatic.com/s/sora/v17/xMQ9uFFYT72X5wkB_18qmnndmSdSnh2BAfO5mnuyOo1lfiQwV6-x.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.gstatic.com/s/sora/v17/xMQ9uFFYT72X5wkB_18qmnndmSdSnh2BAfO5mnuyOo1lfiQwV6-x.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/images/login-shoe-stock.jpg",
+      "status": 304
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/images/login-shoe-stock.jpg",
+      "status": 304
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/images/login-shoe-stock.jpg",
+      "status": 304
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery-validation/dist/jquery.validate.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery-validation/dist/jquery.validate.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery-validation/dist/jquery.validate.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/Movimentacoes",
+      "status": 302
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/Movimentacoes",
+      "status": 302
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/Movimentacoes",
+      "status": 302
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/Movimentacoes",
+      "status": 302
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/Account/Login?ReturnUrl=%2FMovimentacoes",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/Account/Login?ReturnUrl=%2FMovimentacoes",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/Account/Login?ReturnUrl=%2FMovimentacoes",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/Account/Login?ReturnUrl=%2FMovimentacoes",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/css/login.css?v=WwqdB2EyoO1EfcEgue59_spnLWMazCrOn-NeNnb-E68",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/css/login.css?v=WwqdB2EyoO1EfcEgue59_spnLWMazCrOn-NeNnb-E68",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/css/login.css?v=WwqdB2EyoO1EfcEgue59_spnLWMazCrOn-NeNnb-E68",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/css/login.css?v=WwqdB2EyoO1EfcEgue59_spnLWMazCrOn-NeNnb-E68",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.gstatic.com/s/sora/v17/xMQ9uFFYT72X5wkB_18qmnndmSdSnh2BAfO5mnuyOo1lfiQwV6-x.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.gstatic.com/s/sora/v17/xMQ9uFFYT72X5wkB_18qmnndmSdSnh2BAfO5mnuyOo1lfiQwV6-x.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.gstatic.com/s/sora/v17/xMQ9uFFYT72X5wkB_18qmnndmSdSnh2BAfO5mnuyOo1lfiQwV6-x.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "https://fonts.gstatic.com/s/sora/v17/xMQ9uFFYT72X5wkB_18qmnndmSdSnh2BAfO5mnuyOo1lfiQwV6-x.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/images/login-shoe-stock.jpg",
+      "status": 304
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/images/login-shoe-stock.jpg",
+      "status": 304
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/images/login-shoe-stock.jpg",
+      "status": 304
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/images/login-shoe-stock.jpg",
+      "status": 304
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery-validation/dist/jquery.validate.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery-validation/dist/jquery.validate.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery-validation/dist/jquery.validate.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery-validation/dist/jquery.validate.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-D",
+      "url": "/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-M",
+      "url": "/Account/Login",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-M",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-M",
+      "url": "/css/login.css?v=WwqdB2EyoO1EfcEgue59_spnLWMazCrOn-NeNnb-E68",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-M",
+      "url": "/images/logo-squad-header.png",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-M",
+      "url": "/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-M",
+      "url": "/lib/jquery-validation/dist/jquery.validate.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-M",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-M",
+      "url": "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-M",
+      "url": "/images/login-shoe-stock.jpg",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-M",
+      "url": "https://fonts.gstatic.com/s/sora/v17/xMQ9uFFYT72X5wkB_18qmnndmSdSnh2BAfO5mnuyOo1lfiQwV6-x.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-M",
+      "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-M",
+      "url": "/Account/Login",
+      "status": 302
+    },
+    {
+      "caso": "VNP-01-M",
+      "url": "/Estoque/Consulta",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-M",
+      "url": "/css/site.css?v=aS4CiPaLRoUIlYcLgUBwYAF9MeNEPTt6tQq-QTvCqCQ",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-M",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-M",
+      "url": "/SquadEstoque.Web.styles.css?v=PFELi-yZddxA7F6lPLBch7KTJJ-USLDJELEtTQMX4yo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-M",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-01-M",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-M",
+      "url": "/js/site.js?v=hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-M",
+      "url": "/js/consulta.js?v=GAMFbIfSbP2T2dl3unGaSaNu8EUyWyQmpnldY7lWpxU",
+      "status": 200
+    },
+    {
+      "caso": "VNP-01-M",
+      "url": "/lib/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-M",
+      "url": "/Produtos",
+      "status": 302
+    },
+    {
+      "caso": "VNP-04-M",
+      "url": "/Account/AccessDenied?ReturnUrl=%2FProdutos",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-M",
+      "url": "/css/site.css?v=aS4CiPaLRoUIlYcLgUBwYAF9MeNEPTt6tQq-QTvCqCQ",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-M",
+      "url": "/SquadEstoque.Web.styles.css?v=PFELi-yZddxA7F6lPLBch7KTJJ-USLDJELEtTQMX4yo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-M",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-M",
+      "url": "/images/logo-squad-header.png",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-M",
+      "url": "/js/site.js?v=hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-M",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-M",
+      "url": "/lib/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-M",
+      "url": "/Movimentacoes/Ajuste",
+      "status": 302
+    },
+    {
+      "caso": "VNP-04-M",
+      "url": "/Movimentacoes/Ajuste",
+      "status": 302
+    },
+    {
+      "caso": "VNP-04-M",
+      "url": "/Account/AccessDenied?ReturnUrl=%2FMovimentacoes%2FAjuste",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-M",
+      "url": "/Account/AccessDenied?ReturnUrl=%2FMovimentacoes%2FAjuste",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-M",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-M",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-M",
+      "url": "/css/site.css?v=aS4CiPaLRoUIlYcLgUBwYAF9MeNEPTt6tQq-QTvCqCQ",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-M",
+      "url": "/css/site.css?v=aS4CiPaLRoUIlYcLgUBwYAF9MeNEPTt6tQq-QTvCqCQ",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-M",
+      "url": "/SquadEstoque.Web.styles.css?v=PFELi-yZddxA7F6lPLBch7KTJJ-USLDJELEtTQMX4yo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-M",
+      "url": "/SquadEstoque.Web.styles.css?v=PFELi-yZddxA7F6lPLBch7KTJJ-USLDJELEtTQMX4yo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-M",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-04-M",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-04-M",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-M",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-M",
+      "url": "/lib/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-M",
+      "url": "/lib/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-M",
+      "url": "/js/site.js?v=hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-04-M",
+      "url": "/js/site.js?v=hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-M",
+      "url": "/Account/Login",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-M",
+      "url": "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-M",
+      "url": "/css/login.css?v=WwqdB2EyoO1EfcEgue59_spnLWMazCrOn-NeNnb-E68",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-M",
+      "url": "/images/logo-squad-header.png",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-M",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-M",
+      "url": "/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-M",
+      "url": "/lib/jquery-validation/dist/jquery.validate.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-M",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-M",
+      "url": "/images/login-shoe-stock.jpg",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-M",
+      "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-M",
+      "url": "https://fonts.gstatic.com/s/sora/v17/xMQ9uFFYT72X5wkB_18qmnndmSdSnh2BAfO5mnuyOo1lfiQwV6-x.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-M",
+      "url": "/Account/Login",
+      "status": 302
+    },
+    {
+      "caso": "VNP-02-M",
+      "url": "/Produtos",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-M",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-M",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-02-M",
+      "url": "/css/site.css?v=aS4CiPaLRoUIlYcLgUBwYAF9MeNEPTt6tQq-QTvCqCQ",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-M",
+      "url": "/SquadEstoque.Web.styles.css?v=PFELi-yZddxA7F6lPLBch7KTJJ-USLDJELEtTQMX4yo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-M",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-M",
+      "url": "/js/site.js?v=hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-02-M",
+      "url": "/lib/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-14-M",
+      "url": "/Estoque/Consulta",
+      "status": 302
+    },
+    {
+      "caso": "VNP-14-M",
+      "url": "/Account/AccessDenied?ReturnUrl=%2FEstoque%2FConsulta",
+      "status": 200
+    },
+    {
+      "caso": "VNP-14-M",
+      "url": "/css/site.css?v=aS4CiPaLRoUIlYcLgUBwYAF9MeNEPTt6tQq-QTvCqCQ",
+      "status": 200
+    },
+    {
+      "caso": "VNP-14-M",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-14-M",
+      "url": "/SquadEstoque.Web.styles.css?v=PFELi-yZddxA7F6lPLBch7KTJJ-USLDJELEtTQMX4yo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-14-M",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-14-M",
+      "url": "/lib/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-14-M",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-14-M",
+      "url": "/js/site.js?v=hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-M",
+      "url": "/Account/Logout",
+      "status": 302
+    },
+    {
+      "caso": "VNP-15-M",
+      "url": "/Account/Login",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-M",
+      "url": "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-M",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-15-M",
+      "url": "/css/login.css?v=WwqdB2EyoO1EfcEgue59_spnLWMazCrOn-NeNnb-E68",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-M",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-M",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-M",
+      "url": "/lib/jquery-validation/dist/jquery.validate.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-M",
+      "url": "/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-M",
+      "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-M",
+      "url": "https://fonts.gstatic.com/s/sora/v17/xMQ9uFFYT72X5wkB_18qmnndmSdSnh2BAfO5mnuyOo1lfiQwV6-x.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-M",
+      "url": "/images/login-shoe-stock.jpg",
+      "status": 304
+    },
+    {
+      "caso": "VNP-15-M",
+      "url": "/Estoque/Consulta",
+      "status": 302
+    },
+    {
+      "caso": "VNP-15-M",
+      "url": "/Account/Login?ReturnUrl=%2FEstoque%2FConsulta",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-M",
+      "url": "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-M",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-M",
+      "url": "/css/login.css?v=WwqdB2EyoO1EfcEgue59_spnLWMazCrOn-NeNnb-E68",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-M",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-15-M",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-M",
+      "url": "/lib/jquery-validation/dist/jquery.validate.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-M",
+      "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-M",
+      "url": "https://fonts.gstatic.com/s/sora/v17/xMQ9uFFYT72X5wkB_18qmnndmSdSnh2BAfO5mnuyOo1lfiQwV6-x.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-15-M",
+      "url": "/images/login-shoe-stock.jpg",
+      "status": 304
+    },
+    {
+      "caso": "VNP-15-M",
+      "url": "/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "/Estoque/Consulta",
+      "status": 302
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "/Account/Login?ReturnUrl=%2FEstoque%2FConsulta",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "/css/login.css?v=WwqdB2EyoO1EfcEgue59_spnLWMazCrOn-NeNnb-E68",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "/images/logo-squad-header.png",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "/lib/jquery-validation/dist/jquery.validate.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "/images/login-shoe-stock.jpg",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "https://fonts.gstatic.com/s/sora/v17/xMQ9uFFYT72X5wkB_18qmnndmSdSnh2BAfO5mnuyOo1lfiQwV6-x.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "/Produtos",
+      "status": 302
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "/Produtos",
+      "status": 302
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "/Account/Login?ReturnUrl=%2FProdutos",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "/Account/Login?ReturnUrl=%2FProdutos",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "/images/logo-squad-header.png",
+      "status": 304
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "/css/login.css?v=WwqdB2EyoO1EfcEgue59_spnLWMazCrOn-NeNnb-E68",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "/css/login.css?v=WwqdB2EyoO1EfcEgue59_spnLWMazCrOn-NeNnb-E68",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "/lib/bootstrap/dist/css/bootstrap.min.css",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "/lib/jquery/dist/jquery.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "/lib/jquery-validation/dist/jquery.validate.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "/lib/jquery-validation/dist/jquery.validate.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "https://fonts.gstatic.com/s/sora/v17/xMQ9uFFYT72X5wkB_18qmnndmSdSnh2BAfO5mnuyOo1lfiQwV6-x.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "https://fonts.gstatic.com/s/sora/v17/xMQ9uFFYT72X5wkB_18qmnndmSdSnh2BAfO5mnuyOo1lfiQwV6-x.woff2",
+      "status": 200
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "/images/login-shoe-stock.jpg",
+      "status": 304
+    },
+    {
+      "caso": "VNP-13-M",
+      "url": "/images/login-shoe-stock.jpg",
+      "status": 304
+    }
+  ]
+}
