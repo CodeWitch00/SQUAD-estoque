@@ -11,7 +11,7 @@
 
 A busca por trecho usa `LIKE '%termo%'` em nome e marca, que não aproveita um índice B-tree comum nessas colunas. Por isso, não foi criado índice de `Nome` para essa busca. A ordenação final das rupturas depende das contagens agregadas e continua exigindo ordenação após o agrupamento.
 
-**Divergência preexistente:** o cartão S3-BE-008 descreve SKUs ativos, mas a consulta atual de saldos zerados filtra somente `SaldoAtual == 0`. Esta tarefa mantém o comportamento atual; qualquer correção funcional deve ser tratada separadamente.
+**Correção posterior à migration:** a auditoria da `main` identificou que a consulta de saldos zerados não excluía itens inativos, em desacordo com S3-BE-008. A consulta foi corrigida para exigir produto e SKU ativos; o índice parcial de saldo zero continua atendendo ao filtro por produto.
 
 ## Evidência antes e depois
 
@@ -35,6 +35,8 @@ Os planos usam SQL representativo dos filtros e agregações dos controllers; n�
 ## Migration
 
 `AddConsultaIndexes` contém somente criação/remoção dos índices das tabelas `Produto`, `Sku` e `Ruptura`. O `Down` remove os novos índices e restaura `IX_Ruptura_SkuId`. Nenhuma tabela ou dado é alterado. A migration foi gerada e revisada, sem aplicação a banco compartilhado.
+
+Após a auditoria, um teste automatizado aplica a migration até a versão anterior em SQLite isolado, insere dados, executa `Up`, `Down` e `Up` novamente, conferindo índices e preservação dos registros.
 
 ## Validação local
 

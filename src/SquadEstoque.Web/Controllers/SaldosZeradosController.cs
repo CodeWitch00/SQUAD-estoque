@@ -21,7 +21,7 @@ public class SaldosZeradosController : Controller
     {
         var produtos = await _context.Produto
             .AsNoTracking()
-            .Where(produto => produto.Skus.Any(sku => sku.SaldoAtual == 0))
+            .Where(produto => produto.Ativo && produto.Skus.Any(sku => sku.Ativo && sku.SaldoAtual == 0))
             .Select(produto => new ProdutoConsultaResultadoViewModel
             {
                 Id = produto.Id,
@@ -29,7 +29,7 @@ public class SaldosZeradosController : Controller
                 Marca = produto.Marca,
                 Cor = produto.Cor,
                 Skus = produto.Skus
-                    .Where(sku => sku.SaldoAtual == 0)
+                    .Where(sku => sku.Ativo && sku.SaldoAtual == 0)
                     .Select(sku => new SkuConsultaResultadoViewModel
                     {
                         Id = sku.Id,
