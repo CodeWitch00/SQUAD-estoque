@@ -141,7 +141,7 @@ A matriz abaixo consolida os acessos diretos por URL documentados neste relatór
 
 ## 7. Estados de execução
 
-Este relatório segue a seção 8.3 do plano. Somente **Aprovado** ou **Reprovado** representa resultado e exige evidência da execução real. Quando não há captura ou registro de resposta HTTP anexado, o caso permanece **Não executado**, mesmo que o executor tenha relatado o comportamento, e o campo "Resultado obtido" informa isso.
+Este relatório segue a seção 8.3 do plano. Somente **Aprovado** ou **Reprovado** representa resultado e exige evidência da execução real. Quando não há captura ou registro de resposta HTTP anexado, o caso permanece **Não executado**, mesmo que o executor tenha relatado o comportamento, e o campo "Resultado obtido" informa isso. O estado **Em execução** é usado quando parte dos critérios foi evidenciada, mas algum item da saída esperada permanece sem verificação — é o caso do VNP-05, cuja contagem de ocorrências não foi conferida contra os registros.
 
 ## 8. Casos de teste
 
