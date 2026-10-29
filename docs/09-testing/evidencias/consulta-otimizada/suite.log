@@ -1,0 +1,10 @@
+  Determinando os projetos a serem restaurados...
+  Todos os projetos estão atualizados para restauração.
+  SquadEstoque.Web -> <repositorio>\src\SquadEstoque.Web\bin\Debug\net10.0\SquadEstoque.Web.dll
+  SquadEstoque.Web.Tests -> <repositorio>\tests\SquadEstoque.Web.Tests\bin\Debug\net10.0\SquadEstoque.Web.Tests.dll
+Execução de teste para <repositorio>\tests\SquadEstoque.Web.Tests\bin\Debug\net10.0\SquadEstoque.Web.Tests.dll (.NETCoreApp,Version=v10.0)
+1 arquivos de teste no total corresponderam ao padrão especificado.
+AVISO: sobrescrevendo o arquivo de resultados: <repositorio>\output\consulta-tests\consulta-suite.trx
+Arquivo de resultados: <repositorio>\output\consulta-tests\consulta-suite.trx
+
+Aprovado!  – Com falha:     0, Aprovado:   279, Ignorado:     0, Total:   279, Duração: 2 m 16 s - SquadEstoque.Web.Tests.dll (net10.0)
