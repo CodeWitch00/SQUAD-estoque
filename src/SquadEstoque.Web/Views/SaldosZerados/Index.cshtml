@@ -26,10 +26,23 @@ else
                         <h2 class="h5 card-title">@produto.Nome</h2>
                         <p class="text-secondary mb-2">@produto.Marca · @produto.Cor</p>
                         <p class="mb-2">Numerações sem saldo:</p>
-                        <ul class="list-inline mb-0">
-                            @foreach (var numeracao in produto.NumeracoesZeradas)
+                        <ul class="list-unstyled mb-0">
+                            @foreach (var sku in produto.NumeracoesZeradas)
                             {
-                                <li class="list-inline-item"><span class="badge text-bg-secondary">@numeracao</span></li>
+                                <li class="saldos-zerados-sku">
+                                    <span class="badge text-bg-secondary">@sku.Numeracao</span>
+                                    <small class="sku-last-update">
+                                        @if (sku.UltimaAtualizacaoSaldoEm.HasValue)
+                                        {
+                                            var atualizacaoLocal = sku.UltimaAtualizacaoSaldoEm.Value.ToLocalTime();
+                                            <span>Atualizado em <time datetime="@atualizacaoLocal.ToString("O")">@atualizacaoLocal.ToString("dd/MM/yyyy HH:mm")</time></span>
+                                        }
+                                        else
+                                        {
+                                            <span>Atualização não registrada</span>
+                                        }
+                                    </small>
+                                </li>
                             }
                         </ul>
                     </div>

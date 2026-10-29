@@ -66,7 +66,8 @@ public sealed class EstoqueController : Controller
                     {
                         Id = sku.Id,
                         Numeracao = sku.Numeracao,
-                        SaldoAtual = sku.SaldoAtual
+                        SaldoAtual = sku.SaldoAtual,
+                        UltimaAtualizacaoSaldoEm = sku.UltimaAtualizacaoSaldoEm
                     })
                     .ToList()
             };
@@ -162,7 +163,8 @@ public sealed class EstoqueController : Controller
                 {
                     Id = sku.Id,
                     Numeracao = sku.Numeracao,
-                    SaldoAtual = sku.SaldoAtual
+                    SaldoAtual = sku.SaldoAtual,
+                    UltimaAtualizacaoSaldoEm = sku.UltimaAtualizacaoSaldoEm
                 })
                 .ToListAsync();
             viewModel.ModeloTotalmenteIndisponivel = produtoSelecionado.Skus.Count == 0 ||

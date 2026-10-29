@@ -135,6 +135,37 @@ public sealed class AdministrativeHttpTests : IClassFixture<SquadEstoqueWebAppli
     }
 
     [Fact]
+    public async Task Product_details_and_batch_grade_render_local_last_update_or_legacy_fallback()
+    {
+        var dataUtc = new DateTime(2026, 10, 29, 14, 30, 0, DateTimeKind.Utc);
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
+            var sku = await context.Sku.OrderBy(item => item.Numeracao).FirstAsync();
+            sku.UltimaAtualizacaoSaldoEm = dataUtc;
+            await context.SaveChangesAsync();
+        }
+
+        using var client = CreateClient();
+        await LoginAsync(client, "lojista@squad.com");
+        using var details = await client.GetAsync("/Produtos/Details/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+        var detailsHtml = WebUtility.HtmlDecode(await details.Content.ReadAsStringAsync());
+        using var batch = await client.GetAsync("/Movimentacoes/EntradaLote?produtoId=aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+        var batchHtml = WebUtility.HtmlDecode(await batch.Content.ReadAsStringAsync());
+        var local = dataUtc.ToLocalTime();
+        var formatted = local.ToString("dd/MM/yyyy HH:mm");
+
+        Assert.Equal(HttpStatusCode.OK, details.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, batch.StatusCode);
+        Assert.Contains("Última atualização", detailsHtml);
+        Assert.Contains(formatted, detailsHtml);
+        Assert.Contains("Atualização não registrada", detailsHtml);
+        Assert.Contains("Última atualização", batchHtml);
+        Assert.Contains(formatted, batchHtml);
+        Assert.Contains("Atualização não registrada", batchHtml);
+    }
+
+    [Fact]
     public async Task Lojista_can_open_grade_management_and_vendedor_cannot()
     {
         using var lojistaClient = CreateClient();

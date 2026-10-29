@@ -44,6 +44,7 @@
                     <tr>
                         <th scope="col">Numeração</th>
                         <th scope="col">Saldo atual</th>
+                        <th scope="col">Última atualização</th>
                         <th scope="col">Estado</th>
                         <th scope="col" class="text-end">Ações de estoque</th>
                     </tr>
@@ -54,6 +55,17 @@
                     <tr>
                         <td class="product-details-size">@sku.Numeracao</td>
                         <td class="product-details-balance">@sku.SaldoAtual par(es)</td>
+                        <td class="sku-last-update">
+                            @if (sku.UltimaAtualizacaoSaldoEm.HasValue)
+                            {
+                                var atualizacaoLocal = sku.UltimaAtualizacaoSaldoEm.Value.ToLocalTime();
+                                <time datetime="@atualizacaoLocal.ToString("O")">@atualizacaoLocal.ToString("dd/MM/yyyy HH:mm")</time>
+                            }
+                            else
+                            {
+                                <span>Atualização não registrada</span>
+                            }
+                        </td>
                         <td>
                             @if (sku.SaldoAtual > 1)
                             {

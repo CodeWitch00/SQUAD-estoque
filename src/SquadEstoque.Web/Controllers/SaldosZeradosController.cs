@@ -34,7 +34,8 @@ public class SaldosZeradosController : Controller
                     {
                         Id = sku.Id,
                         Numeracao = sku.Numeracao,
-                        SaldoAtual = sku.SaldoAtual
+                        SaldoAtual = sku.SaldoAtual,
+                        UltimaAtualizacaoSaldoEm = sku.UltimaAtualizacaoSaldoEm
                     })
                     .ToList()
             })

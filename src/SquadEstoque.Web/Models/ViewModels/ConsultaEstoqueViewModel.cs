@@ -41,6 +41,7 @@ public class SkuConsultaResultadoViewModel
     public Guid Id { get; set; }
     public string Numeracao { get; set; } = string.Empty;
     public int SaldoAtual { get; set; }
+    public DateTime? UltimaAtualizacaoSaldoEm { get; set; }
 
     public string EstadoDisponibilidade => SaldoAtual switch
     {
