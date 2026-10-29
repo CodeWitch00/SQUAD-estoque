@@ -12,7 +12,7 @@
 | Níveis | E2E, Aceite e Não funcional (responsividade) |
 | Perfis | `LOJISTA`, `VENDEDOR` e Anônimo (sem autenticação) |
 | Data de execução | 12/10/2026 (execução manual inicial); 27/10/2026 (execução complementar, seção 5.1) |
-| Commit testado | `729b28f` (execução inicial); `8c94b36` — `main` atual — via branch do PR com merge da `main` (execução complementar) |
+| Commit testado | `729b28f` (execução inicial); `8c94b36` (execução complementar); `95199c4` — `main` atual em 29/10/2026 — conferida por inspeção do diff, sem alteração nos pontos de autorização e navegação (seção 5.2) |
 | Executor | Nícolas Amorim Araújo |
 | Plano de referência | [Plano de testes](../../plano-de-testes.md), versão 2.0 |
 | Alteração no repositório | Este relatório e as evidências em `docs/09-testing/evidencias/s2-qa-035/` (capturas complementares `complemento-*` e log HTTP `http-log-complementar-s2-qa-035.json`); remoção de `site.mobile.css` (arquivo fora do escopo do cartão, não carregado por nenhuma página da aplicação) e do relatório antigo `docs/09-testing/Validacao.do.perfil.-.Desktop.e.Mobile.md`. Sem alteração de código da aplicação. |
@@ -68,11 +68,11 @@ As senhas de teste não são exibidas nas evidências. Nenhum dado real de clien
 
 ### 5.1 Execução complementar — 27/10/2026 (correções da revisão do PR #73)
 
-Para atender às correções solicitadas na revisão (status HTTP de VNP-04 e VNP-13, destino pós-login de VNP-01 e VNP-02, grade após salvar em VNP-08 e conclusão de VNP-12, VNP-14 e VNP-15), os fluxos foram reexecutados sobre o conteúdo atual da `main`:
+Para atender às correções solicitadas na revisão (status HTTP de VNP-04 e VNP-13, destino pós-login de VNP-01 e VNP-02, grade após salvar em VNP-08 e conclusão de VNP-12, VNP-14 e VNP-15), os fluxos foram reexecutados sobre a `main` `8c94b36`, então vigente:
 
 | Item | Valor |
 |---|---|
-| Base | `main` `8c94b36` (merge da branch do PR com a `main` atual, sem conflitos) |
+| Base | `main` `8c94b36` (merge da branch do PR com a `main`, sem conflitos) |
 | Ambiente | Aplicação ASP.NET Core executada localmente em `http://localhost:5200`, com `Demo__SeedUsers=true` (mesmos usuários USR-LOJ-01 e USR-VEN-01 da seção 5) |
 | Ferramenta | Script Playwright 1.62.1 + Chromium, reproduzindo os passos manuais de cada caso |
 | Desktop (D) | Viewport 1920 × 1080 px, `deviceScaleFactor` 1 |
@@ -81,6 +81,16 @@ Para atender às correções solicitadas na revisão (status HTTP de VNP-04 e VN
 | Evidências | Capturas complementares com prefixo `complemento-` na pasta `docs/09-testing/evidencias/s2-qa-035/` |
 
 Os status HTTP afirmados neste relatório provêm exclusivamente desse log; nenhum código de resposta foi estimado ou inferido. As capturas complementares têm viewport exata (1920 px de largura em Desktop; 750 px — 375 × 2 — em Mobile), ao contrário das capturas iniciais (seção 12).
+
+### 5.2 Conferência contra a `main` de 29/10/2026 (`95199c4`)
+
+A `main` avançou de `8c94b36` para `95199c4` (`feat: exibir ultima atualizacao de saldo nas grades`) depois da execução complementar. O diff entre os dois commits foi inspecionado e altera apenas a exibição da última atualização de saldo nas grades de consulta, entrada em lote, detalhe do produto e saldos zerados, além dos testes correspondentes. Não há mudança em:
+
+- atributos `[Authorize]` de `EstoqueController`, `ProdutosController`, `MovimentacoesController` e `RupturasController`;
+- rotas MVC, `LoginPath`, `AccessDeniedPath` ou destinos pós-login;
+- views de login, logout e acesso negado.
+
+Por isso, os resultados de autorização e navegação registrados nas seções 6 a 9 continuam válidos para `95199c4`. A conferência é **estática**: não houve nova execução HTTP contra esse commit, pois o ambiente desta revisão não dispõe do SDK .NET para subir a aplicação. A nova coluna de última atualização de saldo não foi capturada nas evidências de VNP-08 e VNP-12, que permanecem as da execução em `8c94b36`.
 
 ## 6. Rotas verificadas
 
@@ -836,7 +846,7 @@ Capturas indexadas por caso. A coluna "Status HTTP" traz os códigos registrados
 3. **Vendedor em rota proibida:** resolvido. As capturas mostram URL final `/Account/AccessDenied?ReturnUrl=…` com a página "Acesso Não Autorizado", ou seja, o comportamento corresponde ao previsto no plano (CT-AUT-13) e não ao "redirecionamento para Login" da versão anterior deste relatório. Os status HTTP (`302` na rota, `200` no destino) foram registrados na execução complementar (seção 5.1, VNP-04).
 4. **Justificativa do ajuste:** resolvido. O mínimo de cinco caracteres está no código: `[MinLength(5)]` em `AjusteEstoqueViewModel.cs` e validação equivalente em `MovimentacoesController.Ajuste`. As mensagens de validação foram evidenciadas no VNP-12 (execução complementar).
 5. **Requisitos:** conferir no SRS os RF e UC do catálogo (VNP-07), do histórico de movimentações (VNP-09), do Histórico de Rupturas (VNP-05, RF-22 e UC-12) e do menu (VNP-06, RF-02 e RF-03).
-6. **Data e commit:** o cabeçalho registra a execução inicial (12/10/2026, commit `729b28f`) e a execução complementar (27/10/2026, `main` `8c94b36`); o registro anterior do PR trazia `20/10/2026` como data única. O cabeçalho foi ajustado para distinguir as duas execuções.
+6. **Data e commit:** o cabeçalho registra a execução inicial (12/10/2026, commit `729b28f`) e a execução complementar (27/10/2026, `main` `8c94b36`, conferida depois em `95199c4` — seção 5.2); o registro anterior do PR trazia `20/10/2026` como data única. O cabeçalho foi ajustado para distinguir as duas execuções.
 7. **Menu do Lojista:** as capturas do commit testado (`729b28f`) mostram apenas "Produtos", "Movimentações" e "Atendimentos"; `_Layout.cshtml` da `main` atual — usada na execução complementar — inclui ainda "Histórico de rupturas" e "Saldos zerados", conforme visível nas capturas complementares (ex.: `complemento-login-lojista-pos-login-destino-desktop-018acf50.png`). Divergência esclarecida pela reexecução sobre a `main`.
 8. **Ambiente:** o PR declarava "ambiente local com SQLite", mas as capturas iniciais mostram o endereço `asp-squad-estoque-free-hgabd8asd5f4a9g9.northcentralus-01.azurewebsites.net`. A seção 5 foi mantida para a execução inicial (App Service) e a seção 5.1 documenta a execução complementar em ambiente local, conforme a intenção original do PR.
 9. **Viewports:** as capturas iniciais Mobile têm 390 × 844 px, 780 × 1688 px (2x de 390 × 844) ou entre 415 e 435 px de largura, e a do Histórico de Rupturas tem 390 × 1331 px (captura de página inteira), contra os 375 × 812 px declarados na seção 5. A execução complementar usou viewport exata de 375 × 812 px (DSF 2, largura de 750 px nas capturas) e 1920 × 1080 px em Desktop; as seções 5.1 e 12 deixam a distinção explícita.
@@ -846,3 +856,5 @@ Capturas indexadas por caso. A coluna "Status HTTP" traz os códigos registrados
 13. **Campo "Outras numerações" (observação da execução complementar):** em `AdicionarNumeracoesViewModel`, a propriedade `NumeracoesExtras` é `string` não-anulável em projeto com `<Nullable>enable</Nullable>`, o que gera `[Required]` implícito no servidor. Um envio apenas com as caixas de numeração marcadas (sem preencher "Outras numerações") é rejeitado silenciosamente: o servidor responde `200` com o formulário novamente, sem mensagem no resumo de validação `ModelOnly` da view. Pelo fluxo normal (botão "Salvar grade"), a validação client-side bloqueia o envio e exibe o aviso de campo obrigatório. No caso VNP-08, a execução preencheu o campo "Outras numerações" com `37, 38, 39, 40, 41` e o salvamento foi concluído com sucesso. Registrar card separado para avaliar a remoção do `[Required]` implícito, já que a regra de negócio aceita cadastrar a grade apenas pelas caixas de seleção.
 14. **Cobertura desigual entre Desktop e Mobile (correção de superdeclaração):** a execução complementar não repetiu todas as rotas em ambos os viewports. VNP-04 e VNP-13 têm status HTTP das quatro rotas no Desktop, mas no Mobile o log cobre duas rotas em cada caso; VNP-08 e VNP-12 têm status HTTP apenas no Desktop (no Mobile, VNP-08 tem captura da grade e VNP-12 tem apenas a validação curta). O relatório agora declara essa diferença em cada caso e na seção 12, em vez de afirmar cobertura uniforme.
 15. **VNP-05:** o status passou de **Aprovado** para **Em execução**. O acesso e a interface foram evidenciados por captura em Desktop e Mobile, mas a saída esperada inclui a quantidade de ocorrências, que não foi conferida contra os registros; o status HTTP de `/Rupturas` também não foi coletado. A conclusão exige confrontar a contagem exibida com os registros persistidos.
+16. **Critério de VNP-14 (correção explícita):** o título do cenário diz "Lojista acessa a consulta de estoque", mas o [inventário de telas](../../../05-ux/inventario-telas-e-mapa-navegacao.md) atribui a consulta de produtos ao **VENDEDOR** (VEN-02) e o `EstoqueController` exige `[Authorize(Roles = "VENDEDOR")]`. O critério correto não é o acesso permitido, e sim a **negativa ao LOJISTA**, com destino a `/Account/AccessDenied`. O caso foi executado e aprovado com esse critério, comprovado por status HTTP (`302` → `200`) e captura com sessão `LOJISTA` genuína (seções 6.1 e 8). A versão anterior do relatório usava capturas rotuladas "Lojista" que na verdade mostravam sessão `VENDEDOR`; essas imagens foram mantidas apenas como registro histórico e estão identificadas como não comprobatórias.
+17. **Conferência contra a `main` atual (`95199c4`):** conforme a seção 5.2, o diff em relação a `8c94b36` não altera autorização, rotas ou destinos de login. A conferência foi estática, sem nova execução HTTP, e está declarada como tal.
