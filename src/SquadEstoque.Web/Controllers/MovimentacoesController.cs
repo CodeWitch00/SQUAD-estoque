@@ -1,10 +1,12 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using SquadEstoque.Web.Data;
 using SquadEstoque.Web.Models;
@@ -640,9 +642,14 @@ public class MovimentacoesController : Controller
             ModelState.AddModelError(nameof(model.NovoSaldoApurado), "O novo saldo apurado não pode ser negativo.");
         }
 
-        if (string.IsNullOrWhiteSpace(model.Motivo) || model.Motivo.Trim().Length < 5)
+        var motivoErrors = new List<ValidationResult>();
+        if (!Validator.TryValidateProperty(model.Motivo,
+            new ValidationContext(model) { MemberName = nameof(model.Motivo) },
+            motivoErrors) && ModelState.GetFieldValidationState(nameof(model.Motivo)) !=
+            ModelValidationState.Invalid)
         {
-            ModelState.AddModelError(nameof(model.Motivo), "O motivo do ajuste é obrigatório e deve possuir pelo menos 5 caracteres.");
+            foreach (var error in motivoErrors)
+                ModelState.AddModelError(nameof(model.Motivo), error.ErrorMessage!);
         }
 
         if (!ModelState.IsValid)
@@ -689,7 +696,7 @@ public class MovimentacoesController : Controller
                 Quantidade = diferenca,
                 UsuarioId = usuarioId.Value,
                 CriadoEm = DateTime.UtcNow,
-                Motivo = model.Motivo.Trim()
+                Motivo = model.Motivo
             };
 
             _context.Movimentacao.Add(movimentacao);

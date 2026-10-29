@@ -40,10 +40,34 @@ public sealed class EstoqueController : Controller
         {
             var atendimento = await _context.Atendimento
                 .AsNoTracking()
-                .Include(a => a.Produto)
-                .ThenInclude(p => p!.Skus)
-                .FirstOrDefaultAsync(a => a.Id == atendimentoId.Value &&
-                    a.UsuarioId == usuarioId.Value && a.Status == StatusAtendimento.PENDENTE);
+                .Where(a => a.Id == atendimentoId.Value &&
+                    a.UsuarioId == usuarioId.Value && a.Status == StatusAtendimento.PENDENTE)
+                .Select(a => new
+                {
+                    a.Id,
+                    a.SkuId,
+                    Produto = a.Produto == null ? null : new ProdutoConsultaResultadoViewModel
+                    {
+                        Id = a.Produto.Id,
+                        Nome = a.Produto.Nome,
+                        Marca = a.Produto.Marca,
+                        Categoria = a.Produto.Categoria,
+                        Cor = a.Produto.Cor,
+                        ImagemUrl = a.Produto.ImagemUrl,
+                        Skus = a.Produto.Skus
+                            .Where(sku => sku.Ativo)
+                            .OrderBy(sku => sku.Numeracao)
+                            .Select(sku => new SkuConsultaResultadoViewModel
+                            {
+                                Id = sku.Id,
+                                Numeracao = sku.Numeracao,
+                                SaldoAtual = sku.SaldoAtual,
+                                UltimaAtualizacaoSaldoEm = sku.UltimaAtualizacaoSaldoEm
+                            })
+                            .ToList()
+                    }
+                })
+                .FirstOrDefaultAsync();
 
             if (atendimento?.Produto is null)
             {
@@ -51,26 +75,7 @@ public sealed class EstoqueController : Controller
                 return View(viewModel);
             }
 
-            var produto = new ProdutoConsultaResultadoViewModel
-            {
-                Id = atendimento.Produto.Id,
-                Nome = atendimento.Produto.Nome,
-                Marca = atendimento.Produto.Marca,
-                Categoria = atendimento.Produto.Categoria,
-                Cor = atendimento.Produto.Cor,
-                ImagemUrl = atendimento.Produto.ImagemUrl,
-                Skus = atendimento.Produto.Skus
-                    .Where(sku => sku.Ativo)
-                    .OrderBy(sku => sku.Numeracao)
-                    .Select(sku => new SkuConsultaResultadoViewModel
-                    {
-                        Id = sku.Id,
-                        Numeracao = sku.Numeracao,
-                        SaldoAtual = sku.SaldoAtual,
-                        UltimaAtualizacaoSaldoEm = sku.UltimaAtualizacaoSaldoEm
-                    })
-                    .ToList()
-            };
+            var produto = atendimento.Produto;
             viewModel.AtendimentoId = atendimento.Id;
             viewModel.ProdutoSelecionadoId = produto.Id;
             viewModel.SkuSelecionadoId = atendimento.SkuId;
@@ -135,8 +140,10 @@ public sealed class EstoqueController : Controller
             })
             .ToListAsync();
 
+        var palavras = termoNormalizado.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
         viewModel.Resultados = produtos
-            .Where(produto => CorrespondeAoTermo(produto, viewModel.Termo))
+            .Where(produto => CorrespondeAoTermo(produto, palavras))
             .OrderBy(produto => produto.Nome)
             .ThenBy(produto => produto.Marca)
             .ThenBy(produto => produto.Cor)
@@ -445,14 +452,13 @@ public sealed class EstoqueController : Controller
         return atendimento;
     }
 
-    private static bool CorrespondeAoTermo(ProdutoConsultaResultadoViewModel produto, string termo)
+    private static bool CorrespondeAoTermo(ProdutoConsultaResultadoViewModel produto, string[] palavras)
     {
-        var palavras = Normalizar(termo)
-            .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         var campos = Normalizar(string.Join(' ', produto.Nome, produto.Marca, produto.Categoria, produto.Cor));
 
+        string[]? palavrasDosCampos = null;
         return palavras.All(palavra => campos.Contains(palavra, StringComparison.Ordinal) ||
-            campos.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            (palavrasDosCampos ??= campos.Split(' ', StringSplitOptions.RemoveEmptyEntries))
                 .Any(campo => palavra.Length >= 4 && DistanciaDeLevenshtein(palavra, campo) <= 1));
     }
 
