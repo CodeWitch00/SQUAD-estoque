@@ -11,7 +11,7 @@ SQLite, Bootstrap, autenticação por cookies, xUnit e GitHub Actions.
 
 A versão integrada está disponível no ambiente acadêmico de homologação:
 
-> [Abrir o SQUAD Estoque no Azure](https://asp-squad-estoque-free-hgabd8asd5f4a9g9.northcentralus-01.azurewebsites.net)
+> [Abrir o SQUAD Estoque ](https://asp-squad-estoque-free-hgabd8asd5f4a9g9.northcentralus-01.azurewebsites.net)
 
 O ambiente é destinado aos desenvolvedores e utiliza somente dados fictícios.
 O estado validado, as limitações e o procedimento de publicação estão no
@@ -53,11 +53,11 @@ demonstrativas nunca devem ser usadas no Azure.
 
 ## Ambientes
 
-| Ambiente | Uso | Banco |
-| --- | --- | --- |
-| Computador do integrante | Implementação e validação manual | SQLite local e individual |
-| Testes locais e GitHub Actions | Testes automatizados | SQLite isolado e recriado por execução |
-| Azure compartilhado | Homologação da versão integrada e demonstração | SQLite persistente do Azure |
+| Ambiente                       | Uso                                                 | Banco                                    |
+| ------------------------------ | --------------------------------------------------- | ---------------------------------------- |
+| Computador do integrante       | Implementação e validação manual                | SQLite local e individual                |
+| Testes locais e GitHub Actions | Testes automatizados                                | SQLite isolado e recriado por execução |
+| Azure compartilhado            | Homologação da versão integrada e demonstração | SQLite persistente do Azure              |
 
 Os desenvolvedores compartilham os registros de homologação acessando a mesma
 aplicação no Azure pelo navegador. Nenhum computador deve abrir diretamente o
@@ -100,19 +100,19 @@ As regras centrais são:
 
 ## Onde consultar
 
-| Necessidade | Fonte |
-| --- | --- |
-| Preparar ambiente e contribuir | [CONTRIBUTING.md](CONTRIBUTING.md) |
-| Domínio e regras de negócio | [docs/01-negocio/dominio.md](docs/01-negocio/dominio.md) |
-| Requisitos e casos de uso | [docs/02-requisitos](docs/02-requisitos/) |
-| Dados e relacionamentos | [docs/03-modelagem](docs/03-modelagem/) |
-| Arquitetura | [docs/04-arquitetura/arquitetura.md](docs/04-arquitetura/arquitetura.md) |
-| Telas e experiência | [docs/05-ux](docs/05-ux/) |
-| Diagramas | [docs/06-uml](docs/06-uml/) |
-| Docker, baseline e operação | [docs/07-operacional/README.md](docs/07-operacional/README.md) |
+| Necessidade                        | Fonte                                                                   |
+| ---------------------------------- | ----------------------------------------------------------------------- |
+| Preparar ambiente e contribuir     | [CONTRIBUTING.md](CONTRIBUTING.md)                                       |
+| Domínio e regras de negócio      | [docs/01-negocio/dominio.md](docs/01-negocio/dominio.md)                 |
+| Requisitos e casos de uso          | [docs/02-requisitos](docs/02-requisitos/)                                |
+| Dados e relacionamentos            | [docs/03-modelagem](docs/03-modelagem/)                                  |
+| Arquitetura                        | [docs/04-arquitetura/arquitetura.md](docs/04-arquitetura/arquitetura.md) |
+| Telas e experiência               | [docs/05-ux](docs/05-ux/)                                                |
+| Diagramas                          | [docs/06-uml](docs/06-uml/)                                              |
+| Docker, baseline e operação      | [docs/07-operacional/README.md](docs/07-operacional/README.md)           |
 | Estratégia e execução de testes | [docs/09-testing/plano-de-testes.md](docs/09-testing/plano-de-testes.md) |
-| Planejamento público | [docs/10-planejamento](docs/10-planejamento/) |
-| Pipeline de CI | [.github/workflows/dotnet.yml](.github/workflows/dotnet.yml) |
+| Planejamento público              | [docs/10-planejamento](docs/10-planejamento/)                            |
+| Pipeline de CI                     | [.github/workflows/dotnet.yml](.github/workflows/dotnet.yml)             |
 
 Código e testes representam o comportamento real da implementação. A
 documentação define domínio, requisitos e decisões; o planejamento define o
