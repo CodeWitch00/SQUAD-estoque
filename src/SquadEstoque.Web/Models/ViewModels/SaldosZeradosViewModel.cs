@@ -31,9 +31,14 @@ public class SaldosZeradosViewModel
                         NumeracoesZeradas = grupo
                             .SelectMany(item => item.Skus)
                             .Where(sku => sku.SaldoAtual == 0)
-                            .Select(sku => sku.Numeracao)
-                            .Distinct(StringComparer.Ordinal)
-                            .OrderBy(numeracao => numeracao, StringComparer.Ordinal)
+                            .GroupBy(sku => sku.Numeracao, StringComparer.Ordinal)
+                            .Select(sku => sku.First())
+                            .OrderBy(sku => sku.Numeracao, StringComparer.Ordinal)
+                            .Select(sku => new SkuSaldoZeradoViewModel
+                            {
+                                Numeracao = sku.Numeracao,
+                                UltimaAtualizacaoSaldoEm = sku.UltimaAtualizacaoSaldoEm
+                            })
                             .ToList()
                     };
                 })
@@ -53,5 +58,11 @@ public class ProdutoSaldoZeradoViewModel
     public string Nome { get; set; } = string.Empty;
     public string Marca { get; set; } = string.Empty;
     public string Cor { get; set; } = string.Empty;
-    public List<string> NumeracoesZeradas { get; set; } = new();
+    public List<SkuSaldoZeradoViewModel> NumeracoesZeradas { get; set; } = new();
+}
+
+public class SkuSaldoZeradoViewModel
+{
+    public string Numeracao { get; set; } = string.Empty;
+    public DateTime? UltimaAtualizacaoSaldoEm { get; set; }
 }

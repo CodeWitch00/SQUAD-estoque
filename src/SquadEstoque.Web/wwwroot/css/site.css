@@ -1501,6 +1501,24 @@ body {
   white-space: nowrap;
 }
 
+.sku-last-update {
+  color: #475569;
+  font-size: .875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.saldos-zerados-sku {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-bottom: .5rem;
+}
+
+.saldos-zerados-sku:last-child {
+  margin-bottom: 0;
+}
+
 .product-details-status {
   min-height: 28px;
   padding: 4px 10px;
@@ -1600,7 +1618,7 @@ body {
 }
 
 .batch-entry-table {
-  min-width: 640px;
+  min-width: 780px;
   margin-bottom: 0;
 }
 
@@ -1653,7 +1671,7 @@ body {
   }
 
   .batch-entry-table {
-    min-width: 600px;
+    min-width: 740px;
   }
 
   .batch-entry-table th,
@@ -2102,6 +2120,13 @@ body {
   font-size: 1.0625rem;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
+}
+
+.consulta-grade-atualizacao {
+  color: #475569;
+  font-size: .8125rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .consulta-grade-estado {

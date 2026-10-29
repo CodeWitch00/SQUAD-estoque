@@ -18,7 +18,7 @@ public class SaldosZeradosViewModelTests
         Assert.Equal("Tênis", item.Nome);
         Assert.Equal("Marca", item.Marca);
         Assert.Equal("Preto", item.Cor);
-        Assert.Equal(new[] { "38" }, item.NumeracoesZeradas);
+        Assert.Equal(new[] { "38" }, item.NumeracoesZeradas.Select(sku => sku.Numeracao));
     }
 
     [Fact]
@@ -42,8 +42,8 @@ public class SaldosZeradosViewModelTests
         var resultado = SaldosZeradosViewModel.Criar(new[] { primeiro, segundo });
 
         Assert.Equal(2, resultado.Produtos.Count);
-        Assert.Equal(new[] { "38" }, resultado.Produtos.Single(p => p.Id == primeiro.Id).NumeracoesZeradas);
-        Assert.Equal(new[] { "39" }, resultado.Produtos.Single(p => p.Id == segundo.Id).NumeracoesZeradas);
+        Assert.Equal(new[] { "38" }, resultado.Produtos.Single(p => p.Id == primeiro.Id).NumeracoesZeradas.Select(sku => sku.Numeracao));
+        Assert.Equal(new[] { "39" }, resultado.Produtos.Single(p => p.Id == segundo.Id).NumeracoesZeradas.Select(sku => sku.Numeracao));
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public class SaldosZeradosViewModelTests
 
         var resultado = SaldosZeradosViewModel.Criar(new[] { primeiro, repetido });
 
-        Assert.Equal(new[] { "38", "39", "40" }, Assert.Single(resultado.Produtos).NumeracoesZeradas);
+        Assert.Equal(new[] { "38", "39", "40" }, Assert.Single(resultado.Produtos).NumeracoesZeradas.Select(sku => sku.Numeracao));
     }
 
     [Fact]
@@ -97,7 +97,7 @@ public class SaldosZeradosViewModelTests
             });
 
             Assert.Equal(new[] { "Zebra", "Ágata" }, resultado.Produtos.Select(p => p.Nome));
-            Assert.Equal(new[] { "10", "35/36", "40", "9" }, resultado.Produtos[0].NumeracoesZeradas);
+            Assert.Equal(new[] { "10", "35/36", "40", "9" }, resultado.Produtos[0].NumeracoesZeradas.Select(sku => sku.Numeracao));
         }
         finally
         {
@@ -118,7 +118,20 @@ public class SaldosZeradosViewModelTests
         produto.Skus.Clear();
 
         Assert.Equal("Tênis", resultado.Produtos[0].Nome);
-        Assert.Equal(new[] { "38", "40" }, resultado.Produtos[0].NumeracoesZeradas);
+        Assert.Equal(new[] { "38", "40" }, resultado.Produtos[0].NumeracoesZeradas.Select(sku => sku.Numeracao));
+    }
+
+    [Fact]
+    public void Criar_preserva_data_da_ultima_atualizacao_e_aceita_data_ausente()
+    {
+        var data = new DateTime(2026, 10, 29, 14, 30, 0, DateTimeKind.Utc);
+        var produto = Produto("Tênis", ("38", 0), ("39", 0));
+        produto.Skus[0].UltimaAtualizacaoSaldoEm = data;
+
+        var resultado = SaldosZeradosViewModel.Criar(new[] { produto });
+
+        Assert.Equal(data, resultado.Produtos[0].NumeracoesZeradas[0].UltimaAtualizacaoSaldoEm);
+        Assert.Null(resultado.Produtos[0].NumeracoesZeradas[1].UltimaAtualizacaoSaldoEm);
     }
 
     [Fact]

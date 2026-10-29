@@ -481,6 +481,7 @@ public class MovimentacoesController : Controller
                     SkuId = sku.Id,
                     Numeracao = sku.Numeracao,
                     SaldoAtual = sku.SaldoAtual,
+                    UltimaAtualizacaoSaldoEm = sku.UltimaAtualizacaoSaldoEm,
                     QuantidadeRecebida = submittedQuantities.GetValueOrDefault(sku.Id)
                 })
                 .ToList()

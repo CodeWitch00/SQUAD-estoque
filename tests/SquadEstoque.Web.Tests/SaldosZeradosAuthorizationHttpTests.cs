@@ -27,6 +27,10 @@ public sealed class SaldosZeradosAuthorizationHttpTests
         Assert.Contains(nome, html);
         Assert.Contains("Numerações sem saldo", html);
         Assert.Contains(">47</span>", html);
+        Assert.Contains("Atualizado em", html);
+        Assert.Contains(new DateTime(2026, 10, 29, 14, 30, 0, DateTimeKind.Utc)
+            .ToLocalTime().ToString("dd/MM/yyyy HH:mm"), html);
+        Assert.Contains("Atualização não registrada", html);
         Assert.DoesNotContain(">48</span>", html);
         Assert.Contains("href=\"/SaldosZerados\"", html);
     }
@@ -124,7 +128,8 @@ public sealed class SaldosZeradosAuthorizationHttpTests
             Ativo = true,
             Skus = new List<Sku>
             {
-                new() { Id = Guid.NewGuid(), Numeracao = "47", SaldoAtual = 0, Ativo = true },
+                new() { Id = Guid.NewGuid(), Numeracao = "47", SaldoAtual = 0, Ativo = true, UltimaAtualizacaoSaldoEm = new DateTime(2026, 10, 29, 14, 30, 0, DateTimeKind.Utc) },
+                new() { Id = Guid.NewGuid(), Numeracao = "46", SaldoAtual = 0, Ativo = true },
                 new() { Id = Guid.NewGuid(), Numeracao = "48", SaldoAtual = 2, Ativo = true }
             }
         });

@@ -165,6 +165,17 @@
                                                     ? "Último par"
                                                     : $"{sku.SaldoAtual} pares")
                                         </span>
+                                    <span class="consulta-grade-atualizacao">
+                                        @if (sku.UltimaAtualizacaoSaldoEm.HasValue)
+                                        {
+                                            var atualizacaoLocal = sku.UltimaAtualizacaoSaldoEm.Value.ToLocalTime();
+                                            <span>Atualizado em <time datetime="@atualizacaoLocal.ToString("O")">@atualizacaoLocal.ToString("dd/MM/yyyy HH:mm")</time></span>
+                                        }
+                                        else
+                                        {
+                                            <span>Atualização não registrada</span>
+                                        }
+                                    </span>
                                         <span class="visually-hidden consulta-grade-estado">Status: @sku.EstadoDisponibilidade</span>
                                     </span>
                                 </label>

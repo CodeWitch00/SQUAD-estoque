@@ -26,6 +26,7 @@ function markup() {
                 <span class="consulta-grade-card-conteudo">
                     <span class="consulta-grade-numero"><span class="consulta-grade-prefixo">Nº</span>${numero}</span>
                     <span class="consulta-grade-saldo">3 pares</span>
+                    <span class="consulta-grade-atualizacao">Atualizado em 29/10/2026 14:30</span>
                     <strong class="consulta-grade-estado"><span class="consulta-grade-marcador"></span>Disponível</strong>
                 </span>
             </label>
