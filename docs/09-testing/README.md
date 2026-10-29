@@ -13,6 +13,7 @@ Esta pasta contém apenas documentação estável que não é substituída pelo 
 | Estratégia, níveis e critérios gerais | [plano-de-testes.md](plano-de-testes.md) |
 | Validação manual, dispositivo e homologação | [registro consolidado](homologacoes/registro-validacoes-manuais.md) |
 | Resumo por sprint | [`docs/10-planejamento/`](../10-planejamento/) |
+| Validações e evidências históricas recuperadas | [índice do arquivo histórico](arquivo-historico/README.md) |
 
 ## Política de manutenção
 
@@ -22,4 +23,4 @@ Esta pasta contém apenas documentação estável que não é substituída pelo 
 - Registrar aqui somente validações manuais, testes em dispositivo, homologação publicada, limitações e decisões de aceite que não possam ser demonstradas pela CI.
 - Capturas destinadas apenas ao acompanhamento do cartão devem permanecer no Trello. Uma captura só deve ser versionada quando for necessária como evidência acadêmica ou de homologação e não contiver dados sensíveis.
 
-Os relatórios removidos durante a simplificação continuam recuperáveis pelo histórico do Git.
+Relatórios, capturas e evidências removidos durante simplificações anteriores foram reorganizados em `evidencias/`, `execucoes/` e `especificacoes/arquivo-historico/`. O [índice do arquivo histórico](arquivo-historico/README.md) registra o caminho original e o commit de origem. Consulte-o antes de reutilizar material antigo; alguns arquivos refletem versões ou critérios anteriores.
