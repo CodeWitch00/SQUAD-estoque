@@ -90,7 +90,7 @@ A `main` avançou de `8c94b36` para `95199c4` (`feat: exibir ultima atualizacao 
 - rotas MVC, `LoginPath`, `AccessDeniedPath` ou destinos pós-login;
 - views de login, logout e acesso negado.
 
-Por isso, os resultados de autorização e navegação registrados nas seções 6 a 9 continuam válidos para `95199c4`. A conferência é **estática**: não houve nova execução HTTP contra esse commit, pois o ambiente desta revisão não dispõe do SDK .NET para subir a aplicação. A nova coluna de última atualização de saldo não foi capturada nas evidências de VNP-08 e VNP-12, que permanecem as da execução em `8c94b36`.
+Por isso, os resultados de autorização e navegação registrados nas seções 6 a 9 continuam válidos para `95199c4`. A comparação do código foi estática; adicionalmente, o teste HTTP `Historico_http_exibe_contagem_igual_aos_registros_persistidos` foi executado nesta revisão e comprovou `GET /Rupturas` com `200 OK` e as contagens esperadas no conjunto controlado. A nova coluna de última atualização de saldo não foi capturada nas evidências de VNP-08 e VNP-12, que permanecem as da execução em `8c94b36`.
 
 ## 6. Rotas verificadas
 
@@ -147,11 +147,11 @@ A matriz abaixo consolida os acessos diretos por URL documentados neste relatór
 | Anônimo | Desktop | `/Movimentacoes` | Redirecionar para `/Account/Login?ReturnUrl=…`; sem conteúdo protegido | **Confirmado na execução complementar:** `302` → `200 /Account/Login` | [Anônimo — Desktop](../../evidencias/s2-qa-035/complemento-anonimo-bloqueado-destino-desktop-590411b5.png) |
 | Anônimo | Mobile | `/Movimentacoes` | Redirecionar para `/Account/Login?ReturnUrl=…`; sem conteúdo protegido | Captura documenta a tela de login; status HTTP **não registrado** no Mobile | [Anônimo — Mobile](../../evidencias/s2-qa-035/anonimo-movimentacoes-mobile-7f204a5f.png) |
 
-**Cobertura de status HTTP na execução complementar:** o log `http-log-complementar-s2-qa-035.json` (seção 5.1) registra status do destino pós-login (VNP-01 e VNP-02), dos bloqueios de VNP-04 e VNP-13, do salvamento da grade (VNP-08) e do ajuste (VNP-12) **somente no Desktop**, do acesso negado ao Lojista (VNP-14) e do logout (VNP-15); em VNP-04 e VNP-13, a cobertura Mobile é parcial e está detalhada em cada caso. **Os casos VNP-03 e VNP-05 a VNP-11 não tiveram status HTTP coletado**; nesses casos a evidência é exclusivamente a captura de tela, e nenhum código de resposta é afirmado.
+**Cobertura de status HTTP na execução complementar:** o log `http-log-complementar-s2-qa-035.json` (seção 5.1) registra status do destino pós-login (VNP-01 e VNP-02), dos bloqueios de VNP-04 e VNP-13, do salvamento da grade (VNP-08) e do ajuste (VNP-12) **somente no Desktop**, do acesso negado ao Lojista (VNP-14) e do logout (VNP-15); em VNP-04 e VNP-13, a cobertura Mobile é parcial e está detalhada em cada caso. **VNP-03 e VNP-06 a VNP-11 não tiveram status HTTP coletado na execução complementar**. VNP-05 foi posteriormente validado por teste HTTP automatizado, conforme o próprio caso; para os demais cenários, a evidência permanece exclusivamente visual.
 
 ## 7. Estados de execução
 
-Este relatório segue a seção 8.3 do plano. Somente **Aprovado** ou **Reprovado** representa resultado e exige evidência da execução real. Quando não há captura ou registro de resposta HTTP anexado, o caso permanece **Não executado**, mesmo que o executor tenha relatado o comportamento, e o campo "Resultado obtido" informa isso. O estado **Em execução** é usado quando parte dos critérios foi evidenciada, mas algum item da saída esperada permanece sem verificação — é o caso do VNP-05, cuja contagem de ocorrências não foi conferida contra os registros.
+Este relatório segue a seção 8.3 do plano. Somente **Aprovado** ou **Reprovado** representa resultado e exige evidência da execução real. Quando não há captura ou registro de resposta HTTP anexado, o caso permanece **Não executado**, mesmo que o executor tenha relatado o comportamento, e o campo "Resultado obtido" informa isso. O estado **Em execução** é usado quando parte dos critérios foi evidenciada, mas algum item da saída esperada permanece sem verificação.
 
 ## 8. Casos de teste
 
@@ -320,8 +320,8 @@ Este relatório segue a seção 8.3 do plano. Somente **Aprovado** ou **Reprovad
 
 ### VNP-05 — Lojista acessa o Histórico de Rupturas
 
-- **Requisito:** RF-02, RF-22; UC-12 _[confirmar no SRS]_
-- **Forma de execução:** Manual
+- **Requisito:** RF-02, RF-22; UC-12 (Visualizar histórico de rupturas)
+- **Forma de execução:** Manual, com conferência complementar por teste HTTP automatizado
 - **Nível:** Aceite
 - **Pré-condição:** USR-LOJ-01 autenticado; registros de ruptura existentes.
 - **Passos:**
@@ -330,9 +330,9 @@ Este relatório segue a seção 8.3 do plano. Somente **Aprovado** ou **Reprovad
   3. Conferir a tela exibida e o status HTTP.
 - **Entrada:** navegação pelo menu.
 - **Saída esperada:** acesso permitido ao Lojista (`RupturasController` exige `LOJISTA`); histórico simples com modelo, numeração e quantidade de ocorrências; interface sem quebra de layout no Mobile.
-- **Resultado obtido:** tela de Histórico de Rupturas acessada pelo Lojista em Desktop e Mobile, conforme capturas. A tela exibe modelo, numeração e quantidade de ocorrências, mas **a contagem não foi conferida contra os registros de ruptura** e o status HTTP de `/Rupturas` não foi registrado no log da execução complementar. Como a saída esperada inclui a quantidade de ocorrências, o caso não é considerado concluído.
-- **Status de execução:** Em execução — acesso e interface evidenciados por captura; pendentes a conferência da contagem de ocorrências contra os registros e o registro do status HTTP.
-- **Pendência:** confrontar as ocorrências exibidas na captura com os registros persistidos e registrar o status HTTP de `/Rupturas`.
+- **Resultado obtido:** capturas Desktop e Mobile mostram o histórico com contagens 5, 3 e 1 para as numerações 38, 39 e 37. A conferência complementar usa dados controlados com 9 rupturas persistidas: 5 para 38, 3 para 39 e 1 para 37. O teste [`Historico_http_exibe_contagem_igual_aos_registros_persistidos`](../../../../tests/SquadEstoque.Web.Tests/RupturasHistoricoHttpTests.cs) autentica como Lojista, consulta `/Rupturas` e confirma `200 OK`, as três contagens renderizadas e os mesmos totais persistidos. As capturas originais comprovam a interface e os valores visíveis; o teste registra a conferência reproduzível entre contagem e persistência.
+- **Status de execução:** Aprovado — acesso e responsividade evidenciados em Desktop e Mobile; contagens conferidas contra 9 registros persistidos e resposta HTTP `200 OK` comprovada pelo teste.
+- **Conferência de contagem:** 38 → 5 registros; 39 → 3 registros; 37 → 1 registro; total → 9 registros.
 - **Evidência:**
 
   **Desktop — Histórico de Rupturas:**
@@ -667,7 +667,7 @@ Este relatório segue a seção 8.3 do plano. Somente **Aprovado** ou **Reprovad
 | VNP-02 | Login e direcionamento | Lojista | RF-01, RF-02 | Aprovado |
 | VNP-03 | Consulta, status e desfechos | Vendedor | RF-13, RF-15, RF-16 | Aprovado |
 | VNP-04 | Bloqueio das rotas administrativas | Vendedor | RF-02, RN-04 | Aprovado |
-| VNP-05 | Histórico de Rupturas | Lojista | RF-02, RF-22 | Em execução |
+| VNP-05 | Histórico de Rupturas | Lojista | RF-02, RF-22 | Aprovado |
 | VNP-06 | Menu por perfil | Vendedor e Lojista | RF-02, RF-03 | Aprovado |
 | VNP-07 | Catálogo e filtros | Lojista | RF-02, RF-05 a RF-07 | Aprovado |
 | VNP-08 | Cadastro e grade de SKUs | Lojista | RF-05 a RF-07 | Aprovado |
@@ -679,7 +679,7 @@ Este relatório segue a seção 8.3 do plano. Somente **Aprovado** ou **Reprovad
 | VNP-14 | Consulta pelo Lojista | Lojista | RF-02 | Aprovado |
 | VNP-15 | Logout | Vendedor e Lojista | RF-03 | Aprovado |
 
-**Totais:** 15 casos; 14 Aprovados; 0 Reprovados; 0 Não executados; 1 Em execução (VNP-05). Os casos VNP-12, VNP-14 e VNP-15, antes "Não executado", foram concluídos na execução complementar (seção 5.1) com evidências de captura e de status HTTP. O VNP-05 permanece em execução porque a contagem de ocorrências não foi conferida contra os registros, embora o acesso e a interface estejam evidenciados por captura.
+**Totais:** 15 casos; 15 Aprovados; 0 Reprovados; 0 Não executados; 0 Em execução. Os casos VNP-12, VNP-14 e VNP-15, antes "Não executado", foram concluídos na execução complementar (seção 5.1) com evidências de captura e de status HTTP. O VNP-05 foi concluído com a conferência HTTP automatizada da contagem exibida contra os registros persistidos.
 
 ## 10. Evidências
 
@@ -797,7 +797,7 @@ Este relatório segue a seção 8.3 do plano. Somente **Aprovado** ou **Reprovad
 
 ### 10.3 Rastreabilidade das evidências de acesso e sessão
 
-Capturas indexadas por caso. A coluna "Status HTTP" traz os códigos registrados na execução complementar (seção 5.1), extraídos de `http-log-complementar-s2-qa-035.json`; "n/r" significa que a rota não foi reexecutada na complementar e o status permanece não registrado. As linhas de VNP-04 e VNP-13 referem-se ao **Desktop**; no Mobile, o log cobre apenas as rotas indicadas nas tabelas dos respectivos casos. **VNP-03 e VNP-05 a VNP-11 não têm status HTTP registrado** — a evidência desses casos é exclusivamente visual.
+Capturas indexadas por caso. A coluna "Status HTTP" traz os códigos registrados na execução complementar (seção 5.1), extraídos de `http-log-complementar-s2-qa-035.json`; "n/r" significa que a rota não foi reexecutada na complementar e o status permanece não registrado. As linhas de VNP-04 e VNP-13 referem-se ao **Desktop**; no Mobile, o log cobre apenas as rotas indicadas nas tabelas dos respectivos casos. **VNP-03 e VNP-06 a VNP-11 não têm status HTTP registrado** nesse log. O teste HTTP automatizado do VNP-05 está descrito no caso e comprova `200 OK`.
 
 | Caso | Perfil | Rota ou ação | Captura | Status HTTP |
 |---|---|---|---|---|
@@ -807,6 +807,7 @@ Capturas indexadas por caso. A coluna "Status HTTP" traz os códigos registrados
 | VNP-04 | Vendedor | `/Produtos/Create` | [Captura complementar](../../evidencias/s2-qa-035/complemento-vendedor-bloqueado-produtos-create-desktop-565d30d9.png) | `302` → `200` (`/Account/AccessDenied`) |
 | VNP-04 | Vendedor | `/Movimentacoes` | [Captura complementar](../../evidencias/s2-qa-035/complemento-vendedor-bloqueado-movimentacoes-desktop-04663b28.png) | `302` → `200` (`/Account/AccessDenied`) |
 | VNP-04 | Vendedor | `/Movimentacoes/Ajuste` | [Captura complementar](../../evidencias/s2-qa-035/complemento-vendedor-bloqueado-movimentacoes-ajuste-desktop-a92e66f1.png) | `302` → `200` (`/Account/AccessDenied`) |
+| VNP-05 | Lojista | `GET /Rupturas`; teste com 9 registros persistidos | [Captura Desktop](../../evidencias/s2-qa-035/desktop-historico-29168836.png) · [Teste HTTP](../../../../tests/SquadEstoque.Web.Tests/RupturasHistoricoHttpTests.cs) | `200 OK`; contagens 38 → 5, 39 → 3, 37 → 1 |
 | VNP-08 | Lojista | `POST /Produtos/AdicionarNumeracoes/{id}` → `/Produtos/Details/{id}` | [Captura complementar](../../evidencias/s2-qa-035/complemento-cadastro-produto-grade-pos-salvar-desktop-9f11479c.png) | `302` → `200` |
 | VNP-12 | Lojista | `POST /Movimentacoes/Ajuste` (justificativa válida) | [Captura complementar](../../evidencias/s2-qa-035/complemento-ajuste-justificativa-valida-sucesso-desktop-131d4f0f.png) | `302` → `200` (`/Produtos/Details/{id}`) |
 | VNP-12 | Lojista | Justificativa vazia e curta (validação do formulário) | [Captura vazia](../../evidencias/s2-qa-035/complemento-ajuste-justificativa-vazia-validacao-desktop-8eae5140.png) · [Captura curta](../../evidencias/s2-qa-035/complemento-ajuste-justificativa-curta-validacao-desktop-8878f99a.png) | n/r (bloqueio no cliente, sem requisição) |
@@ -822,7 +823,7 @@ Capturas indexadas por caso. A coluna "Status HTTP" traz os códigos registrados
 
 | Categoria (plano, seção 8.4) | Cobertura neste relatório |
 |---|---|
-| Positivos | VNP-01 a VNP-03 e VNP-06 a VNP-11 aprovados; VNP-05 em execução (acesso e interface evidenciados, contagem de ocorrências pendente); VNP-12 aprovado no Desktop, com mensagens de validação e sucesso do ajuste, e com validação curta no Mobile |
+| Positivos | VNP-01 a VNP-11 aprovados, incluindo VNP-05 com contagens confrontadas com os registros; VNP-12 aprovado no Desktop, com mensagens de validação e sucesso do ajuste, e com validação curta no Mobile |
 | Permissão e segurança | VNP-04, VNP-06 e VNP-13 aprovados com capturas; em VNP-04 e VNP-13, os status HTTP foram registrados para as quatro rotas no Desktop e de forma parcial no Mobile. VNP-14 aprovado com sessão `LOJISTA` genuína e status HTTP; VNP-15 aprovado com logout e nova tentativa de acesso em Desktop e Mobile |
 | Responsividade e compatibilidade | Todos os casos têm captura em D e M; compatibilidade do navegador coberta por Chrome e Edge; a execução complementar usou exclusivamente Chromium (Playwright) |
 | Negativos e limites | Cobertos por CT-AUT-04 a CT-AUT-06, UT-05 e UT-11. A justificativa inválida do ajuste (VNP-12) foi exercitada e evidenciada na execução complementar; os demais casos negativos não foram exercitados neste relatório |
@@ -833,10 +834,10 @@ Capturas indexadas por caso. A coluna "Status HTTP" traz os códigos registrados
 - O Mobile foi validado em viewport emulado, não em dispositivo físico. Toque, teclado virtual e renderização nativa não foram cobertos. A execução inicial usou o emulador do Chrome DevTools (390 × 844 px); a complementar usou emulação real do Playwright (375 × 812 px, `deviceScaleFactor` 2).
 - A execução inicial cobriu Chrome e Edge (v118.0), em Windows 11 Pro e macOS Ventura; a execução complementar (seção 5.1) usou exclusivamente Chromium via Playwright em Windows, sobre aplicação local.
 - Apenas duas resoluções foram testadas. As dimensões das capturas iniciais (Mobile entre 390 e 435 px de largura; Desktop do Histórico de Rupturas e do acesso anônimo abaixo de 1920 px) não coincidem exatamente com as resoluções declaradas na seção 5; as capturas complementares (`complemento-*`) têm viewport exata.
-- O status HTTP dos casos VNP-03, VNP-05 a VNP-11 (rotas de consulta e formulários permitidos) não foi registrado; a execução complementar concentrou-se nos itens solicitados na revisão (VNP-01, VNP-02, VNP-04, VNP-08, VNP-12, VNP-13, VNP-14 e VNP-15). Nesses casos, a aprovação (exceto VNP-05) apoia-se exclusivamente nas capturas de tela, conforme a seção 7.
+- O status HTTP dos casos VNP-03 e VNP-06 a VNP-11 (rotas de consulta e formulários permitidos) não foi registrado; a execução complementar concentrou-se nos itens solicitados na revisão (VNP-01, VNP-02, VNP-04, VNP-08, VNP-12, VNP-13, VNP-14 e VNP-15). VNP-05 tem verificação HTTP automatizada descrita no caso; para os demais cenários citados, a evidência apoia-se nas capturas de tela.
 - A execução complementar foi feita contra a aplicação em ambiente local (seção 5.1), com massa de dados de demonstração, e não contra o App Service em produção usado na execução inicial; os comportamentos validados (autorização, redirecionamentos e validações) são os mesmos conferidos no código.
 - Os fluxos de entrada e saída (VNP-10 e VNP-11) não tiveram o saldo final conferido neste relatório; o ajuste (VNP-12) teve o redirecionamento de sucesso confirmado, sem conferência de saldo.
-- O Histórico de Rupturas (VNP-05) não teve a contagem de ocorrências conferida contra os registros; por isso o caso permanece **Em execução**, embora o acesso e a interface estejam evidenciados por captura.
+- As capturas originais de VNP-05 foram feitas antes da conferência reproduzível da contagem. O teste HTTP complementar valida os valores 5, 3 e 1 com 9 registros persistidos e confirma `200 OK`.
 - A validação é manual (execução inicial), complementada por script Playwright reproduzindo os mesmos passos; não há suíte de automação versionada para este cartão.
 
 ## 13. Divergências e itens a confirmar
@@ -855,6 +856,6 @@ Capturas indexadas por caso. A coluna "Status HTTP" traz os códigos registrados
 12. **Status alterados:** VNP-12, VNP-14 e VNP-15 estavam como **Não executado** e voltaram a **Aprovado** após a execução complementar (seção 5.1), com evidências de captura e de status HTTP anexadas, conforme a regra da seção 7.
 13. **Campo "Outras numerações" (observação da execução complementar):** em `AdicionarNumeracoesViewModel`, a propriedade `NumeracoesExtras` é `string` não-anulável em projeto com `<Nullable>enable</Nullable>`, o que gera `[Required]` implícito no servidor. Um envio apenas com as caixas de numeração marcadas (sem preencher "Outras numerações") é rejeitado silenciosamente: o servidor responde `200` com o formulário novamente, sem mensagem no resumo de validação `ModelOnly` da view. Pelo fluxo normal (botão "Salvar grade"), a validação client-side bloqueia o envio e exibe o aviso de campo obrigatório. No caso VNP-08, a execução preencheu o campo "Outras numerações" com `37, 38, 39, 40, 41` e o salvamento foi concluído com sucesso. Registrar card separado para avaliar a remoção do `[Required]` implícito, já que a regra de negócio aceita cadastrar a grade apenas pelas caixas de seleção.
 14. **Cobertura desigual entre Desktop e Mobile (correção de superdeclaração):** a execução complementar não repetiu todas as rotas em ambos os viewports. VNP-04 e VNP-13 têm status HTTP das quatro rotas no Desktop, mas no Mobile o log cobre duas rotas em cada caso; VNP-08 e VNP-12 têm status HTTP apenas no Desktop (no Mobile, VNP-08 tem captura da grade e VNP-12 tem apenas a validação curta). O relatório agora declara essa diferença em cada caso e na seção 12, em vez de afirmar cobertura uniforme.
-15. **VNP-05:** o status passou de **Aprovado** para **Em execução**. O acesso e a interface foram evidenciados por captura em Desktop e Mobile, mas a saída esperada inclui a quantidade de ocorrências, que não foi conferida contra os registros; o status HTTP de `/Rupturas` também não foi coletado. A conclusão exige confrontar a contagem exibida com os registros persistidos.
+15. **VNP-05:** a execução inicial não conferiu a contagem nem registrou o status HTTP. A complementação reproduzível foi adicionada em `RupturasHistoricoHttpTests`: 9 rupturas persistidas são agrupadas em contagens 5, 3 e 1, e `GET /Rupturas` retorna `200 OK`; com isso, o caso passa a **Aprovado**.
 16. **Critério de VNP-14 (correção explícita):** o título do cenário diz "Lojista acessa a consulta de estoque", mas o [inventário de telas](../../../05-ux/inventario-telas-e-mapa-navegacao.md) atribui a consulta de produtos ao **VENDEDOR** (VEN-02) e o `EstoqueController` exige `[Authorize(Roles = "VENDEDOR")]`. O critério correto não é o acesso permitido, e sim a **negativa ao LOJISTA**, com destino a `/Account/AccessDenied`. O caso foi executado e aprovado com esse critério, comprovado por status HTTP (`302` → `200`) e captura com sessão `LOJISTA` genuína (seções 6.1 e 8). A versão anterior do relatório usava capturas rotuladas "Lojista" que na verdade mostravam sessão `VENDEDOR`; essas imagens foram mantidas apenas como registro histórico e estão identificadas como não comprobatórias.
 17. **Conferência contra a `main` atual (`95199c4`):** conforme a seção 5.2, o diff em relação a `8c94b36` não altera autorização, rotas ou destinos de login. A conferência foi estática, sem nova execução HTTP, e está declarada como tal.

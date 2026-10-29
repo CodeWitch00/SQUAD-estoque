@@ -12,6 +12,63 @@ namespace SquadEstoque.Web.Tests;
 public sealed class RupturasHistoricoHttpTests
 {
     [Fact]
+    public async Task Historico_http_exibe_contagem_igual_aos_registros_persistidos()
+    {
+        using var factory = new SquadEstoqueWebApplicationFactory();
+        using var client = CreateClient(factory);
+        using (var scope = factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
+            var produto = await db.Produto.Include(item => item.Skus)
+                .SingleAsync(item => item.Nome == "Tênis Runner");
+            var usuario = await db.Usuario.SingleAsync(item => item.Email == "vendedor@squad.com");
+            var skus = produto.Skus.ToDictionary(item => item.Numeracao);
+            var data = new DateTime(2026, 10, 29, 12, 0, 0, DateTimeKind.Utc);
+
+            db.Ruptura.AddRange(
+                Enumerable.Range(0, 5).Select(i => new Ruptura
+                {
+                    Id = Guid.NewGuid(), SkuId = skus["38"].Id, UsuarioId = usuario.Id, CriadoEm = data.AddMinutes(i)
+                })
+                .Concat(Enumerable.Range(0, 3).Select(i => new Ruptura
+                {
+                    Id = Guid.NewGuid(), SkuId = skus["39"].Id, UsuarioId = usuario.Id, CriadoEm = data.AddMinutes(i)
+                }))
+                .Append(new Ruptura
+                {
+                    Id = Guid.NewGuid(), SkuId = skus["37"].Id, UsuarioId = usuario.Id, CriadoEm = data
+                }));
+            await db.SaveChangesAsync();
+        }
+
+        await LoginAsync(client, "lojista@squad.com");
+        using var response = await client.GetAsync("/Rupturas");
+        var html = WebUtility.HtmlDecode(await response.Content.ReadAsStringAsync());
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var numeracoesExibidas = Regex.Matches(html,
+                "data-label=\"Numeração\"[^>]*>\\s*(\\d+)")
+            .Select(match => match.Groups[1].Value)
+            .ToArray();
+        var contagensExibidas = Regex.Matches(html, "<strong[^>]*>(\\d+)</strong>")
+            .Select(match => int.Parse(match.Groups[1].Value))
+            .ToArray();
+        Assert.Equal(new[] { "38", "39", "37" }, numeracoesExibidas);
+        Assert.Equal(new[] { 5, 3, 1 }, contagensExibidas);
+
+        using var verifyScope = factory.Services.CreateScope();
+        var verify = verifyScope.ServiceProvider.GetRequiredService<EstoqueContext>();
+        var contagensPersistidas = await verify.Ruptura
+            .GroupBy(item => item.Sku!.Numeracao)
+            .Select(grupo => new { Numeracao = grupo.Key, Total = grupo.Count() })
+            .ToDictionaryAsync(item => item.Numeracao, item => item.Total);
+        Assert.Equal(9, await verify.Ruptura.CountAsync());
+        Assert.Equal(5, contagensPersistidas["38"]);
+        Assert.Equal(3, contagensPersistidas["39"]);
+        Assert.Equal(1, contagensPersistidas["37"]);
+    }
+
+    [Fact]
     public async Task Historico_agrega_ordena_e_preserva_registros_apos_reposicao()
     {
         using var factory = new SquadEstoqueWebApplicationFactory();
