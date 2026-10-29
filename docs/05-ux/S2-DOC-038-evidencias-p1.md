@@ -535,8 +535,8 @@ Aprovado! – Com falha: 0, Aprovado: 274, Ignorado: 0, Total: 274, Duração: 1
 | 3ª revisão — correção das anotações do PR #74: Seção 3 reescrita com os códigos oficiais do inventário; `/Rupturas` e `/Atendimentos` como exclusivos do `LOJISTA`; `/Rupturas` como 🕐 (20/10); Seção 4 reescrita com IDs oficiais + tabela de correspondência CT-001..CT-015; usuário corrigido para `vendedor@squad.com` | Integrante de documentação | 27/10/2026 | ✅ Concluída |
 | Re-sincronização com a `main` (`8c94b36`, merges de #71/#75/#77) e atualização das Seções 7.2, 7.4, 8, 9 e 10 | Integrante de documentação | 27/10/2026 | ✅ Verificado via `ls-remote`, `fetch` e API |
 | Conferência local da suíte (`274/274 aprovados` em `8c94b36`) | Integrante de documentação | 27/10/2026 | ✅ Seção 7.4 |
-| 4ª revisão — atualização das referências ao S2-QA-035: #73 fechado sem merge, reentrega no #79, estado real de 14 aprovados + 1 em execução (VNP-05) e viewport documentado | Integrante de documentação | 29/10/2026 | ✅ Concluída |
-| Reenvio em nova branch `docs/s2-doc-038-reentrega` (substituindo o PR #74 fechado) | Equipe | 29/10/2026 | ✅ Branch publicada; PR [#80](https://github.com/CodeWitch00/SQUAD-estoque/pull/80) aberto para revisão |
+| 4ª revisão — atualização das referências ao S2-QA-035: #73 fechado sem merge, reentrega no #79, estado real de 14 aprovados + 1 em execução (VNP-05) e viewport documentada | Integrante de documentação | 29/10/2026 | ✅ Concluída |
+| Reenvio em nova branch `docs/s2-doc-038-reentrega` (substituindo o PR #78 fechado, que substituiu o #74) | Equipe | 29/10/2026 | ✅ Branch publicada; PR [#80](https://github.com/CodeWitch00/SQUAD-estoque/pull/80) aberto para revisão |
 | Conferência final e merge | Equipe | — | ⏳ Pendente |
 
 **Conferência final:** o pacote P1 está consolidado neste índice versionado, alinhado às fontes normativas (inventário de telas e plano de testes) e com divergências e pendências declaradas nas Seções 3.6 e 9. Nenhuma funcionalidade planejada foi declarada como implementada; nenhuma monografia foi duplicada neste card. As 4 anotações da revisão do PR #74 foram corrigidas nesta versão.
