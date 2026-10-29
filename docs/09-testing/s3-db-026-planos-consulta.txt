@@ -1,0 +1,38 @@
+ANTES: produtos por marca
+QUERY PLAN
+|--SCAN Produto
+`--USE TEMP B-TREE FOR ORDER BY
+ANTES: marcas distintas
+QUERY PLAN
+|--SCAN Produto
+`--USE TEMP B-TREE FOR DISTINCT
+ANTES: categorias distintas
+QUERY PLAN
+|--SCAN Produto
+`--USE TEMP B-TREE FOR DISTINCT
+ANTES: produtos com saldo zero
+QUERY PLAN
+|--SCAN p
+`--CORRELATED SCALAR SUBQUERY 1
+   `--SEARCH s USING INDEX IX_Sku_ProdutoId_Numeracao (ProdutoId=?)
+ANTES: rupturas agregadas
+QUERY PLAN
+`--SCAN Ruptura USING INDEX IX_Ruptura_SkuId
+DEPOIS: produtos por marca
+QUERY PLAN
+|--SEARCH Produto USING INDEX IX_Produto_Marca (Marca=?)
+`--USE TEMP B-TREE FOR ORDER BY
+DEPOIS: marcas distintas
+QUERY PLAN
+`--SCAN Produto USING COVERING INDEX IX_Produto_Marca
+DEPOIS: categorias distintas
+QUERY PLAN
+`--SCAN Produto USING COVERING INDEX IX_Produto_Categoria
+DEPOIS: produtos com saldo zero
+QUERY PLAN
+|--SCAN p USING COVERING INDEX IX_Produto_Categoria
+`--CORRELATED SCALAR SUBQUERY 1
+   `--SEARCH s USING COVERING INDEX IX_Sku_ProdutoId_SaldoZero (ProdutoId=?)
+DEPOIS: rupturas agregadas
+QUERY PLAN
+`--SCAN Ruptura USING COVERING INDEX IX_Ruptura_SkuId_CriadoEm

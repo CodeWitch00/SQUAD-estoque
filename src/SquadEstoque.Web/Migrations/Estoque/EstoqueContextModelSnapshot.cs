@@ -245,6 +245,10 @@ namespace SquadEstoque.Web.Migrations.Estoque
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Categoria");
+
+                    b.HasIndex("Marca");
+
                     b.ToTable("Produto");
                 });
 
@@ -271,9 +275,9 @@ namespace SquadEstoque.Web.Migrations.Estoque
                     b.HasIndex("AtendimentoId")
                         .IsUnique();
 
-                    b.HasIndex("SkuId");
-
                     b.HasIndex("UsuarioId");
+
+                    b.HasIndex("SkuId", "CriadoEm");
 
                     b.ToTable("Ruptura");
                 });
@@ -305,6 +309,9 @@ namespace SquadEstoque.Web.Migrations.Estoque
 
                     b.HasIndex("ProdutoId", "Numeracao")
                         .IsUnique();
+
+                    b.HasIndex(new[] { "ProdutoId" }, "IX_Sku_ProdutoId_SaldoZero")
+                        .HasFilter("SaldoAtual = 0");
 
                     b.ToTable("Sku", t =>
                         {

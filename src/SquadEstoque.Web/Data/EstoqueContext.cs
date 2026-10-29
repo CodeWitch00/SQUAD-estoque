@@ -30,6 +30,17 @@ public class EstoqueContext : DbContext
             .HasIndex(s => new { s.ProdutoId, s.Numeracao })
             .IsUnique();
 
+        modelBuilder.Entity<Produto>().HasIndex(p => p.Marca);
+        modelBuilder.Entity<Produto>().HasIndex(p => p.Categoria);
+
+        modelBuilder.Entity<Sku>()
+            .HasIndex(s => s.ProdutoId, "IX_Sku_ProdutoId_SaldoZero")
+            .HasFilter("SaldoAtual = 0");
+
+        // Substitui o indice convencional da FK SkuId e cobre COUNT/MAX(CriadoEm).
+        modelBuilder.Entity<Ruptura>()
+            .HasIndex(r => new { r.SkuId, r.CriadoEm });
+
         modelBuilder.Entity<Sku>()
             .Property(s => s.UltimaAtualizacaoSaldoEm)
             .HasConversion(
