@@ -25,6 +25,7 @@ public sealed class SaldosZeradosConsultaTests
     private static readonly Guid AgataId = Guid.Parse("00000000-0000-0000-0000-000000000006");
     private static readonly Guid BotaAlfaBrancaId = Guid.Parse("00000000-0000-0000-0000-000000000007");
     private static readonly Guid BotaBetaId = Guid.Parse("00000000-0000-0000-0000-000000000008");
+    private static readonly Guid ProdutoSoSkuInativoId = Guid.Parse("00000000-0000-0000-0000-000000000009");
 
     [Fact]
     public async Task Index_inclui_somente_skus_ativos_com_saldo_exatamente_zero()
@@ -43,6 +44,8 @@ public sealed class SaldosZeradosConsultaTests
         Assert.Contains(resultado.Produtos, produto => produto.Id == AgataId);
         Assert.DoesNotContain(resultado.Produtos, produto => produto.Id == TenisBetaId);
         Assert.DoesNotContain(resultado.Produtos, produto => produto.Id == ProdutoInativoId);
+        // Produto ativo cujo único SKU zerado está inativo também fica de fora.
+        Assert.DoesNotContain(resultado.Produtos, produto => produto.Id == ProdutoSoSkuInativoId);
     }
 
     [Fact]
@@ -104,8 +107,19 @@ public sealed class SaldosZeradosConsultaTests
         }
 
         var resultado = await ConsultarAsync(factory);
-
         Assert.Empty(resultado.Produtos);
+
+        using var client = factory.CreateClient(new WebApplicationFactoryClientOptions
+        {
+            AllowAutoRedirect = false,
+            HandleCookies = true
+        });
+        await LoginAsync(client, "lojista@squad.com");
+        using var response = await client.GetAsync("/SaldosZerados");
+        var html = WebUtility.HtmlDecode(await response.Content.ReadAsStringAsync());
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("Nenhum produto possui numerações com saldo zerado no momento.", html);
     }
 
     [Fact]
@@ -170,6 +184,8 @@ public sealed class SaldosZeradosConsultaTests
                 ("35", 0, true)),
             Produto(ProdutoInativoId, "Produto inativo", "Beta", "Preto", ativo: false,
                 ("43", 0, true)),
+            Produto(ProdutoSoSkuInativoId, "Produto só com SKU inativo", "Beta", "Preto", ativo: true,
+                ("34", 0, false)),
             Produto(TenisGamaId, "Tênis Gama", "Alfa", "Preto", ativo: true,
                 ("9", 0, true),
                 ("10", 0, true),
