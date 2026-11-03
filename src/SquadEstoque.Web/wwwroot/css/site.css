@@ -2972,3 +2972,12 @@ body {
     font-size: var(--squad-admin-badge);
   }
 }
+
+/* Visões de consulta do lojista: textos completos também em telas estreitas. */
+.report-page { min-width: 0; overflow-wrap: anywhere; }
+.report-page .admin-page-heading > div,
+.report-page .card-body { min-width: 0; }
+.report-page .saldos-zerados-sku { align-items: baseline; gap: .5rem .75rem; }
+.report-page .saldos-zerados-sku .badge { max-width: 100%; font-size: .875rem; }
+.report-page .saldos-zerados-sku .sku-last-update { flex: 1 1 12rem; min-width: 0; }
+.report-page a:focus-visible { outline: 3px solid #172b4d; outline-offset: 4px; }
