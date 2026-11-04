@@ -1,0 +1,320 @@
+{
+  "metadados": {
+    "cartao": "S3-QA-030",
+    "baseline": "main 9111713 (03/11/2026 19:53 -03:00) + correcao DEF-S3QA030-01",
+    "branch_de_execucao": "test/s3-qa-030-e2e",
+    "ambiente": "Windows, .NET SDK 10.0.403, Kestrel local HTTP, SQLite descartavel, Demo__SeedUsers=true",
+    "massa": "Tenis E2E QA V2, grade oficial 37-40, sem numeracao extra",
+    "observacao": "Exportacao sem senhas, hashes ou e-mails de contas."
+  },
+  "resumo": {
+    "produtos": 1,
+    "skus": 4,
+    "movimentacoes": 9,
+    "atendimentos": 6,
+    "atendimentos_concluidos": 6,
+    "rupturas": 3,
+    "usuarios": 2,
+    "saldos": {
+      "37": 1,
+      "38": 1,
+      "39": 3,
+      "40": 0
+    }
+  },
+  "produtos": [
+    {
+      "Id": "63A0854A-5CD0-4FFE-B6D8-CC89031B8608",
+      "Nome": "Tênis E2E QA V2",
+      "Marca": "Marca QA",
+      "Categoria": "Tênis",
+      "Cor": "Azul",
+      "Ativo": 1
+    }
+  ],
+  "skus": [
+    {
+      "Id": "884BEF7B-9701-460C-B366-762B5969CEE2",
+      "ProdutoId": "63A0854A-5CD0-4FFE-B6D8-CC89031B8608",
+      "Produto": "Tênis E2E QA V2",
+      "Numeracao": "37",
+      "SaldoAtual": 1,
+      "Ativo": 1,
+      "UltimaAtualizacaoSaldoEm": "2026-11-04 02:11:45.4511837"
+    },
+    {
+      "Id": "1232624F-3E5C-4EF2-A7AB-6F09C70D08C2",
+      "ProdutoId": "63A0854A-5CD0-4FFE-B6D8-CC89031B8608",
+      "Produto": "Tênis E2E QA V2",
+      "Numeracao": "38",
+      "SaldoAtual": 1,
+      "Ativo": 1,
+      "UltimaAtualizacaoSaldoEm": "2026-11-04 02:14:21.872633"
+    },
+    {
+      "Id": "18B71C60-6F5C-4937-BE4D-7BAF4A3E9CD8",
+      "ProdutoId": "63A0854A-5CD0-4FFE-B6D8-CC89031B8608",
+      "Produto": "Tênis E2E QA V2",
+      "Numeracao": "39",
+      "SaldoAtual": 3,
+      "Ativo": 1,
+      "UltimaAtualizacaoSaldoEm": "2026-11-04 02:12:28.4699616"
+    },
+    {
+      "Id": "CF3C93A8-11D5-4F64-BBCD-1A4998D37EAA",
+      "ProdutoId": "63A0854A-5CD0-4FFE-B6D8-CC89031B8608",
+      "Produto": "Tênis E2E QA V2",
+      "Numeracao": "40",
+      "SaldoAtual": 0,
+      "Ativo": 1,
+      "UltimaAtualizacaoSaldoEm": "2026-11-04 02:12:32.0633061"
+    }
+  ],
+  "movimentacoes": [
+    {
+      "Id": "45BD5DFF-31FA-477C-8095-E97945854717",
+      "CriadoEm": "2026-11-04 02:11:45.5263158",
+      "Tipo": "ENTRADA",
+      "Quantidade": 1,
+      "Motivo": "Saldo inicial no cadastro da grade",
+      "SkuId": "884BEF7B-9701-460C-B366-762B5969CEE2",
+      "Numeracao": "37",
+      "Produto": "Tênis E2E QA V2",
+      "AtendimentoId": null,
+      "UsuarioId": "FC90184B-312E-4748-9682-D75C09A6D763",
+      "UsuarioPerfil": "LOJISTA"
+    },
+    {
+      "Id": "E1E76CFA-7021-40F2-A6BD-5DAA47082CD7",
+      "CriadoEm": "2026-11-04 02:11:45.5729329",
+      "Tipo": "ENTRADA",
+      "Quantidade": 2,
+      "Motivo": "Saldo inicial no cadastro da grade",
+      "SkuId": "1232624F-3E5C-4EF2-A7AB-6F09C70D08C2",
+      "Numeracao": "38",
+      "Produto": "Tênis E2E QA V2",
+      "AtendimentoId": null,
+      "UsuarioId": "FC90184B-312E-4748-9682-D75C09A6D763",
+      "UsuarioPerfil": "LOJISTA"
+    },
+    {
+      "Id": "81C69959-6106-48C6-95E7-41E1D873081A",
+      "CriadoEm": "2026-11-04 02:11:45.5733507",
+      "Tipo": "ENTRADA",
+      "Quantidade": 1,
+      "Motivo": "Saldo inicial no cadastro da grade",
+      "SkuId": "18B71C60-6F5C-4937-BE4D-7BAF4A3E9CD8",
+      "Numeracao": "39",
+      "Produto": "Tênis E2E QA V2",
+      "AtendimentoId": null,
+      "UsuarioId": "FC90184B-312E-4748-9682-D75C09A6D763",
+      "UsuarioPerfil": "LOJISTA"
+    },
+    {
+      "Id": "736267C7-A2A6-4F27-85D3-A6F1B30F4F99",
+      "CriadoEm": "2026-11-04 02:12:06.7136968",
+      "Tipo": "ENTRADA",
+      "Quantidade": 1,
+      "Motivo": "Entrada individual E2E v2",
+      "SkuId": "1232624F-3E5C-4EF2-A7AB-6F09C70D08C2",
+      "Numeracao": "38",
+      "Produto": "Tênis E2E QA V2",
+      "AtendimentoId": null,
+      "UsuarioId": "FC90184B-312E-4748-9682-D75C09A6D763",
+      "UsuarioPerfil": "LOJISTA"
+    },
+    {
+      "Id": "5CF5E448-4727-4D29-8DD2-0E586A8FA54A",
+      "CriadoEm": "2026-11-04 02:12:16.8894258",
+      "Tipo": "ENTRADA",
+      "Quantidade": 2,
+      "Motivo": "Entrada em lote E2E v2",
+      "SkuId": "CF3C93A8-11D5-4F64-BBCD-1A4998D37EAA",
+      "Numeracao": "40",
+      "Produto": "Tênis E2E QA V2",
+      "AtendimentoId": null,
+      "UsuarioId": "FC90184B-312E-4748-9682-D75C09A6D763",
+      "UsuarioPerfil": "LOJISTA"
+    },
+    {
+      "Id": "ACFA0548-1736-4CD2-AE81-56402B3BE44C",
+      "CriadoEm": "2026-11-04 02:12:28.4699667",
+      "Tipo": "AJUSTE",
+      "Quantidade": 2,
+      "Motivo": "Ajuste E2E v2 de inventario",
+      "SkuId": "18B71C60-6F5C-4937-BE4D-7BAF4A3E9CD8",
+      "Numeracao": "39",
+      "Produto": "Tênis E2E QA V2",
+      "AtendimentoId": null,
+      "UsuarioId": "FC90184B-312E-4748-9682-D75C09A6D763",
+      "UsuarioPerfil": "LOJISTA"
+    },
+    {
+      "Id": "1FCB3039-9547-45DF-9DA0-4F9A52442511",
+      "CriadoEm": "2026-11-04 02:12:32.0633107",
+      "Tipo": "AJUSTE",
+      "Quantidade": 2,
+      "Motivo": "Ajuste E2E v2 para zerar tamanho 40",
+      "SkuId": "CF3C93A8-11D5-4F64-BBCD-1A4998D37EAA",
+      "Numeracao": "40",
+      "Produto": "Tênis E2E QA V2",
+      "AtendimentoId": null,
+      "UsuarioId": "FC90184B-312E-4748-9682-D75C09A6D763",
+      "UsuarioPerfil": "LOJISTA"
+    },
+    {
+      "Id": "4C323EBD-8318-4244-9166-3DF549A6F6EA",
+      "CriadoEm": "2026-11-04 02:14:11.0791614",
+      "Tipo": "SAIDA",
+      "Quantidade": 1,
+      "Motivo": null,
+      "SkuId": "1232624F-3E5C-4EF2-A7AB-6F09C70D08C2",
+      "Numeracao": "38",
+      "Produto": "Tênis E2E QA V2",
+      "AtendimentoId": "08041A65-DC67-4A91-BE13-096AB3AFBC7B",
+      "UsuarioId": "B73C8C4F-5915-4038-A882-B969CAF1590C",
+      "UsuarioPerfil": "VENDEDOR"
+    },
+    {
+      "Id": "2F062B22-F03C-4007-A228-833908205632",
+      "CriadoEm": "2026-11-04 02:14:21.8759519",
+      "Tipo": "SAIDA",
+      "Quantidade": 1,
+      "Motivo": null,
+      "SkuId": "1232624F-3E5C-4EF2-A7AB-6F09C70D08C2",
+      "Numeracao": "38",
+      "Produto": "Tênis E2E QA V2",
+      "AtendimentoId": "4A274547-7D6D-499D-8930-1E4E522EEFF1",
+      "UsuarioId": "B73C8C4F-5915-4038-A882-B969CAF1590C",
+      "UsuarioPerfil": "VENDEDOR"
+    }
+  ],
+  "atendimentos": [
+    {
+      "Id": "08041A65-DC67-4A91-BE13-096AB3AFBC7B",
+      "CriadoEm": "2026-11-04 02:13:50.5183132",
+      "ConcluidoEm": "2026-11-04 02:14:11.0794558",
+      "Status": "CONCLUIDO",
+      "Resultado": "VENDEU",
+      "SaldoConsultado": 3,
+      "ProdutoId": "63A0854A-5CD0-4FFE-B6D8-CC89031B8608",
+      "Produto": "Tênis E2E QA V2",
+      "SkuId": "1232624F-3E5C-4EF2-A7AB-6F09C70D08C2",
+      "Numeracao": "38",
+      "UsuarioId": "B73C8C4F-5915-4038-A882-B969CAF1590C",
+      "UsuarioPerfil": "VENDEDOR"
+    },
+    {
+      "Id": "4A274547-7D6D-499D-8930-1E4E522EEFF1",
+      "CriadoEm": "2026-11-04 02:14:17.5416663",
+      "ConcluidoEm": "2026-11-04 02:14:21.8759548",
+      "Status": "CONCLUIDO",
+      "Resultado": "VENDEU",
+      "SaldoConsultado": 2,
+      "ProdutoId": "63A0854A-5CD0-4FFE-B6D8-CC89031B8608",
+      "Produto": "Tênis E2E QA V2",
+      "SkuId": "1232624F-3E5C-4EF2-A7AB-6F09C70D08C2",
+      "Numeracao": "38",
+      "UsuarioId": "B73C8C4F-5915-4038-A882-B969CAF1590C",
+      "UsuarioPerfil": "VENDEDOR"
+    },
+    {
+      "Id": "2FDE8C14-C7BF-4D44-85CF-A9BC36155572",
+      "CriadoEm": "2026-11-04 02:14:28.3333447",
+      "ConcluidoEm": "2026-11-04 02:14:28.3517713",
+      "Status": "CONCLUIDO",
+      "Resultado": "NAO_TINHA",
+      "SaldoConsultado": 0,
+      "ProdutoId": "63A0854A-5CD0-4FFE-B6D8-CC89031B8608",
+      "Produto": "Tênis E2E QA V2",
+      "SkuId": "CF3C93A8-11D5-4F64-BBCD-1A4998D37EAA",
+      "Numeracao": "40",
+      "UsuarioId": "B73C8C4F-5915-4038-A882-B969CAF1590C",
+      "UsuarioPerfil": "VENDEDOR"
+    },
+    {
+      "Id": "72FE7D40-3B81-493E-9663-A3BD12432609",
+      "CriadoEm": "2026-11-04 02:14:57.8582859",
+      "ConcluidoEm": "2026-11-04 02:14:57.8612408",
+      "Status": "CONCLUIDO",
+      "Resultado": "NAO_TINHA",
+      "SaldoConsultado": 0,
+      "ProdutoId": "63A0854A-5CD0-4FFE-B6D8-CC89031B8608",
+      "Produto": "Tênis E2E QA V2",
+      "SkuId": "CF3C93A8-11D5-4F64-BBCD-1A4998D37EAA",
+      "Numeracao": "40",
+      "UsuarioId": "B73C8C4F-5915-4038-A882-B969CAF1590C",
+      "UsuarioPerfil": "VENDEDOR"
+    },
+    {
+      "Id": "968FCC7A-AB9D-4EAE-AF2C-56B40D0B399B",
+      "CriadoEm": "2026-11-04 02:15:05.7549716",
+      "ConcluidoEm": "2026-11-04 02:15:05.773227",
+      "Status": "CONCLUIDO",
+      "Resultado": "NAO_TINHA",
+      "SaldoConsultado": 0,
+      "ProdutoId": "63A0854A-5CD0-4FFE-B6D8-CC89031B8608",
+      "Produto": "Tênis E2E QA V2",
+      "SkuId": "CF3C93A8-11D5-4F64-BBCD-1A4998D37EAA",
+      "Numeracao": "40",
+      "UsuarioId": "B73C8C4F-5915-4038-A882-B969CAF1590C",
+      "UsuarioPerfil": "VENDEDOR"
+    },
+    {
+      "Id": "888E1B29-A2F0-494B-AACD-11BBEBB305C4",
+      "CriadoEm": "2026-11-04 02:15:13.8957938",
+      "ConcluidoEm": "2026-11-04 02:15:19.2287623",
+      "Status": "CONCLUIDO",
+      "Resultado": "DESISTIU",
+      "SaldoConsultado": 3,
+      "ProdutoId": "63A0854A-5CD0-4FFE-B6D8-CC89031B8608",
+      "Produto": "Tênis E2E QA V2",
+      "SkuId": "18B71C60-6F5C-4937-BE4D-7BAF4A3E9CD8",
+      "Numeracao": "39",
+      "UsuarioId": "B73C8C4F-5915-4038-A882-B969CAF1590C",
+      "UsuarioPerfil": "VENDEDOR"
+    }
+  ],
+  "rupturas": [
+    {
+      "Id": "047CE565-DDF7-4F05-A709-B22305632BBF",
+      "CriadoEm": "2026-11-04 02:14:28.3515221",
+      "SkuId": "CF3C93A8-11D5-4F64-BBCD-1A4998D37EAA",
+      "Numeracao": "40",
+      "Produto": "Tênis E2E QA V2",
+      "AtendimentoId": "2FDE8C14-C7BF-4D44-85CF-A9BC36155572",
+      "UsuarioId": "B73C8C4F-5915-4038-A882-B969CAF1590C",
+      "UsuarioPerfil": "VENDEDOR"
+    },
+    {
+      "Id": "CD6E57A5-21D0-4686-BE10-7C277BE72473",
+      "CriadoEm": "2026-11-04 02:14:57.8612387",
+      "SkuId": "CF3C93A8-11D5-4F64-BBCD-1A4998D37EAA",
+      "Numeracao": "40",
+      "Produto": "Tênis E2E QA V2",
+      "AtendimentoId": "72FE7D40-3B81-493E-9663-A3BD12432609",
+      "UsuarioId": "B73C8C4F-5915-4038-A882-B969CAF1590C",
+      "UsuarioPerfil": "VENDEDOR"
+    },
+    {
+      "Id": "B1FE2224-978C-47EA-852E-A9D674DD395F",
+      "CriadoEm": "2026-11-04 02:15:05.7732225",
+      "SkuId": "CF3C93A8-11D5-4F64-BBCD-1A4998D37EAA",
+      "Numeracao": "40",
+      "Produto": "Tênis E2E QA V2",
+      "AtendimentoId": "968FCC7A-AB9D-4EAE-AF2C-56B40D0B399B",
+      "UsuarioId": "B73C8C4F-5915-4038-A882-B969CAF1590C",
+      "UsuarioPerfil": "VENDEDOR"
+    }
+  ],
+  "usuarios": [
+    {
+      "Id": "B73C8C4F-5915-4038-A882-B969CAF1590C",
+      "Perfil": "VENDEDOR"
+    },
+    {
+      "Id": "FC90184B-312E-4748-9682-D75C09A6D763",
+      "Perfil": "LOJISTA"
+    }
+  ]
+}
