@@ -1,7 +1,5 @@
 # Auditoria MVC — separação de responsabilidades
 
-Data: 04/11/2026. Área: QA e arquitetura. Branch: `dev/emmy`.
-
 ## Escopo e referência
 
 Auditoria de autenticação, estoque, venda, ruptura e relatórios, com inspeção
@@ -11,24 +9,17 @@ implementada neste cartão.
 
 Base auditada: [`f87c14c9f42fe2e780ffd7b71810093cb0fbe7d0`](https://github.com/CodeWitch00/ESTOQUE/tree/f87c14c9f42fe2e780ffd7b71810093cb0fbe7d0).
 As referências por linha abaixo apontam para essa revisão imutável.
-Consulta adicional, somente de leitura, da referência remota `origin/main`:
-`9111713`. A branch local `main` foi preservada em `fb5fef7`.
-A branch pessoal já existia e foi atualizada até `origin/dev/emmy`; não foi
-recriada, integrada à main nem submetida a force push.
 
 Fontes: [guia de contribuição](../../CONTRIBUTING.md),
 [arquitetura](arquitetura.md), [domínio](../01-negocio/dominio.md),
 [requisitos](../02-requisitos/srs.md),
 [casos de uso](../02-requisitos/casos-de-uso.md) e código da revisão indicada.
-O cartão foi identificado pelo objetivo “Auditar se as Views apenas apresentam
-dados e se validações críticas permanecem no servidor”; seu endereço não foi
-fornecido na abertura da atividade.
 
 ## Parecer
 
 As regras críticas examinadas são executadas no servidor. Não foi identificada,
 na inspeção realizada, autorização ou validação de saldo cuja única proteção
-seja Razor ou JavaScript. Isso não equivale a uma auditoria de segurança completa.
+seja Razor ou JavaScript.
 
 A separação MVC é parcial: a maioria das telas usa ViewModels, mas há telas
 que recebem entidades e ViewModels que ainda transportam entidades completas.
@@ -47,13 +38,6 @@ divergência entre o resumo reapresentado da NF-e e os dados usados na persistê
 | Venda | [EstoqueController:283–343](https://github.com/CodeWitch00/ESTOQUE/blob/f87c14c9f42fe2e780ffd7b71810093cb0fbe7d0/src/SquadEstoque.Web/Controllers/EstoqueController.cs#L283-L343) e [SaidaEstoque:10–116](https://github.com/CodeWitch00/ESTOQUE/blob/f87c14c9f42fe2e780ffd7b71810093cb0fbe7d0/src/SquadEstoque.Web/Data/SaidaEstoque.cs#L10-L116): SKU/produto, vendedor, atendimento pendente, quantidade fixa de um par na venda rápida, UPDATE condicionado ao saldo, movimento e commit na mesma transação. | `consulta.js` bloqueia botões por conveniência e atualiza a tela com `data.saldoAtual`; não calcula a baixa persistida. Desabilitar JavaScript não remove a proteção de saldo. |
 | Ruptura e desistência | [EstoqueController:251–278](https://github.com/CodeWitch00/ESTOQUE/blob/f87c14c9f42fe2e780ffd7b71810093cb0fbe7d0/src/SquadEstoque.Web/Controllers/EstoqueController.cs#L251-L278) e [346–400](https://github.com/CodeWitch00/ESTOQUE/blob/f87c14c9f42fe2e780ffd7b71810093cb0fbe7d0/src/SquadEstoque.Web/Controllers/EstoqueController.cs#L346-L400): antiforgery, proprietário/status do atendimento e SKU ativo pertencente ao produto. | “Não tinha” cria ruptura explícita sem baixar saldo, inclusive com saldo positivo. “Desistiu” encerra atendimento sem criar venda/ruptura. Isso respeita a distinção entre saldo físico e demanda não atendida. |
 | Relatórios | [RupturasController:9–34](https://github.com/CodeWitch00/ESTOQUE/blob/f87c14c9f42fe2e780ffd7b71810093cb0fbe7d0/src/SquadEstoque.Web/Controllers/RupturasController.cs#L9-L34), [SaldosZeradosController:9](https://github.com/CodeWitch00/ESTOQUE/blob/f87c14c9f42fe2e780ffd7b71810093cb0fbe7d0/src/SquadEstoque.Web/Controllers/SaldosZeradosController.cs#L9) e [AtendimentosController:9–77](https://github.com/CodeWitch00/ESTOQUE/blob/f87c14c9f42fe2e780ffd7b71810093cb0fbe7d0/src/SquadEstoque.Web/Controllers/AtendimentosController.cs#L9-L77): LOJISTA, consultas, agrupamentos, contagens e alertas no servidor. | As telas recebem ViewModels e exibem resultados. Ressalva de recorte de dados em MVC-04; divergência de versão de saldos zerados descrita adiante. |
-
-## Achados e prioridades
-
-Prioridades: P1 = correção urgente de integridade/acesso; P2 = risco funcional
-ou dívida arquitetural a planejar; P3 = melhoria de consistência/manutenção.
-Não foram classificados achados P1 nesta auditoria. Os cenários de confirmação
-abaixo são recomendações para futuros cartões, não testes novos implementados.
 
 ### MVC-01 — entidades entregues à apresentação — P2
 
@@ -157,9 +141,6 @@ a interface comunica corretamente o conjunto representado pelos indicadores.
 | EntradasFiscais/Index | `IReadOnlyList<EntradaFiscal>` | Sem ViewModel próprio; MVC-01. |
 | Rupturas/Index, SaldosZerados/Index, Atendimentos/Index | `RupturasIndexViewModel`, `SaldosZeradosViewModel`, `AtendimentosIndexViewModel` | Contratos próprios, agregações no servidor; ressalva MVC-04. |
 
-Telas estáticas de acesso negado e erro não precisam de ViewModels de negócio.
-O nome “ViewModel” não garante isolamento quando o objeto transporta entidades.
-
 ## Diferenças relevantes já presentes em origin/main
 
 Na base `f87c14c`, `SaldosZeradosController` filtra saldo zero sem restringir
@@ -188,8 +169,5 @@ para este cartão documental. Os testes existentes de autenticação, ruptura,
 venda transacional, ajuste e relatórios dão suporte à verificação do servidor,
 mas não provam todos os cenários de melhoria sugeridos neste documento.
 
-Para revisão de `CodeWitch00`: conferir as evidências MVC-01 a MVC-04, validar
-prioridades, confirmar a distinção entre regra crítica e apresentação e verificar
-o tratamento das diferenças entre a branch auditada e a referência remota.
 O pedido de revisão no PR não representa revisão concluída nem aprovação.
 Nenhum merge ou movimentação no Trello integra esta entrega.
