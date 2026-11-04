@@ -181,9 +181,7 @@ pluralização, rótulos de enum e exibição de menus foram tratados como apres
 Compilação local com .NET SDK 10.0.400: aprovada, sem avisos ou erros, usando
 `dotnet build tests/SquadEstoque.Web.Tests/SquadEstoque.Web.Tests.csproj --no-restore`.
 Suíte local `dotnet test --no-build`: 297 aprovados, 0 falhas e 1 ignorado (P95 opt-in).
-A tentativa de executar 
-pm run test:frontend` não avançou porque 
-pm` não está
+A tentativa de executar `npm run test:frontend` não avançou porque `npm` não está
 no PATH desta sessão; a verificação de frontend fica a cargo da CI do PR.
 Resultado da CI deve ser consultado no PR; não foi criada suíte nova
 para este cartão documental. Os testes existentes de autenticação, ruptura,
