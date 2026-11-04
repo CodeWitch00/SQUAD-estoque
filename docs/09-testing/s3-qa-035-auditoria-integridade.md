@@ -1,8 +1,5 @@
 # S3-QA-035 — Auditoria de integridade do schema e das migrations
 
-Data: 04/11/2026. Base auditada: `dev/emmy`, commit `31cdb18f4db43bf333dababffa8bfcba43614943`.
-Branch documental: `docs/s3-qa-035-emmy`. Destino do PR: `dev/emmy`. Revisão solicitada a `CodeWitch00` no PR; aprovação deve ser conferida no GitHub.
-
 ## Escopo e método
 
 Inspeção estática das regras, entidades, configuração do EF Core, operações `Up`/`Down`, respectivos Designers e snapshot. Nenhum banco foi aberto, migrado ou alterado. A aplicação não foi iniciada: seu bootstrap executa `Database.Migrate()` em [Program.cs](../../src/SquadEstoque.Web/Program.cs). Não houve publicação nem alteração de workflow. A `main` não foi usada como base nem modificada.
@@ -12,8 +9,6 @@ Fontes: [SRS, RN-01 a RN-06](../02-requisitos/srs.md), [domínio](../01-negocio/
 ## Resultado executivo
 
 As quatro proteções centrais estão declaradas no modelo e nas migrations: SKU único por produto e numeração, e-mail único, saldo não negativo e quantidade de movimentação positiva. As referências obrigatórias do núcleo estão presentes e usam deleção restritiva. A extensão fiscal apresenta duas divergências relevantes: quantidade de item sem CHECK e exclusão em cascata dos itens da nota. A conclusão é de conformidade parcial do conjunto, sem correções neste cartão.
-
-Esta auditoria comprova as declarações versionadas; não certifica o estado de um banco implantado, a aplicação efetiva das migrations nem a ativação de FKs em uma conexão externa.
 
 ## Constraints
 
@@ -84,10 +79,7 @@ A unicidade de e-mail sem normalização é um limite a confirmar com a equipe, 
 
 Inspeção com `git ls-tree`, `Get-Content` e `rg`, sem execução de SQL ou conexão ao banco. Conferir os nomes na matriz contra contexto, `Up` e snapshot; comparar o modelo alvo do último Designer com o snapshot. Conferir os quinze relacionamentos e suas nulabilidades na migration que os introduziu.
 
-Os testes existentes [EstoqueDomainPersistenceTests](../../tests/SquadEstoque.Web.Tests/EstoqueDomainPersistenceTests.cs) cobrem SKU duplicado e saldo negativo usando `EnsureCreated`; [EnumDomainMigrationTests](../../tests/SquadEstoque.Web.Tests/EnumDomainMigrationTests.cs) e [SkuUltimaAtualizacaoMigrationTests](../../tests/SquadEstoque.Web.Tests/SkuUltimaAtualizacaoMigrationTests.cs) usam migrations em SQLite isolado. Foram lidos como evidência de cobertura disponível, sem execução local neste cartão. Não se deve confundir cobertura do modelo por `EnsureCreated` com validação de toda a cadeia de migrations.
-
-Antes do commit: revisar links relativos, executar `git status --short`, conferir que o diff contém somente este relatório e executar `git diff --check`. No PR, acompanhar o workflow `.NET Build and Tests`, incluindo build, testes e baseline de cobertura. Resultado da execução e revisão devem ser consultados no próprio PR, pois ocorrem após o versionamento deste relatório.
-
+Os testes existentes [EstoqueDomainPersistenceTests](../../tests/SquadEstoque.Web.Tests/EstoqueDomainPersistenceTests.cs) cobrem SKU duplicado e saldo negativo usando `EnsureCreated`; [EnumDomainMigrationTests](../../tests/SquadEstoque.Web.Tests/EnumDomainMigrationTests.cs) e [SkuUltimaAtualizacaoMigrationTests](../../tests/SquadEstoque.Web.Tests/SkuUltimaAtualizacaoMigrationTests.cs) 
 ## Evidência para o cartão
 
 Usar o link permanente deste arquivo no commit documental e o PR direcionado a `dev/emmy`. Capturar a tela do PR com os checks e a solicitação de revisão para CodeWitch00. Resumo: quatro regras centrais declaradas; 15 FKs (14 restritivas, uma cascata); cinco migrations em sequência; divergências D01–D04 registradas; nenhuma alteração de banco ou da main. A movimentação do cartão permanece com a responsável.
