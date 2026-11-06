@@ -1,65 +1,40 @@
-# Relatório de execução E2E — S3-QA-030 (v2)
+# Relatório de execução E2E — S3-QA-030 (revisão sem alteração de código)
 
 **Cartão:** S3-QA-030 — Executar regressão funcional: vendedor e lojista ponta a ponta
 **Sprint:** Sprint 3
 **Prazo formal:** 11/11/2026 23:59 (America/Sao_Paulo)
 **Reunião-alvo:** 02/11/2026
-**Execução:** 03/11/2026, reteste integral após a correção de `DEF-S3QA030-01`
-**Responsável pela execução:** agente de QA
-**Revisão por outro integrante:** pendente
-**Alteração de código:** sim — uma linha no view model da grade, autorizada para corrigir o defeito bloqueante. Nenhuma outra alteração de produto foi feita.
-
-Esta é a segunda versão do registro. A v1 (PR #91) foi encerrada pela revisão porque o E2E-02 falhou, a massa usou a numeração extra 45 como workaround e o relatório expunha a senha das contas de desenvolvimento. Nesta v2 o defeito foi corrigido, a senha foi removida e o cenário oficial 37–40 foi reexecutado sem workaround.
+**Execução:** 02/11/2026 (fluxo principal) e 03/11/2026 (reteste de continuidade)
+**Responsável pela execução:** agente de QA (a revisão por outro integrante permanece pendente)
+**Alteração de código:** nenhuma. Validação somente leitura sobre a baseline.
 
 ## 1. Baseline e ambiente
 
 | Item | Valor |
 |---|---|
 | Repositório | `CodeWitch00/SQUAD-estoque` |
-| Branch | `test/s3-qa-030-e2e` |
-| Commit-base | `9111713d5526dc8f757ed10b6b7d7a6600f04189` (`main`, 03/11/2026 19:53 -03:00) |
-| Commit da correção | `ccd27fbb334d05a15064ed9f04f89b26506a2dd0` |
+| Branch | `test/s3-qa-009-integrante` |
+| Commit | `2e116c5041dec61f3f868b77bfddc1692c0d745b` (30/10/2026) |
 | Sistema operacional | Windows NT 10.0.26200.0 |
 | SDK | .NET SDK 10.0.403, aplicação `net10.0` |
 | Servidor | Kestrel HTTP em `http://localhost:5186` |
 | Banco | SQLite descartável `src/SquadEstoque.Web/Estoque.db` |
 | Configuração | `ASPNETCORE_ENVIRONMENT=Development`, `Demo__SeedUsers=true` |
 | Navegador | OpenCode 2.2.5 / Chrome 152.0.7977.167 / Electron 44.9.1, viewport 1000×700 |
-| Fuso da execução | `America/Sao_Paulo` |
-| Credenciais | contas de seed de desenvolvimento fornecidas pelo ambiente; valores omitidos |
-| Massa | `Tênis E2E QA V2`, grade oficial 37, 38, 39 e 40; nenhuma numeração extra |
+| Fuso | `America/Sao_Paulo` |
+| Credenciais | contas seed de desenvolvimento; valores omitidos |
 
-A branch foi atualizada sobre a `main` de `9111713` antes da correção. O banco foi criado do zero e migrado pela própria aplicação, sem escrita manual.
+A branch foi escolhida por já conter os recursos de saldos zerados, histórico de rupturas e ajustes de p95/índices. A `main` disponível no clone estava atrás desse estado.
 
-## 2. Correção aplicada
-
-`DEF-S3QA030-01` era causado pelo tipo não anulável do campo:
-
-```csharp
-// antes
-public string NumeracoesExtras { get; set; } = string.Empty;
-```
-
-Com referências anuláveis habilitadas, o ASP.NET Core trata propriedades `string` não anuláveis como obrigatórias. O campo aparecia como opcional, mas bloqueava o envio da grade quando ficava vazio. A correção torna o campo explicitamente opcional:
-
-```csharp
-// depois
-public string? NumeracoesExtras { get; set; }
-```
-
-A alteração está no commit `ccd27fb`, em `src/SquadEstoque.Web/Models/ViewModels/AdicionarNumeracoesViewModel.cs`. Não houve migration, alteração de banco ou mudança no fluxo de numerações extras.
-
-Também foi incluído o teste HTTP `Lojista_saves_official_grade_when_extras_field_is_submitted_empty` em `AdministrativeHttpTests`, que envia `NumeracoesExtras` explicitamente vazio. O teste falha na baseline `9111713` e passa com a correção, cobrindo o defeito na CI.
-
-## 3. Método e evidências
+## 2. Método e evidências
 
 - Execução manual assistida pelo navegador, com inspeção de DOM, URLs, requisições HTTP e consultas diretas ao SQLite.
 - Cada operação de estoque foi conferida antes/depois no banco, além da resposta visível na tela.
-- Capturas de tela não puderam ser geradas nesta sessão: `browser.screenshot` retorna “Screenshot needs a visible tab”. A evidência é textual/DOM, HTTP e banco.
-- Massa e estado final exportados em [`evidencias/s3-qa-030/estado-final-banco.json`](../../evidencias/s3-qa-030/estado-final-banco.json), sem senhas, hashes ou e-mails.
+- Capturas de tela não puderam ser geradas nesta sessão: `browser.screenshot` retorna “Screenshot needs a visible tab”. Foram usados snapshots de texto/DOM, URLs, códigos HTTP e exportação do banco.
+- Massa e estado final exportados em [`evidencias/s3-qa-030/estado-final-banco.json`](../../evidencias/s3-qa-030/estado-final-banco.json).
 - Snapshots de UI e detalhes de reprodução em [`evidencias/s3-qa-030/evidencias-ui-e2e.md`](../../evidencias/s3-qa-030/evidencias-ui-e2e.md).
 
-Comandos usados para subir a aplicação (sem credenciais):
+Comandos usados para subir a aplicação:
 
 ```powershell
 cd src/SquadEstoque.Web
@@ -68,143 +43,142 @@ $env:Demo__SeedUsers='true'
 dotnet run --no-build --urls http://localhost:5186
 ```
 
-## 4. Resumo dos casos oficiais
+## 3. Resumo dos casos oficiais
 
-| ID | Cenário | Resultado esperado | Resultado obtido | Status | Evidência |
+| ID | Cenário | Resultado esperado | Resultado obtido | Status de execução | Evidência |
 |---|---|---|---|---|---|
-| E2E-01 | Login e logout de lojista | Home do perfil; área autorizada; após sair, rota protegida pede login | Login em `/Produtos`; logout em `/Account/Login`; rotas anônimas com 302 e `ReturnUrl` | **Aprovado** | §5.1 |
-| E2E-02 | Cadastro até entrada inicial | Produto e SKUs visíveis; saldos e movimentações corretos | Grade oficial 37–40 salva com “Outras numerações” vazio; POST 302; 4 SKUs e saldos iniciais corretos; entradas individual e em lote conferidas | **Aprovado** | §§5.2–5.3 |
-| E2E-03 | Consulta e venda | Grade aparece; saldo reduz em 1; confirmação visível | Grade abriu; duas vendas no 38: 3→2→1; confirmações visíveis; ressalva cosmética “1 pares” | **Aprovado** | §5.5 |
-| E2E-04 | Consulta e ruptura | Ruptura registrada; saldo não muda | 3 ações `Não tinha` no 40: saldo permaneceu 0, 3 rupturas e nenhuma saída | **Aprovado** | §5.6 |
-| E2E-05 | Desistência e continuidade | Nenhum efeito no estoque; uso continua sem bloqueio | `Desistiu` no 39 concluiu sem movimentação/ruptura; retorno à busca; nova consulta abriu a grade | **Aprovado** | §5.7 |
-| E2E-06 | Ajuste administrativo | Novo saldo e histórico rastreável; vendedor não acessa | Ajustes 1→3 e 2→0 com motivo e responsável; ajuste sem alteração rejeitado; vendedor recebeu `AccessDenied` | **Aprovado** | §5.4 |
-| E2E-07 | Decisão de reposição | Agrupamentos e frequências correspondem à massa | `/SaldosZerados` listou somente 40; `/Rupturas` agrupou 40 com 3 ocorrências | **Aprovado** | §5.8 |
+| E2E-01 | Login e logout de lojista | Home do perfil; área autorizada; após sair, rota protegida pede login | Login levou a `/Produtos`; logout levou a `/Account/Login`; rotas anônimas redirecionaram com `ReturnUrl` | **Aprovado** | URLs e snapshots em `evidencias-ui-e2e.md` §§1 |
+| E2E-02 | Cadastro até entrada inicial | Produto e SKUs visíveis; saldos e movimentações corretos | Produto criado, mas a grade não pôde ser salva com “Outras numerações” vazio; a reprodução controlada com 37–40 no produto de defeito também falhou. Com workaround (38, 39, 40 e 45), produto e SKUs ficaram visíveis e entradas/saldos corretos | **Reprovado** | Defeito `DEF-S3QA030-01`; `estado-final-banco.json` |
+| E2E-03 | Consulta e venda | Grade aparece; saldo reduz em 1; confirmação visível | Grade abriu; duas vendas reduziram 38 de 3→2→1; confirmação visível; ressalva cosmética “1 pares” | **Aprovado** | `evidencias-ui-e2e.md` §§7–8 |
+| E2E-04 | Consulta e ruptura | Ruptura registrada; saldo não muda | 3 ações `Não tinha` no 40: saldo permaneceu 0, 3 rupturas e nenhuma saída | **Aprovado** | `evidencias-ui-e2e.md` §§9; `estado-final-banco.json` |
+| E2E-05 | Desistência e continuidade | Nenhum efeito no estoque; uso continua sem bloqueio | `Desistiu` no 39 concluiu sem movimentação/ruptura; retorno à busca; nova consulta abriu a grade | **Aprovado** | `evidencias-ui-e2e.md` §§10 |
+| E2E-06 | Ajuste administrativo | Novo saldo e histórico rastreável; vendedor não acessa | Ajustes 1→3 e 2→0 com motivo e responsável; vendedor recebeu `AccessDenied` em `/Movimentacoes/Ajuste` | **Aprovado** | `evidencias-ui-e2e.md` §§3 e 11 |
+| E2E-07 | Decisão de reposição | Agrupamentos e frequências correspondem à massa | `/SaldosZerados` listou somente 40 e 45; `/Rupturas` agrupou 40 com 3 ocorrências | **Aprovado** | `evidencias-ui-e2e.md` §§4–5 |
 
-**Conclusão dos casos:** 7 aprovados e 0 reprovados na baseline corrigida. O E2E-02 foi concluído com a grade oficial 37–40, sem numeração extra e sem contornar a validação do cliente.
+**Conclusão dos casos:** 6 aprovados e 1 reprovado (E2E-02). O aceite formal **não está aprovado** enquanto o defeito de grade não for corrigido, a execução não for revisada por outro integrante e o cenário oficial 37–40 não for reexecutado sem workaround.
 
-O aceite formal ainda depende da conferência desta execução por outro integrante, conforme a regra do cartão. O agente de QA não declara aprovação final sozinho.
+## 4. Detalhamento por fluxo
 
-## 5. Detalhamento por fluxo
-
-### 5.1 Login, logout e autorização
+### 4.1 Login, logout e autorização
 
 | Perfil | Ação | Esperado | Obtido | Status |
 |---|---|---|---|---|
 | LOJISTA | Login válido | Entrar na área do lojista | `/Produtos` | Aprovado |
 | LOJISTA | Logout | Encerrar sessão | `/Account/Login` | Aprovado |
-| Anônimo | Abrir `/Produtos` | Pedir login com retorno | 302 → `/Account/Login?ReturnUrl=%2FProdutos` | Aprovado |
-| Anônimo | Abrir `/Estoque/Consulta` | Pedir login com retorno | 302 → `/Account/Login?ReturnUrl=%2FEstoque%2FConsulta` | Aprovado |
-| Anônimo | Abrir `/Movimentacoes/Entrada` | Pedir login com retorno | 302 → `/Account/Login?ReturnUrl=%2FMovimentacoes%2FEntrada` | Aprovado |
-| Anônimo | Abrir `/Movimentacoes/Ajuste` | Pedir login com retorno | 302 → `/Account/Login?ReturnUrl=%2FMovimentacoes%2FAjuste` | Aprovado |
-| Anônimo | Abrir `/SaldosZerados`, `/Rupturas`, `/Atendimentos` | Pedir login com retorno | 302 com `ReturnUrl` para as três rotas | Aprovado |
+| Anônimo | Abrir `/Produtos` | Pedir login com retorno | `/Account/Login?ReturnUrl=%2FProdutos` | Aprovado |
+| Anônimo | Abrir `/Estoque/Consulta` | Pedir login com retorno | `/Account/Login?ReturnUrl=%2FEstoque%2FConsulta` | Aprovado |
+| Anônimo | Abrir `/Movimentacoes/Entrada` | Pedir login com retorno | `/Account/Login?ReturnUrl=%2FMovimentacoes%2FEntrada` | Aprovado |
 | VENDEDOR | Abrir `/Produtos`, `/Movimentacoes`, `/Movimentacoes/Entrada`, `/Movimentacoes/Ajuste`, `/SaldosZerados`, `/Rupturas`, `/Atendimentos` | Acesso negado | Todas → `/Account/AccessDenied` com “Acesso Não Autorizado” | Aprovado |
 | LOJISTA | Abrir `/Estoque/Consulta` | Acesso negado | `/Account/AccessDenied?ReturnUrl=%2FEstoque%2FConsulta` | Aprovado |
 
-### 5.2 Produto, grade oficial e entrada inicial (LOJISTA)
+### 4.2 Produto, grade e entrada inicial (LOJISTA)
 
-**Produto:** `Tênis E2E QA V2` (`63A0854A-5CD0-4FFE-B6D8-CC89031B8608`), marca `Marca QA`, categoria `Tênis`, cor `Azul`.
+**Produto usado no fluxo principal:** `Tênis E2E QA` (`67E39FA5-859A-4281-ABB4-A7292C71654F`), marca `Marca QA`, categoria `Tênis`, cor `Azul`.
 
-**Esperado:** criar produto, informar a grade oficial 37–40, deixar “Outras numerações” vazio, salvar e registrar entrada inicial.
+**Esperado:** criar produto, informar grade 37–40, salvar e registrar entrada inicial.
 
 **Obtido:**
 
-1. O produto foi criado e apareceu em `/Produtos` com a grade `37 38 39 40`.
-2. Na tela de grade, o campo “Outras numerações” ficou vazio. O HTML apresentou `required=false`, `validationMessage` vazio e `form.checkValidity() === true`.
-3. O clique em “Salvar grade” enviou `POST /Produtos/AdicionarNumeracoes/63a0854a-...` e recebeu **HTTP 302** para os detalhes do produto.
-4. A grade foi persistida com quatro SKUs: **37=1, 38=2, 39=1, 40=0**. Nenhuma numeração extra foi criada.
-5. As movimentações iniciais foram criadas para 37, 38 e 39 com o motivo `Saldo inicial no cadastro da grade`. O 40 ficou zerado, sem movimentação inicial.
-6. Entrada individual no 38: 2→3, `ENTRADA` 1, motivo `Entrada individual E2E v2`.
-7. Entrada em lote no 40: 0→2, `ENTRADA` 2, motivo `Entrada em lote E2E v2`.
-8. Quantidade 0 na entrada foi bloqueada pelo cliente com a mensagem em português `O valor deve ser maior ou igual a 1.`.
+1. O produto foi criado e apareceu em `/Produtos`.
+2. A primeira tentativa de salvar a grade com os tamanhos selecionados e “Outras numerações” vazio **não salvou nenhum SKU** e não exibiu mensagem de erro visível. A reprodução controlada com 37, 38, 39 e 40 foi feita no produto `Produto Defeito Grade` e confirmou o mesmo comportamento.
+3. Para obter cobertura, foi informada a numeração extra `45`. A grade foi salva com 38 (saldo 2), 39 (saldo 1), 40 (saldo 0) e 45 (saldo 0). O tamanho 37 não foi persistido; o 45 foi uma inclusão artificial.
+4. As movimentações de saldo inicial foram criadas: `ENTRADA` 2 no 38 e `ENTRADA` 1 no 39, motivo “Saldo inicial no cadastro da grade”.
+5. Entrada individual no 38: 2→3, `ENTRADA` 1, motivo `Entrada E2E`.
+6. Entrada em lote no 40: 0→2, `ENTRADA` 2, motivo `Entrada lote E2E`.
+7. Entrada com quantidade 0 foi rejeitada no cliente com a mensagem em inglês `Please enter a value greater than or equal to 1.`
 
-**Conferência do defeito corrigido:** o fluxo anterior (v1) não enviava POST, marcava o campo com `input-validation-error` e não exibia mensagem. Nesta execução o envio ocorreu normalmente com o campo vazio, e os quatro SKUs oficiais foram salvos.
+**Desvio registrado:** o caso oficial pede grade 37–40. A execução usou 38, 39, 40 e 45 por causa do defeito `DEF-S3QA030-01`. O E2E-02 não pode ser considerado aprovado nessa condição.
 
-### 5.3 Entrada inicial e saldos
-
-| Momento | 37 | 38 | 39 | 40 |
-|---|---:|---:|---:|---:|
-| Após salvar a grade | 1 | 2 | 1 | 0 |
-| Após entrada individual no 38 | 1 | 3 | 1 | 0 |
-| Após entrada em lote no 40 | 1 | 3 | 1 | 2 |
-| Após ajustes (39→3 e 40→0) | 1 | 3 | 3 | 0 |
-| Após vendas no 38 | 1 | 1 | 3 | 0 |
-
-### 5.4 Ajuste administrativo (LOJISTA)
+### 4.3 Ajuste administrativo (LOJISTA)
 
 | SKU | Antes | Novo saldo | Movimento | Motivo | Resultado |
 |---|---:|---:|---|---|---|
-| 39 | 1 | 3 | `AJUSTE` 2 | `Ajuste E2E v2 de inventario` | Saldo e histórico corretos |
-| 40 | 2 | 0 | `AJUSTE` 2 | `Ajuste E2E v2 para zerar tamanho 40` | Saldo zerado e histórico correto |
-| 39 | 3 | 3 | Nenhum | `Teste sem alteracao v2` | Rejeitado com “Não há alteração de saldo a ser registrada.” |
+| 39 | 1 | 3 | `AJUSTE` 2 | `Ajuste E2E de inventario` | Saldo e histórico corretos |
+| 40 | 2 | 0 | `AJUSTE` 2 | `Ajuste E2E para zerar tamanho 40` | Saldo zerado e histórico correto |
+| 39 | 3 | 3 | Nenhum | — | Rejeitado com “Não há alteração de saldo a ser registrada.” |
 
-O vendedor não acessa `/Movimentacoes/Ajuste` (redirecionado para `AccessDenied`). Os ajustes ficaram registrados com o perfil LOJISTA e os motivos informados.
+O vendedor não acessa `/Movimentacoes/Ajuste` (redirecionado para `AccessDenied`).
 
-### 5.5 Consulta e venda (VENDEDOR)
+### 4.4 Consulta e venda (VENDEDOR)
 
-- Busca com 1 caractere (`a`): “Digite pelo menos 2 caracteres para buscar.”
-- Busca sem resultado (`zzz`): “Produto não encontrado.”
-- Busca `Tênis`: 1 produto encontrado; a grade abriu com 37 (último par), 38 (3 pares), 39 (3 pares) e 40 (sem estoque).
-- Venda 1 no 38: 3→2, `SAIDA` 1 vinculada ao atendimento `08041A65-DC67-4A91-BE13-096AB3AFBC7B` e ao vendedor. UI: `Venda registrada para o nº 38.` / `Saldo atualizado: 2 pares.`
-- Venda 2 no 38: 2→1, `SAIDA` 1 vinculada ao atendimento `4A274547-7D6D-499D-8930-1E4E522EEFF1`. UI: `Venda registrada para o nº 38.` / `Saldo atualizado: 1 pares.`
-- O 38 passou a ser exibido como “Último par”, com a classe `consulta-grade-item--ultimo-par`.
-- **Ressalva cosmética:** a confirmação usa “1 pares” em vez de “1 par” (`DEF-S3QA030-02`). Não afeta saldo, movimentação ou autorização.
+- Busca `Tênis` e `tenis` retornou o produto.
+- Busca com 1 caractere (`a`) exibiu “Digite pelo menos 2 caracteres para buscar.”
+- Busca sem resultado (`zzz`) exibiu “Produto não encontrado.”
+- Grade final: 38 com 1 par (“Último par”), 39 com 3 pares (“Disponível”), 40 e 45 sem estoque (“Indisponível”).
+- Venda 1 no 38: 3→2, `SAIDA` 1 vinculada ao atendimento e ao vendedor.
+- Venda 2 no 38: 2→1, `SAIDA` 1; UI exibiu `Saldo atualizado: 1 pares` e aplicou a classe `consulta-grade-item--ultimo-par`.
+- **Ressalva cosmética:** a confirmação usa “1 pares” em vez de “1 par” (`DEF-S3QA030-02`).
 
-### 5.6 Ruptura (VENDEDOR)
+### 4.5 Ruptura (VENDEDOR)
 
 - Três ações `Não tinha` no tamanho 40, que estava com saldo 0.
-- Cada ação retornou `Falta registrada para o nº 40.` e `O saldo do sistema não foi alterado.`
-- O saldo permaneceu 0 nas três vezes.
+- Saldo permaneceu 0 nas três vezes.
 - Foram criadas 3 linhas em `Ruptura`, todas com SKU, vendedor, atendimento e data.
 - Os 3 atendimentos foram concluídos como `NAO_TINHA`, com `SaldoConsultado=0`.
 - Nenhuma movimentação de saída foi criada.
 
-### 5.7 Desistiu e continuidade (VENDEDOR)
+### 4.6 Desistiu e continuidade (VENDEDOR)
 
-- Tamanho 39 selecionado com saldo 3; o atendimento `888E1B29-A2F0-494B-AACD-11BBEBB305C4` foi criado.
-- A ação `Desistiu` concluiu o atendimento com `Resultado=DESISTIU` e `SaldoConsultado=3`.
-- Nenhuma movimentação e nenhuma ruptura foram criadas; o saldo permaneceu 3.
-- A UI exibiu `Atendimento encerrado.` / `Nenhuma movimentação foi registrada.`
-- A nova tela de busca abriu sem bloqueio; uma nova consulta do mesmo produto abriu a grade novamente.
+- Tamanho 39 selecionado com saldo 3.
+- Ação `Desistiu` concluiu o atendimento `A20F8EAF-824A-4C89-AB99-79E9218A8C6B` com `Resultado=DESISTIU`, `SaldoConsultado=3`.
+- Nenhuma movimentação e nenhuma ruptura foram criadas; saldo permaneceu 3.
+- A UI retornou à busca com “Atendimento encerrado. Nenhuma movimentação foi registrada.”
+- Nova busca `Tênis` retornou o produto e a grade abriu novamente, sem bloqueio.
 
-### 5.8 Saldos zerados e histórico de rupturas (LOJISTA)
+### 4.7 Saldos zerados e histórico de rupturas (LOJISTA)
 
-- `/SaldosZerados` listou somente `Tênis E2E QA V2`, numeração 40. Os tamanhos 37 (1), 38 (1) e 39 (3) não apareceram.
-- `/Rupturas` exibiu `Tênis E2E QA V2`, numeração 40, **3 ocorrências**, última em `04/11/2026 02:15` (UTC).
-- `/Atendimentos` exibiu 0 pendentes, 6 concluídos e 4 alertas de encerramento em menos de 5 segundos. Os alertas decorrem da velocidade da execução assistida, não de comportamento incorreto do fluxo.
-- `/Movimentacoes` exibiu 9 movimentações: 3 entradas iniciais, 1 entrada individual, 1 entrada em lote, 2 ajustes e 2 saídas.
+- `/SaldosZerados` listou somente `Tênis E2E QA` com os tamanhos 40 e 45. Os tamanhos 38 (saldo 1) e 39 (saldo 3) não apareceram.
+- O tamanho 45 apareceu com “Atualização não registrada”, coerente com o SKU criado sem saldo inicial.
+- `/Rupturas` exibiu `Tênis E2E QA`, numeração 40, 3 ocorrências, última em `02/11/2026 21:45` (UTC).
+- `/Atendimentos` exibiu 0 pendentes, 7 concluídos e 4 alertas de encerramento em menos de 5 segundos.
 
-### 5.9 Estado final do banco
+### 4.8 Estado final do banco
 
 | Entidade | Quantidade |
 |---|---:|
-| Produtos | 1 |
+| Produtos | 2 |
 | SKUs | 4 |
-| Movimentações | 9 |
-| Atendimentos | 6 (todos concluídos) |
+| Movimentações | 8 |
+| Atendimentos | 7 (todos concluídos) |
 | Rupturas | 3 |
 | Usuários | 2 |
 
-Saldos finais: **37=1, 38=1, 39=3, 40=0**. Não existe SKU 45.
+Saldos finais: **38=1, 39=3, 40=0, 45=0**.
 
-## 6. Defeitos
+## 5. Defeitos reproduzíveis
 
-### DEF-S3QA030-01 — “Outras numerações” bloqueava a grade sem mensagem visível
+### DEF-S3QA030-01 — Grade bloqueada por “Outras numerações” obrigatória sem mensagem visível
 
 | Campo | Valor |
 |---|---|
-| Severidade original | Alta / bloqueante para o E2E-02 |
+| Severidade sugerida | Alta / bloqueante para o E2E-02 |
 | Área | Cadastro de produto / grade (LOJISTA) |
-| Status | **Corrigido e validado nesta branch** |
-| Correção | `ccd27fbb334d05a15064ed9f04f89b26506a2dd0` |
+| Produto de reprodução | `Produto Defeito Grade` (`EE68C3AD-91ED-4A43-8179-273E4335A0B4`) |
+| Status | Reproduzido em 02/11/2026 |
 
-**Comportamento anterior (v1):** com 37–40 selecionados e “Outras numerações” vazio, nenhum POST era enviado, o campo recebia `input-validation-error` e não havia mensagem visível; o `POST` forçado retornava 200 sem salvar SKUs.
+**Passos para reproduzir:**
 
-**Validação da correção (v2):**
+1. Autenticar como LOJISTA.
+2. Abrir `/Produtos/AdicionarNumeracoes/ee68c3ad-91ed-4a43-8179-273e4335a0b4?cadastroInicial=True`.
+3. Marcar os tamanhos 37, 38, 39 e 40 com quantidade 1.
+4. Deixar “Outras numerações” vazio.
+5. Clicar em “Salvar grade”.
 
-- `required=false` no campo;
-- `validationMessage` vazio e `form.checkValidity() === true`;
-- `POST /Produtos/AdicionarNumeracoes/63a0854a-...` → **302**;
-- 4 SKUs persistidos (37, 38, 39 e 40), sem numeração extra.
+**Esperado:** a grade é salva com os tamanhos selecionados, pois o campo é apresentado como opcional (“Numerações extras são cadastradas com saldo zero”).
+
+**Obtido:**
+
+- Nenhuma requisição `POST` é enviada no fluxo normal.
+- O campo recebe `class="form-control input-validation-error"`.
+- O HTML contém `data-val-required="The Outras numerações field is required."` e `aria-describedby="NumeracoesExtras-error"`, mas o elemento `#NumeracoesExtras-error` **não existe**.
+- Não há mensagem de erro visível nem resumo de validação.
+- Nenhum SKU é salvo.
+
+**Confirmação no servidor:** ao contornar a validação do cliente com `form.submit()` nativo, o `POST` retornou **HTTP 200**, re-renderizou a página, manteve o campo com erro e continuou sem mensagem visível. Consulta ao SQLite após o POST: `select ... from Sku where ProdutoId='ee68c3ad-...'` → **0 linhas**.
+
+**Impacto:** o lojista não consegue concluir o cadastro da grade sem descobrir sozinho que precisa preencher um campo rotulado como opcional.
+
+**Workaround usado:** informar uma numeração extra (45) para liberar o salvamento. Isso alterou a massa oficial e está registrado como desvio do E2E-02.
 
 ### DEF-S3QA030-02 — Texto de confirmação “1 pares”
 
@@ -212,9 +186,9 @@ Saldos finais: **37=1, 38=1, 39=3, 40=0**. Não existe SKU 45.
 |---|---|
 | Severidade sugerida | Baixa / cosmética |
 | Área | Consulta do vendedor / confirmação de venda |
-| Status | **Permanece** |
+| Status | Observado em 02/11/2026 |
 
-Após vender o penúltimo par do tamanho 38, a UI exibiu `Saldo atualizado: 1 pares.`. O correto é `1 par`. Não afeta saldo, movimentação ou autorização.
+Após vender o último par do tamanho 38, a UI exibiu `Saldo atualizado: 1 pares`. O correto é `1 par`. Não afeta saldo, movimentação ou autorização.
 
 ### DEF-S3QA030-03 — Mensagem de validação em inglês na entrada
 
@@ -222,50 +196,53 @@ Após vender o penúltimo par do tamanho 38, a UI exibiu `Saldo atualizado: 1 pa
 |---|---|
 | Severidade sugerida | Baixa / localização |
 | Área | Entrada de estoque (LOJISTA) |
-| Status | **Não reproduzido nesta baseline** |
+| Status | Observado em 02/11/2026 |
 
-Com quantidade 0, a validação do cliente exibiu `O valor deve ser maior ou igual a 1.`, em português. A operação foi corretamente bloqueada.
+Com quantidade 0, a validação do cliente exibiu `Please enter a value greater than or equal to 1.` em vez de uma mensagem em português. A operação foi corretamente bloqueada; o defeito é de idioma.
 
-## 7. Rastreabilidade das evidências
+## 6. Rastreabilidade das evidências
 
 | Evidência | Conteúdo |
 |---|---|
-| [`evidencias/s3-qa-030/estado-final-banco.json`](../../evidencias/s3-qa-030/estado-final-banco.json) | Exportação de produtos, SKUs, movimentações, atendimentos, rupturas e perfis (sem senhas, hashes ou e-mails) |
-| [`evidencias/s3-qa-030/evidencias-ui-e2e.md`](../../evidencias/s3-qa-030/evidencias-ui-e2e.md) | Snapshots de texto/DOM, URLs, respostas HTTP e detalhes da validação da correção |
+| [`evidencias/s3-qa-030/estado-final-banco.json`](../../evidencias/s3-qa-030/estado-final-banco.json) | Exportação de produtos, SKUs, movimentações, atendimentos, rupturas e usuários (sem hash de senha) |
+| [`evidencias/s3-qa-030/evidencias-ui-e2e.md`](../../evidencias/s3-qa-030/evidencias-ui-e2e.md) | Snapshots de texto/DOM, URLs, respostas HTTP e detalhes da reprodução do defeito de grade |
 
 Consultas de conferência usadas:
 
 ```sql
 select Id, Nome, Marca, Categoria, Cor, Ativo from Produto;
-select Id, ProdutoId, Numeracao, SaldoAtual, Ativo, UltimaAtualizacaoSaldoEm from Sku order by ProdutoId, Numeracao;
+select Id, ProdutoId, Numeracao, SaldoAtual, Ativo from Sku order by ProdutoId, Numeracao;
 select Id, CriadoEm, Tipo, Quantidade, Motivo, SkuId, AtendimentoId, UsuarioId from Movimentacao order by CriadoEm;
 select Id, Status, Resultado, SaldoConsultado, SkuId, CriadoEm, ConcluidoEm from Atendimento order by CriadoEm;
 select Id, CriadoEm, SkuId, AtendimentoId, UsuarioId from Ruptura order by CriadoEm;
 ```
 
-## 8. Limitações e pendências
+## 7. Limitações e pendências
 
-- **Revisão por outro integrante:** pendente. Nenhum par revisou esta v2 até a data deste relatório. O PR deve permanecer sem aprovação final até essa conferência.
+- **Revisão por outro integrante:** pendente. Nenhum par revisou esta execução até a data deste relatório.
+- **Aprovação formal:** não declarada. O E2E-02 está reprovado e o aceite depende da correção do defeito de grade e de nova execução sem workaround.
 - **Capturas de tela:** não geradas nesta sessão; a evidência é textual/HTTP/banco.
 - **Ambiente publicado:** não validado. Toda a execução foi local (Kestrel + SQLite).
 - **Dispositivos móveis:** não validados nesta rodada; viewport única de 1000×700.
-- **Alertas de atendimento:** 4 alertas de encerramento em menos de 5 segundos decorrem da automação assistida; não foram tratados como defeito.
+- **Massa oficial:** o E2E-02 usou 38, 39, 40 e 45 em vez de 37–40. Após a correção, reexecutar o caso com a grade oficial e sem numeração extra.
 - **Desempenho e concorrência:** fora do escopo deste cartão; não medidos.
-- **Escopo de código:** a correção de `DEF-S3QA030-01` foi autorizada explicitamente para este branch, apesar da regra original de “não corrigir código dentro do cartão”. Nenhuma outra alteração de produto foi feita.
+- **Registro consolidado:** a execução foi adicionada a `docs/09-testing/homologacoes/registro-validacoes-manuais.md`, sem alteração de código-fonte.
 
-## 9. Checklist para revisão por outro integrante
+## 8. Checklist para revisão por outro integrante
 
-- [ ] Conferir o diff do commit `ccd27fb` e confirmar que a única alteração de produto é a nulabilidade de `NumeracoesExtras`.
-- [ ] Executar `dotnet test` e confirmar o teste `Lojista_saves_official_grade_when_extras_field_is_submitted_empty`.
-- [ ] Reexecutar o E2E-02 em banco limpo com 37–40, “Outras numerações” vazio e sem workaround, confirmando POST 302 e 4 SKUs.
-- [ ] Conferir no SQLite as 9 movimentações, os 6 atendimentos concluídos e as 3 rupturas do tamanho 40.
-- [ ] Conferir os saldos finais 37=1, 38=1, 39=3 e 40=0, sem SKU 45.
+- [ ] Reexecutar `DEF-S3QA030-01` em banco limpo, com 37–40 selecionados e “Outras numerações” vazio, confirmando ausência de `POST`, ausência de mensagem visível e zero SKUs.
+- [ ] Conferir no SQLite as 8 movimentações, os 7 atendimentos concluídos e as 3 rupturas do tamanho 40.
+- [ ] Conferir os saldos finais 38=1, 39=3, 40=0 e 45=0.
 - [ ] Repetir as rotas de autorização de VENDEDOR e LOJISTA e confirmar os `AccessDenied`.
-- [ ] Confirmar que o relatório e as evidências não contêm senhas, hashes ou e-mails.
-- [ ] Registrar nome e data da revisão no PR.
+- [ ] Confirmar que nenhum arquivo do repositório foi alterado e que as evidências anexadas correspondem à execução.
 
-## 10. Conclusão
+## 9. Conclusão
 
-A regressão funcional manual cobriu os dois perfis e todos os fluxos pedidos: login, logout, autorização, produtos, grade, entrada, ajuste, consulta, venda, ruptura, `Desistiu`, saldos zerados e histórico de rupturas. Na baseline `9111713` com a correção `ccd27fb`, os 7 casos oficiais passaram. O E2E-02 foi concluído com a grade oficial 37–40, sem workaround, e o campo “Outras numerações” permaneceu opcional e vazio.
+A regressão funcional manual cobriu os dois perfis e os fluxos solicitados: login/logout, produtos, grade, entrada, ajuste, consulta, venda, ruptura, `Desistiu`, saldos zerados e histórico de rupturas. Seis dos sete casos oficiais passaram na execução local. O E2E-02 falhou por um defeito reproduzível no cadastro da grade: “Outras numerações” é obrigatório de fato, mas a tela não informa isso e não exibe erro visível.
 
-O resultado **não declara aprovação formal do cartão**. Para encerrar, falta a conferência desta execução e do diff por outro integrante. O defeito cosmético `DEF-S3QA030-02` permanece registrado e não bloqueia o aceite.
+O resultado **não representa aprovação do aceite**. Para encerrar o cartão como aprovado, é necessário:
+
+1. corrigir `DEF-S3QA030-01` (e, se desejado, os defeitos cosméticos `02` e `03`);
+2. reexecutar o E2E-02 com a grade oficial 37–40, sem workaround;
+3. obter conferência dos defeitos e da execução por outro integrante;
+4. anexar as evidências ao registro consolidado, se a equipe decidir manter documentação no repositório.

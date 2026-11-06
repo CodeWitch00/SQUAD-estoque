@@ -1,302 +1,197 @@
-# Evidências de UI e HTTP — S3-QA-030 (v2)
+# Evidências de UI e banco — S3-QA-030
 
-**Execução:** 03/11/2026, entre 23:10 e 23:16 (America/Sao_Paulo)
-**Baseline:** `main` `9111713` + correção `ccd27fb`
-**Navegador:** OpenCode 2.2.5 / Chrome 152.0.7977.167 / Electron 44.9.1, viewport 1000×700
-**Observação:** capturas de tela não puderam ser geradas (`browser.screenshot` retorna “Screenshot needs a visible tab”). Os registros abaixo são snapshots de texto/DOM, URLs, códigos HTTP e consultas ao SQLite. Nenhuma senha, hash ou e-mail é reproduzido.
+**Execução:** 02/11/2026 (fluxo principal) e 03/11/2026 (reteste de continuidade do `Desistiu`)
+**Baseline:** `test/s3-qa-009-integrante` no commit `2e116c5041dec61f3f868b77bfddc1692c0d745b`
+**Ambiente:** Windows NT 10.0.26200.0, .NET SDK 10.0.403, aplicação `net10.0` em Kestrel HTTP `http://localhost:5186`, SQLite `Estoque.db` descartável, `ASPNETCORE_ENVIRONMENT=Development`, `Demo__SeedUsers=true`
+**Navegador:** OpenCode 2.2.5 / Chrome 152.0.7977.167 / Electron 44.9.1, viewport 1000×700, fuso `America/Sao_Paulo`
 
-## 1. Login, logout e autorização
+> Capturas de tela não puderam ser geradas nesta sessão (`browser.screenshot` retorna "Screenshot needs a visible tab"). As evidências abaixo são snapshots de DOM/texto, URLs, requisições HTTP e consultas diretas ao SQLite. Nenhuma senha ou hash é reproduzido.
 
-### Login do LOJISTA
+## 1. LOJISTA — login, logout e rotas protegidas
 
-- URL inicial: `http://localhost:5186/Account/Login?ReturnUrl=%2F`
-- Após autenticar: `http://localhost:5186/Produtos`
-- Trecho da tela: `Catálogo de Produtos` / `Consulte os modelos, as numerações e o estado de cada produto.`
-
-### Logout do LOJISTA
-
-- Ação: POST no formulário `/Account/Logout`
-- URL final: `http://localhost:5186/Account/Login`
-- Trecho da tela: `Bem-vindo` / `E-mail` / `Senha` / `Entrar`
-
-### Rotas anônimas (HTTP 302)
-
-| Rota | Status | Location |
-|---|---|---|
-| `/Produtos` | 302 | `http://localhost:5186/Account/Login?ReturnUrl=%2FProdutos` |
-| `/Estoque/Consulta` | 302 | `http://localhost:5186/Account/Login?ReturnUrl=%2FEstoque%2FConsulta` |
-| `/Movimentacoes/Entrada` | 302 | `http://localhost:5186/Account/Login?ReturnUrl=%2FMovimentacoes%2FEntrada` |
-| `/Movimentacoes/Ajuste` | 302 | `http://localhost:5186/Account/Login?ReturnUrl=%2FMovimentacoes%2FAjuste` |
-| `/SaldosZerados` | 302 | `http://localhost:5186/Account/Login?ReturnUrl=%2FSaldosZerados` |
-| `/Rupturas` | 302 | `http://localhost:5186/Account/Login?ReturnUrl=%2FRupturas` |
-| `/Atendimentos` | 302 | `http://localhost:5186/Account/Login?ReturnUrl=%2FAtendimentos` |
-
-### VENDEDOR em rotas administrativas
-
-Requisições autenticadas com o perfil VENDEDOR, seguindo redirecionamento:
-
-| Rota solicitada | URL final | Conteúdo |
-|---|---|---|
-| `/Produtos` | `/Account/AccessDenied?ReturnUrl=%2FProdutos` | `Acesso Não Autorizado` |
-| `/Movimentacoes` | `/Account/AccessDenied?ReturnUrl=%2FMovimentacoes` | `Acesso Não Autorizado` |
-| `/Movimentacoes/Entrada` | `/Account/AccessDenied?ReturnUrl=%2FMovimentacoes%2FEntrada` | `Acesso Não Autorizado` |
-| `/Movimentacoes/Ajuste` | `/Account/AccessDenied?ReturnUrl=%2FMovimentacoes%2FAjuste` | `Acesso Não Autorizado` |
-| `/SaldosZerados` | `/Account/AccessDenied?ReturnUrl=%2FSaldosZerados` | `Acesso Não Autorizado` |
-| `/Rupturas` | `/Account/AccessDenied?ReturnUrl=%2FRupturas` | `Acesso Não Autorizado` |
-| `/Atendimentos` | `/Account/AccessDenied?ReturnUrl=%2FAtendimentos` | `Acesso Não Autorizado` |
-
-### LOJISTA na consulta do vendedor
-
-- Requisição: `GET /Estoque/Consulta`
-- URL final: `http://localhost:5186/Account/AccessDenied?ReturnUrl=%2FEstoque%2FConsulta`
-- Conteúdo: `Acesso Não Autorizado`
-
-## 2. E2E-02 — grade oficial 37–40 sem workaround
-
-### Produto criado
-
-- Nome: `Tênis E2E QA V2`
-- ID: `63A0854A-5CD0-4FFE-B6D8-CC89031B8608`
-- Marca: `Marca QA`
-- Categoria: `Tênis`
-- Cor: `Azul`
-- URL após salvar os dados: `/Produtos/AdicionarNumeracoes/63a0854a-5cd0-4ffe-b6d8-cc89031b8608?cadastroInicial=True`
-
-### Estado do campo “Outras numerações” antes do envio
-
-Inspeção do DOM com o campo vazio:
-
-```json
-{
-  "required": false,
-  "validationMessage": "",
-  "formValid": true,
-  "extrasValue": ""
-}
-```
-
-### Envio da grade
-
-- Tamanhos marcados: 37 (1), 38 (2), 39 (1), 40 (0)
-- “Outras numerações”: vazio
-- Requisição observada:
-
-```text
-POST http://localhost:5186/Produtos/AdicionarNumeracoes/63a0854a-5cd0-4ffe-b6d8-cc89031b8608
-Status: 302
-```
-
-- URL final: `/Produtos/Details/63a0854a-5cd0-4ffe-b6d8-cc89031b8608`
-- Trecho da tela:
-
-```text
-Tênis E2E QA V2
-Marca QA · Tênis · Azul
-Grade de numerações
-37  1 par(es)  03/11/2026 23:11  Último par
-38  2 par(es)  03/11/2026 23:11  Disponível
-39  1 par(es)  03/11/2026 23:11  Último par
-40  0 par(es)  Atualização não registrada  Indisponível
-```
-
-Nenhuma numeração 45 foi criada.
-
-## 3. Entradas
-
-### Entrada individual no 38
-
-- URL: `/Movimentacoes/Entrada?skuId=1232624f-3e5c-4ef2-a7ab-6f09c70d08c2`
-- Saldo antes: `2 par(es)`
-- Quantidade: 1
-- Motivo: `Entrada individual E2E v2`
-- Após confirmar: `/Produtos/Details/63a0854a-...`
-- Saldo do 38 na tela: `3 par(es)` às `23:12`
-
-### Entrada em lote no 40
-
-- URL: `/Movimentacoes/EntradaLote?produtoId=63a0854a-...`
-- Saldo antes do 40: `0 par(es)`
-- Quantidade recebida: 2
-- Observação: `Entrada em lote E2E v2`
-- Após confirmar: `/Produtos/Details/63a0854a-...`
-- Saldo do 40 na tela: `2 par(es)` às `23:12`
-
-### Quantidade zero na entrada
-
-- Campo `#Quantidade` com valor `0`
-- `form.checkValidity()`: `false`
-- `validationMessage`: `O valor deve ser maior ou igual a 1.`
-- Nenhum POST foi enviado.
-
-## 4. Ajustes
-
-### 39: 1 → 3
-
-- URL: `/Movimentacoes/Ajuste?skuId=18b71c60-6f5c-4937-be4d-7baf4a3e9cd8`
-- Saldo antes: `1 par(es)`
-- Novo saldo: `3`
-- Motivo: `Ajuste E2E v2 de inventario`
-- Resultado: `/Produtos/Details/63a0854a-...` com `39  3 par(es)`
-
-### 40: 2 → 0
-
-- URL: `/Movimentacoes/Ajuste?skuId=cf3c93a8-11d5-4f64-bbcd-1a4998d37eaa`
-- Saldo antes: `2 par(es)`
-- Novo saldo: `0`
-- Motivo: `Ajuste E2E v2 para zerar tamanho 40`
-- Resultado: `/Produtos/Details/63a0854a-...` com `40  0 par(es)` e estado `Indisponível`
-
-### Ajuste sem alteração
-
-- SKU 39, saldo atual 3, novo saldo 3
-- Motivo: `Teste sem alteracao v2`
-- Resultado: permaneceu em `/Movimentacoes/Ajuste`
-- Mensagem visível: `Não há alteração de saldo a ser registrada.`
-- Nenhuma movimentação nova.
-
-## 5. Consulta e venda
-
-### Busca
-
-| Termo | Resultado |
+| Ação | Resultado observado |
 |---|---|
-| `a` | `Digite pelo menos 2 caracteres para buscar.` |
-| `zzz` | `Produto não encontrado.` |
-| `Tênis` | `1 produto encontrado` / `Tênis E2E QA V2` |
+| Login `[e-mail omitido]` | Redirecionou para `http://localhost:5186/Produtos` |
+| Logout | Redirecionou para `http://localhost:5186/Account/Login` |
+| Anônimo em `/Produtos` | `302` para `/Account/Login?ReturnUrl=%2FProdutos` |
+| Anônimo em `/Estoque/Consulta` | `302` para `/Account/Login?ReturnUrl=%2FEstoque%2FConsulta` |
+| Anônimo em `/Movimentacoes/Entrada` | `302` para `/Account/Login?ReturnUrl=%2FMovimentacoes%2FEntrada` |
+| LOJISTA em `/Estoque/Consulta` | `/Account/AccessDenied?ReturnUrl=%2FEstoque%2FConsulta`, texto "Acesso Não Autorizado" |
 
-### Grade do vendedor
+## 2. LOJISTA — catálogo e grade
+
+Texto observado em `/Produtos`:
 
 ```text
-Disponíveis 3
-Nº 37  Último par   STATUS: ÚLTIMO PAR
-Nº 38  3 pares      STATUS: DISPONÍVEL
-Nº 39  3 pares      STATUS: DISPONÍVEL
-Indisponíveis 1
-Nº 40  Sem estoque  STATUS: INDISPONÍVEL
+Mostrando 1–2 de 2 produtos
+Produto Defeito Grade  QA  Teste  Preto  (grade vazia)  Ativo
+Tênis E2E QA          Marca QA  Tênis  Azul  38 39 40 45  Ativo
 ```
 
-### Venda 1 no 38
+O produto `Produto Defeito Grade` permaneceu sem grade após a tentativa de cadastro com "Outras numerações" vazio.
 
-- POST `http://localhost:5186/Estoque/Vender` → 200
-- Saldo 3 → 2
-- Mensagem: `Venda registrada para o nº 38.` / `Saldo atualizado: 2 pares. Voltando para a busca…`
-- Atendimento: `08041A65-DC67-4A91-BE13-096AB3AFBC7B`
+## 3. LOJISTA — movimentações
 
-### Venda 2 no 38
-
-- POST `http://localhost:5186/Estoque/Vender` → 200
-- Saldo 2 → 1
-- Mensagem: `Venda registrada para o nº 38.` / `Saldo atualizado: 1 pares. Voltando para a busca…`
-- Atendimento: `4A274547-7D6D-499D-8930-1E4E522EEFF1`
-- O card do 38 passou a `Último par` e recebeu a classe `consulta-grade-item--ultimo-par`.
-
-## 6. Ruptura
-
-Três ações no tamanho 40, com saldo 0:
+Texto observado em `/Movimentacoes` (8 registros):
 
 ```text
-POST http://localhost:5186/Estoque/RegistrarNaoTinha → 200
-Mensagem: Falta registrada para o nº 40.
-          O saldo do sistema não foi alterado. Voltando para a busca…
+Mostrando 1–8 de 8 movimentações
+02/11/2026 18:44:34  Tênis E2E QA  38  SAÍDA   1  Vendedor Teste  —
+02/11/2026 18:43:59  Tênis E2E QA  38  SAÍDA   1  Vendedor Teste  —
+02/11/2026 18:42:50  Tênis E2E QA  40  AJUSTE  2  Lojista Teste   Ajuste E2E para zerar tamanho 40
+02/11/2026 18:42:36  Tênis E2E QA  39  AJUSTE  2  Lojista Teste   Ajuste E2E de inventario
+02/11/2026 18:42:23  Tênis E2E QA  40  ENTRADA 2  Lojista Teste   Entrada lote E2E
+02/11/2026 18:42:07  Tênis E2E QA  38  ENTRADA 1  Lojista Teste   Entrada E2E
+02/11/2026 18:41:37  Tênis E2E QA  39  ENTRADA 1  Lojista Teste   Saldo inicial no cadastro da grade
+02/11/2026 18:41:37  Tênis E2E QA  38  ENTRADA 2  Lojista Teste   Saldo inicial no cadastro da grade
 ```
 
-- Saldo do 40 permaneceu 0 nas três vezes.
-- Atendimentos: `2FDE8C14-C7BF-4D44-85CF-A9BC36155572`, `72FE7D40-3B81-493E-9663-A3BD12432609`, `968FCC7A-AB9D-4EAE-AF2C-56B40D0B399B`, todos `NAO_TINHA` com `SaldoConsultado=0`.
-- Nenhuma movimentação de saída foi criada.
+## 4. LOJISTA — saldos zerados
 
-## 7. Desistiu
-
-- SKU 39, saldo 3
-- Seleção persistida: POST `/Estoque/SelecionarSku` → 200
-- Atendimento: `888E1B29-A2F0-494B-AACD-11BBEBB305C4`
-- Ação `Desistiu`: POST `/Estoque/RegistrarDesistiu` → 200
-- Tela final: `/Estoque/Consulta`
+Texto observado em `/SaldosZerados`:
 
 ```text
-Atendimento encerrado.
-Nenhuma movimentação foi registrada.
-Qual modelo o cliente procura?
-```
-
-- Saldo do 39 permaneceu 3.
-- Nenhuma movimentação e nenhuma ruptura foram criadas.
-- Nova busca abriu o produto e a grade novamente.
-
-## 8. Saldos zerados, rupturas e atendimentos
-
-### `/SaldosZerados`
-
-```text
-Saldos zerados para reposição
-Tênis E2E QA V2
+Tênis E2E QA
 Marca QA · Azul
 Numerações sem saldo:
-40
-Atualizado em 03/11/2026 23:12
+40   Atualizado em 02/11/2026 18:42
+45   Atualização não registrada
 ```
 
-Somente o 40. Os tamanhos 37 (1), 38 (1) e 39 (3) não aparecem.
+Somente os SKUs com saldo 0 foram listados. Os tamanhos 38 (saldo 1) e 39 (saldo 3) não apareceram.
 
-### `/Rupturas`
+## 5. LOJISTA — histórico de rupturas
+
+Texto observado em `/Rupturas`:
 
 ```text
 Histórico de rupturas por modelo e numeração. Datas e horários em UTC.
-Modelo            Numeração  Ocorrências  Última ruptura (UTC)
-Tênis E2E QA V2   40         3            04/11/2026 02:15
+Modelo          Numeração  Ocorrências  Última ruptura (UTC)
+Tênis E2E QA    40         3            02/11/2026 21:45
 ```
 
-### `/Atendimentos`
+As 3 rupturas do tamanho 40 foram agrupadas corretamente e o saldo permaneceu 0.
+
+## 6. LOJISTA — atendimentos
+
+Texto observado em `/Atendimentos` (após o reteste de 03/11):
 
 ```text
 Pendentes 0
-Concluídos 6
+Concluídos 7
 Alertas para revisar 4
-
-23:15  Vendedor Teste  39  Desistiu   3 par(es)  —
-23:15  Vendedor Teste  40  Não tinha  0 par(es)  Encerrado em menos de 5 segundos
-23:14  Vendedor Teste  40  Não tinha  0 par(es)  Encerrado em menos de 5 segundos
-23:14  Vendedor Teste  40  Não tinha  0 par(es)  Encerrado em menos de 5 segundos
-23:14  Vendedor Teste  38  Vendeu     2 par(es)  Encerrado em menos de 5 segundos
-23:13  Vendedor Teste  38  Vendeu     3 par(es)  —
 ```
 
-Os quatro alertas de “menos de 5 segundos” são efeito da execução assistida, que clicou mais rápido que uma pessoa.
+Resultados observados: 2 `Vendeu`, 3 `Não tinha`, 2 `Desistiu`. Os 4 alertas são encerramentos em menos de 5 segundos, incluindo as 3 rupturas e o `Desistiu`.
 
-### `/Movimentacoes`
+## 7. VENDEDOR — consulta e estados da grade
+
+Busca `Tênis` em `/Estoque/Consulta` retornou 1 produto. Grade final observada:
 
 ```text
-Mostrando 1–9 de 9 movimentações
-23:14:21  38  SAÍDA   1  Vendedor Teste  —
-23:14:11  38  SAÍDA   1  Vendedor Teste  —
-23:12:32  40  AJUSTE  2  Lojista Teste   Ajuste E2E v2 para zerar tamanho 40
-23:12:28  39  AJUSTE  2  Lojista Teste   Ajuste E2E v2 de inventario
-23:12:16  40  ENTRADA 2  Lojista Teste   Entrada em lote E2E v2
-23:12:06  38  ENTRADA 1  Lojista Teste   Entrada individual E2E v2
-23:11:45  39  ENTRADA 1  Lojista Teste   Saldo inicial no cadastro da grade
-23:11:45  38  ENTRADA 2  Lojista Teste   Saldo inicial no cadastro da grade
-23:11:45  37  ENTRADA 1  Lojista Teste   Saldo inicial no cadastro da grade
+Disponíveis 2
+Nº 38  Último par   Atualizado em 02/11/2026 18:44  STATUS: ÚLTIMO PAR
+Nº 39  3 pares      Atualizado em 02/11/2026 18:42  STATUS: DISPONÍVEL
+
+Indisponíveis 2
+Nº 40  Sem estoque  Atualizado em 02/11/2026 18:42  STATUS: INDISPONÍVEL
+Nº 45  Sem estoque  Atualização não registrada      STATUS: INDISPONÍVEL
 ```
 
-## 9. Estado final conferido no SQLite
+Classes CSS observadas: `consulta-grade-item--ultimo-par`, `consulta-grade-item--disponivel`, `consulta-grade-item--indisponivel` (duas ocorrências).
+
+## 8. VENDEDOR — venda
+
+Duas vendas no tamanho 38:
+
+| Antes | Depois | Movimento | Atendimento |
+|---:|---:|---|---|
+| 3 | 2 | `SAIDA` 1, vendedor, atendimento `E9698AAB-DF5A-4A32-B8E4-F88BA43285F0` | `VENDEU`, saldo consultado 3 |
+| 2 | 1 | `SAIDA` 1, vendedor, atendimento `ECD6BD96-E652-4D7D-8A91-86708AFD65AA` | `VENDEU`, saldo consultado 2 |
+
+A UI exibiu `Saldo atualizado: 1 pares` e aplicou `consulta-grade-item--ultimo-par`. Foi registrado o defeito cosmético de pluralização (`1 pares` em vez de `1 par`).
+
+## 9. VENDEDOR — ruptura
+
+Três ações `Não tinha` no tamanho 40 (saldo 0):
+
+- saldo permaneceu 0;
+- 3 linhas em `Ruptura`, todas vinculadas ao vendedor e a um atendimento;
+- 3 atendimentos concluídos com `NAO_TINHA` e `SaldoConsultado=0`;
+- nenhuma movimentação de saída foi criada.
+
+## 10. VENDEDOR — Desistiu e continuidade
+
+Reteste em 03/11/2026:
+
+1. Busca `Tênis`, seleção do produto e do tamanho 39 (saldo 3).
+2. Ação `Desistiu`.
+3. UI retornou à busca com a mensagem `Atendimento encerrado. Nenhuma movimentação foi registrada.`
+4. Atendimento `A20F8EAF-824A-4C89-AB99-79E9218A8C6B` concluído com `Resultado=DESISTIU`, `SaldoConsultado=3`; nenhuma movimentação e nenhuma ruptura.
+5. Nova busca `Tênis` retornou o produto e a grade abriu novamente, sem bloqueio.
+
+## 11. VENDEDOR — autorização
+
+Todas as rotas abaixo responderam com `/Account/AccessDenied` e o texto "Acesso Não Autorizado":
 
 ```text
-Produtos: 1
-SKUs: 4
-Movimentações: 9
-Atendimentos: 6 (6 concluídos)
-Rupturas: 3
-Usuários: 2
-
-Saldos: 37=1, 38=1, 39=3, 40=0
+/Produtos
+/Movimentacoes
+/Movimentacoes/Entrada
+/Movimentacoes/Ajuste
+/SaldosZerados
+/Rupturas
+/Atendimentos
 ```
 
-Exportação completa e sanitizada: [`estado-final-banco.json`](estado-final-banco.json).
+## 12. Defeito reproduzível — grade exige "Outras numerações" sem indicar isso
 
-## 10. Checklist de conferência da evidência
+**Produto:** `Produto Defeito Grade` (`EE68C3AD-91ED-4A43-8179-273E4335A0B4`)
 
-- [ ] O campo “Outras numerações” estava vazio e o POST da grade retornou 302.
-- [ ] Os quatro SKUs 37–40 existem, sem 45.
-- [ ] As 9 movimentações e os 6 atendimentos conferem com as tabelas acima.
-- [ ] As 3 rupturas são do tamanho 40 e não geraram saída.
-- [ ] O `Desistiu` do 39 não alterou saldo nem criou ruptura.
-- [ ] Nenhuma senha, hash ou e-mail aparece neste arquivo ou no JSON.
+**Passos:**
+
+1. LOJISTA abre `/Produtos/AdicionarNumeracoes/ee68c3ad-91ed-4a43-8179-273e4335a0b4?cadastroInicial=True`.
+2. Marca os tamanhos 37, 38, 39 e 40, com quantidade 1 em cada.
+3. Deixa "Outras numerações" vazio, conforme o texto de apoio "Numerações extras são cadastradas com saldo zero."
+4. Clica em "Salvar grade".
+
+**Resultado observado no fluxo normal:**
+
+- Nenhuma requisição `POST` foi enviada.
+- O campo recebeu `class="form-control input-validation-error"`.
+- O campo tem `data-val-required="The Outras numerações field is required."`.
+- `aria-describedby="NumeracoesExtras-error"`, mas **não existe** o elemento `#NumeracoesExtras-error`.
+- Nenhuma mensagem de erro visível, nenhum resumo de validação.
+- Nenhum SKU foi salvo.
+
+**Resultado observado ao contornar a validação do cliente** (`form.submit()` nativo):
+
+- `POST /Produtos/AdicionarNumeracoes/ee68c3ad-91ed-4a43-8179-273e4335a0b4` → **HTTP 200**, HTML re-renderizado.
+- Corpo da requisição continha `Opcoes[3..6].Selecionada=true` e `NumeracoesExtras=`.
+- A resposta manteve `input-validation-error` no campo e nenhuma mensagem visível.
+- Consulta ao banco: `select ... from Sku where ProdutoId='ee68c3ad-...'` → **0 linhas**.
+
+**Conclusão:** o campo "Outras numerações" é obrigatório de fato, embora a tela o apresente como opcional e não exiba a mensagem. O cadastro da grade fica bloqueado sem feedback compreensível. Foi necessário informar uma numeração extra (45) para concluir a grade do produto `Tênis E2E QA`.
+
+## 13. Estado final do banco
+
+Exportado em `estado-final-banco.json`:
+
+| Entidade | Quantidade |
+|---|---:|
+| Produtos | 2 |
+| SKUs | 4 |
+| Movimentações | 8 |
+| Atendimentos | 7 (todos concluídos) |
+| Rupturas | 3 |
+| Usuários | 2 (`[e-mail omitido]`, `[e-mail omitido]`) |
+
+Saldos finais: 38=1, 39=3, 40=0, 45=0.
+
+## 14. Limitações
+
+- Sem capturas de tela; evidência por DOM, URL, HTTP e SQLite.
+- Sem ambiente publicado/homologação Azure.
+- Sem aparelho físico ou viewports móveis nesta rodada.
+- O caso E2E-02 foi executado com desvio: grade 38/39/40 + 45, não 37–40, por causa do defeito acima.
+- Revisão por outro integrante e aprovação formal permanecem pendentes.
