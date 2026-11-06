@@ -79,7 +79,9 @@ A unicidade de e-mail sem normalização é um limite a confirmar com a equipe, 
 
 Inspeção com `git ls-tree`, `Get-Content` e `rg`, sem execução de SQL ou conexão ao banco. Conferir os nomes na matriz contra contexto, `Up` e snapshot; comparar o modelo alvo do último Designer com o snapshot. Conferir os quinze relacionamentos e suas nulabilidades na migration que os introduziu.
 
-Os testes existentes [EstoqueDomainPersistenceTests](../../tests/SquadEstoque.Web.Tests/EstoqueDomainPersistenceTests.cs) cobrem SKU duplicado e saldo negativo usando `EnsureCreated`; [EnumDomainMigrationTests](../../tests/SquadEstoque.Web.Tests/EnumDomainMigrationTests.cs) e [SkuUltimaAtualizacaoMigrationTests](../../tests/SquadEstoque.Web.Tests/SkuUltimaAtualizacaoMigrationTests.cs) 
+Os testes existentes [EstoqueDomainPersistenceTests](../../tests/SquadEstoque.Web.Tests/EstoqueDomainPersistenceTests.cs) cobrem SKU duplicado e saldo negativo usando `EnsureCreated`; [EnumDomainMigrationTests](../../tests/SquadEstoque.Web.Tests/EnumDomainMigrationTests.cs) verifica os CHECKs dos enums e o comportamento de `Down`, e [SkuUltimaAtualizacaoMigrationTests](../../tests/SquadEstoque.Web.Tests/SkuUltimaAtualizacaoMigrationTests.cs) cobre a preservação do SKU e do saldo ao adicionar e reverter a coluna de data da última atualização.
+
+Esses testes oferecem cobertura complementar, mas não substituem a inspeção estática das demais constraints e FKs descritas neste relatório.
 ## Evidência para o cartão
 
 Usar o link permanente deste arquivo no commit documental e o PR direcionado a `dev/emmy`. Capturar a tela do PR com os checks e a solicitação de revisão para CodeWitch00. Resumo: quatro regras centrais declaradas; 15 FKs (14 restritivas, uma cascata); cinco migrations em sequência; divergências D01–D04 registradas; nenhuma alteração de banco ou da main. A movimentação do cartão permanece com a responsável.
