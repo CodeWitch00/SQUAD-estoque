@@ -18,7 +18,7 @@ public class AdicionarNumeracoesViewModel
     public bool CadastroInicial { get; set; }
     public List<GradeNumeracaoItemViewModel> Opcoes { get; set; } = new();
     [Display(Name = "Outras numerações")]
-    public string? NumeracoesExtras { get; set; }
+    public string NumeracoesExtras { get; set; } = string.Empty;
 }
 
 public class GradeNumeracaoItemViewModel
