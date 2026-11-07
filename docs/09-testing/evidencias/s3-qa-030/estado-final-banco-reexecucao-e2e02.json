@@ -1,0 +1,150 @@
+{
+  "metadados": {
+    "cartao": "S3-QA-030",
+    "escopo": "reexecucao somente do E2E-02 apos a correcao DEF-S3QA030-01",
+    "baseline": "main 748572f + head eb26f7d do PR #95 (fix/def-s3qa030-01-grade-opcional)",
+    "ambiente": "Windows, .NET SDK 10.0.403, Kestrel local HTTP, SQLite descartavel, Demo__SeedUsers=true",
+    "massa": "Tenis E2E QA Reteste, grade oficial 37-40, sem numeracao extra",
+    "observacao": "Exportacao sem senhas, hashes ou e-mails de contas."
+  },
+  "resumo": {
+    "produtos": 1,
+    "skus": 4,
+    "movimentacoes": 5,
+    "atendimentos": 0,
+    "atendimentos_concluidos": 0,
+    "rupturas": 0,
+    "usuarios": 2,
+    "saldos": {
+      "37": 1,
+      "38": 3,
+      "39": 1,
+      "40": 2
+    }
+  },
+  "produtos": [
+    {
+      "Id": "68590ED9-7869-4DD1-8F62-32C39CF5F825",
+      "Nome": "Tênis E2E QA Reteste",
+      "Marca": "Marca QA",
+      "Categoria": "Tênis",
+      "Cor": "Azul",
+      "Ativo": 1
+    }
+  ],
+  "skus": [
+    {
+      "Id": "EEB6169A-723D-4C79-8645-0B1E7722E26F",
+      "ProdutoId": "68590ED9-7869-4DD1-8F62-32C39CF5F825",
+      "Produto": "Tênis E2E QA Reteste",
+      "Numeracao": "37",
+      "SaldoAtual": 1,
+      "Ativo": 1,
+      "UltimaAtualizacaoSaldoEm": "2026-11-07 15:55:22.5869755"
+    },
+    {
+      "Id": "D35E6B58-AD5A-405E-9001-BD736C3F5310",
+      "ProdutoId": "68590ED9-7869-4DD1-8F62-32C39CF5F825",
+      "Produto": "Tênis E2E QA Reteste",
+      "Numeracao": "38",
+      "SaldoAtual": 3,
+      "Ativo": 1,
+      "UltimaAtualizacaoSaldoEm": "2026-11-07 15:55:32.4173768"
+    },
+    {
+      "Id": "9BD420A4-B8C0-4F7E-B3B4-53D8D8428970",
+      "ProdutoId": "68590ED9-7869-4DD1-8F62-32C39CF5F825",
+      "Produto": "Tênis E2E QA Reteste",
+      "Numeracao": "39",
+      "SaldoAtual": 1,
+      "Ativo": 1,
+      "UltimaAtualizacaoSaldoEm": "2026-11-07 15:55:22.5874937"
+    },
+    {
+      "Id": "46564B18-29A3-4029-B0DF-22481CA543C6",
+      "ProdutoId": "68590ED9-7869-4DD1-8F62-32C39CF5F825",
+      "Produto": "Tênis E2E QA Reteste",
+      "Numeracao": "40",
+      "SaldoAtual": 2,
+      "Ativo": 1,
+      "UltimaAtualizacaoSaldoEm": "2026-11-07 15:55:39.731866"
+    }
+  ],
+  "movimentacoes": [
+    {
+      "Id": "44EB41AB-FDDD-4511-B821-6CC9DAB23EC8",
+      "CriadoEm": "2026-11-07 15:55:22.703806",
+      "Tipo": "ENTRADA",
+      "Quantidade": 1,
+      "Motivo": "Saldo inicial no cadastro da grade",
+      "SkuId": "EEB6169A-723D-4C79-8645-0B1E7722E26F",
+      "Numeracao": "37",
+      "Produto": "Tênis E2E QA Reteste",
+      "AtendimentoId": null,
+      "UsuarioId": "29023736-6397-4E90-BBFC-F8D8566507D8",
+      "UsuarioPerfil": "LOJISTA"
+    },
+    {
+      "Id": "17BCB684-483C-491B-A1CC-C392C49D8E56",
+      "CriadoEm": "2026-11-07 15:55:22.7865199",
+      "Tipo": "ENTRADA",
+      "Quantidade": 2,
+      "Motivo": "Saldo inicial no cadastro da grade",
+      "SkuId": "D35E6B58-AD5A-405E-9001-BD736C3F5310",
+      "Numeracao": "38",
+      "Produto": "Tênis E2E QA Reteste",
+      "AtendimentoId": null,
+      "UsuarioId": "29023736-6397-4E90-BBFC-F8D8566507D8",
+      "UsuarioPerfil": "LOJISTA"
+    },
+    {
+      "Id": "BFB0BA12-19F8-483D-B5D4-73E43047D016",
+      "CriadoEm": "2026-11-07 15:55:22.7871513",
+      "Tipo": "ENTRADA",
+      "Quantidade": 1,
+      "Motivo": "Saldo inicial no cadastro da grade",
+      "SkuId": "9BD420A4-B8C0-4F7E-B3B4-53D8D8428970",
+      "Numeracao": "39",
+      "Produto": "Tênis E2E QA Reteste",
+      "AtendimentoId": null,
+      "UsuarioId": "29023736-6397-4E90-BBFC-F8D8566507D8",
+      "UsuarioPerfil": "LOJISTA"
+    },
+    {
+      "Id": "374637D2-3507-4A04-8AC1-B34FDD240839",
+      "CriadoEm": "2026-11-07 15:55:32.4173805",
+      "Tipo": "ENTRADA",
+      "Quantidade": 1,
+      "Motivo": "Entrada E2E reteste",
+      "SkuId": "D35E6B58-AD5A-405E-9001-BD736C3F5310",
+      "Numeracao": "38",
+      "Produto": "Tênis E2E QA Reteste",
+      "AtendimentoId": null,
+      "UsuarioId": "29023736-6397-4E90-BBFC-F8D8566507D8",
+      "UsuarioPerfil": "LOJISTA"
+    },
+    {
+      "Id": "00A5ABCB-7C4B-4ABA-8470-7FCE678ACF51",
+      "CriadoEm": "2026-11-07 15:55:39.7318623",
+      "Tipo": "ENTRADA",
+      "Quantidade": 2,
+      "Motivo": "Entrada lote E2E reteste",
+      "SkuId": "46564B18-29A3-4029-B0DF-22481CA543C6",
+      "Numeracao": "40",
+      "Produto": "Tênis E2E QA Reteste",
+      "AtendimentoId": null,
+      "UsuarioId": "29023736-6397-4E90-BBFC-F8D8566507D8",
+      "UsuarioPerfil": "LOJISTA"
+    }
+  ],
+  "usuarios": [
+    {
+      "Id": "59318F48-1293-4F16-A104-20B843C72682",
+      "Perfil": "VENDEDOR"
+    },
+    {
+      "Id": "29023736-6397-4E90-BBFC-F8D8566507D8",
+      "Perfil": "LOJISTA"
+    }
+  ]
+}
