@@ -13,6 +13,7 @@ Esta pasta contém apenas documentação estável que não é substituída pelo 
 | Estratégia, níveis e critérios gerais | [plano-de-testes.md](plano-de-testes.md) |
 | Validação manual, dispositivo e homologação | [registro consolidado](homologacoes/registro-validacoes-manuais.md) |
 | Resumo por sprint | [`docs/10-planejamento/`](../10-planejamento/) |
+| Índice de evidências da Sprint 3 por cartão (S3-DOC-039) | [relatorio-sprint-3.md](../10-planejamento/relatorio-sprint-3.md) |
 | Validações e evidências históricas recuperadas | [índice do arquivo histórico](arquivo-historico/README.md) |
 
 ## Política de manutenção
