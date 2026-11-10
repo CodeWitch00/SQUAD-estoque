@@ -336,7 +336,7 @@ conjunto do projeto.
 | Critério de produção | Peso | Evidência deste índice | Estado |
 | --- | --- | --- | --- |
 | Qualidade da escrita e ortografia | 1,0 | Este documento e os documentos referenciados | Pendente de revisão por outro integrante |
-| Controle de versão (Git/GitHub) | 1,5 | `origin/main` em `c6cfdad`; branch e PR serão criados após autorização | Pendente de execução |
+| Controle de versão (Git/GitHub) | 1,5 | `origin/main` em `c6cfdad`; branch `docs/s3-doc-038-integrante` publicada com o commit deste índice | **Parcial** — Pull Request pendente |
 | Gestão do Trello/Kanban e Sprints | 1,0 | Cartão S3-DOC-038 e checklist deste artefato | Pendente de movimentação e anexos no Trello |
 | Presença do grupo em reuniões/aulas | 1,5 | Não comprovável por documento | Fora do escopo deste artefato |
 | Arquitetura MVC e persistência | 1,5 | 9 controllers, 9 entidades, 15 view models, 25 views, `EstoqueContext`, 6 migrations e 310 testes aprovados na suíte local | **Comprovado em código e testes** |
@@ -423,4 +423,5 @@ conjunto do projeto.
 
 | Versão | Data | Alteração | Situação |
 | --- | --- | --- | --- |
-| 0.1 | 09/11/2026 | Organização inicial das evidências de aplicação, GUI, MVC, persistência e segurança; pendências da Sprint 4 | Rascunho para revisão por par; não commitado nem anexado ao Trello |
+| 0.1 | 09/11/2026 | Organização inicial das evidências de aplicação, GUI, MVC, persistência e segurança; pendências da Sprint 4 | Rascunho para revisão por par |
+| 0.2 | 09/11/2026 | Publicação da branch `docs/s3-doc-038-integrante` e registro do commit deste índice | Publicado no GitHub; Pull Request e anexo no Trello pendentes |
