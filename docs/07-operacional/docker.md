@@ -63,18 +63,14 @@ docker compose up --build -d
 O volume `squad-estoque-data` será reutilizado e as migrations pendentes serão
 aplicadas durante a inicialização.
 
-## Dados demonstrativos
+## Primeiro acesso
 
-O Compose habilita `Demo__SeedUsers=true`. Em um banco de estoque vazio, a
-aplicação cria os usuários conhecidos de desenvolvimento. Essa opção é adequada
-somente para desenvolvimento e demonstração.
-
-Antes de uma publicação real:
-
-- remova `Demo__SeedUsers` ou defina o valor como `false`;
-- provisione usuários com senhas fortes por um procedimento seguro;
-- não publique senhas no repositório ou na imagem;
-- mantenha as connection strings e demais segredos no gerenciador da plataforma.
+O Compose executa em `Production` e não cria usuários demonstrativos. Em um
+volume novo, cadastre o primeiro LOJISTA pelo
+[procedimento de primeiro acesso](primeiro-acesso-lojista.md) antes do login.
+O seed com contas conhecidas pertence somente ao ambiente `Development` local.
+Não publique senhas no repositório ou na imagem; mantenha configurações
+sensíveis no gerenciador da plataforma.
 
 ## Backup dos bancos
 

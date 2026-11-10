@@ -36,9 +36,13 @@ Demo__SeedUsers=true
 ```
 
 O banco do estoque e as chaves de cookies ficam em `/home/data`, fora de
-`/home/site/wwwroot`, onde o pacote é implantado. O seed demonstrativo permanece
-temporariamente habilitado somente para a equipe e será revisto no cartão
-`S4-BE-003` antes da demonstração final ou de qualquer uso real.
+`/home/site/wwwroot`, onde o pacote é implantado. `Demo__SeedUsers=true` é uma
+configuração legada registrada antes do cartão `S4-BE-003`: o código novo não
+executa seed em `Production` mesmo que ela permaneça definida. Remova essa
+configuração do App Service antes de publicar a mudança. Usuários
+demonstrativos já existentes no banco não são removidos automaticamente;
+revise-os separadamente antes de usar o ambiente fora da demonstração. Para um
+banco novo, siga o [primeiro acesso do LOJISTA](primeiro-acesso-lojista.md).
 
 ## Publicação automatizada
 
