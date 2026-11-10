@@ -5,13 +5,15 @@
 | Campo | Valor |
 |---|---|
 | Projeto | SQUAD Estoque |
-| Versão do documento | 2.0 |
-| Status | Estratégia vigente; resultados automáticos consultados na CI e homologação publicada pendente |
+| Versão do documento | 2.1 |
+| Status | Estratégia vigente; resultados da Sprint 3 registrados por caso; homologação publicada pendente |
+| Última atualização | 09/11/2026 |
+| Atualização desta versão | S3-DOC-036 — resultados completos da Sprint 3 |
 | Tipo | Aplicação web ASP.NET Core MVC |
 | Estratégia | Pirâmide de testes |
 | Perfis | `LOJISTA` e `VENDEDOR` |
 | Responsáveis | Equipe de desenvolvimento e qualidade |
-| Fontes | SRS, casos de uso, domínio, arquitetura, UX e código implementado |
+| Fontes | SRS, casos de uso, domínio, arquitetura, UX, código implementado e execuções da Sprint 3 |
 | Revisão do plano | A cada alteração de requisito, regra de negócio ou fluxo crítico |
 
 Este é o plano geral de qualidade do projeto e reúne também os casos de autenticação, sessão e perfis.
@@ -40,6 +42,12 @@ O plano procura responder:
 - [Inventário de telas e navegação](../05-ux/inventario-telas-e-mapa-navegacao.md)
 - [Preparação e fluxo de desenvolvimento](../../CONTRIBUTING.md)
 - [Registro consolidado de validações manuais](homologacoes/registro-validacoes-manuais.md)
+- [Execuções da Sprint 3](execucoes/sprint-3/)
+- [P95 da consulta — S3-QA-028](s3-qa-028-p95-consulta.md)
+- [Última atualização do saldo — S3-QA-025](s3-qa-025-ultima-atualizacao.md)
+- [Índices de consulta — S3-DB-026](s3-db-026-indices-consulta.md)
+- [Evidências das visões do lojista — S3-FE-031](../05-ux/evidencias/s3-fe-031/README.md)
+- [Regressão E2E — S3-QA-030](execucoes/sprint-3/s3-qa-030-regressao-e2e.md)
 - [Relatório da Sprint 1](../10-planejamento/relatorio-sprint-1.md)
 - [Relatório da Sprint 2](../10-planejamento/relatorio-sprint-2.md)
 - [GitHub Actions](https://github.com/CodeWitch00/SQUAD-estoque/actions)
@@ -153,8 +161,8 @@ Os casos unitários estão no catálogo UT; os casos de integração, nos catál
 | Persistência isolada | EF Core + SQLite em memória | Adotado |
 | Hash de senha | BCrypt.Net | Adotado |
 | Visualização no VS Code | C# Dev Kit / Test Explorer | Indicado |
-| E2E em navegador | Playwright para .NET | Planejado quando os fluxos-alvo estiverem implementados |
-| Carga e P95 | k6 ou NBomber | Planejado |
+| E2E em navegador | Playwright para .NET | Parcial: validação visual automatizada em S3-FE-031; jornadas S3-QA-030 executadas manualmente assistidas |
+| Carga e P95 | k6 ou NBomber; linha de base local em TestServer com xUnit | Parcial: RNF-02 medido localmente em S3-QA-028; carga de homologação pendente |
 | Inspeção manual HTTP | DevTools do navegador | Adotado para validação complementar |
 | Integração contínua | GitHub Actions | Adotado |
 
@@ -292,10 +300,10 @@ Legenda:
 | UT-08 | RF-16 | Opções do resultado | estado após consulta válida | Apenas `Vendeu`, `Não tinha` e `Desistiu` são oferecidos | Dependente do módulo do vendedor |
 | UT-09 | RF-17, RN-02 | Venda de um par | saldos 2, 1 e 0 | Novos saldos 1, 0 e rejeição | Dependente do módulo do vendedor |
 | UT-10 | RF-19, RF-20 | Desistência | atendimento iniciado e ação `Desistiu` | Nenhuma mudança; nova consulta continua permitida | Dependente do módulo do vendedor |
-| UT-11 | RF-23, UC-10 | Validação do motivo de ajuste | motivo vazio, espaços e texto válido | Vazios são rejeitados; texto válido é aceito | **Parcial:** existe rejeição de vazio no controller; ampliar cobertura do ViewModel |
-| UT-12 | RF-23, RN-02 | Cálculo do ajuste | saldo atual 2; novo saldo 6, 0 e valor negativo | Saldos finais 6 e 0; quantidades absolutas 4 e 2 no movimento AJUSTE, respectivamente; novo saldo negativo é rejeitado | Planejado |
-| UT-13 | RF-21, UC-11 | Filtro de saldo zerado | SKUs com saldos 0, 1 e 3 | Somente saldo 0 compõe o resultado | Dependente da visão do lojista |
-| UT-14 | RF-22, UC-12 | Agrupamento de rupturas | ocorrências repetidas por produto/SKU | Frequência correta por modelo e numeração | Dependente do relatório de rupturas |
+| UT-11 | RF-23, UC-10 | Validação do motivo de ajuste | motivo vazio, espaços e texto válido | Vazios são rejeitados; texto válido é aceito | **Parcial:** rejeição de motivo ausente, vazio, curto e com espaços comprovada por HTTP em S3-QA-020; não há teste unitário dedicado do ViewModel |
+| UT-12 | RF-23, RN-02 | Cálculo do ajuste | saldo atual 2; novo saldo 6, 0 e valor negativo | Saldos finais 6 e 0; quantidades absolutas 4 e 2 no movimento AJUSTE, respectivamente; novo saldo negativo é rejeitado | **Parcial:** diferenças 5 e 3 comprovadas por HTTP em S3-QA-020; rejeição de saldo negativo não foi executada |
+| UT-13 | RF-21, UC-11 | Filtro de saldo zerado | SKUs com saldos 0, 1 e 3 | Somente saldo 0 compõe o resultado | **Existente e aprovado:** `SaldosZeradosViewModelTests` e `SaldosZeradosConsultaTests`; execução de 01/11/2026 em S3-FE-031 |
+| UT-14 | RF-22, UC-12 | Agrupamento de rupturas | ocorrências repetidas por produto/SKU | Frequência correta por modelo e numeração | **Parcial:** agrupamento e contagem comprovados em `RupturasControllerTests` e `RupturasHistoricoHttpTests`; o ViewModel de S3-BE-013 não possui teste unitário próprio |
 | UT-15 | RF-04, RNF-04 | Política de hash | hash bcrypt de custo 12 e hash de custo inferior | Custo 12 é aceito; custo inferior é reprovado | Planejado |
 
 ## 10. Catálogo de testes do meio da pirâmide
@@ -350,12 +358,12 @@ O destino pós-login ainda possui uma divergência: o UC-01 exige uma tela inici
 | IT-10 | RF-11, RN-02, UC-S4 | Saída suficiente | saldo 5; saída 2 | Saldo 3; uma movimentação `SAIDA` | **Existente:** `Saida_registers_movement_and_reduces_balance` |
 | IT-11 | RF-11, RN-02, UC-S4 | Saída insuficiente | saldo 1; saída 2 | Erro claro; saldo 1; nenhuma movimentação | **Existente:** `Saida_with_insufficient_balance_is_rejected_by_controller` |
 | IT-12 | RN-02 | Constraint de saldo | tentar persistir SKU com saldo -1 | Banco rejeita a gravação | **Existente:** `Sku_with_negative_balance_cannot_be_persisted` |
-| IT-13 | RF-12 | Última atualização | efetuar entrada ou saída com tempo controlado | Data/hora do SKU corresponde à operação e é exibida | Dependente da implementação completa de RF-12 |
-| IT-14 | RN-03 | Imutabilidade | GET/POST de edição e exclusão por LOJISTA, VENDEDOR e anônimo; PUT/PATCH/DELETE nas rotas de alteração por LOJISTA | Ações ausentes no MVC; HTTP 404 ou 405; campos preservados após cada tentativa; histórico disponível ao lojista | Automatizado: [MovimentacaoImutabilidadeHttpTests](../../tests/SquadEstoque.Web.Tests/MovimentacaoImutabilidadeHttpTests.cs) e [MovimentacaoSomenteLeituraHttpTests](../../tests/SquadEstoque.Web.Tests/MovimentacaoSomenteLeituraHttpTests.cs) |
-| IT-15 | RF-23, RN-04, UC-10 | Ajuste válido | saldo 2; novo saldo 6; motivo “Contagem física”; `LOJISTA` | Saldo 6; movimentação `AJUSTE`, diferença 4, motivo e responsável | **Parcial:** `Ajuste_registers_movement_and_updates_balance` |
-| IT-16 | RF-23, UC-10 | Ajuste sem motivo | saldo 2; novo saldo 6; motivo vazio | Rejeição; saldo 2; nenhuma movimentação | **Existente:** `Ajuste_without_reason_is_rejected_by_controller` |
-| IT-17 | RF-23, RN-02 | Ajuste para saldo negativo | novo saldo apurado menor que 0 | Rejeição; nenhuma alteração ou movimentação | Planejado |
-| IT-18 | RN-07, UC-S2 | Venda concorrente do último par | saldo 1; dois vendedores confirmam simultaneamente | Uma operação vence; outra falha; saldo final 0; exatamente uma saída | Planejado prioritário |
+| IT-13 | RF-12 | Última atualização | entrada, venda, ajuste, ruptura, desistência e rejeições | Data/hora do SKU muda somente após operação confirmada; operações sem efeito preservam o valor | **Existente e aprovado:** [UltimaAtualizacaoSaldoHttpTests](../../tests/SquadEstoque.Web.Tests/UltimaAtualizacaoSaldoHttpTests.cs), 16 cenários em 29/10/2026; [evidência](s3-qa-025-ultima-atualizacao.md) |
+| IT-14 | RN-03 | Imutabilidade | GET/POST de edição e exclusão por LOJISTA, VENDEDOR e anônimo; PUT/PATCH/DELETE nas rotas de alteração por LOJISTA | Ações ausentes no MVC; HTTP 404 ou 405; campos preservados após cada tentativa; histórico disponível ao lojista | **Existente e aprovado:** [MovimentacaoImutabilidadeHttpTests](../../tests/SquadEstoque.Web.Tests/MovimentacaoImutabilidadeHttpTests.cs) e [MovimentacaoSomenteLeituraHttpTests](../../tests/SquadEstoque.Web.Tests/MovimentacaoSomenteLeituraHttpTests.cs); smoke HTTP de 14/10/2026 no [registro consolidado](homologacoes/registro-validacoes-manuais.md) |
+| IT-15 | RF-23, RN-04, UC-10 | Ajuste válido | saldo 2; novo saldo 6; motivo “Contagem física”; `LOJISTA` | Saldo 6; movimentação `AJUSTE`, diferença 4, motivo e responsável | **Existente e aprovado:** `Ajuste_registers_one_traceable_movement_and_updates_balance`, `AjusteMotivoHttpTests` e `AjusteAuthorizationHttpTests`; 8 cenários em 22/10/2026 ([S3-QA-020](execucoes/sprint-3/s3-qa-020-motivo-ajuste.md)) e 7 em 12/10/2026 ([S3-QA-021](execucoes/sprint-3/s3-qa-021-autorizacao-ajuste.md)) |
+| IT-16 | RF-23, UC-10 | Ajuste sem motivo | saldo 2; novo saldo 6; motivo vazio | Rejeição; saldo 2; nenhuma movimentação | **Existente e aprovado:** `Ajuste_without_reason_is_rejected_by_controller`; motivo ausente, vazio e só espaços cobertos por `AjusteMotivoHttpTests` em 22/10/2026 |
+| IT-17 | RF-23, RN-02 | Ajuste para saldo negativo | novo saldo apurado menor que 0 | Rejeição; nenhuma alteração ou movimentação | Planejado — não executado; a rejeição de saldo negativo não foi comprovada por teste |
+| IT-18 | RN-07, UC-S2 | Venda concorrente do último par | saldo 1; dois vendedores confirmam simultaneamente | Uma operação vence; outra falha; saldo final 0; exatamente uma saída | **Existente e aprovado em linha de base local:** `Concurrent_saidas_sell_available_stock_only_once` com 30 repetições em 11/10/2026 ([S3-QA-003](execucoes/sprint-3/s3-qa-003-venda-simultanea.md)), `VendaTransacionalTests` e S3-BE-001; não representa dois navegadores nem carga |
 
 ### 10.4 Consulta e atendimento do vendedor
 
@@ -363,54 +371,56 @@ Os casos detalhados, incluindo pré-condições, passos e resultados esperados, 
 
 | ID | Requisitos | Cenário | Entradas/ações | Resultado esperado | Situação |
 |---|---|---|---|---|---|
-| IT-19 | RF-13, UC-02 | Busca parcial | termo existente com pelo menos 2 caracteres | Produtos correspondentes retornados | Dependente do módulo do vendedor |
-| IT-20 | RF-13, UC-02 | Busca sem resultado | termo inexistente | Mensagem “Produto não encontrado”; lista vazia | Dependente |
-| IT-21 | RF-14, UC-03 | Grade completa | selecionar PRD-01 | Todas as numerações e respectivos saldos são exibidos | Dependente |
-| IT-22 | RF-15, UC-03 | Estados da grade | SKUs com saldo 0, 1 e 2 | Cada SKU recebe estado visual correto | Dependente |
-| IT-23 | RF-16 | Ações do atendimento | consulta válida | As três opções de resultado são exibidas | Dependente |
-| IT-24 | RF-10, RF-17, UC-04, UC-S2, UC-S5 | Resultado `Vendeu` | SKU com saldo 5, 3, 2 ou 1; vendedor autenticado | Saldo reduz exatamente 1; uma saída vinculada ao SKU e ao vendedor; confirmação e grade atualizada | **Existente:** `Vendedor_sells_exactly_one_pair_without_changing_any_other_sku` e `Vendedor_can_post_venda_for_sku_and_records_authenticated_user` |
-| IT-25 | RF-17, RN-02, UC-S4 | Venda sem saldo | SKU saldo 0 | Rejeição; saldo 0; nenhuma movimentação ou ruptura | **Existente:** `Vendedor_cannot_sell_zero_stock_and_creates_no_movement`, `Vender_rejects_zero_balance_without_creating_movement_or_rupture` e `Venda_rapida_rejects_zero_balance_without_movement` |
-| IT-26 | RF-18, RN-05, RN-06, UC-05, UC-S3 | Resultado `Não tinha` | SKU válido; vendedor autenticado | Uma Ruptura com SKU, vendedor e data; saldo inalterado e nenhuma movimentação | **Existente:** `Registrar_nao_tinha_creates_rupture_without_changing_any_stock_or_movement` |
-| IT-27 | RN-06 | Ruptura sem SKU | `sku_id` ausente ou inválido | Rejeição; nenhuma Ruptura | Planejado/dependente do endpoint |
-| IT-28 | RF-19, UC-06 | Resultado `Desistiu` | atendimento iniciado | Nenhuma movimentação ou ruptura; retorno à busca | Dependente |
-| IT-29 | RF-20 | Nova consulta sem registrar resultado | abandonar resultado e iniciar nova busca | Nova busca permitida sem efeito no estoque | Dependente |
+| IT-19 | RF-13, UC-02 | Busca parcial | termo existente com pelo menos 2 caracteres | Produtos correspondentes retornados | **Existente e aprovado em E2E local:** buscas `Tênis` e `tenis` em 02/11/2026 ([S3-QA-030](execucoes/sprint-3/s3-qa-030-regressao-e2e.md)) |
+| IT-20 | RF-13, UC-02 | Busca sem resultado | termo inexistente | Mensagem “Produto não encontrado”; lista vazia | **Existente e aprovado em E2E local:** termo `zzz` em 02/11/2026 ([S3-QA-030](execucoes/sprint-3/s3-qa-030-regressao-e2e.md)) |
+| IT-21 | RF-14, UC-03 | Grade completa | selecionar PRD-01 | Todas as numerações e respectivos saldos são exibidos | **Existente e aprovado em E2E local:** grade 37–40 no reteste de 07/11/2026 ([S3-QA-030](execucoes/sprint-3/s3-qa-030-regressao-e2e.md)) |
+| IT-22 | RF-15, UC-03 | Estados da grade | SKUs com saldo 0, 1 e 2 | Cada SKU recebe estado visual correto | **Existente e aprovado em E2E local:** `Indisponível`, `Último par` e `Disponível` observados em 02/11/2026 ([S3-QA-030](execucoes/sprint-3/s3-qa-030-regressao-e2e.md)) |
+| IT-23 | RF-16 | Ações do atendimento | consulta válida | As três opções de resultado são exibidas | **Existente e aprovado em E2E local:** `Vendeu`, `Não tinha` e `Desistiu` exercitados em 02 e 03/11/2026 ([S3-QA-030](execucoes/sprint-3/s3-qa-030-regressao-e2e.md)) |
+| IT-24 | RF-10, RF-17, UC-04, UC-S2, UC-S5 | Resultado `Vendeu` | SKU com saldo 5, 3, 2 ou 1; vendedor autenticado | Saldo reduz exatamente 1; uma saída vinculada ao SKU e ao vendedor; confirmação e grade atualizada | **Existente e aprovado:** `Vendedor_sells_exactly_one_pair_without_changing_any_other_sku` e `Vendedor_can_post_venda_for_sku_and_records_authenticated_user`; duas vendas 3→2→1 no E2E local de 02/11/2026 |
+| IT-25 | RF-17, RN-02, UC-S4 | Venda sem saldo | SKU saldo 0 | Rejeição; saldo 0; nenhuma movimentação ou ruptura | **Existente e aprovado:** `Vendedor_cannot_sell_zero_stock_and_creates_no_movement`, `Vender_rejects_zero_balance_without_creating_movement_or_rupture` e `Venda_rapida_rejects_zero_balance_without_movement`; venda com saldo 0 rejeitada no E2E local |
+| IT-26 | RF-18, RN-05, RN-06, UC-05, UC-S3 | Resultado `Não tinha` | SKU válido; vendedor autenticado | Uma Ruptura com SKU, vendedor e data; saldo inalterado e nenhuma movimentação | **Existente e aprovado:** `Registrar_nao_tinha_creates_rupture_without_changing_any_stock_or_movement`; 3 rupturas no SKU 40 sem movimentação no E2E local de 02/11/2026 |
+| IT-27 | RN-06 | Ruptura sem SKU | `sku_id` ausente ou inválido | Rejeição; nenhuma Ruptura | Planejado/dependente do endpoint — não executado |
+| IT-28 | RF-19, UC-06 | Resultado `Desistiu` | atendimento iniciado | Nenhuma movimentação ou ruptura; retorno à busca | **Existente e aprovado em E2E local:** atendimento concluído como `DESISTIU`, saldo preservado e retorno à busca em 03/11/2026 ([S3-QA-030](execucoes/sprint-3/s3-qa-030-regressao-e2e.md)) |
+| IT-29 | RF-20 | Nova consulta sem registrar resultado | abandonar resultado e iniciar nova busca | Nova busca permitida sem efeito no estoque | **Existente e aprovado em E2E local:** nova busca `Tênis` abriu a grade sem bloqueio em 03/11/2026 ([S3-QA-030](execucoes/sprint-3/s3-qa-030-regressao-e2e.md)) |
 
 ### 10.5 Visões do lojista
 
 | ID | Requisitos | Cenário | Entradas/ações | Resultado esperado | Situação |
 |---|---|---|---|---|---|
-| IT-30 | RF-21, UC-11 | Saldos zerados | Produtos com SKUs 0, 1 e 2 | Somente saldo 0 é listado, agrupado por modelo | Automatizado: [SaldosZeradosViewModelTests](../../tests/SquadEstoque.Web.Tests/SaldosZeradosViewModelTests.cs) e [SaldosZeradosAuthorizationHttpTests](../../tests/SquadEstoque.Web.Tests/SaldosZeradosAuthorizationHttpTests.cs) |
-| IT-31 | RF-21, RF-02 | Vendedor tenta abrir saldos zerados | Login `VENDEDOR`; URL direta | Acesso negado, sem dados de estoque | Automatizado: [SaldosZeradosAuthorizationHttpTests](../../tests/SquadEstoque.Web.Tests/SaldosZeradosAuthorizationHttpTests.cs) |
-| IT-32 | RF-22, UC-12 | Histórico de rupturas | Rupturas repetidas para diferentes SKUs | Modelo, numeração e frequência corretos | Dependente da visão |
-| IT-33 | RF-22, RF-02 | Vendedor tenta abrir histórico | Login `VENDEDOR`; URL direta | Acesso negado | Dependente da rota |
+| IT-30 | RF-21, UC-11 | Saldos zerados | Produtos com SKUs 0, 1 e 2 | Somente saldo 0 é listado, agrupado por modelo | **Existente e aprovado:** `SaldosZeradosViewModelTests`, `SaldosZeradosConsultaTests` e `SaldosZeradosAuthorizationHttpTests`; capturas em 320/390/768/1440 px em [S3-FE-031](../05-ux/evidencias/s3-fe-031/README.md) |
+| IT-31 | RF-21, RF-02 | Vendedor tenta abrir saldos zerados | Login `VENDEDOR`; URL direta | Acesso negado, sem dados de estoque | **Existente e aprovado:** `SaldosZeradosAuthorizationHttpTests`; VENDEDOR e anônimo negados em 01/11/2026 |
+| IT-32 | RF-22, UC-12 | Histórico de rupturas | Rupturas repetidas para diferentes SKUs | Modelo, numeração e frequência corretos | **Existente e aprovado:** `RupturasControllerTests` e `RupturasHistoricoHttpTests`; capturas em 320/390/768/1440 px em [S3-FE-031](../05-ux/evidencias/s3-fe-031/README.md) |
+| IT-33 | RF-22, RF-02 | Vendedor tenta abrir histórico | Login `VENDEDOR`; URL direta | Acesso negado | **Existente e aprovado:** `RupturasHistoricoHttpTests` restringe ao LOJISTA; VENDEDOR e anônimo negados em 01/11/2026 |
 
 ## 11. Catálogo de testes do topo da pirâmide
 
-Executar em homologação com Playwright quando as jornadas estiverem estáveis.
+Executar em homologação com Playwright ou navegador real quando as jornadas estiverem estáveis. Na Sprint 3, as jornadas foram executadas localmente de forma manual assistida; a validação em ambiente publicado permanece pendente.
 
 | ID | Jornada | Entradas principais | Resultado esperado | Requisitos | Situação |
 |---|---|---|---|---|---|
-| E2E-01 | Login e logout de lojista | credenciais válidas; acessar Produtos; sair | Home do perfil; área autorizada; após sair, rota protegida pede login | RF-01 a RF-03, UC-01 | Planejado |
-| E2E-02 | Cadastro até entrada inicial | lojista cria PRD-01, grade 37–40 e entrada | Produto e SKUs visíveis; saldos e movimentações corretos | RF-05 a RF-10, UC-07 a UC-09 | Planejado |
-| E2E-03 | Consulta e venda | vendedor busca PRD-01, escolhe SKU-02 e marca `Vendeu` | Grade aparece; saldo reduz em 1; confirmação visível | RF-13 a RF-17, UC-02 a UC-04 | Parcial: aprovado em navegador local; bloqueado no ambiente publicado conforme `DEF-VEN-MOB-01` |
-| E2E-04 | Consulta e ruptura | vendedor busca, escolhe SKU e marca `Não tinha` | Ruptura registrada; saldo não muda | RF-18, RN-05, RN-06, UC-05 | Dependente |
-| E2E-05 | Desistência e continuidade | vendedor consulta, desiste e inicia nova consulta | Nenhum efeito no estoque; uso continua sem bloqueio | RF-19, RF-20, UC-06 | Dependente |
-| E2E-06 | Ajuste administrativo | lojista ajusta SKU com motivo | Novo saldo e histórico rastreável; vendedor não acessa a função | RF-23, RN-04, UC-10 | Planejado |
-| E2E-07 | Decisão de reposição | lojista abre saldos zerados e rupturas | Agrupamentos e frequências correspondem à massa preparada | RF-21, RF-22, UC-11, UC-12 | Dependente |
+| E2E-01 | Login e logout de lojista | credenciais válidas; acessar Produtos; sair | Home do perfil; área autorizada; após sair, rota protegida pede login | RF-01 a RF-03, UC-01 | **Aprovado** em 02/11/2026 ([S3-QA-030](execucoes/sprint-3/s3-qa-030-regressao-e2e.md)) |
+| E2E-02 | Cadastro até entrada inicial | lojista cria PRD-01, grade 37–40 e entrada | Produto e SKUs visíveis; saldos e movimentações corretos | RF-05 a RF-10, UC-07 a UC-09 | **Aprovado no reteste** de 07/11/2026; a execução original foi reprovada por `DEF-S3QA030-01` e a correção foi integrada ao `main` pelo PR #95 em 08/11/2026 (`c6cfdad`) |
+| E2E-03 | Consulta e venda | vendedor busca PRD-01, escolhe SKU-02 e marca `Vendeu` | Grade aparece; saldo reduz em 1; confirmação visível | RF-13 a RF-17, UC-02 a UC-04 | **Aprovado em ambiente local** em 02/11/2026; ressalva cosmética `DEF-S3QA030-02`; ambiente publicado segue bloqueado por `DEF-VEN-MOB-01` |
+| E2E-04 | Consulta e ruptura | vendedor busca, escolhe SKU e marca `Não tinha` | Ruptura registrada; saldo não muda | RF-18, RN-05, RN-06, UC-05 | **Aprovado** em 02/11/2026 ([S3-QA-030](execucoes/sprint-3/s3-qa-030-regressao-e2e.md)) |
+| E2E-05 | Desistência e continuidade | vendedor consulta, desiste e inicia nova consulta | Nenhum efeito no estoque; uso continua sem bloqueio | RF-19, RF-20, UC-06 | **Aprovado** em 03/11/2026 ([S3-QA-030](execucoes/sprint-3/s3-qa-030-regressao-e2e.md)) |
+| E2E-06 | Ajuste administrativo | lojista ajusta SKU com motivo | Novo saldo e histórico rastreável; vendedor não acessa a função | RF-23, RN-04, UC-10 | **Aprovado** em 02/11/2026; vendedor recebeu `AccessDenied` |
+| E2E-07 | Decisão de reposição | lojista abre saldos zerados e rupturas | Agrupamentos e frequências correspondem à massa preparada | RF-21, RF-22, UC-11, UC-12 | **Aprovado** em 02/11/2026 ([S3-QA-030](execucoes/sprint-3/s3-qa-030-regressao-e2e.md)) |
+
+A execução de 02, 03 e 07/11/2026 foi manual assistida, local, com Kestrel e SQLite descartável, sem capturas de tela. Os 7 casos foram aprovados após o reteste do E2E-02 e o PR #95 foi integrado ao `main` em 08/11/2026 (`c6cfdad`), mas o aceite formal continua pendente de revisão por outro integrante e de validação em ambiente publicado. Os defeitos `DEF-S3QA030-02` (“1 pares”) e `DEF-S3QA030-03` (mensagem em inglês) permanecem abertos.
 
 ## 12. Requisitos não funcionais
 
 | ID | Requisito | Método e entradas | Resultado esperado | Ferramenta/cadência |
 |---|---|---|---|---|
 | NFT-01 | RNF-01 | Abrir jornadas E2E em Chrome e Safari mobile, sem instalação | Sistema funciona pelo navegador | Playwright + validação manual por release |
-| NFT-02 | RNF-02 | Base representativa; carga de buscas concorrentes; medir P95 | Resposta da consulta < 500 ms em P95 e resultado visível em até 3 s com perfil de rede definido | k6/NBomber antes de release |
+| NFT-02 | RNF-02 | Linha de base local em TestServer com 1 usuário; carga de 20 usuários e medição mobile pendentes | P95 de servidor < 500 ms e resultado visível em até 3 s com perfil de rede definido | **Parcial:** 15/15 P95 < 500 ms em 29/10/2026 ([S3-QA-028](s3-qa-028-p95-consulta.md)); capacidade e ambiente publicado não comprovados; k6/NBomber antes de release |
 | NFT-03 | RNF-03 | Health check durante janela de 12 horas por dia, 7 dias | Disponibilidade atende à meta operacional que ainda deve ser quantificada no SRS | Monitoramento contínuo; requisito precisa de meta percentual |
 | NFT-04 | RNF-04 | Inspecionar hashes persistidos | bcrypt válido, custo >= 12, nenhuma senha em claro | xUnit a cada CI |
 | NFT-05 | RNF-05 | Requisitar HTTP em homologação/produção e inspecionar headers | Redirecionamento para HTTPS; tráfego final somente HTTPS; HSTS quando aplicável | Teste de integração/configuração e smoke por release |
 | NFT-06 | RNF-06 | Usuário vendedor sem treinamento realiza primeira consulta | No máximo 2 toques a partir do login, sem ajuda | Teste de usabilidade com pelo menos 5 participantes representativos |
 | NFT-07 | RNF-07 | Viewports 360×800, 390×844 e 430×932 | Sem rolagem horizontal, sobreposição ou ação inacessível | Playwright visual + manual por release |
 
-Para NFT-02, documentar volume de dados, número de usuários virtuais, duração, máquina e perfil de rede. Um tempo medido sem essas condições não é evidência reproduzível.
+Para NFT-02, documentar volume de dados, número de usuários virtuais, duração, máquina e perfil de rede. Um tempo medido sem essas condições não é evidência reproduzível. A medição de S3-QA-028 é opt-in, fica ignorada na suíte padrão, usou 1 usuário e TestServer no mesmo processo; não comprova capacidade, ambiente Azure nem o critério de 3 s no navegador.
 
 ## 13. Matriz de rastreabilidade resumida
 
@@ -432,7 +442,20 @@ Para NFT-02, documentar volume de dados, número de usuários virtuais, duraçã
 | RN-05 e RN-06 | IT-26, IT-27, E2E-04 |
 | RN-07 | IT-18 |
 
-### 13.1 Rastreabilidade dos casos de uso
+### 13.1 Rastreabilidade dos requisitos atualizados na Sprint 3
+
+| Requisito | Casos principais | Resultado registrado | Evidência | Limites |
+|---|---|---|---|---|
+| RN-03 | IT-14 | **Aprovado:** edição e exclusão ausentes no MVC; 12 tentativas por GET/POST recusadas com 404/405 e campos preservados | [MovimentacaoImutabilidadeHttpTests](../../tests/SquadEstoque.Web.Tests/MovimentacaoImutabilidadeHttpTests.cs), [MovimentacaoSomenteLeituraHttpTests](../../tests/SquadEstoque.Web.Tests/MovimentacaoSomenteLeituraHttpTests.cs) e [registro consolidado](homologacoes/registro-validacoes-manuais.md) | Smoke HTTP local de 14/10/2026; sem Azure ou teste visual |
+| RN-07 | IT-18, UT-05, IT-25 | **Aprovado em linha de base local:** uma única venda vence a disputa; saldo final zero e exatamente uma saída em 30 repetições | [S3-QA-003](execucoes/sprint-3/s3-qa-003-venda-simultanea.md), [S3-BE-001](execucoes/sprint-3/s3-be-001-decremento-atomico.md), [S3-BE-002](execucoes/sprint-3/s3-be-002-venda-transacional.md) e [saída da concorrência](execucoes/sprint-3/s3-qa-003-resultados.txt) | Teste de persistência, não dois navegadores nem carga; revisão independente no PR |
+| RF-12 | IT-13 | **Aprovado:** 16 cenários HTTP comprovam alteração da data somente após entrada, venda ou ajuste confirmados | [S3-QA-025](s3-qa-025-ultima-atualizacao.md), `UltimaAtualizacaoSaldoHttpTests` e [PR #83](https://github.com/CodeWitch00/SQUAD-estoque/pull/83) | Sem homologação manual em navegador; a tela pode formatar somente até minutos |
+| RF-21 | UT-13, IT-30, IT-31, E2E-07 | **Aprovado:** somente SKUs ativos com saldo zero são agrupados; consulta, autorização e telas responsivas validadas | [S3-BE-007](execucoes/sprint-3/s3-be-007-viewmodel-saldos-zerados.md), [S3-FE-031](../05-ux/evidencias/s3-fe-031/README.md), [PR #90](https://github.com/CodeWitch00/SQUAD-estoque/pull/90) e [S3-QA-030](execucoes/sprint-3/s3-qa-030-regressao-e2e.md) | Aparelho físico, leitor de tela e Safari não validados |
+| RF-22 | UT-14, IT-32, IT-33, E2E-07 | **Aprovado:** agrupamento, contagem e última ocorrência corretos; histórico restrito ao LOJISTA e telas responsivas validadas | [S3-BE-013](execucoes/sprint-3/s3-be-013-viewmodel-rupturas.md), [S3-FE-031](../05-ux/evidencias/s3-fe-031/README.md), [PR #90](https://github.com/CodeWitch00/SQUAD-estoque/pull/90) e [S3-QA-030](execucoes/sprint-3/s3-qa-030-regressao-e2e.md) | Volume maior de dados, foco por teclado e revisão independente não comprovados |
+| RNF-02 | NFT-02 | **Parcial:** 15/15 P95 de servidor abaixo de 500 ms em linha de base local com 1 usuário | [S3-QA-028](s3-qa-028-p95-consulta.md), [resultado.json](evidencias/s3-qa-028/resultado.json) e [amostras.csv](evidencias/s3-qa-028/amostras.csv) | TestServer local, sem carga de 20 usuários, sem Azure e sem medição mobile de 3 s |
+
+A coluna de resultado distingue aprovação local de aceite formal. Nenhuma linha desta matriz declara aceite de release.
+
+### 13.2 Rastreabilidade dos casos de uso
 
 | Caso de uso | Testes principais |
 |---|---|
@@ -454,22 +477,59 @@ Para NFT-02, documentar volume de dados, número de usuários virtuais, duraçã
 | UC-S4 — Rejeitar saída inválida | UT-05, IT-11, IT-12, IT-25 |
 | UC-S5 — Registrar movimentação | IT-07, IT-09, IT-10, IT-15 |
 
-### 13.2 Evidência de execução
+### 13.3 Evidência de execução
 
-Este plano não mantém resultados por commit nem contagens de testes. O estado executável está em [`tests/`](../../tests/), e o resultado de cada revisão está nos checks do Pull Request e no [GitHub Actions](https://github.com/CodeWitch00/SQUAD-estoque/actions). Validações que dependem de percepção visual, dispositivo ou ambiente publicado ficam no [registro consolidado](homologacoes/registro-validacoes-manuais.md).
+Este plano mantém, na seção 13.4, somente resultados de casos efetivamente executados, com data, commit, resultado e link da evidência. Contagens e percentuais agregados não são copiados para o plano: permanecem no runner, no check do Pull Request e no [GitHub Actions](https://github.com/CodeWitch00/SQUAD-estoque/actions). O estado executável está em [`tests/`](../../tests/). Validações que dependem de percepção visual, dispositivo ou ambiente publicado ficam no [registro consolidado](homologacoes/registro-validacoes-manuais.md).
+
+### 13.4 Resultados registrados na Sprint 3
+
+| Caso | Execução | Resultado | Evidência | Limites |
+|---|---|---|---|---|
+| IT-13 / RF-12 | 29/10/2026, base `95199c4`, PR #83 | **Aprovado:** 16 cenários HTTP de data e hora | [S3-QA-025](s3-qa-025-ultima-atualizacao.md) | Sem homologação manual em navegador |
+| IT-14 / RN-03 | 14/10/2026, base `1dacf4d` | **Aprovado:** 12 tentativas de edição/exclusão recusadas; campos e histórico preservados | [MovimentacaoImutabilidadeHttpTests](../../tests/SquadEstoque.Web.Tests/MovimentacaoImutabilidadeHttpTests.cs) e [registro consolidado](homologacoes/registro-validacoes-manuais.md) | Smoke HTTP local; sem Azure ou teste visual |
+| IT-15 e IT-16 / RF-23 | 12/10/2026 e 22/10/2026, PR #58 e #69 | **Aprovado:** 7 cenários de autorização e 8 de motivo/persistência | [S3-QA-021](execucoes/sprint-3/s3-qa-021-autorizacao-ajuste.md) e [S3-QA-020](execucoes/sprint-3/s3-qa-020-motivo-ajuste.md) | Saldo negativo (IT-17) não foi executado |
+| IT-18 / RN-07 | 08/10 a 11/10/2026, PR #53 e commit `91beacd` | **Aprovado em linha de base local:** 30 disputas com uma única venda e uma única saída; transação e rollback cobertos | [S3-BE-001](execucoes/sprint-3/s3-be-001-decremento-atomico.md), [S3-BE-002](execucoes/sprint-3/s3-be-002-venda-transacional.md), [S3-QA-003](execucoes/sprint-3/s3-qa-003-venda-simultanea.md) e [saída da concorrência](execucoes/sprint-3/s3-qa-003-resultados.txt) | Não representa dois navegadores nem teste de carga |
+| S3-BE-007 / RF-21 | 13/10/2026, commit `bfa420c` | **Aprovado:** contrato de saldos zerados com 11 casos e suíte da baseline aprovada | [S3-BE-007](execucoes/sprint-3/s3-be-007-viewmodel-saldos-zerados.md) | Entrega o ViewModel, não a consulta ou a tela |
+| S3-BE-013 / RF-22 | 14/10/2026, commit `88465f1` | **Aprovado:** contrato do histórico com os seis campos e suíte da baseline aprovada | [S3-BE-013](execucoes/sprint-3/s3-be-013-viewmodel-rupturas.md) | Sem teste unitário próprio de propriedades |
+| IT-30 e IT-31 / RF-21 | 01/11/2026, PR #90 | **Aprovado:** composição, consulta e autorização; capturas em 320/390/768/1440 px | [S3-FE-031](../05-ux/evidencias/s3-fe-031/README.md) | Aparelho físico, leitor de tela e Safari não validados |
+| IT-32 e IT-33 / RF-22 | 01/11/2026, PR #90 | **Aprovado:** agrupamento, contagem, restrição ao LOJISTA e capturas responsivas | [S3-FE-031](../05-ux/evidencias/s3-fe-031/README.md) | Volume maior, foco por teclado e revisão independente pendentes |
+| S3-DB-026 / apoio a RF-21 e RF-22 | 29/10/2026, PR #87 | **Aprovado:** planos de consulta usam os novos índices; migration testada com `Up`, `Down` e preservação de dados | [S3-DB-026](s3-db-026-indices-consulta.md) | Planos SQL representativos; não mede tempo HTTP nem ganho em produção |
+| E2E-01 | 02/11/2026, base `2e116c5`; registro integrado pelo PR #95 (`c6cfdad`) — o PR #92 foi fechado sem merge | **Aprovado:** login, logout e retorno à rota protegida | [S3-QA-030](execucoes/sprint-3/s3-qa-030-regressao-e2e.md) | Sem capturas de tela; ambiente publicado não validado |
+| E2E-02 | 02/11/2026 reprovado; reteste em 07/11/2026 no head `eb26f7d`; PR #95 integrado em 08/11/2026 (`c6cfdad`) | **Aprovado no reteste:** grade 37–40 sem workaround, saldos 1/2/1/0 e entradas corretas | [S3-QA-030](execucoes/sprint-3/s3-qa-030-regressao-e2e.md) e [estado do reteste](evidencias/s3-qa-030/estado-final-banco-reexecucao-e2e02.json) | Aceite formal pendente de revisão independente e validação em ambiente publicado |
+| E2E-03 | 02/11/2026 | **Aprovado em ambiente local:** duas vendas 3→2→1 e confirmação visível | [S3-QA-030](execucoes/sprint-3/s3-qa-030-regressao-e2e.md) | `DEF-S3QA030-02` (“1 pares”) aberto; ambiente publicado bloqueado por `DEF-VEN-MOB-01` |
+| E2E-04 | 02/11/2026 | **Aprovado:** 3 rupturas, saldo 0 preservado e nenhuma saída | [S3-QA-030](execucoes/sprint-3/s3-qa-030-regressao-e2e.md) | Sem capturas de tela |
+| E2E-05 | 03/11/2026 | **Aprovado:** `Desistiu` sem movimentação ou ruptura e nova consulta liberada | [S3-QA-030](execucoes/sprint-3/s3-qa-030-regressao-e2e.md) | Sem capturas de tela |
+| E2E-06 | 02/11/2026 | **Aprovado:** ajustes 1→3 e 2→0 rastreáveis; VENDEDOR recebeu `AccessDenied` | [S3-QA-030](execucoes/sprint-3/s3-qa-030-regressao-e2e.md) | Sem capturas de tela |
+| E2E-07 | 02/11/2026 | **Aprovado:** saldos zerados e rupturas agrupados conforme a massa | [S3-QA-030](execucoes/sprint-3/s3-qa-030-regressao-e2e.md) | Sem capturas de tela |
+| NFT-02 / RNF-02 | 29/10/2026, commit `91b9e8c`, PR #85 | **Aprovado em linha de base local:** 15/15 P95 de servidor < 500 ms | [S3-QA-028](s3-qa-028-p95-consulta.md), [resultado.json](evidencias/s3-qa-028/resultado.json) e [amostras.csv](evidencias/s3-qa-028/amostras.csv) | 1 usuário, TestServer local, sem Azure ou carga de homologação |
 
 ## 14. Automação existente
 
 | Arquivo | Responsabilidade principal |
 |---|---|
 | [BasicRoutesTests.cs](../../tests/SquadEstoque.Web.Tests/BasicRoutesTests.cs) | inicialização, rotas básicas e acesso anônimo |
-| [AuthenticationAuthorizationTests.cs](../../tests/SquadEstoque.Web.Tests/AuthenticationAuthorizationTests.cs) | login, perfis, navegação, autorização, BCrypt e logout |
+| [AuthenticationAuthorizationTests.cs](../../tests/SquadEstoque.Web.Tests/AuthenticationAuthorizationTests.cs) | login, perfis, navegação, autorização, BCrypt, logout e regressão de segurança do login |
 | [AdministrativeHttpTests.cs](../../tests/SquadEstoque.Web.Tests/AdministrativeHttpTests.cs) | fluxos administrativos e autorização HTTP |
 | [ConsultaEstoqueTests.cs](../../tests/SquadEstoque.Web.Tests/ConsultaEstoqueTests.cs) | busca, seleção, grade, saldos e estados visuais |
 | [ConsultaOperacionalHttpTests.cs](../../tests/SquadEstoque.Web.Tests/ConsultaOperacionalHttpTests.cs) | consulta operacional e controles de atendimento |
 | [EstoqueControllerHttpTests.cs](../../tests/SquadEstoque.Web.Tests/EstoqueControllerHttpTests.cs) | venda, ruptura, autorização, antiforgery e renderização |
-| [EstoqueDomainPersistenceTests.cs](../../tests/SquadEstoque.Web.Tests/EstoqueDomainPersistenceTests.cs) | persistência, estoque, movimentações, concorrência e rollback |
+| [EstoqueDomainPersistenceTests.cs](../../tests/SquadEstoque.Web.Tests/EstoqueDomainPersistenceTests.cs) | persistência, estoque, movimentações, concorrência, rollback e última atualização |
+| [VendaTransacionalTests.cs](../../tests/SquadEstoque.Web.Tests/VendaTransacionalTests.cs) | transação da venda, rollback, conflito de escrita e mensagens seguras |
+| [RollbackVendaTests.cs](../../tests/SquadEstoque.Web.Tests/RollbackVendaTests.cs) | falha controlada antes do commit sem saldo ou movimentação parcial |
 | [VendaRapidaHttpTests.cs](../../tests/SquadEstoque.Web.Tests/VendaRapidaHttpTests.cs) | venda de uma unidade e movimentação rastreável |
+| [UltimaAtualizacaoSaldoHttpTests.cs](../../tests/SquadEstoque.Web.Tests/UltimaAtualizacaoSaldoHttpTests.cs) | RF-12 via HTTP em entrada, venda, ajuste, ruptura e desistência |
+| [AjusteMotivoHttpTests.cs](../../tests/SquadEstoque.Web.Tests/AjusteMotivoHttpTests.cs) | motivo, normalização e persistência do ajuste |
+| [AjusteAuthorizationHttpTests.cs](../../tests/SquadEstoque.Web.Tests/AjusteAuthorizationHttpTests.cs) | autorização do ajuste por perfil e antiforgery |
+| [SaldosZeradosViewModelTests.cs](../../tests/SquadEstoque.Web.Tests/SaldosZeradosViewModelTests.cs) | composição, filtro, agrupamento e ordenação de saldos zerados |
+| [SaldosZeradosConsultaTests.cs](../../tests/SquadEstoque.Web.Tests/SaldosZeradosConsultaTests.cs) | consulta de saldos zerados e preservação de estoque |
+| [SaldosZeradosAuthorizationHttpTests.cs](../../tests/SquadEstoque.Web.Tests/SaldosZeradosAuthorizationHttpTests.cs) | autorização e estados da visão de saldos zerados |
+| [RupturasControllerTests.cs](../../tests/SquadEstoque.Web.Tests/RupturasControllerTests.cs) | agrupamento, ordenação e restrição do histórico de rupturas |
+| [RupturasHistoricoHttpTests.cs](../../tests/SquadEstoque.Web.Tests/RupturasHistoricoHttpTests.cs) | contagem, agregação, estado vazio e autorização do histórico |
+| [RupturaPersistenceHttpTests.cs](../../tests/SquadEstoque.Web.Tests/RupturaPersistenceHttpTests.cs) | persistência da ruptura com SKU, vendedor e data |
+| [MovimentacaoImutabilidadeHttpTests.cs](../../tests/SquadEstoque.Web.Tests/MovimentacaoImutabilidadeHttpTests.cs) | RN-03: edição e exclusão de movimentações recusadas |
+| [MovimentacaoSomenteLeituraHttpTests.cs](../../tests/SquadEstoque.Web.Tests/MovimentacaoSomenteLeituraHttpTests.cs) | RN-03: rotas MVC somente leitura e preservação do histórico |
+| [RelatoriosErroHttpTests.cs](../../tests/SquadEstoque.Web.Tests/RelatoriosErroHttpTests.cs) | falha de consulta nos relatórios sem confundir com estado vazio |
+| [ConsultaP95Tests.cs](../../tests/SquadEstoque.Web.Tests/ConsultaP95Tests.cs) | medição opt-in de RNF-02 e cálculo de P95 por nearest-rank |
 | [`tests/frontend/`](../../tests/frontend/) | comportamento de interface isolado e regressões frontend |
 
 As classes podem crescer ou ser reorganizadas sem exigir atualização de contagens neste plano. Novos domínios só precisam ser citados aqui quando alterarem a estratégia ou a cobertura obrigatória.
@@ -484,12 +544,12 @@ As classes podem crescer ou ser reorganizadas sem exigir atualização de contag
 
 Ordem recomendada para reduzir risco atual:
 
-1. concorrência da venda do último par (IT-18);
-2. autorização de escrita do ajuste para `VENDEDOR`;
-3. hash bcrypt persistido e custo (NFT-04);
-4. auditoria completa das movimentações (IT-09);
-5. testes do módulo do vendedor à medida que cada fatia for implementada;
-6. E2E somente após estabilizar as jornadas.
+1. hash bcrypt persistido e custo (NFT-04), ainda sem execução registrada;
+2. auditoria completa das movimentações (IT-09);
+3. correção dos defeitos cosméticos `DEF-S3QA030-02` e `DEF-S3QA030-03`;
+4. carga de RNF-02 em homologação e medição mobile (NFT-02);
+5. validação das jornadas E2E em ambiente publicado;
+6. rejeição de saldo negativo no ajuste (IT-17) e demais lacunas de escrita.
 
 ## 16. Execução
 
@@ -511,6 +571,14 @@ dotnet test tests/SquadEstoque.Web.Tests/SquadEstoque.Web.Tests.csproj \
 O CI exige cobertura de linhas igual ou superior a 50% e publica o arquivo
 `coverage.cobertura.xml`. O percentual vigente deve ser consultado no artefato da
 execução correspondente, sem manter uma cópia manual no plano.
+
+Medição opt-in de RNF-02, ignorada na suíte padrão:
+
+```powershell
+pwsh -File scripts/medir-rnf02.ps1 -OutputDirectory ./TestResults/rnf02-execucao-01
+```
+
+A medição local não substitui a carga de 20 usuários em homologação nem a validação mobile de 3 s.
 
 Com `mise`:
 
@@ -582,9 +650,9 @@ As evidências devem permanecer na fonte que as produz:
 - revisão e integração: conversa, checks, commits e decisão no Pull Request;
 - defeitos: issue ou cartão associado, quando aplicável;
 - validações manuais, visuais, em dispositivo ou ambiente publicado: [registro consolidado de validações manuais](homologacoes/registro-validacoes-manuais.md);
-- síntese do período: relatório da sprint em `docs/10-planejamento/`.
+- síntese do período: seção 13.4 deste plano e relatório da sprint em `docs/10-planejamento/`.
 
-Não deve ser criado um relatório Markdown para cada teste automatizado, cartão ou execução local. Logs, arquivos TRX, saídas de console, percentuais e contagens pertencem à execução da CI e não devem ser copiados para a documentação.
+Não deve ser criado um relatório Markdown para cada teste automatizado, cartão ou execução local. Logs, arquivos TRX, saídas de console, percentuais e contagens agregadas pertencem à execução da CI e não devem ser copiados para a documentação. A seção 13.4 registra apenas a síntese por caso, com link para a evidência original.
 
 Quando uma validação manual for necessária, registrar apenas data, commit, ambiente, escopo, resultado, limitações e o link da evidência externa relevante. Capturas anexadas somente ao Trello permanecem no cartão; entram no repositório apenas quando forem necessárias para homologação ou entrega acadêmica duradoura.
 
@@ -593,7 +661,8 @@ Quando uma validação manual for necessária, registrar apenas data, commit, am
 - requisito novo deve entrar na matriz antes de ser considerado pronto;
 - requisito removido deve ter os casos marcados como obsoletos, preservando histórico no Git;
 - teste automatizado novo deve atualizar a situação do caso correspondente;
-- não manter contagens ou percentuais de execução no plano; o runner e a CI são as fontes operacionais;
+- resultado novo deve ser registrado na seção 13.4 com data, commit, resultado e link da evidência;
+- não manter contagens ou percentuais agregados de execução no plano; o runner e a CI são as fontes operacionais;
 - divergências entre SRS, UX e implementação devem ser resolvidas, não escondidas alterando a expectativa do teste;
 - este plano deve ser revisado no planejamento de cada sprint e antes de cada release.
 
@@ -609,5 +678,6 @@ Quando uma validação manual for necessária, registrar apenas data, commit, am
 | 1.4 | 2026-09-29 | Execução e rastreabilidade | Codex, em execução solicitada pela equipe | Resultados reais da venda com saldo, saldo zero, autorização, movimentação, vínculo Produto–SKU e validação mobile registrados; divergência do Azure e validação por toque mantidas abertas |
 | 1.5 | 2026-09-29 | Ruptura | Codex, em execução solicitada pela equipe | IT-26 atualizado com a execução HTTP que comprova uma ruptura, saldos integralmente preservados e nenhuma alteração na tabela de movimentações |
 | 2.0 | 2026-10-12 | Simplificação documental | Equipe do projeto | Evidências automáticas direcionadas à CI e validações manuais reunidas em registro único; relatórios repetitivos removidos |
+| 2.1 | 2026-11-09 | Resultados da Sprint 3 | Equipe do projeto | Resultados de RN-03, RN-07, RF-12, RF-21, RF-22 e RNF-02 registrados por caso na seção 13.4; catálogos, automação, prioridades e referências atualizados; falhas e bloqueios mantidos visíveis |
 
 Revisões assistidas não substituem o aceite do responsável de QA ou do produto quando esse aceite for exigido para release. A próxima alteração funcional ou de requisito deve gerar uma nova linha, com versão, data, tipo, revisor e resultado.
