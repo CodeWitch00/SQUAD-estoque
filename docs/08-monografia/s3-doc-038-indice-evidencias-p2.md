@@ -13,9 +13,9 @@
 | Área principal | Documentação |
 | Branch sugerida | `docs/s3-doc-038-integrante` |
 | Baseline de código conferida | `origin/main` em `c6cfdad` (08/11/2026) |
-| Árvore de trabalho | `docs/s3-doc-037-integrante` em `9ebe899` (09/11/2026), um commit documental à frente da `origin/main` |
-| Data desta organização | 09/11/2026 |
-| Versão deste índice | 0.1 — rascunho para revisão por par |
+| Árvore de trabalho | branch `docs/s3-doc-038-integrante` criada a partir da `origin/main` em `c6cfdad` (republicação de 10/11/2026; a entrega anterior, PR #97, foi fechada sem merge) |
+| Data desta organização | 09/11/2026; republicado em 10/11/2026 |
+| Versão deste índice | 0.3 — republicado para revisão por par |
 | Responsável | integrante que assumir o cartão |
 
 ## 1. Objetivo e limite do artefato
@@ -336,8 +336,8 @@ conjunto do projeto.
 | Critério de produção | Peso | Evidência deste índice | Estado |
 | --- | --- | --- | --- |
 | Qualidade da escrita e ortografia | 1,0 | Este documento e os documentos referenciados | Pendente de revisão por outro integrante |
-| Controle de versão (Git/GitHub) | 1,5 | `origin/main` em `c6cfdad`; branch `docs/s3-doc-038-integrante` publicada com o commit deste índice | **Parcial** — Pull Request pendente |
-| Gestão do Trello/Kanban e Sprints | 1,0 | Cartão S3-DOC-038 e checklist deste artefato | Pendente de movimentação e anexos no Trello |
+| Controle de versão (Git/GitHub) | 1,5 | `origin/main` em `c6cfdad`; branch `docs/s3-doc-038-integrante` republicada com o [PR #102](https://github.com/CodeWitch00/SQUAD-estoque/pull/102) aberto | **Em revisão** — aguarda revisão obrigatória de outro integrante |
+| Gestão do Trello/Kanban e Sprints | 1,0 | Cartão S3-DOC-038 em Testes com o relatório de evidências anexado | Movido para Testes; aguarda revisão e aprovação |
 | Presença do grupo em reuniões/aulas | 1,5 | Não comprovável por documento | Fora do escopo deste artefato |
 | Arquitetura MVC e persistência | 1,5 | 9 controllers, 9 entidades, 15 view models, 25 views, `EstoqueContext`, 6 migrations e 310 testes aprovados na suíte local | **Comprovado em código e testes** |
 | Segurança e controle de acesso | 2,0 | Cookie, BCrypt custo 12, autorização por perfil e testes de acesso negado | **Comprovado em código e testes**; falta smoke manual na versão publicada |
@@ -365,8 +365,8 @@ conjunto do projeto.
    [`plano-de-testes.md`](../09-testing/plano-de-testes.md) contêm afirmações de
    baselines anteriores que precisam ser reconciliadas com o código atual antes
    da P2.
-10. A movimentação do cartão no Trello e o anexo de evidências não foram
-    executados por este artefato.
+10. A movimentação final do cartão para Feito depende da aprovação do
+    professor e do merge do PR #102.
 
 ## 11. Pendências para a Sprint 4
 
@@ -425,3 +425,4 @@ conjunto do projeto.
 | --- | --- | --- | --- |
 | 0.1 | 09/11/2026 | Organização inicial das evidências de aplicação, GUI, MVC, persistência e segurança; pendências da Sprint 4 | Rascunho para revisão por par |
 | 0.2 | 09/11/2026 | Publicação da branch `docs/s3-doc-038-integrante` e registro do commit deste índice | Publicado no GitHub; Pull Request e anexo no Trello pendentes |
+| 0.3 | 10/11/2026 | Republicação a partir da `origin/main` atualizada (`c6cfdad`) após o PR #97 ser fechado sem merge; abertura do [PR #102](https://github.com/CodeWitch00/SQUAD-estoque/pull/102) com revisão solicitada e evidência anexada ao cartão do Trello | PR aberto aguardando revisão obrigatória |
