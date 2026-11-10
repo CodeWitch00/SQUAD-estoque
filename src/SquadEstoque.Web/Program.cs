@@ -1,5 +1,7 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
+using System.Text;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +9,17 @@ using Microsoft.Extensions.DependencyInjection;
 using SquadEstoque.Web.Data;
 using SquadEstoque.Web.Models;
 
-var builder = WebApplication.CreateBuilder(args);
+var bootstrapLojista = args.Length > 0 && args[0] == "--bootstrap-lojista";
+if (bootstrapLojista && args.Length != 3)
+{
+    throw new InvalidOperationException("Uso: --bootstrap-lojista NOME EMAIL (senha pela entrada padrao).");
+}
+
+var builder = WebApplication.CreateBuilder(bootstrapLojista ? Array.Empty<string>() : args);
+if (bootstrapLojista && !builder.Environment.IsProduction())
+{
+    throw new InvalidOperationException("O primeiro LOJISTA so pode ser criado em Production.");
+}
 
 var dataProtectionKeysPath = builder.Configuration["DataProtection:KeysPath"];
 if (!string.IsNullOrWhiteSpace(dataProtectionKeysPath))
@@ -50,9 +62,51 @@ if (!app.Environment.IsEnvironment("Testing"))
     var estoqueContext = services.GetRequiredService<EstoqueContext>();
     estoqueContext.Database.Migrate();
 
-    // Usuários conhecidos só são criados em ambientes explicitamente demonstrativos.
+    if (bootstrapLojista)
+    {
+        var nome = args[1].Trim();
+        var email = args[2].Trim();
+        if (string.IsNullOrWhiteSpace(nome) || nome.Length > 150 ||
+            string.IsNullOrWhiteSpace(email) || email.Length > 255 ||
+            !new EmailAddressAttribute().IsValid(email))
+        {
+            throw new InvalidOperationException("Nome ou email do primeiro LOJISTA invalido.");
+        }
+
+        if (!Console.IsInputRedirected)
+        {
+            throw new InvalidOperationException("Forneca a senha pela entrada padrao redirecionada.");
+        }
+
+        using var transaction = estoqueContext.Database.BeginTransaction();
+        if (estoqueContext.Usuario.Any())
+        {
+            throw new InvalidOperationException("O banco ja possui usuarios; primeiro acesso indisponivel.");
+        }
+
+        var senha = Console.In.ReadLine();
+        if (senha is null || senha.Length < 12 || Encoding.UTF8.GetByteCount(senha) > 72)
+        {
+            throw new InvalidOperationException("A senha deve ter ao menos 12 caracteres e no maximo 72 bytes UTF-8.");
+        }
+
+        estoqueContext.Usuario.Add(new Usuario
+        {
+            Id = Guid.NewGuid(),
+            Nome = nome,
+            Email = email,
+            SenhaHash = BCrypt.Net.BCrypt.HashPassword(senha, 12),
+            Perfil = PerfilUsuario.LOJISTA
+        });
+        estoqueContext.SaveChanges();
+        transaction.Commit();
+        Console.WriteLine("Primeiro LOJISTA criado.");
+        return;
+    }
+
+    // Usuários demonstrativos só podem ser criados em Development.
     var seedDemoUsers = builder.Configuration.GetValue<bool>("Demo:SeedUsers");
-    if (seedDemoUsers && !estoqueContext.Usuario.Any())
+    if (app.Environment.IsDevelopment() && seedDemoUsers && !estoqueContext.Usuario.Any())
     {
         estoqueContext.Usuario.AddRange(
             new Usuario
