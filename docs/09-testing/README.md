@@ -1,6 +1,7 @@
 # Testes
 
-Esta pasta contém apenas documentação estável que não é substituída pelo código, pelo Git ou pela integração contínua.
+Esta pasta reúne o plano de testes, validações manuais, evidências históricas e
+registros objetivos que acrescentam contexto ao código e à integração contínua.
 
 ## Fontes de verdade
 
@@ -17,10 +18,10 @@ Esta pasta contém apenas documentação estável que não é substituída pelo 
 
 ## Política de manutenção
 
-- Não criar um relatório Markdown para cada teste automatizado, cartão ou execução local.
+- Não criar um relatório Markdown para cada teste automatizado, cartão ou execução local. Uma evidência objetiva solicitada para um cartão pode ser versionada quando acrescentar contexto operacional e limites que a CI não registra.
 - Não copiar para esta pasta logs, TRX, saída de console ou contagens já registradas pela CI.
 - Não repetir a implementação em especificações extensas quando o teste automatizado e os requisitos já descrevem o comportamento.
-- Registrar aqui somente validações manuais, testes em dispositivo, homologação publicada, limitações e decisões de aceite que não possam ser demonstradas pela CI.
+- Registrar aqui somente validações manuais, testes em dispositivo, homologação publicada, evidências operacionais específicas, limitações e decisões de aceite que não possam ser demonstradas pela CI.
 - Capturas destinadas apenas ao acompanhamento do cartão devem permanecer no Trello. Uma captura só deve ser versionada quando for necessária como evidência acadêmica ou de homologação e não contiver dados sensíveis.
 
 Relatórios, capturas e evidências removidos durante simplificações anteriores foram reorganizados em `evidencias/`, `execucoes/` e `especificacoes/arquivo-historico/`. O [índice do arquivo histórico](arquivo-historico/README.md) registra o caminho original e o commit de origem. Consulte-o antes de reutilizar material antigo; alguns arquivos refletem versões ou critérios anteriores.

@@ -1,7 +1,7 @@
 # S3-QA-028 — P95 da consulta de estoque
 
 Rastreabilidade: [RNF-02 no SRS](../02-requisitos/srs.md) e
-[especificação não funcional](especificacao-testes-nao-funcionais.md), NFT-PERF-01 a 03.
+[especificação não funcional histórica](especificacoes/arquivo-historico/especificacao-testes-nao-funcionais.md), NFT-PERF-01 a 03.
 Dependência: consulta e grade implementadas em `dev/emmy` (base `91b9e8c`).
 
 ## Protocolo reproduzível

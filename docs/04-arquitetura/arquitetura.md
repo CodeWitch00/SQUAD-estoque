@@ -51,40 +51,23 @@ As seguintes restrições regem o desenvolvimento deste projeto:
 
 ## 4. Estrutura de Diretórios e Componentes
 
-A organização do projeto mantém o layout canônico do ASP.NET Core MVC:
+A organização mantém o ASP.NET Core MVC tradicional:
 
-```text
-src/SquadEstoque.Web/
-├── Controllers/
-│   ├── AccountController.cs       # Login, Logout e controle de acesso
-│   ├── ProdutosController.cs      # Catálogo de modelos e definição de grades
-│   ├── EstoqueController.cs       # Consulta rápida (vendedor), entradas e ajustes (lojista)
-│   ├── MovimentacoesController.cs # Histórico e auditoria de entradas, saídas e ajustes
-├── Models/
-│   ├── Entities/                  # Entidades persistidas do domínio do estoque
-│   │   ├── Usuario.cs             # Usuário autenticado e enum PerfilUsuario
-│   │   ├── Produto.cs             # Modelo comercial de calçado
-│   │   ├── Sku.cs                 # Unidade mínima de estoque (Produto + Numeração)
-│   │   ├── Movimentacao.cs        # Registro imutável e enum TipoMovimentacao
-│   │   └── Ruptura.cs             # Demanda não atendida vinculada a SKU
-│   └── ViewModels/                # Modelos de tela, entrada e mensagens de erro
-├── Views/
-│   ├── Account/                   # Telas de Login e Acesso Negado
-│   ├── Produtos/                  # Telas de listagem e cadastro de modelos
-│   ├── Estoque/                   # Consulta de grade (vendedor) e telas de entrada/ajuste (lojista)
-│   ├── Movimentacoes/             # Listagem do livro-razão de movimentações
-│   ├── Rupturas/                  # Visão consolidada de perdas de venda
-│   ├── Shared/                    # _Layout.cshtml, _ValidationScriptsPartial.cshtml, Error.cshtml
-│   ├── _ViewImports.cshtml        # Importação global de TagHelpers e namespaces
-│   └── _ViewStart.cshtml          # Layout padrão
-├── Data/
-│   └── EstoqueContext.cs          # DbContext do EF Core com mapeamento das 5 tabelas
-├── Migrations/                    # Migrações gerenciadas pelo EF Core
-├── wwwroot/                       # Arquivos estáticos (CSS, JS, Bootstrap, jQuery)
-├── Program.cs                     # Configuração de serviços, autenticação e pipeline HTTP
-├── appsettings.json               # Connection string do SQLite e configurações
-└── Estoque.db                     # Base física de dados SQLite local
-```
+| Caminho | Responsabilidade atual |
+| --- | --- |
+| `Controllers/` | Login, produtos, consulta, movimentações, rupturas, saldos zerados, atendimentos e entrada fiscal. |
+| `Models/Entities/` e `Models/ViewModels/` | Nove entidades persistidas e modelos específicos das telas. |
+| `Views/` | Telas Razor organizadas por controller e layout compartilhado. |
+| `Data/EstoqueContext.cs` | Mapeamento EF Core, relacionamentos, índices e restrições SQLite. |
+| `Data/SaidaEstoque.cs` | Baixa de saldo protegida por transação. |
+| `Migrations/Estoque/` | Evolução do esquema SQLite. |
+| `Program.cs` | Serviços, cookies, pipeline HTTP, migrations e primeiro acesso do LOJISTA. |
+| `wwwroot/` | CSS, JavaScript e arquivos estáticos. |
+
+O [modelo vigente](../03-modelagem/README.md) resume as nove tabelas. O banco
+em execução é configurado por connection string; o arquivo SQLite local não é
+fonte de verdade do projeto. Os [diagramas vigentes](../06-uml/README.md)
+mostram as entidades, atores e fluxos atuais.
 
 ---
 
@@ -102,43 +85,19 @@ flowchart TD
         ROUTER["MapControllerRoute"]
     end
 
-    subgraph ControllersLayer ["Controllers MVC"]
-        AC["AccountController"]
-        PC["ProdutosController"]
-        EC["EstoqueController"]
-        MC["MovimentacoesController"]
-    end
+    C["Controllers MVC"]
 
     subgraph DataLayer ["Acesso a Dados"]
         CTX["EstoqueContext (DbContext)"]
-        DB[(SQLite: Estoque.db)]
+        DB[("SQLite configurado")]
     end
 
-    subgraph ViewsLayer ["Views Razor"]
-        V_ACC["Views/Account"]
-        V_PROD["Views/Produtos"]
-        V_EST["Views/Estoque"]
-        V_MOV["Views/Movimentacoes"]
-        V_RUP["Views/Rupturas"]
-    end
+    V["Views Razor"]
 
-    REQ --> AUTH --> ROUTER
-    ROUTER --> AC
-    ROUTER --> PC
-    ROUTER --> EC
-    ROUTER --> MC
-    ROUTER --> RC
-
-    AC & PC & EC & MC & RC -->|Acesso Direto LINQ| CTX
+    REQ --> AUTH --> ROUTER --> C
+    C -->|Acesso a dados| CTX
     CTX -->|Persistência / Consulta| DB
-
-    AC --> V_ACC
-    PC --> V_PROD
-    EC --> V_EST
-    MC --> V_MOV
-    RC --> V_RUP
-
-    V_ACC & V_PROD & V_EST & V_MOV & V_RUP --> RESP
+    C --> V --> RESP
 ```
 
 ---
@@ -157,15 +116,16 @@ flowchart TD
 | **DA-06** | **Desacoplamento de Ruptura (RN-05, RN-06)** | A tabela `ruptura` não armazena saldo nem quantidade, sendo gerada exclusivamente pelo clique em "Não tinha". | Ruptura é dado de inteligência comercial, não afeta estoque físico. |
 | **DA-07** | **Atomicidade de Venda (RN-07)** | Operações de saída executadas em transação de escrita imediata no SQLite com `CHECK (saldo_atual >= 0)`. | Garante que dois vendedores concorrentes não vendam o último par simultaneamente. |
 | **DA-08** | **Autenticação e Sessão** | Cookie Authentication nativo do ASP.NET Core com perfis `VENDEDOR` e `LOJISTA`. | Leve, integrado ao framework e sem a sobrecarga de tabelas do Identity completo. |
-| **DA-09** | **Persistência do domínio de estoque** | `EstoqueContext` mantém as migrations e o banco SQLite do estoque. | A aplicação possui somente a persistência necessária ao produto. |
+| **DA-09** | **Persistência do domínio de estoque** | `EstoqueContext` mapeia as nove tabelas do SQLite; as migrations versionam o esquema. | Uma persistência única para o produto. |
 
 ---
 
-### 6.2 Decisões Arquiteturais Pendentes (A Serem Alinhadas com a Equipe)
+### 6.2 Decisões implementadas depois da base inicial
 
-| ID | Tópico | Opções em Aberto | Impacto |
-| :--- | :--- | :--- | :--- |
-| **DP-01** | **Algoritmo / Pacote de Hash de Senha** | - Opção A: `BCrypt.Net-Next` (atende estritamente o RNF-04 que cita bcrypt custo $\ge 12$).<br>- Opção B: `PasswordHasher<T>` nativo do ASP.NET Core (usa PBKDF2). | Definição da dependência externa no `.csproj`. |
-| **DP-02** | **Estratégia de Seed de Dados** | - Opção A: Criar usuários (`vendedor@loja.com` e `lojista@loja.com`) e produtos padrão automaticamente na inicialização caso a base esteja vazia.<br>- Opção B: Não realizar carga inicial automática. | Facilidade de testes manuais e homologação local. |
+- Senhas de usuários são armazenadas com BCrypt, custo 12.
+- Usuários demonstrativos só são criados em `Development` quando
+  `Demo:SeedUsers=true` e o banco está vazio. `Testing` usa banco isolado.
+- `Production` não cria contas demonstrativas; o primeiro LOJISTA de um banco
+  vazio é cadastrado pelo [procedimento operacional](../07-operacional/primeiro-acesso-lojista.md).
 
 ---

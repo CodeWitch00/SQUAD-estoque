@@ -1,5 +1,10 @@
 ## Diagrama de Classes - Sistema SQUAD
 
+> **Registro histórico:** desenho de classes do domínio inicial. Consulte o
+> [modelo vigente](../../03-modelagem/README.md) para a persistência atual.
+> A notação original mistura tipos genéricos de banco com classes C#; `UUID`,
+> `VARCHAR` e `TIMESTAMPTZ` não são tipos físicos do SQLite desta aplicação.
+
 ```mermaid
 classDiagram
 

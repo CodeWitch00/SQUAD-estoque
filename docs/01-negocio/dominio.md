@@ -81,7 +81,6 @@ Criar uma ferramenta simples e confiável que resolva dois problemas específico
 
 ### 4.2 Fora do Escopo
 
-- Importação de XML de NF-e  
 - PDV e caixa  
 - Gestão financeira  
 - Multi-loja
@@ -91,6 +90,11 @@ Criar uma ferramenta simples e confiável que resolva dois problemas específico
 - Alertas automáticos de ruptura 
 - Relatórios analíticos avançados
 - Emissão de nota fiscal  
+
+A importação manual do XML de NF-e, inicialmente fora do MVP, foi incorporada
+posteriormente pelos [RF-26 a RF-30](../02-requisitos/srs.md). O escopo
+implementado está descrito em
+[entrada-mercadorias-nfe.md](../04-arquitetura/entrada-mercadorias-nfe.md).
 
 ---
 ## 5. Regras de Negócio
