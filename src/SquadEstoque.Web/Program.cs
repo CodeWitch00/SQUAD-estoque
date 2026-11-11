@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SquadEstoque.Web.Data;
+using SquadEstoque.Web.Configuration;
 using SquadEstoque.Web.Models;
 
 var bootstrapLojista = args.Length > 0 && args[0] == "--bootstrap-lojista";
@@ -21,13 +22,17 @@ if (bootstrapLojista && !builder.Environment.IsProduction())
     throw new InvalidOperationException("O primeiro LOJISTA so pode ser criado em Production.");
 }
 
-var dataProtectionKeysPath = builder.Configuration["DataProtection:KeysPath"];
-if (!string.IsNullOrWhiteSpace(dataProtectionKeysPath))
-{
-    Directory.CreateDirectory(dataProtectionKeysPath);
-    builder.Services.AddDataProtection()
-        .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionKeysPath));
-}
+builder.Services.AddDataProtection();
+builder.Services.AddOptions<Microsoft.AspNetCore.DataProtection.KeyManagement.KeyManagementOptions>()
+    .Configure<IConfiguration, ILoggerFactory>((options, configuration, loggerFactory) =>
+    {
+        var keysPath = configuration["DataProtection:KeysPath"];
+        if (!string.IsNullOrWhiteSpace(keysPath))
+        {
+            options.XmlRepository = new Microsoft.AspNetCore.DataProtection.Repositories.FileSystemXmlRepository(
+                new DirectoryInfo(keysPath), loggerFactory);
+        }
+    });
 
 builder.Services.AddDbContext<EstoqueContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("EstoqueContext") ?? throw new InvalidOperationException("Connection string 'EstoqueContext' not found.")));
@@ -52,6 +57,8 @@ if (builder.Environment.IsDevelopment())
 }
 
 var app = builder.Build();
+
+ProductionConfiguration.Validate(app.Configuration, app.Environment);
 
 if (!app.Environment.IsEnvironment("Testing"))
 {

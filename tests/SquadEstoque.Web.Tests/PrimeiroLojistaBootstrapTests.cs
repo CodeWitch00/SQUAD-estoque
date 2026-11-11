@@ -25,7 +25,7 @@ public sealed class PrimeiroLojistaBootstrapTests
             Assert.DoesNotContain(senha, resultado.Output);
             Assert.Contains("Primeiro LOJISTA criado.", resultado.Output);
 
-            await using var connection = new SqliteConnection($"Data Source={dbPath}");
+            await using var connection = new SqliteConnection($"Data Source={dbPath};Pooling=False");
             await connection.OpenAsync();
             await using var command = connection.CreateCommand();
             command.CommandText = "SELECT Email, SenhaHash, Perfil FROM Usuario";
