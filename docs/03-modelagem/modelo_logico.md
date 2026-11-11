@@ -1,4 +1,7 @@
 # Modelo Lógico 
+
+> **Registro histórico:** desenho inicial do MVP com cinco tabelas. Consulte o
+> [modelo vigente](README.md) para a estrutura atual do SQLite.
 > **Para quem é este documento:** desenvolvedores 
 
 ---

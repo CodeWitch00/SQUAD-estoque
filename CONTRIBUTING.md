@@ -408,10 +408,10 @@ endpoint `/health` respondeu com sucesso; as validações de login, persistênci
 após reinício e republicação, backup e restauração continuam pendentes e estão
 registradas no [runbook do Azure](docs/07-operacional/azure.md).
 
-Depois da publicação, cada integrante acessa a URL pelo navegador com as
-credenciais demonstrativas temporárias. Todos veem o mesmo banco de homologação.
-Esse ambiente serve para validar a versão integrada da `main`, ensaiar os fluxos
-e preparar a demonstração.
+Depois da publicação, cada integrante acessa a URL pelo navegador com uma
+conta autorizada. Todos veem o mesmo banco de homologação. Esse ambiente serve
+para validar a versão integrada da `main`, ensaiar os fluxos e preparar a
+demonstração.
 
 Somente uma pessoa autorizada publica por vez. Antes de cada publicação:
 
@@ -423,12 +423,13 @@ Somente uma pessoa autorizada publica por vez. Antes de cada publicação:
 6. confirme a persistência após reinício e republicação;
 7. registre versão, horário, responsável e resultado.
 
-Não teste branches individuais no Azure compartilhado. Como exceção temporária,
-o seed demonstrativo está habilitado para a validação interna dos
-desenvolvedores, sempre com dados fictícios e com a URL compartilhada somente
-com a equipe. O cartão `S4-BE-003` deverá substituir essas credenciais antes da
-demonstração final ou de qualquer uso real. O CD será configurado somente depois
-da persistência e da recuperação estarem comprovadas.
+Não teste branches individuais no Azure compartilhado. O seed demonstrativo
+fica restrito a `Development`; contas demonstrativas já presentes no banco
+compartilhado precisam de revisão separada antes de qualquer uso real. Para um
+banco de produção novo, siga o
+[procedimento do primeiro LOJISTA](docs/07-operacional/primeiro-acesso-lojista.md).
+O CD será configurado somente depois da persistência e da recuperação estarem
+comprovadas.
 
 ## 9. Critérios comuns
 

@@ -4,6 +4,7 @@
     ViewData["Title"] = "Saldos zerados para reposição";
 }
 
+<div class="report-page">
 <div class="admin-page-heading mb-4">
     <div>
         <h1>Saldos zerados para reposição</h1>
@@ -17,20 +18,21 @@
 }
 else
 {
+    <p class="text-secondary">Produtos em ordem de nome, com suas numerações sem saldo.</p>
     <div class="row g-3">
         @foreach (var produto in Model.Produtos)
         {
             <div class="col-12 col-md-6 col-xl-4">
-                <section class="card h-100" aria-label="@produto.Nome">
+                <section class="card h-100" aria-labelledby="produto-@produto.Id">
                     <div class="card-body">
-                        <h2 class="h5 card-title">@produto.Nome</h2>
+                        <h2 id="produto-@produto.Id" class="h5 card-title">@produto.Nome</h2>
                         <p class="text-secondary mb-2">@produto.Marca · @produto.Cor</p>
                         <p class="mb-2">Numerações sem saldo:</p>
                         <ul class="list-unstyled mb-0">
                             @foreach (var sku in produto.NumeracoesZeradas)
                             {
                                 <li class="saldos-zerados-sku">
-                                    <span class="badge text-bg-secondary">@sku.Numeracao</span>
+                                    <span class="badge text-bg-secondary text-wrap">@sku.Numeracao</span>
                                     <small class="sku-last-update">
                                         @if (sku.UltimaAtualizacaoSaldoEm.HasValue)
                                         {
@@ -51,3 +53,5 @@ else
         }
     </div>
 }
+
+</div>

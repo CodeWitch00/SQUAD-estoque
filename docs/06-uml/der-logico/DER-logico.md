@@ -1,5 +1,8 @@
 # DER Modelo Lógico
 
+> **Registro histórico:** diagrama do domínio inicial. Para as nove tabelas
+> persistidas atualmente, consulte o [modelo vigente](../../03-modelagem/README.md).
+
 O modelo lógico do SQUAD é organizado em quatro camadas:
 
 1. Catálogo

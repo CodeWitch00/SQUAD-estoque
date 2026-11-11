@@ -1,5 +1,8 @@
 # DER Modelo Conceitual
 
+> **Registro histórico:** desenho inicial do MVP com cinco entidades. O
+> [modelo vigente](README.md) inclui atendimento e entrada fiscal.
+
 Foco: Visão macro dos negócios e regras da organização.
 Componentes: Entidades principais, relacionamentos sem cardinalidade detalhada e atributos essenciais.
 

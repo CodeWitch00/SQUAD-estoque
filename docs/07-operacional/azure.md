@@ -1,7 +1,7 @@
 # Publicação e validação no Azure
 
 Este runbook registra o ambiente acadêmico compartilhado, a publicação manual
-de contingência e o fluxo automatizado em preparação. Ele não contém senhas,
+de contingência e o fluxo automatizado ativo. Ele não contém senhas,
 bancos ou outros segredos.
 
 ## Ambiente
@@ -25,20 +25,23 @@ Não cadastre clientes, dados pessoais ou informações reais.
 
 ## Persistência configurada
 
-As configurações de aplicativo usadas no App Service são:
+As configurações esperadas no App Service são (confirme os valores no Portal):
 
 ```text
 ASPNETCORE_ENVIRONMENT=Production
 WEBSITES_ENABLE_APP_SERVICE_STORAGE=true
 ConnectionStrings__EstoqueContext=Data Source=/home/data/Estoque.db
 DataProtection__KeysPath=/home/data/keys
-Demo__SeedUsers=true
 ```
 
 O banco do estoque e as chaves de cookies ficam em `/home/data`, fora de
-`/home/site/wwwroot`, onde o pacote é implantado. O seed demonstrativo permanece
-temporariamente habilitado somente para a equipe e será revisto no cartão
-`S4-BE-003` antes da demonstração final ou de qualquer uso real.
+`/home/site/wwwroot`, onde o pacote é implantado. A configuração legada
+`Demo__SeedUsers` foi removida no Portal em 10/11/2026. O código publicado
+também não executa seed demonstrativo em `Production`, mesmo se a variável
+voltar a ser definida. Usuários demonstrativos já existentes no banco não são
+removidos automaticamente;
+revise-os separadamente antes de usar o ambiente fora da demonstração. Para um
+banco novo, siga o [primeiro acesso do LOJISTA](primeiro-acesso-lojista.md).
 
 ## Publicação automatizada
 
@@ -47,19 +50,17 @@ publicar. O job de deploy só é elegível em `push` ou execução manual da `ma
 rejeita pacotes que contenham arquivos SQLite, autentica no Azure com OIDC e
 confere `/health` depois da publicação.
 
-O deploy fica desativado enquanto a variável de repositório
-`AZURE_CD_ENABLED` não estiver definida como `true`. A identidade federada
+O deploy só é executado quando a variável de repositório
+`AZURE_CD_ENABLED` está definida como `true`; ela foi conferida assim em
+10/11/2026. A identidade federada
 `id-squad-estoque-github` confia somente em `main` e recebe `Website Contributor`
 com escopo no App Service. Os identificadores usados pelo login OIDC ficam nos
 secrets `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` e `AZURE_SUBSCRIPTION_ID`; os
 valores não devem ser registrados neste documento.
 
-Após ativar a variável, execute uma vez o workflow pela aba **Actions**, com a
-branch `main`. Depois, cada atualização da `main` aciona build, testes e deploy
-automaticamente, desde que a validação passe.
-
-Enquanto o fluxo ainda não estiver ativado, a aplicação não é publicada por
-este workflow.
+Cada atualização da `main` aciona build, testes e deploy automaticamente,
+desde que a validação passe. Consulte a execução mais recente na aba
+**Actions** antes de declarar a publicação concluída.
 
 ## Publicação manual de contingência
 
@@ -101,16 +102,14 @@ az webapp deploy \
 A publicação deve partir somente da `main` validada. Apenas a responsável pelo
 ambiente executa o deploy.
 
-## Estado do ambiente
+## Estado do ambiente — conferência em 10/11/2026
 
 | Verificação | Resultado |
 | --- | --- |
-| Último commit implantado antes da automação | `ead5edb` (deploy ZIP em 21/09/2026) |
-| Commit de automação em `main` | `e7c8a0b` |
-| Build e testes do workflow após a integração | Aguardando conferência no GitHub Actions |
-| Variável `AZURE_CD_ENABLED` | Pendente de configuração |
-| Primeiro deploy pelo GitHub Actions | Pendente |
-| HTTPS e `/health` após o próximo deploy | Pendente |
+| Build, testes e deploy do commit `dac6eaf` | Aprovados no [workflow da `main`](https://github.com/CodeWitch00/SQUAD-estoque/actions/runs/42901865609) |
+| Variável `AZURE_CD_ENABLED` | `true`, conferida em 10/11/2026 |
+| `Demo__SeedUsers` | Removida do App Service em 10/11/2026; confirmar novamente no Portal se a configuração mudar |
+| HTTPS e `/health` após o deploy | Aprovados pelo passo `Check application health` do workflow acima |
 | Login dos dois perfis | Pendente de validação registrada |
 | Persistência após reinício | Aprovada em 24/09/2026; ver [registro](validacao-persistencia-azure.md) |
 | Persistência após nova publicação | Pendente |

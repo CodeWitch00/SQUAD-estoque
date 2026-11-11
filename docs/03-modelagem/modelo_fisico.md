@@ -1,5 +1,9 @@
 # Modelo Físico 
 
+> **Registro histórico:** SQL proposto para a estrutura inicial de cinco
+> tabelas. Não use este DDL para criar ou atualizar o banco atual; consulte o
+> [modelo vigente](README.md) e as migrations do EF Core.
+
 > **Para quem é este documento:** desenvolvedores  
 > **Banco de dados:** SQLite 3.x (via Entity Framework Core)  
 > **Plataforma:** ASP.NET Core MVC (.NET 10)  
