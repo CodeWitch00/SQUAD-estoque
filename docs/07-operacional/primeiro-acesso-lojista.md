@@ -25,7 +25,8 @@ pela fábrica de testes em SQLite isolado.
 
 No Portal Azure, abra o App Service → **SSH** com a aplicação em execução.
 O contêiner deve receber `ASPNETCORE_ENVIRONMENT=Production` e a connection
-string do SQLite persistido pelas configurações do App Service. Execute no
+string do SQLite persistido, `DataProtection__KeysPath` e `AllowedHosts` com a lista
+explícita de hosts pelas configurações do App Service. Execute no
 shell Bash do contêiner:
 
 ```bash
