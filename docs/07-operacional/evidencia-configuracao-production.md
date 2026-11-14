@@ -44,3 +44,50 @@ Resultado local final:
 
 O teste ignorado pertence a medicao optativa de performance ja existente na suite.
 A revisao de CodeWitch00 e o resultado da CI devem ser conferidos no Pull Request.
+
+## Ajustes da revisao em 14/11/2026
+
+O relatorio S3-QA-035 foi retirado do escopo do PR #104 e preservado, sem alteracoes
+de conteudo, no [PR #105](https://github.com/CodeWitch00/SQUAD-estoque/pull/105).
+
+`AllowedHosts` passou a ser obrigatoria em Production. O fallback `*` foi removido
+do `appsettings.json`. A lista deve conter hosts explicitos separados por `;`, sem
+espacos, esquema, porta ou caminho. Curingas e enderecos que desabilitam o filtro
+de hosts sao rejeitados antes das migrations.
+
+O Compose usa somente hosts de loopback por padrao; acesso por dominio ou IP da
+rede exige configurar a lista. O runbook Azure foi atualizado com a configuracao
+que deve existir no App Service antes da publicacao. Nenhuma configuracao do
+ambiente remoto foi alterada nesta atividade.
+
+### Validacao manual do filtro de hosts
+
+Processo real em Production, com banco temporario, porta livre e lista explicita
+`localhost;127.0.0.1;[::1];estoque.example.test`:
+
+| Cenario | Resultado observado |
+| --- | --- |
+| `GET /health` com Host `127.0.0.1` | HTTP 200 Healthy |
+| `GET /health` com Host `estoque.example.test` | HTTP 200 Healthy |
+| `GET /health` com Host fora da lista | HTTP 400 |
+| `AllowedHosts` ausente | Inicializacao recusada com `Configuracao obrigatoria ausente: AllowedHosts.` |
+| `AllowedHosts` igual a `*`, `localhost;*`, `0.0.0.0` ou `[::]` | Inicializacao recusada com mensagem clara identificando AllowedHosts |
+
+### Validacao automatizada da revisao
+
+A execucao focada aprovou 31 testes: configuracao de Production, inicializacao por
+ambiente e primeiro acesso do lojista. Foram adicionados 14 casos de AllowedHosts
+ausente ou invalido. O caso positivo verifica a lista de hosts permitidos e a
+rejeicao de um Host fora da lista pelo middleware padrao do ASP.NET Core.
+
+Resultado da revisao em 14/11/2026:
+
+| Verificacao | Resultado |
+| --- | --- |
+| `git diff --check` | Aprovado |
+| Build da aplicacao | Aprovado; 0 avisos, 0 erros |
+| Suite completa | 341 aprovados, 0 falhas, 1 ignorado; total 342 |
+| Testes focados de inicializacao | 31 aprovados, 0 falhas |
+| Filtro de hosts em processo Production real | Hosts autorizados com HTTP 200; host fora da lista com HTTP 400 |
+
+O unico teste ignorado continua sendo a medicao optativa de performance preexistente.

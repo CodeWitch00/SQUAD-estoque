@@ -71,6 +71,7 @@ public sealed class StartupEnvironmentTests
             builder.ConfigureAppConfiguration((_, configuration) =>
                 configuration.AddInMemoryCollection(new Dictionary<string, string?>
                 {
+                    ["AllowedHosts"] = "localhost",
                     ["ConnectionStrings:EstoqueContext"] = $"Data Source={dbPath};Pooling=False",
                     ["Demo:SeedUsers"] = seedHabilitado.ToString(),
                     ["DataProtection:KeysPath"] = Path.Combine(Path.GetDirectoryName(dbPath)!, "keys")

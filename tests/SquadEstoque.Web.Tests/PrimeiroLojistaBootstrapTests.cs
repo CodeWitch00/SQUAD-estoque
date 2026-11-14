@@ -84,6 +84,7 @@ public sealed class PrimeiroLojistaBootstrapTests
         start.ArgumentList.Add("Primeiro Lojista");
         start.ArgumentList.Add("primeiro@example.test");
         start.Environment["ASPNETCORE_ENVIRONMENT"] = ambiente;
+        start.Environment["AllowedHosts"] = "localhost";
         start.Environment["ConnectionStrings__EstoqueContext"] = $"Data Source={dbPath}";
         start.Environment["DataProtection__KeysPath"] = Path.Combine(Path.GetDirectoryName(dbPath)!, "keys");
         start.Environment["Demo__SeedUsers"] = "true";
