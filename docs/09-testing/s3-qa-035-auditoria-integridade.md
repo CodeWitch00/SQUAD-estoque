@@ -84,4 +84,4 @@ Os testes existentes [EstoqueDomainPersistenceTests](../../tests/SquadEstoque.We
 Esses testes oferecem cobertura complementar, mas não substituem a inspeção estática das demais constraints e FKs descritas neste relatório.
 ## Evidência para o cartão
 
-Usar o link permanente deste arquivo no commit documental e o PR direcionado a `dev/emmy`. Capturar a tela do PR com os checks e a solicitação de revisão para CodeWitch00. Resumo: quatro regras centrais declaradas; 15 FKs (14 restritivas, uma cascata); cinco migrations em sequência; divergências D01–D04 registradas; nenhuma alteração de banco ou da main. A movimentação do cartão permanece com a responsável.
+Usar o link permanente deste arquivo no commit documental e o PR #105, direcionado a `main`, como evidências da separação do relatório. A auditoria original foi realizada na branch `dev/emmy`. Capturar a tela do PR com os checks e a solicitação de revisão para CodeWitch00. Resumo: quatro regras centrais declaradas; 15 FKs (14 restritivas, uma cascata); cinco migrations em sequência; divergências D01–D04 registradas; nenhuma alteração de banco ou da main. A movimentação do cartão permanece com a responsável.
