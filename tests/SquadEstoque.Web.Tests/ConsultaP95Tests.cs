@@ -156,6 +156,7 @@ public sealed class ConsultaP95Tests
             builder.ConfigureServices(services =>
             {
                 services.AddDataProtection().UseEphemeralDataProtectionProvider();
+                services.RemoveAll<Microsoft.EntityFrameworkCore.Infrastructure.IDbContextOptionsConfiguration<EstoqueContext>>();
                 services.RemoveAll<DbContextOptions<EstoqueContext>>();
                 services.RemoveAll<EstoqueContext>();
                 services.AddDbContext<EstoqueContext>(o => o.UseSqlite($"Data Source={database};Pooling=False"));

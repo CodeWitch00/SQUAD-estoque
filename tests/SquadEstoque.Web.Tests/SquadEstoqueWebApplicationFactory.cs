@@ -25,6 +25,7 @@ public sealed class SquadEstoqueWebApplicationFactory : WebApplicationFactory<Pr
             services.AddDataProtection()
                 .UseEphemeralDataProtectionProvider();
 
+            services.RemoveAll<Microsoft.EntityFrameworkCore.Infrastructure.IDbContextOptionsConfiguration<EstoqueContext>>();
             services.RemoveAll<DbContextOptions<EstoqueContext>>();
             services.RemoveAll<EstoqueContext>();
             services.AddDbContext<EstoqueContext>(options =>

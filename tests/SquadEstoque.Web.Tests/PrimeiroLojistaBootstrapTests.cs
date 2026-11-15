@@ -25,7 +25,7 @@ public sealed class PrimeiroLojistaBootstrapTests
             Assert.DoesNotContain(senha, resultado.Output);
             Assert.Contains("Primeiro LOJISTA criado.", resultado.Output);
 
-            await using var connection = new SqliteConnection($"Data Source={dbPath}");
+            await using var connection = new SqliteConnection($"Data Source={dbPath};Pooling=False");
             await connection.OpenAsync();
             await using var command = connection.CreateCommand();
             command.CommandText = "SELECT Email, SenhaHash, Perfil FROM Usuario";
@@ -84,6 +84,7 @@ public sealed class PrimeiroLojistaBootstrapTests
         start.ArgumentList.Add("Primeiro Lojista");
         start.ArgumentList.Add("primeiro@example.test");
         start.Environment["ASPNETCORE_ENVIRONMENT"] = ambiente;
+        start.Environment["AllowedHosts"] = "localhost";
         start.Environment["ConnectionStrings__EstoqueContext"] = $"Data Source={dbPath}";
         start.Environment["DataProtection__KeysPath"] = Path.Combine(Path.GetDirectoryName(dbPath)!, "keys");
         start.Environment["Demo__SeedUsers"] = "true";

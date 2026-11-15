@@ -8,6 +8,7 @@ preparação, implementação, testes, Git e Pull Request está somente no
 
 | Necessidade | Documento |
 | --- | --- |
+| Configurar Production sem segredos no repositorio | [configuracao-production.md](configuracao-production.md) |
 | Conferir a baseline técnica | [checklist-baseline.md](checklist-baseline.md) |
 | Executar e preservar dados com Docker | [docker.md](docker.md) |
 | Cadastrar o primeiro LOJISTA sem senha versionada | [primeiro-acesso-lojista.md](primeiro-acesso-lojista.md) |

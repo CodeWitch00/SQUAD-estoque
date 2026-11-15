@@ -29,10 +29,16 @@ As configurações esperadas no App Service são (confirme os valores no Portal)
 
 ```text
 ASPNETCORE_ENVIRONMENT=Production
+AllowedHosts=asp-squad-estoque-free-hgabd8asd5f4a9g9.northcentralus-01.azurewebsites.net
 WEBSITES_ENABLE_APP_SERVICE_STORAGE=true
 ConnectionStrings__EstoqueContext=Data Source=/home/data/Estoque.db
 DataProtection__KeysPath=/home/data/keys
 ```
+
+Configure `AllowedHosts` antes de publicar a versao do S4-OPS-002. A aplicacao
+nao inicia em Production sem uma lista explicita. Se houver dominio personalizado,
+adicione-o separado por `;`, sem esquema, porta ou caminho. O exemplo acima nao
+comprova que essa variavel ja foi configurada no Portal.
 
 O banco do estoque e as chaves de cookies ficam em `/home/data`, fora de
 `/home/site/wwwroot`, onde o pacote é implantado. A configuração legada
