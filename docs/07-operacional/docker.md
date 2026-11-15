@@ -78,20 +78,11 @@ O volume protege contra substituição do container, mas não substitui backup. 
 backup consistente do SQLite deve ser criado com a API de backup do SQLite ou com
 o comando `.backup`, e não copiando o arquivo enquanto há escrita ativa.
 
-Exemplo para um ambiente controlado, após parar a aplicação:
-
-```bash
-docker compose stop squad-estoque
-docker run --rm \
-  -v squad-estoque-data:/data:ro \
-  -v "$PWD/backups:/backup" \
-  alpine:3.22 \
-  cp /data/Estoque.db /backup/Estoque.db
-docker compose start squad-estoque
-```
-
-A pasta `backups/` é ignorada pelo Git. Não versione bancos que contenham dados
-reais ou hashes de senha.
+Use o procedimento versionado em
+[backup-restauracao-sqlite.md](backup-restauracao-sqlite.md), que nomeia a cópia
+por ambiente e data UTC e testa a restauração em um arquivo isolado. A cópia
+bruta por `cp` foi removida deste guia porque pode ser inconsistente se alguém
+a executar com o serviço ativo. Não versione bancos reais ou hashes de senha.
 
 ## Publicação futura
 

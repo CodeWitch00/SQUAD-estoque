@@ -119,7 +119,7 @@ ambiente executa o deploy.
 | Login dos dois perfis | Pendente de validação registrada |
 | Persistência após reinício | Aprovada em 24/09/2026; ver [registro](validacao-persistencia-azure.md) |
 | Persistência após nova publicação | Pendente |
-| Backup consistente baixado | Aprovado; restauração ainda não testada |
+| Backup consistente baixado em 24/09/2026 | Cópia registrada; procedimento local com fixture foi aprovado em 15/11/2026; restauração da cópia real do Azure continua pendente |
 
 ## Validação após cada publicação
 
@@ -130,8 +130,10 @@ ambiente executa o deploy.
 5. Crie um registro fictício identificável.
 6. Reinicie o App Service e confirme que o registro permaneceu.
 7. Em uma publicação posterior, confirme novamente a persistência.
-8. Mantenha uma cópia consistente do SQLite fora do App Service e teste a
-   restauração antes de depender do backup em uma recuperação.
+8. Mantenha uma cópia consistente do SQLite fora do App Service. Para gerar,
+   verificar e restaurar em isolamento, siga
+   [backup-restauracao-sqlite.md](backup-restauracao-sqlite.md). O teste local
+   da fixture não substitui a restauração da cópia real do Azure.
 
 O plano F1 pode suspender a aplicação por inatividade e não possui garantia de
 disponibilidade. Antes da apresentação, valide a URL, a assinatura Azure for
