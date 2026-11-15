@@ -1,21 +1,21 @@
 # SQUAD Estoque
 
-Sistema web acadêmico para controle de estoque de uma loja de calçados. O
-produto controla produtos, grades de numeração, saldos por SKU, movimentações e
+Sistema web acadêmico para controle de estoque de uma loja de calçados. Reúne
+catálogo de produtos, grades de numeração, saldos por SKU, movimentações e
 rupturas, com acessos distintos para `LOJISTA` e `VENDEDOR`.
 
 Tecnologias: ASP.NET Core MVC, .NET 10, Razor Views, Entity Framework Core,
 SQLite, Bootstrap, autenticação por cookies, xUnit e GitHub Actions.
 
-## Demonstração compartilhada
+## Acesse a aplicação
 
 A versão integrada está disponível no ambiente acadêmico de homologação:
 
-> [Abrir o SQUAD Estoque ](https://asp-squad-estoque-free-hgabd8asd5f4a9g9.northcentralus-01.azurewebsites.net)
+**[Abrir o SQUAD Estoque ](https://asp-squad-estoque-free-hgabd8asd5f4a9g9.northcentralus-01.azurewebsites.net)**
 
-O ambiente é destinado aos desenvolvedores e utiliza somente dados fictícios.
-O estado validado, as limitações e o procedimento de publicação estão no
-[runbook do Azure](docs/07-operacional/azure.md).
+Para acessar pelo celular, aponte a câmera para o QR code:
+
+<img src="assets/readme/qr-acesso-azure.svg" alt="QR code para abrir o SQUAD Estoque no Azure" width="180">
 
 ## Comece por aqui
 
@@ -63,7 +63,7 @@ Os desenvolvedores compartilham os registros de homologação acessando a mesma
 aplicação no Azure pelo navegador. Nenhum computador deve abrir diretamente o
 arquivo SQLite hospedado.
 
-O SQUAD Estoque foi publicado manualmente no App Service gratuito. O estado e
+O SQUAD Estoque está hospedado no App Service gratuito. O estado da publicação e
 as regras de uso do ambiente estão no
 [CONTRIBUTING.md](CONTRIBUTING.md#8-ambiente-compartilhado-no-azure) e no
 [runbook do Azure](docs/07-operacional/azure.md).
