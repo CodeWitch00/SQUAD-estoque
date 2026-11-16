@@ -26,6 +26,49 @@ banco e as chaves.
 
 ## Construir e iniciar
 
+### Contexto de build — S4-OPS-008
+
+O `.dockerignore` da raiz permite somente `src/SquadEstoque.Web/` e exclui
+artefatos de compilação, bancos SQLite e seus arquivos auxiliares, uploads,
+backups, chaves, certificados, arquivos `.env` e configurações particulares.
+Git, documentação e testes também ficam fora do contexto. As regras usam a
+[sintaxe oficial do Docker](https://docs.docker.com/build/concepts/context/#dockerignore-files)
+e se aplicam tanto ao Docker no Ubuntu quanto ao Docker Desktop com containers
+Linux no Windows.
+
+O arquivo `appsettings.json` permanece, assim como o `.csproj`, código C#,
+migrations, Razor Views e arquivos estáticos versionados de `wwwroot`.
+Arquivos `appsettings.*.json`, inclusive `Development`, ficam fora: forneça
+configurações de ambiente pelo Compose ou pela plataforma. Não coloque segredos
+no `appsettings.json`, no código ou nos arquivos estáticos; o `.dockerignore`
+filtra caminhos, não o conteúdo dos arquivos.
+
+Ao adicionar projetos ou dependências de build fora desse diretório, revise a
+lista de inclusão junto com os comandos `COPY` do `Dockerfile`.
+
+Para validar em Ubuntu ou Windows com Docker disponível, execute na raiz:
+
+```bash
+docker build --no-cache --progress=plain -t squad-estoque:s4-ops-008 .
+```
+
+Confirme que restore e publish terminam com sucesso e confira o tamanho
+transferido na etapa `load build context`. Para inspecionar os arquivos do
+contexto efetivo, crie fora do repositório um Dockerfile temporário com
+`FROM scratch` e `COPY . /` e execute:
+
+```bash
+docker build --no-cache -f <Dockerfile-temporario> --output type=local,dest=<pasta-externa-vazia> .
+```
+
+A pasta exportada deve conter somente o projeto filtrado: confira a presença
+do `.csproj`, `Views`, `Migrations`, `wwwroot` e `appsettings.json`, e a ausência
+de `.git`, `bin`, `obj`, bancos, uploads, `.env` e `appsettings.*.json`.
+Use somente arquivos fictícios para exercitar as exclusões; nunca use segredos
+reais nessa verificação.
+
+### Subir a aplicação
+
 Na raiz do repositório:
 
 ```bash
