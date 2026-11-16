@@ -32,7 +32,9 @@ start() {
   docker logs "$container"; return 1
 }
 start
-docker exec "$container" sh -ec '
+docker exec "$container" sh -exc '
+  id
+  stat -c "%a %U:%G %n" /app/data /app/data/nested /app/data/nested/Estoque.db /app/wwwroot/uploads
   test "$(id -u)" != 0
   test ! -w /app/SquadEstoque.Web.dll
   test ! -w /app/SquadEstoque.Web.runtimeconfig.json
