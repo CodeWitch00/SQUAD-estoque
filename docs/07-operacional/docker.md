@@ -26,11 +26,14 @@ banco e as chaves.
 
 ## Construir e iniciar
 
-Na raiz do repositório:
+Na raiz do repositório, com o Docker em execução:
 
 ```bash
 docker compose up --build -d
 ```
+
+Esse comando constrói a imagem (quando necessário), cria o volume nomeado do
+SQLite e sobe o container em modo destacado.
 
 A aplicação fica disponível em:
 
@@ -45,6 +48,11 @@ docker compose ps
 docker compose logs -f squad-estoque
 curl --fail http://localhost:8080/health
 ```
+
+Se quiser definir variáveis locais sem versioná-las, copie
+`.env.compose.example` para `.env.compose` antes de subir o container. O arquivo
+`.env.compose` é ignorado pelo Git e pode ser usado para sobrescrever
+configurações ou informar segredos apenas por ambiente/arquivo não versionado.
 
 ## Parar e atualizar
 
@@ -63,18 +71,22 @@ docker compose up --build -d
 O volume `squad-estoque-data` será reutilizado e as migrations pendentes serão
 aplicadas durante a inicialização.
 
-## Dados demonstrativos
+## Dados demonstrativos e segredos
 
-O Compose habilita `Demo__SeedUsers=true`. Em um banco de estoque vazio, a
-aplicação cria os usuários conhecidos de desenvolvimento. Essa opção é adequada
-somente para desenvolvimento e demonstração.
+O Compose versionado não embute segredos. Configurações sensíveis ou específicas
+de ambiente devem ser fornecidas por variáveis do ambiente de execução ou por um
+arquivo local não versionado (`.env.compose`).
+
+Para cenários de demonstração local, a aplicação pode criar usuários de exemplo
+quando `Demo__SeedUsers=true` em um banco vazio. Defina esse valor apenas em
+ambiente controlado e nunca use credenciais demonstrativas em publicação real.
 
 Antes de uma publicação real:
 
-- remova `Demo__SeedUsers` ou defina o valor como `false`;
+- garanta `Demo__SeedUsers=false` ou omita a criação de usuários demonstrativos;
 - provisione usuários com senhas fortes por um procedimento seguro;
 - não publique senhas no repositório ou na imagem;
-- mantenha as connection strings e demais segredos no gerenciador da plataforma.
+- mantenha connection strings e demais segredos fora do versionamento.
 
 ## Backup dos bancos
 

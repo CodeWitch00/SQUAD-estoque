@@ -4,13 +4,16 @@ services:
       context: .
       dockerfile: Dockerfile
     image: squad-estoque:local
+    container_name: squad-estoque
     init: true
     restart: unless-stopped
     ports:
       - "8080:8080"
+    env_file:
+      - path: .env.compose
+        required: false
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      Demo__SeedUsers: "true"
       DataProtection__KeysPath: /app/data/keys
       ConnectionStrings__EstoqueContext: Data Source=/app/data/Estoque.db
     volumes:
