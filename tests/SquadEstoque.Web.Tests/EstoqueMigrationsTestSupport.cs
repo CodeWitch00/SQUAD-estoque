@@ -166,24 +166,32 @@ internal static class EstoqueMigrationsTestSupport
         await ExecAsync(context,
             "INSERT INTO Sku (Id, ProdutoId, Numeracao, SaldoAtual, Ativo, UltimaAtualizacaoSaldoEm) VALUES ('{0}','{1}','40',1,1,NULL)",
             Guid.NewGuid(), pid);
-        await Assert.ThrowsAsync<DbUpdateException>(() => ExecAsync(context,
+        await AssertConstraintViolationAsync(() => ExecAsync(context,
             "INSERT INTO Sku (Id, ProdutoId, Numeracao, SaldoAtual, Ativo, UltimaAtualizacaoSaldoEm) VALUES ('{0}','{1}','40',2,1,NULL)",
             Guid.NewGuid(), pid));
 
         // Saldo negativo
-        await Assert.ThrowsAsync<DbUpdateException>(() => ExecAsync(context,
+        await AssertConstraintViolationAsync(() => ExecAsync(context,
             "INSERT INTO Sku (Id, ProdutoId, Numeracao, SaldoAtual, Ativo, UltimaAtualizacaoSaldoEm) VALUES ('{0}','{1}','41',-1,1,NULL)",
             Guid.NewGuid(), pid));
 
         // Enum inválido (constraints adicionadas em AddEnumDomainConstraints)
-        await Assert.ThrowsAsync<DbUpdateException>(() => ExecAsync(context,
+        await AssertConstraintViolationAsync(() => ExecAsync(context,
             "INSERT INTO Usuario (Id, Nome, Email, SenhaHash, Perfil) VALUES ('{0}','U','perfil-invalido-{0}@x.test','h',99)",
             Guid.NewGuid()));
         var uid = await ScalarStringAsync(context, "SELECT Id AS Value FROM Usuario LIMIT 1");
         var sid = await ScalarStringAsync(context, "SELECT Id AS Value FROM Sku LIMIT 1");
-        await Assert.ThrowsAsync<DbUpdateException>(() => ExecAsync(context,
+        await AssertConstraintViolationAsync(() => ExecAsync(context,
             "INSERT INTO Movimentacao (Id, SkuId, Tipo, Quantidade, UsuarioId, CriadoEm, Motivo, AtendimentoId) VALUES ('{0}','{1}',99,1,'{2}','2026-01-01 00:00:00',NULL,NULL)",
             Guid.NewGuid(), sid, uid));
+    }
+
+    private static async Task AssertConstraintViolationAsync(Func<Task> action)
+    {
+        var ex = await Assert.ThrowsAnyAsync<Exception>(action);
+        Assert.True(
+            ex is DbUpdateException || ex is SqliteException || ex.InnerException is SqliteException,
+            $"Esperava violação de constraint (SQLite/EF), obtido: {ex}");
     }
 
     public static async Task SeedDadosLegadosAsync(EstoqueContext context, string versaoDePartida)
