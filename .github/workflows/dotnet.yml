@@ -67,6 +67,20 @@ jobs:
           path: TestResults/**/coverage.cobertura.xml
           if-no-files-found: error
 
+  sqlite-volume:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Validate SQLite container storage
+        run: bash scripts/test-sqlite-volume.sh 2>&1 | tee sqlite-volume.log
+      - name: Upload storage evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sqlite-volume-evidence
+          path: sqlite-volume.log
+
   frontend-tests:
     runs-on: ubuntu-latest
     steps:
