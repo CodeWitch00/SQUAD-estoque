@@ -6,7 +6,7 @@ RUN dotnet restore src/SquadEstoque.Web/SquadEstoque.Web.csproj
 
 COPY src/SquadEstoque.Web/ src/SquadEstoque.Web/
 WORKDIR /source/src/SquadEstoque.Web
-RUN dotnet publish --configuration Release --no-restore --output /app/publish /p:UseAppHost=false
+RUN dotnet publish --configuration Release --output /app/publish /p:UseAppHost=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
