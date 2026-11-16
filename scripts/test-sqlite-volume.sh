@@ -46,11 +46,20 @@ docker exec "$container" sh -exc '
   test -z "$(find /app/data -name ".storage-check-*")"
   echo persistido > /app/data/evidencia
 '
-checksum=$(docker exec "$container" sha256sum /app/data/nested/Estoque.db)
 docker rm -f "$container" >/dev/null
+printf '%s\n' 'senha-ficticia-volume-2026' | docker run --rm -i \
+  --cap-drop ALL --security-opt no-new-privileges:true \
+  -v "$volume:/app/data" "${settings[@]}" "$image" \
+  --bootstrap-lojista 'Volume Test' 'volume@example.test'
 start
-test "$checksum" = "$(docker exec "$container" sha256sum /app/data/nested/Estoque.db)"
 test "$(docker exec "$container" cat /app/data/evidencia)" = persistido
+bootstrap_status=0
+bootstrap_log=$(docker run --rm --cap-drop ALL --security-opt no-new-privileges:true \
+  -v "$volume:/app/data" "${settings[@]}" "$image" \
+  --bootstrap-lojista 'Volume Test' 'volume@example.test' </dev/null 2>&1) || bootstrap_status=$?
+if [ "$bootstrap_status" = 0 ] || ! grep -q 'O banco ja possui usuarios' <<< "$bootstrap_log"; then
+  printf '%s\n' "$bootstrap_log"; echo 'FAIL: usuario nao persistiu'; exit 1
+fi
 echo 'PASS: caminho configurado, criacao de diretorio, usuario nao root, permissoes e persistencia apos recriar container'
 docker rm -f "$container" >/dev/null
 

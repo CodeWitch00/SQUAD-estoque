@@ -66,7 +66,8 @@ bash scripts/test-sqlite-volume.sh
 O roteiro Docker usa apenas um volume descartável com nome exclusivo. Constrói
 a imagem, inicia com caminho aninhado, confirma UID diferente de zero, binários
 sem escrita, modos `0700`/`0600`, banco criado e ausência de arquivos de sondagem.
-Recria o container e compara o hash do banco e um marcador persistido. Confirma
+Cria um LOJISTA ficticio pelo bootstrap, recria o container e confirma que o banco
+continua contendo usuarios e que um marcador foi preservado. Confirma
 falha com diagnóstico e código diferente de zero em volume somente leitura, arquivo sem escrita,
 diretório root sem acesso e caminho inválido sob `/proc`. O cleanup remove
 somente os recursos temporários criados pelo roteiro.
