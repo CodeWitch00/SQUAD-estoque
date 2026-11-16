@@ -240,6 +240,8 @@ internal static class EstoqueMigrationsTestSupport
         await ExecAsync(context, $"INSERT INTO Sku ({cols}) VALUES ({vals})", id, produtoId, num, saldo);
     }
 
+    // Snapshot captura as colunas existentes na versão de partida (originais) para cada tabela.
+    // Formato por tabela: "__cols:<col1,col2,...>" seguido de uma linha por registro (ordenado por rowid).
     public static async Task<IReadOnlyDictionary<string, IReadOnlyList<string>>> CaptureSnapshotAsync(EstoqueContext context)
     {
         var snapshot = new Dictionary<string, IReadOnlyList<string>>(StringComparer.Ordinal);
@@ -249,16 +251,24 @@ internal static class EstoqueMigrationsTestSupport
             var cols = await StringListAsync(context,
                 $"SELECT name AS Value FROM pragma_table_info('{table}') ORDER BY cid");
             var rows = await QueryRowsAsync(context,
-                $"SELECT {string.Join(", ", cols.Select(c => QuoteIdent(c)))} FROM {QuoteIdent(table)} ORDER BY rowid");
-            snapshot[table] = rows;
+                $"SELECT {string.Join(", ", cols.Select(QuoteIdent))} FROM {QuoteIdent(table)} ORDER BY rowid");
+            var entries = new List<string> { "__cols:" + string.Join(",", cols) };
+            entries.AddRange(rows);
+            snapshot[table] = entries;
         }
-        snapshot["__counts"] = new[]
+
+        snapshot["__meta"] = new[]
         {
+            $"Usuario:{await ScalarLongAsync(context, "SELECT COUNT(*) AS Value FROM Usuario")}",
+            $"Produto:{await ScalarLongAsync(context, "SELECT COUNT(*) AS Value FROM Produto")}",
+            $"Sku:{await ScalarLongAsync(context, "SELECT COUNT(*) AS Value FROM Sku")}",
             $"SkuSum:{await ScalarLongAsync(context, "SELECT COALESCE(SUM(SaldoAtual),0) AS Value FROM Sku")}",
-            $"SkuCount:{await ScalarLongAsync(context, "SELECT COUNT(*) AS Value FROM Sku")}",
-            $"ProdutoCount:{await ScalarLongAsync(context, "SELECT COUNT(*) AS Value FROM Produto")}",
-            $"MovCount:{await ScalarLongAsync(context, "SELECT COUNT(*) AS Value FROM Movimentacao")}",
-            $"RupCount:{await ScalarLongAsync(context, "SELECT COUNT(*) AS Value FROM Ruptura")}"
+            $"Movimentacao:{await ScalarLongAsync(context, "SELECT COUNT(*) AS Value FROM Movimentacao")}",
+            $"Ruptura:{await ScalarLongAsync(context, "SELECT COUNT(*) AS Value FROM Ruptura")}",
+            $"Atendimento:{await ScalarLongAsync(context, await TableExistsAsync(context, "Atendimento") ? "SELECT COUNT(*) AS Value FROM Atendimento" : "SELECT 0 AS Value")}",
+            $"EntradaFiscal:{await ScalarLongAsync(context, await TableExistsAsync(context, "EntradaFiscal") ? "SELECT COUNT(*) AS Value FROM EntradaFiscal" : "SELECT 0 AS Value")}",
+            $"ItemEntradaFiscal:{await ScalarLongAsync(context, await TableExistsAsync(context, "ItemEntradaFiscal") ? "SELECT COUNT(*) AS Value FROM ItemEntradaFiscal" : "SELECT 0 AS Value")}",
+            $"VinculoProdutoFornecedor:{await ScalarLongAsync(context, await TableExistsAsync(context, "VinculoProdutoFornecedor") ? "SELECT COUNT(*) AS Value FROM VinculoProdutoFornecedor" : "SELECT 0 AS Value")}",
         };
         return snapshot;
     }
@@ -266,13 +276,44 @@ internal static class EstoqueMigrationsTestSupport
     public static async Task AssertSnapshotPreservedAsync(
         EstoqueContext context, IReadOnlyDictionary<string, IReadOnlyList<string>> baseline)
     {
-        var after = await CaptureSnapshotAsync(context);
         foreach (var kv in baseline)
         {
-            Assert.True(after.ContainsKey(kv.Key), $"Tabela/chave ausente após migration: {kv.Key}");
-            Assert.Equal(kv.Value, after[kv.Key]);
+            if (kv.Key == "__meta")
+            {
+                foreach (var entry in kv.Value)
+                {
+                    var parts = entry.Split(':', 2);
+                    var table = parts[0];
+                    var expected = long.Parse(parts[1], CultureInfo.InvariantCulture);
+                    long actual;
+                    if (table == "SkuSum")
+                        actual = await ScalarLongAsync(context, "SELECT COALESCE(SUM(SaldoAtual),0) AS Value FROM Sku");
+                    else if (await TableExistsAsync(context, table))
+                        actual = await ScalarLongAsync(context, $"SELECT COUNT(*) AS Value FROM {QuoteIdent(table)}");
+                    else
+                        actual = 0;
+                    Assert.Equal(expected, actual);
+                }
+                continue;
+            }
+
+            Assert.True(await TableExistsAsync(context, kv.Key), $"Tabela ausente após migration: {kv.Key}");
+            var entries = kv.Value;
+            Assert.True(entries.Count > 0 && entries[0].StartsWith("__cols:"), $"Snapshot inválido para {kv.Key}");
+            var cols = entries[0]["__cols:".Length..]
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            var expectedRows = entries.Skip(1).ToList();
+
+            // Compara apenas as colunas originais existentes na versão de partida.
+            var actualRows = await QueryRowsAsync(context,
+                $"SELECT {string.Join(", ", cols.Select(QuoteIdent))} FROM {QuoteIdent(kv.Key)} ORDER BY rowid");
+
+            foreach (var row in expectedRows)
+                Assert.Contains(row, actualRows);
+            Assert.Equal(expectedRows.Count, actualRows.Count);
         }
     }
+
 
     public static async Task AssertFluxoEssencialAsync(EstoqueContext context)
     {
