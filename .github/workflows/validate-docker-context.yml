@@ -1,0 +1,80 @@
+name: Validate S4-OPS-008 Docker context
+on:
+  push:
+    branches: [test/s4-ops-008-validacao-felipe]
+permissions:
+  contents: read
+jobs:
+  docker-context:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 7c46c99c6102a20d0d4c1d0cbe8f02393c9d8500
+          fetch-depth: 2
+      - name: Export baseline and filtered contexts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/before" "$RUNNER_TEMP/after" evidence
+          git archive HEAD^ | tar -x -C "$RUNNER_TEMP/before"
+          git archive HEAD | tar -x -C "$RUNNER_TEMP/after"
+          git rev-parse HEAD | tee evidence/validated-commit.txt
+          docker version > evidence/docker-version.txt
+          for context in before after; do
+            printf 'FROM scratch\nCOPY . /\n' | docker build --no-cache --progress=plain -f - --output "type=local,dest=$RUNNER_TEMP/export-$context" "$RUNNER_TEMP/$context" 2>&1 | tee "evidence/context-$context.log"
+          done
+          python3 - <<'PY'
+          import os, pathlib, json
+          root = pathlib.Path(os.environ['RUNNER_TEMP'])
+          stats = {}
+          for name in ('before', 'after'):
+              files = [p for p in (root / ('export-' + name)).rglob('*') if p.is_file()]
+              stats[name] = {'files': len(files), 'bytes': sum(p.stat().st_size for p in files)}
+          assert stats['after']['bytes'] < stats['before']['bytes'], stats
+          stats['reduction_percent'] = round(100 * (1-stats['after']['bytes']/stats['before']['bytes']), 2)
+          after = root / 'export-after'
+          required = ['SquadEstoque.Web.csproj', 'Program.cs', 'appsettings.json']
+          for name in required:
+              assert (after / 'src/SquadEstoque.Web' / name).is_file(), name
+          for name in ('Migrations', 'Views', 'wwwroot'):
+              assert any((after / 'src/SquadEstoque.Web' / name).rglob('*')), name
+          pathlib.Path('evidence/context-stats.json').write_text(json.dumps(stats, indent=2))
+          print(json.dumps(stats, indent=2))
+          PY
+      - name: Confirm local data are excluded
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os, pathlib, json
+          root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'after'
+          paths = ['.env', 'docs/probe.txt', '.git/probe', 'tests/probe.txt']
+          paths += ['src/SquadEstoque.Web/' + p for p in ['bin/probe.dll', 'obj/probe.json', 'nested/bin/probe.dll', 'data/probe.db', 'probe.DB', 'probe.db-wal', 'probe.sqlite3-shm', 'backups/probe.bak', 'keys/key-probe.xml', 'wwwroot/uploads/probe.txt', '.env.production', 'appsettings.Production.json', 'probe.pfx', 'probe.pem', 'Properties/probe.pubxml', '.vscode/probe.json']]
+          for name in paths:
+              path = root / name
+              path.parent.mkdir(parents=True, exist_ok=True)
+              path.write_text('synthetic validation fixture')
+          pathlib.Path('evidence/probes.json').write_text(json.dumps(paths, indent=2))
+          PY
+          printf 'FROM scratch\nCOPY . /\n' | docker build --no-cache --progress=plain -f - --output "type=local,dest=$RUNNER_TEMP/export-probes" "$RUNNER_TEMP/after" 2>&1 | tee evidence/context-probes.log
+          python3 - <<'PY'
+          import os, pathlib, json
+          root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'export-probes'
+          paths = json.loads(pathlib.Path('evidence/probes.json').read_text())
+          leaked = [p for p in paths if (root / p).exists()]
+          assert not leaked, leaked
+          print(f'{len(paths)} synthetic local-data probes excluded successfully')
+          PY
+      - name: Build actual Dockerfile with filtered context
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build --no-cache --progress=plain -t squad-estoque:s4-ops-008 . 2>&1 | tee evidence/docker-build.log
+          docker image inspect squad-estoque:s4-ops-008 --format '{{.Id}} {{.Config.User}}' | tee evidence/image.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: s4-ops-008-docker-evidence
+          path: evidence/
+          if-no-files-found: error
