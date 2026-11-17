@@ -1,21 +1,21 @@
 # SQUAD Estoque
 
-Sistema web acadêmico para controle de estoque de uma loja de calçados. O
-produto controla produtos, grades de numeração, saldos por SKU, movimentações e
+Sistema web acadêmico para controle de estoque de uma loja de calçados. Reúne
+catálogo de produtos, grades de numeração, saldos por SKU, movimentações e
 rupturas, com acessos distintos para `LOJISTA` e `VENDEDOR`.
 
 Tecnologias: ASP.NET Core MVC, .NET 10, Razor Views, Entity Framework Core,
 SQLite, Bootstrap, autenticação por cookies, xUnit e GitHub Actions.
 
-## Demonstração compartilhada
+## Acesse a aplicação
 
 A versão integrada está disponível no ambiente acadêmico de homologação:
 
-> [Abrir o SQUAD Estoque no Azure](https://asp-squad-estoque-free-hgabd8asd5f4a9g9.northcentralus-01.azurewebsites.net)
+**[Abrir o SQUAD Estoque ](https://asp-squad-estoque-free-hgabd8asd5f4a9g9.northcentralus-01.azurewebsites.net)**
 
-O ambiente é destinado aos desenvolvedores e utiliza somente dados fictícios.
-O estado validado, as limitações e o procedimento de publicação estão no
-[runbook do Azure](docs/07-operacional/azure.md).
+Para acessar pelo celular, aponte a câmera para o QR code:
+
+<img src="assets/readme/qr-acesso-azure.svg" alt="QR code para abrir o SQUAD Estoque no Azure" width="180">
 
 ## Comece por aqui
 
@@ -53,17 +53,17 @@ demonstrativas nunca devem ser usadas no Azure.
 
 ## Ambientes
 
-| Ambiente | Uso | Banco |
-| --- | --- | --- |
-| Computador do integrante | Implementação e validação manual | SQLite local e individual |
-| Testes locais e GitHub Actions | Testes automatizados | SQLite isolado e recriado por execução |
-| Azure compartilhado | Homologação da versão integrada e demonstração | SQLite persistente do Azure |
+| Ambiente                       | Uso                                                 | Banco                                    |
+| ------------------------------ | --------------------------------------------------- | ---------------------------------------- |
+| Computador do integrante       | Implementação e validação manual                | SQLite local e individual                |
+| Testes locais e GitHub Actions | Testes automatizados                                | SQLite isolado e recriado por execução |
+| Azure compartilhado            | Homologação da versão integrada e demonstração | SQLite persistente do Azure              |
 
 Os desenvolvedores compartilham os registros de homologação acessando a mesma
 aplicação no Azure pelo navegador. Nenhum computador deve abrir diretamente o
 arquivo SQLite hospedado.
 
-O SQUAD Estoque foi publicado manualmente no App Service gratuito. O estado e
+O SQUAD Estoque está hospedado no App Service gratuito. O estado da publicação e
 as regras de uso do ambiente estão no
 [CONTRIBUTING.md](CONTRIBUTING.md#8-ambiente-compartilhado-no-azure) e no
 [runbook do Azure](docs/07-operacional/azure.md).
@@ -100,19 +100,19 @@ As regras centrais são:
 
 ## Onde consultar
 
-| Necessidade | Fonte |
-| --- | --- |
-| Preparar ambiente e contribuir | [CONTRIBUTING.md](CONTRIBUTING.md) |
-| Domínio e regras de negócio | [docs/01-negocio/dominio.md](docs/01-negocio/dominio.md) |
-| Requisitos e casos de uso | [docs/02-requisitos](docs/02-requisitos/) |
-| Dados e relacionamentos | [docs/03-modelagem](docs/03-modelagem/) |
-| Arquitetura | [docs/04-arquitetura/arquitetura.md](docs/04-arquitetura/arquitetura.md) |
-| Telas e experiência | [docs/05-ux](docs/05-ux/) |
-| Diagramas | [docs/06-uml](docs/06-uml/) |
-| Docker, baseline e operação | [docs/07-operacional/README.md](docs/07-operacional/README.md) |
+| Necessidade                        | Fonte                                                                   |
+| ---------------------------------- | ----------------------------------------------------------------------- |
+| Preparar ambiente e contribuir     | [CONTRIBUTING.md](CONTRIBUTING.md)                                       |
+| Domínio e regras de negócio      | [docs/01-negocio/dominio.md](docs/01-negocio/dominio.md)                 |
+| Requisitos e casos de uso          | [docs/02-requisitos](docs/02-requisitos/)                                |
+| Dados e relacionamentos            | [docs/03-modelagem](docs/03-modelagem/)                                  |
+| Arquitetura                        | [docs/04-arquitetura/arquitetura.md](docs/04-arquitetura/arquitetura.md) |
+| Telas e experiência               | [docs/05-ux](docs/05-ux/)                                                |
+| Diagramas                          | [docs/06-uml](docs/06-uml/)                                              |
+| Docker, baseline e operação      | [docs/07-operacional/README.md](docs/07-operacional/README.md)           |
 | Estratégia e execução de testes | [docs/09-testing/plano-de-testes.md](docs/09-testing/plano-de-testes.md) |
-| Planejamento público | [docs/10-planejamento](docs/10-planejamento/) |
-| Pipeline de CI | [.github/workflows/dotnet.yml](.github/workflows/dotnet.yml) |
+| Planejamento público              | [docs/10-planejamento](docs/10-planejamento/)                            |
+| Pipeline de CI                     | [.github/workflows/dotnet.yml](.github/workflows/dotnet.yml)             |
 
 Código e testes representam o comportamento real da implementação. A
 documentação define domínio, requisitos e decisões; o planejamento define o

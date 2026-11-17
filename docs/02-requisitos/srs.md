@@ -126,7 +126,7 @@ O sistema:
 |--------|----------|-----------|
 | RF-21 | O sistema deve exibir ao lojista quais SKUs estão com saldo zerado, agrupados por modelo.| 🔴 Obrigatório |
 | RF-22 | O sistema deve exibir ao lojista o histórico de rupturas registradas, contendo: modelo, numeração e quantidade de ocorrências de 'Não tinha'.| 🟡 Importante |
-| RF-23 | O sistema deve permitir que o lojista realize ajuste manual de saldo de qualquer SKU, registrando o motivo da operação.| 🔴 Obrigatório |
+| RF-23 | O sistema deve permitir que o lojista informe o novo saldo apurado de um SKU, não negativo e diferente do atual, registrando o motivo da operação. O saldo é substituído pelo valor apurado e a movimentação AJUSTE registra a diferença absoluta entre os saldos, o usuário autenticado e a data do servidor, na mesma transação. A quantidade registrada não indica o sentido do ajuste (RN-02 do domínio; decisão no PR #69). | 🔴 Obrigatório |
 
 ### 4.7 Entrada de mercadorias por NF-e
 

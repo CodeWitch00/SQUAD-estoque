@@ -1,0 +1,13 @@
+[
+  "SaldosZerados 320: sem rolagem horizontal nem texto cortado",
+  "SaldosZerados 390: sem rolagem horizontal nem texto cortado",
+  "SaldosZerados 768: sem rolagem horizontal nem texto cortado",
+  "SaldosZerados 1440: sem rolagem horizontal nem texto cortado",
+  "Rupturas 320: sem rolagem horizontal nem texto cortado",
+  "Rupturas 390: sem rolagem horizontal nem texto cortado",
+  "Rupturas 768: sem rolagem horizontal nem texto cortado",
+  "Rupturas 1440: sem rolagem horizontal nem texto cortado",
+  "Link entre relatórios: foco visível e ativação por Enter",
+  "SaldosZerados: vazio, erro HTTP 503 e recuperação por teclado validados",
+  "Rupturas: vazio, erro HTTP 503 e recuperação por teclado validados"
+]

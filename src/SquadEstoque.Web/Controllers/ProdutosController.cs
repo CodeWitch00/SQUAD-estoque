@@ -302,6 +302,7 @@ public class ProdutosController : Controller
                 ProdutoId = produtoAtualizado.Id,
                 Numeracao = numeracao,
                 SaldoAtual = quantidades.GetValueOrDefault(numeracao),
+                UltimaAtualizacaoSaldoEm = quantidades.GetValueOrDefault(numeracao) > 0 ? DateTime.UtcNow : null,
                 Ativo = true
             }).ToList();
             _context.Sku.AddRange(novosSkus);

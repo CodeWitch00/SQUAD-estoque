@@ -1,0 +1,55 @@
+  Determinando os projetos a serem restaurados...
+  Todos os projetos estão atualizados para restauração.
+  SquadEstoque.Web -> <repositorio>\src\SquadEstoque.Web\bin\Debug\net10.0\SquadEstoque.Web.dll
+  SquadEstoque.Web.Tests -> <repositorio>\tests\SquadEstoque.Web.Tests\bin\Debug\net10.0\SquadEstoque.Web.Tests.dll
+Execução de teste para <repositorio>\tests\SquadEstoque.Web.Tests\bin\Debug\net10.0\SquadEstoque.Web.Tests.dll (.NETCoreApp,Version=v10.0)
+1 arquivos de teste no total corresponderam ao padrão especificado.
+<repositorio>\tests\SquadEstoque.Web.Tests\bin\Debug\net10.0\SquadEstoque.Web.Tests.dll
+[xUnit.net 00:00:00.01] xUnit.net VSTest Adapter v3.1.5+1b188a7b0a (64-bit .NET 10.0.11)
+[xUnit.net 00:00:00.43]   Discovering: SquadEstoque.Web.Tests
+[xUnit.net 00:00:00.63]   Discovered:  SquadEstoque.Web.Tests
+[xUnit.net 00:00:00.72]   Starting:    SquadEstoque.Web.Tests
+  Aprovado SquadEstoque.Web.Tests.ConsultaQueryPerformanceTests.Resume_preserves_grade_with_constant_query_count(skuCount: 4) [4 s]
+  Mensagens de saída padrão:
+ SKUs=4; active=2; queries=2; median_ms=0,665; median_bytes=69952; iterations=30; warmup=5
+ SELECT "s0"."Id", "s0"."SkuId", "s0"."c", "s0"."Id0", "s0"."Nome", "s0"."Marca", "s0"."Categoria", "s0"."Cor", "s0"."ImagemUrl", "s1"."Id", "s1"."Numeracao", "s1"."SaldoAtual", "s1"."UltimaAtualizacaoSaldoEm"
+ FROM (
+     SELECT "a"."Id", "a"."SkuId", 0 AS "c", "p"."Id" AS "Id0", "p"."Nome", "p"."Marca", "p"."Categoria", "p"."Cor", "p"."ImagemUrl"
+     FROM "Atendimento" AS "a"
+     INNER JOIN "Produto" AS "p" ON "a"."ProdutoId" = "p"."Id"
+     WHERE "a"."Id" = @atendimentoId_Value AND "a"."UsuarioId" = @usuarioId_Value AND "a"."Status" = 0
+     LIMIT 1
+ ) AS "s0"
+ LEFT JOIN (
+     SELECT "s"."Id", "s"."Numeracao", "s"."SaldoAtual", "s"."UltimaAtualizacaoSaldoEm", "s"."ProdutoId"
+     FROM "Sku" AS "s"
+     WHERE "s"."Ativo"
+ ) AS "s1" ON "s0"."Id0" = "s1"."ProdutoId"
+ ORDER BY "s0"."Id", "s0"."Id0", "s1"."Numeracao"
+
+
+[xUnit.net 00:00:05.17]   Finished:    SquadEstoque.Web.Tests
+  Aprovado SquadEstoque.Web.Tests.ConsultaQueryPerformanceTests.Resume_preserves_grade_with_constant_query_count(skuCount: 200) [199 ms]
+  Mensagens de saída padrão:
+ SKUs=200; active=100; queries=2; median_ms=2,161; median_bytes=403208; iterations=30; warmup=5
+ SELECT "s0"."Id", "s0"."SkuId", "s0"."c", "s0"."Id0", "s0"."Nome", "s0"."Marca", "s0"."Categoria", "s0"."Cor", "s0"."ImagemUrl", "s1"."Id", "s1"."Numeracao", "s1"."SaldoAtual", "s1"."UltimaAtualizacaoSaldoEm"
+ FROM (
+     SELECT "a"."Id", "a"."SkuId", 0 AS "c", "p"."Id" AS "Id0", "p"."Nome", "p"."Marca", "p"."Categoria", "p"."Cor", "p"."ImagemUrl"
+     FROM "Atendimento" AS "a"
+     INNER JOIN "Produto" AS "p" ON "a"."ProdutoId" = "p"."Id"
+     WHERE "a"."Id" = @atendimentoId_Value AND "a"."UsuarioId" = @usuarioId_Value AND "a"."Status" = 0
+     LIMIT 1
+ ) AS "s0"
+ LEFT JOIN (
+     SELECT "s"."Id", "s"."Numeracao", "s"."SaldoAtual", "s"."UltimaAtualizacaoSaldoEm", "s"."ProdutoId"
+     FROM "Sku" AS "s"
+     WHERE "s"."Ativo"
+ ) AS "s1" ON "s0"."Id0" = "s1"."ProdutoId"
+ ORDER BY "s0"."Id", "s0"."Id0", "s1"."Numeracao"
+
+
+
+Execução de Teste Bem-sucedida.
+Total de testes: 2
+     Aprovados: 2
+Tempo total: 6,7297 Segundos

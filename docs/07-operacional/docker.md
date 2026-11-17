@@ -24,6 +24,9 @@ container /app
 Recriar ou atualizar o container preserva o volume. Excluir o volume remove o
 banco e as chaves.
 
+Consulte [caminho e permissões do SQLite](sqlite-volume.md) para configuração
+externa, provisionamento de permissões e validação automatizada do container.
+
 ## Construir e iniciar
 
 Na raiz do repositório:
@@ -63,18 +66,14 @@ docker compose up --build -d
 O volume `squad-estoque-data` será reutilizado e as migrations pendentes serão
 aplicadas durante a inicialização.
 
-## Dados demonstrativos
+## Primeiro acesso
 
-O Compose habilita `Demo__SeedUsers=true`. Em um banco de estoque vazio, a
-aplicação cria os usuários conhecidos de desenvolvimento. Essa opção é adequada
-somente para desenvolvimento e demonstração.
-
-Antes de uma publicação real:
-
-- remova `Demo__SeedUsers` ou defina o valor como `false`;
-- provisione usuários com senhas fortes por um procedimento seguro;
-- não publique senhas no repositório ou na imagem;
-- mantenha as connection strings e demais segredos no gerenciador da plataforma.
+O Compose executa em `Production` e não cria usuários demonstrativos. Em um
+volume novo, cadastre o primeiro LOJISTA pelo
+[procedimento de primeiro acesso](primeiro-acesso-lojista.md) antes do login.
+O seed com contas conhecidas pertence somente ao ambiente `Development` local.
+Não publique senhas no repositório ou na imagem; mantenha configurações
+sensíveis no gerenciador da plataforma.
 
 ## Backup dos bancos
 
@@ -82,20 +81,11 @@ O volume protege contra substituição do container, mas não substitui backup. 
 backup consistente do SQLite deve ser criado com a API de backup do SQLite ou com
 o comando `.backup`, e não copiando o arquivo enquanto há escrita ativa.
 
-Exemplo para um ambiente controlado, após parar a aplicação:
-
-```bash
-docker compose stop squad-estoque
-docker run --rm \
-  -v squad-estoque-data:/data:ro \
-  -v "$PWD/backups:/backup" \
-  alpine:3.22 \
-  cp /data/Estoque.db /backup/Estoque.db
-docker compose start squad-estoque
-```
-
-A pasta `backups/` é ignorada pelo Git. Não versione bancos que contenham dados
-reais ou hashes de senha.
+Use o procedimento versionado em
+[backup-restauracao-sqlite.md](backup-restauracao-sqlite.md), que nomeia a cópia
+por ambiente e data UTC e testa a restauração em um arquivo isolado. A cópia
+bruta por `cp` foi removida deste guia porque pode ser inconsistente se alguém
+a executar com o serviço ativo. Não versione bancos reais ou hashes de senha.
 
 ## Publicação futura
 

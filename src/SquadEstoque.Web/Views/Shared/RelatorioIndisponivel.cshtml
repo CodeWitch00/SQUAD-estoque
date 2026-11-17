@@ -1,0 +1,11 @@
+@{
+    ViewData["Title"] = "Relatório indisponível";
+}
+<div class="report-page">
+    <div class="alert alert-danger" role="alert">
+        <h1 class="h4">Não foi possível carregar o relatório</h1>
+        <p>A consulta está temporariamente indisponível. Tente novamente em instantes.</p>
+        <p class="mb-0">A falha na consulta não significa ausência de registros.</p>
+    </div>
+    <a asp-action="Index" class="btn btn-primary">Tentar novamente</a>
+</div>

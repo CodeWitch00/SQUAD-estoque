@@ -8,8 +8,13 @@ preparação, implementação, testes, Git e Pull Request está somente no
 
 | Necessidade | Documento |
 | --- | --- |
+| Configurar, iniciar, atualizar e diagnosticar | [runbook-producao.md](runbook-producao.md) |
+| Fazer backup consistente e restaurar SQLite em isolamento | [backup-restauracao-sqlite.md](backup-restauracao-sqlite.md) |
+| Evidenciar o teste local de recuperação | [validacao-backup-restauracao.md](validacao-backup-restauracao.md) |
+| Configurar Production sem segredos no repositorio | [configuracao-production.md](configuracao-production.md) |
 | Conferir a baseline técnica | [checklist-baseline.md](checklist-baseline.md) |
 | Executar e preservar dados com Docker | [docker.md](docker.md) |
+| Cadastrar o primeiro LOJISTA sem senha versionada | [primeiro-acesso-lojista.md](primeiro-acesso-lojista.md) |
 | Publicar e validar o ambiente compartilhado | [azure.md](azure.md) |
 | Consultar evidências do cartão S2-BE-007 | [s2-be-007-evidencias.md](s2-be-007-evidencias.md) |
 | Consultar evidências do cartão S2-BE-008 | [s2-be-008-evidencias.md](s2-be-008-evidencias.md) |

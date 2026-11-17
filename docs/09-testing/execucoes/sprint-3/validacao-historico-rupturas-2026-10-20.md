@@ -21,7 +21,7 @@ Validação em Chromium local, com banco SQLite isolado e dados demonstrativos. 
 | Reposição | Numerações 38 e 37 seguem no histórico com saldo positivo |
 | Console | Nenhum erro JavaScript registrado |
 
-Capturas e dados de verificação em [evidencias/historico-rupturas](evidencias/historico-rupturas).
+Capturas e dados de verificação em [evidencias/historico-rupturas](../../evidencias/historico-rupturas/).
 
 ## Testes
 

@@ -1,4 +1,5 @@
-%% DER físico do schema SQLite efetivamente implementado no commit 327efc5.
+%% Registro histórico: DER físico do SQLite no commit 327efc5, com cinco tabelas.
+%% O modelo vigente está em docs/03-modelagem/README.md.
 %% Tipos físicos: Guid -> TEXT; string/DateTime -> TEXT; int/bool/enum -> INTEGER.
 %% Não existe atributo de data de última atualização na tabela Sku.
 

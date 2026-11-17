@@ -57,10 +57,12 @@ public static class SaidaEstoque
             }
 
             // Saldo e movimentação só são confirmados juntos após o commit.
+            var atualizadoEm = DateTime.UtcNow;
             var linhasAlteradas = await context.Sku
                 .Where(s => s.Id == skuId && s.SaldoAtual >= quantidade)
                 .ExecuteUpdateAsync(setters => setters
-                    .SetProperty(s => s.SaldoAtual, s => s.SaldoAtual - quantidade));
+                    .SetProperty(s => s.SaldoAtual, s => s.SaldoAtual - quantidade)
+                    .SetProperty(s => s.UltimaAtualizacaoSaldoEm, atualizadoEm));
             sku = await context.Sku.Include(s => s.Produto)
                 .FirstOrDefaultAsync(s => s.Id == skuId);
 

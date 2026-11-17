@@ -81,6 +81,8 @@ public sealed class EntradaFiscalHttpTests
             var produto = await context.Produto.Include(p => p.Skus).SingleAsync(p => p.Nome == "Tênis XML");
             var sku = produto.Skus.Single(s => s.Numeracao == "38");
             Assert.Equal(6, sku.SaldoAtual);
+            Assert.NotNull(sku.UltimaAtualizacaoSaldoEm);
+            Assert.Equal(DateTimeKind.Utc, sku.UltimaAtualizacaoSaldoEm.Value.Kind);
             var movimento = await context.Movimentacao.SingleAsync(m => m.SkuId == sku.Id);
             Assert.Equal(TipoMovimentacao.ENTRADA, movimento.Tipo);
             Assert.Equal(6, movimento.Quantidade);

@@ -172,6 +172,31 @@ public sealed class ConsultaEstoqueTests : IClassFixture<SquadEstoqueWebApplicat
         Assert.Contains("Selecione a numeração solicitada pelo cliente.", html);
     }
 
+    [Fact]
+    public async Task Selected_grade_shows_local_last_update_and_handles_missing_legacy_date()
+    {
+        var marker = Guid.NewGuid().ToString("N")[..10];
+        var product = CreateProduct("Atualização " + marker);
+        var atualizado = CreateSku(product.Id, "38", 2);
+        atualizado.UltimaAtualizacaoSaldoEm = new DateTime(2026, 10, 29, 14, 30, 0, DateTimeKind.Utc);
+        product.Skus.Add(atualizado);
+        product.Skus.Add(CreateSku(product.Id, "39", 0));
+        await AddProductsAsync(product);
+        using var client = CreateClient();
+        await LoginAsync(client, "vendedor@squad.com");
+
+        using var response = await client.GetAsync(
+            $"/Estoque/Consulta?termo={marker}&produtoId={product.Id}");
+        var html = WebUtility.HtmlDecode(await response.Content.ReadAsStringAsync());
+        var dataLocal = atualizado.UltimaAtualizacaoSaldoEm.Value.ToLocalTime();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("Atualizado em", html);
+        Assert.Contains(dataLocal.ToString("dd/MM/yyyy HH:mm"), html);
+        Assert.Contains("datetime=\"" + dataLocal.ToString("O") + "\"", html);
+        Assert.Contains("Atualização não registrada", html);
+    }
+
     private HttpClient CreateClient()
     {
         return _factory.CreateClient(new WebApplicationFactoryClientOptions

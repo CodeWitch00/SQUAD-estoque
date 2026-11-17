@@ -33,6 +33,7 @@
                         <tr>
                             <th scope="col">Numeração</th>
                             <th scope="col">Saldo atual</th>
+                            <th scope="col">Última atualização</th>
                             <th scope="col">Quantidade recebida</th>
                         </tr>
                     </thead>
@@ -45,6 +46,17 @@
                                     <span class="batch-entry-size">@Model.Itens[index].Numeracao</span>
                                 </td>
                                 <td>@Model.Itens[index].SaldoAtual par(es)</td>
+                                <td class="sku-last-update">
+                                    @if (Model.Itens[index].UltimaAtualizacaoSaldoEm is DateTime atualizacaoUtc)
+                                    {
+                                        var atualizacaoLocal = atualizacaoUtc.ToLocalTime();
+                                        <time datetime="@atualizacaoLocal.ToString("O")">@atualizacaoLocal.ToString("dd/MM/yyyy HH:mm")</time>
+                                    }
+                                    else
+                                    {
+                                        <span>Atualização não registrada</span>
+                                    }
+                                </td>
                                 <td>
                                     <label asp-for="Itens[index].QuantidadeRecebida" class="visually-hidden">Quantidade recebida para a numeração @Model.Itens[index].Numeracao</label>
                                     <input asp-for="Itens[index].QuantidadeRecebida" type="number" min="0" class="form-control batch-entry-quantity" aria-label="Quantidade recebida para a numeração @Model.Itens[index].Numeracao" />

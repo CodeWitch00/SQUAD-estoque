@@ -75,6 +75,45 @@ public sealed class AdministrativeHttpTests : IClassFixture<SquadEstoqueWebAppli
     }
 
     [Fact]
+    public async Task Lojista_saves_official_grade_when_extras_field_is_submitted_empty()
+    {
+        var product = await AddProductAsync();
+        using var client = CreateClient();
+        await LoginAsync(client, "lojista@squad.com");
+
+        var gradePage = await client.GetAsync($"/Produtos/AdicionarNumeracoes/{product.Id}");
+        Assert.Equal(HttpStatusCode.OK, gradePage.StatusCode);
+        var token = await ExtractAntiforgeryTokenAsync(gradePage);
+
+        var gradeValues = new List<(string Key, string Value)>();
+        for (var index = 0; index <= 10; index++)
+        {
+            var numeracao = (34 + index).ToString();
+            gradeValues.Add(($"Opcoes[{index}].Numeracao", numeracao));
+            gradeValues.Add(($"Opcoes[{index}].Quantidade", numeracao == "38" ? "2" : "0"));
+            if (numeracao is "37" or "38" or "39" or "40")
+            {
+                gradeValues.Add(($"Opcoes[{index}].Selecionada", "true"));
+            }
+        }
+        gradeValues.Add(("ProdutoId", product.Id.ToString()));
+        gradeValues.Add(("CadastroInicial", "true"));
+        gradeValues.Add(("NumeracoesExtras", ""));
+        using var gradeContent = Form(token, gradeValues.ToArray());
+
+        var gradeResponse = await client.PostAsync(
+            $"/Produtos/AdicionarNumeracoes/{product.Id}", gradeContent);
+
+        Assert.Equal(HttpStatusCode.Found, gradeResponse.StatusCode);
+        Assert.Equal($"/Produtos/Details/{product.Id}", gradeResponse.Headers.Location?.OriginalString);
+        using var scope = _factory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
+        var persisted = await context.Produto.Include(p => p.Skus).SingleAsync(p => p.Id == product.Id);
+        Assert.Equal(new[] { "37", "38", "39", "40" },
+            persisted.Skus.OrderBy(s => s.Numeracao).Select(s => s.Numeracao));
+    }
+
+    [Fact]
     public async Task Lojista_edits_and_deactivates_product_via_http()
     {
         var product = await AddProductAsync();
@@ -132,6 +171,37 @@ public sealed class AdministrativeHttpTests : IClassFixture<SquadEstoqueWebAppli
         var deniedPost = await vendedorClient.PostAsync("/Movimentacoes/EntradaLote", deniedContent);
         Assert.Equal(HttpStatusCode.Found, deniedPost.StatusCode);
         Assert.StartsWith("/Account/AccessDenied", deniedPost.Headers.Location?.PathAndQuery);
+    }
+
+    [Fact]
+    public async Task Product_details_and_batch_grade_render_local_last_update_or_legacy_fallback()
+    {
+        var dataUtc = new DateTime(2026, 10, 29, 14, 30, 0, DateTimeKind.Utc);
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
+            var sku = await context.Sku.OrderBy(item => item.Numeracao).FirstAsync();
+            sku.UltimaAtualizacaoSaldoEm = dataUtc;
+            await context.SaveChangesAsync();
+        }
+
+        using var client = CreateClient();
+        await LoginAsync(client, "lojista@squad.com");
+        using var details = await client.GetAsync("/Produtos/Details/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+        var detailsHtml = WebUtility.HtmlDecode(await details.Content.ReadAsStringAsync());
+        using var batch = await client.GetAsync("/Movimentacoes/EntradaLote?produtoId=aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+        var batchHtml = WebUtility.HtmlDecode(await batch.Content.ReadAsStringAsync());
+        var local = dataUtc.ToLocalTime();
+        var formatted = local.ToString("dd/MM/yyyy HH:mm");
+
+        Assert.Equal(HttpStatusCode.OK, details.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, batch.StatusCode);
+        Assert.Contains("Última atualização", detailsHtml);
+        Assert.Contains(formatted, detailsHtml);
+        Assert.Contains("Atualização não registrada", detailsHtml);
+        Assert.Contains("Última atualização", batchHtml);
+        Assert.Contains(formatted, batchHtml);
+        Assert.Contains("Atualização não registrada", batchHtml);
     }
 
     [Fact]

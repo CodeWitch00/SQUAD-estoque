@@ -48,7 +48,7 @@
 
                     <div class="movement-field movement-field--last">
                         <label asp-for="Motivo" class="form-label">Justificativa do Ajuste (Obrigatório, mín. 5 caracteres)</label>
-                        <textarea asp-for="Motivo" rows="3" class="form-control movement-input movement-textarea" placeholder="ex: Recontagem de inventário mensal / Par avariado descartado"></textarea>
+                        <textarea asp-for="Motivo" data-normalizar-motivo rows="3" class="form-control movement-input movement-textarea" placeholder="ex: Recontagem de inventário mensal / Par avariado descartado"></textarea>
                         <span asp-validation-for="Motivo" class="movement-validation"></span>
                     </div>
 
@@ -61,4 +61,5 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/ajuste.js" asp-append-version="true"></script>
 }

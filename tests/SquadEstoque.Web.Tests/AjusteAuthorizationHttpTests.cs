@@ -29,6 +29,10 @@ public sealed class AjusteAuthorizationHttpTests
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Contains("name=\"NovoSaldoApurado\"", html);
         Assert.Contains("name=\"Motivo\"", html);
+        Assert.Contains("data-normalizar-motivo", html);
+        Assert.Contains("/js/ajuste.js?v=", html);
+        Assert.Contains("data-val-length-max=\"500\"", html);
+        Assert.Contains("data-val-minlength-min=\"5\"", html);
         Assert.Contains(skuId.ToString(), html);
         ExtractToken(html);
         await AssertUnchangedAsync(factory, before);

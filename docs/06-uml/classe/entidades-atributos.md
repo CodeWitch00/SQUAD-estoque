@@ -1,13 +1,17 @@
 # Tabela de Entidades e Atributos - Sistema SQUAD
 
-## Entidades principais
+> **Registro histórico:** lista de entidades do domínio inicial. Consulte o
+> [modelo vigente](../../03-modelagem/README.md) para a persistência atual.
+
+## Entidades principais do modelo inicial
 
 PRODUTO → modelo do calçado
 SKU → variação (tamanho)
-ESTOQUE → saldo por SKU
 MOVIMENTAÇÃO → histórico (entrada/saída/ajuste)
 RUPTURA → demanda não atendida
 USUARIO → ator do sistema
+
+`ESTOQUE` não é uma entidade separada: o saldo pertence ao `SKU`.
 
 
 | Entidade | Atributos |

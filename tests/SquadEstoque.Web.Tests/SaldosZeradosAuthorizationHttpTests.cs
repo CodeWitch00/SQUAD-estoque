@@ -27,8 +27,42 @@ public sealed class SaldosZeradosAuthorizationHttpTests
         Assert.Contains(nome, html);
         Assert.Contains("Numerações sem saldo", html);
         Assert.Contains(">47</span>", html);
+        Assert.Contains("Atualizado em", html);
+        Assert.Contains(new DateTime(2026, 10, 29, 14, 30, 0, DateTimeKind.Utc)
+            .ToLocalTime().ToString("dd/MM/yyyy HH:mm"), html);
+        Assert.Contains("Atualização não registrada", html);
         Assert.DoesNotContain(">48</span>", html);
+        Assert.DoesNotContain(">49</span>", html);
         Assert.Contains("href=\"/SaldosZerados\"", html);
+    }
+
+    [Fact]
+    public async Task Produto_inativo_com_sku_zerado_nao_aparece_na_visao()
+    {
+        using var factory = new SquadEstoqueWebApplicationFactory();
+        using var client = CreateClient(factory);
+        var nome = $"Produto inativo {Guid.NewGuid():N}";
+        using (var scope = factory.Services.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
+            context.Produto.Add(new Produto
+            {
+                Id = Guid.NewGuid(), Nome = nome, Marca = "Marca Teste",
+                Categoria = "Calçado", Cor = "Azul", Ativo = false,
+                Skus = new List<Sku>
+                {
+                    new() { Id = Guid.NewGuid(), Numeracao = "50", SaldoAtual = 0, Ativo = true }
+                }
+            });
+            await context.SaveChangesAsync();
+        }
+        await LoginAsync(client, "lojista@squad.com");
+
+        using var response = await client.GetAsync("/SaldosZerados");
+        var html = WebUtility.HtmlDecode(await response.Content.ReadAsStringAsync());
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.DoesNotContain(nome, html);
+        Assert.DoesNotContain(">50</span>", html);
     }
 
     [Fact]
@@ -124,8 +158,10 @@ public sealed class SaldosZeradosAuthorizationHttpTests
             Ativo = true,
             Skus = new List<Sku>
             {
-                new() { Id = Guid.NewGuid(), Numeracao = "47", SaldoAtual = 0, Ativo = true },
-                new() { Id = Guid.NewGuid(), Numeracao = "48", SaldoAtual = 2, Ativo = true }
+                new() { Id = Guid.NewGuid(), Numeracao = "47", SaldoAtual = 0, Ativo = true, UltimaAtualizacaoSaldoEm = new DateTime(2026, 10, 29, 14, 30, 0, DateTimeKind.Utc) },
+                new() { Id = Guid.NewGuid(), Numeracao = "46", SaldoAtual = 0, Ativo = true },
+                new() { Id = Guid.NewGuid(), Numeracao = "48", SaldoAtual = 2, Ativo = true },
+                new() { Id = Guid.NewGuid(), Numeracao = "49", SaldoAtual = 0, Ativo = false }
             }
         });
         await context.SaveChangesAsync();

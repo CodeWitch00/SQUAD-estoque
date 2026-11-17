@@ -1,4 +1,8 @@
-# DER físico implementado - Sistema SQUAD
+# DER físico da versão inicial - Sistema SQUAD
+
+> **Registro histórico:** auditoria do commit `dca1bc5` com cinco tabelas. A
+> aplicação atual possui nove; consulte o [modelo vigente](../../03-modelagem/README.md).
+> O diagrama e a validação abaixo descrevem apenas a versão auditada na época.
 
 ## Identificação da auditoria
 
@@ -84,9 +88,11 @@ Não foram utilizados `UUID`, `VARCHAR`, `TIMESTAMPTZ`, `BOOLEAN` nativo ou `ENU
 
 ## Verificação do SKU
 
-**O modelo físico atualmente implementado não possui atributo de data de última atualização na entidade `Sku`.**
+**Na versão auditada, o modelo físico não possuía atributo de data de última atualização na entidade `Sku`.**
 
-Não existem `UpdatedAt`, `AtualizadoEm`, `UltimaAtualizacao` ou campo equivalente em `Models/Entities/Sku.cs`, nas migrations, no ModelSnapshot ou no schema SQLite.
+Na versão auditada não existia campo equivalente em `Models/Entities/Sku.cs`, nas
+migrations, no ModelSnapshot ou no schema SQLite. A versão vigente possui
+`Sku.UltimaAtualizacaoSaldoEm`.
 
 ## Evidências conferidas
 
@@ -122,4 +128,5 @@ Figura X — Diagrama Entidade-Relacionamento do modelo implementado do Sistema 
 
 Fonte: Elaborado pelos autores (2026).
 
-**DER APROVADO PARA A MONOGRAFIA: SIM**
+**DER aprovado para a monografia na versão auditada:** sim. Não representa o
+esquema completo vigente.

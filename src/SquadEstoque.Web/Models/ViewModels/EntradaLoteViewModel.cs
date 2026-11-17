@@ -25,5 +25,6 @@ public class EntradaLoteItemViewModel
     public Guid SkuId { get; set; }
     public string Numeracao { get; set; } = string.Empty;
     public int SaldoAtual { get; set; }
+    public DateTime? UltimaAtualizacaoSaldoEm { get; set; }
     public int? QuantidadeRecebida { get; set; }
 }

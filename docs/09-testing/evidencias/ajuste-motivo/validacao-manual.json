@@ -1,0 +1,118 @@
+[
+  {
+    "cenario": "motivo inválido",
+    "entrada": "''",
+    "http": 200,
+    "estado": [
+      10,
+      0
+    ],
+    "resultado": "aprovado"
+  },
+  {
+    "cenario": "motivo inválido",
+    "entrada": "'   \\t\\r\\n '",
+    "http": 200,
+    "estado": [
+      10,
+      0
+    ],
+    "resultado": "aprovado"
+  },
+  {
+    "cenario": "motivo inválido",
+    "entrada": "' a   b '",
+    "http": 200,
+    "estado": [
+      10,
+      0
+    ],
+    "resultado": "aprovado"
+  },
+  {
+    "cenario": "motivo inválido",
+    "entrada": "'abcd'",
+    "http": 200,
+    "estado": [
+      10,
+      0
+    ],
+    "resultado": "aprovado"
+  },
+  {
+    "cenario": "motivo inválido",
+    "entrada": "501 caracteres",
+    "http": 200,
+    "estado": [
+      10,
+      0
+    ],
+    "resultado": "aprovado"
+  },
+  {
+    "cenario": "motivo válido e rastreável",
+    "comprimento_normalizado": 5,
+    "http": 302,
+    "estado": [
+      15,
+      1
+    ],
+    "movimento": [
+      2,
+      "abcde",
+      "BE66D502-B089-4418-AD41-C30ED7BFFEC5",
+      "2026-10-26 21:42:37.7307186"
+    ],
+    "resultado": "aprovado"
+  },
+  {
+    "cenario": "motivo válido e rastreável",
+    "comprimento_normalizado": 500,
+    "http": 302,
+    "estado": [
+      7,
+      2
+    ],
+    "movimento": [
+      2,
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "BE66D502-B089-4418-AD41-C30ED7BFFEC5",
+      "2026-10-26 21:42:37.9595033"
+    ],
+    "resultado": "aprovado"
+  },
+  {
+    "cenario": "motivo válido e rastreável",
+    "comprimento_normalizado": 26,
+    "http": 302,
+    "estado": [
+      12,
+      3
+    ],
+    "movimento": [
+      2,
+      "Contagem física do estoque",
+      "BE66D502-B089-4418-AD41-C30ED7BFFEC5",
+      "2026-10-26 21:42:38.0190044"
+    ],
+    "resultado": "aprovado"
+  },
+  {
+    "cenario": "saldo sem alteração",
+    "http": 200,
+    "estado": [
+      12,
+      3
+    ],
+    "resultado": "aprovado"
+  },
+  {
+    "cenario": "vendedor bloqueado GET e POST",
+    "http": 302,
+    "estado": [
+      12,
+      3
+    ],
+    "resultado": "aprovado"
+  }
+]

@@ -150,6 +150,31 @@ public sealed class AuthenticationAuthorizationTests : IClassFixture<SquadEstoqu
     }
 
     [Fact]
+    public async Task Existing_user_with_invalid_password_does_not_authenticate()
+    {
+        using var client = CreateClient();
+        var loginPage = await client.GetAsync("/Account/Login");
+        var token = ExtractAntiforgeryToken(await loginPage.Content.ReadAsStringAsync());
+        using var content = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["Email"] = "lojista@squad.com",
+            ["Senha"] = "senha-incorreta",
+            ["__RequestVerificationToken"] = token
+        });
+
+        var loginResponse = await client.PostAsync("/Account/Login", content);
+        var html = await loginResponse.Content.ReadAsStringAsync();
+        var produtosResponse = await client.GetAsync("/Produtos");
+
+        Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
+        Assert.Contains("E-mail ou senha inválidos.", WebUtility.HtmlDecode(html));
+        Assert.Equal(HttpStatusCode.Found, produtosResponse.StatusCode);
+        Assert.Equal(
+            "/Account/Login?ReturnUrl=%2FProdutos",
+            produtosResponse.Headers.Location?.PathAndQuery);
+    }
+
+    [Fact]
     public async Task Invalid_credentials_do_not_authenticate()
     {
         using var client = CreateClient();
@@ -167,6 +192,26 @@ public sealed class AuthenticationAuthorizationTests : IClassFixture<SquadEstoqu
         var produtosResponse = await client.GetAsync("/Produtos");
 
         Assert.Equal(HttpStatusCode.OK, loginResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.Found, produtosResponse.StatusCode);
+        Assert.Equal(
+            "/Account/Login?ReturnUrl=%2FProdutos",
+            produtosResponse.Headers.Location?.PathAndQuery);
+    }
+
+    [Fact]
+    public async Task Login_rejects_post_without_antiforgery_token()
+    {
+        using var client = CreateClient();
+        using var content = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["Email"] = "lojista@squad.com",
+            ["Senha"] = "123"
+        });
+
+        var response = await client.PostAsync("/Account/Login", content);
+        var produtosResponse = await client.GetAsync("/Produtos");
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.Equal(HttpStatusCode.Found, produtosResponse.StatusCode);
         Assert.Equal(
             "/Account/Login?ReturnUrl=%2FProdutos",
@@ -235,6 +280,20 @@ public sealed class AuthenticationAuthorizationTests : IClassFixture<SquadEstoqu
         Assert.Equal(
             "/Account/Login?ReturnUrl=%2FProdutos",
             afterLogoutResponse.Headers.Location?.PathAndQuery);
+    }
+
+    [Fact]
+    public async Task Logout_rejects_post_without_antiforgery_token_and_keeps_session()
+    {
+        using var client = CreateClient();
+        await LoginAsync(client, "lojista@squad.com");
+        using var content = new FormUrlEncodedContent(new Dictionary<string, string>());
+
+        var logoutResponse = await client.PostAsync("/Account/Logout", content);
+        var produtosResponse = await client.GetAsync("/Produtos");
+
+        Assert.Equal(HttpStatusCode.BadRequest, logoutResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, produtosResponse.StatusCode);
     }
 
     [Theory]

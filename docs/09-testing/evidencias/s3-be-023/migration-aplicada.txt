@@ -1,0 +1,400 @@
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (46ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      PRAGMA journal_mode = 'wal';
+info: Microsoft.EntityFrameworkCore.Migrations[20411]
+      Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (7ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*) FROM "sqlite_master" WHERE "name" = '__EFMigrationsLock' AND "type" = 'table';
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (13ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE IF NOT EXISTS "__EFMigrationsLock" (
+          "Id" INTEGER NOT NULL CONSTRAINT "PK___EFMigrationsLock" PRIMARY KEY,
+          "Timestamp" TEXT NOT NULL
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (8ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      INSERT OR IGNORE INTO "__EFMigrationsLock"("Id", "Timestamp") VALUES(1, '2026-10-26 22:08:11.4506243+00:00');
+      SELECT changes();
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
+          "MigrationId" TEXT NOT NULL CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY,
+          "ProductVersion" TEXT NOT NULL
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*) FROM "sqlite_master" WHERE "name" = '__EFMigrationsHistory' AND "type" = 'table';
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT "MigrationId", "ProductVersion"
+      FROM "__EFMigrationsHistory"
+      ORDER BY "MigrationId";
+info: Microsoft.EntityFrameworkCore.Migrations[20402]
+      Applying migration '20260817120442_InitialSquadSchema'.
+Applying migration '20260817120442_InitialSquadSchema'.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "Produto" (
+          "Id" TEXT NOT NULL CONSTRAINT "PK_Produto" PRIMARY KEY,
+          "Nome" TEXT NOT NULL,
+          "Marca" TEXT NOT NULL,
+          "Categoria" TEXT NOT NULL,
+          "Cor" TEXT NOT NULL,
+          "Ativo" INTEGER NOT NULL
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "Usuario" (
+          "Id" TEXT NOT NULL CONSTRAINT "PK_Usuario" PRIMARY KEY,
+          "Nome" TEXT NOT NULL,
+          "Email" TEXT NOT NULL,
+          "SenhaHash" TEXT NOT NULL,
+          "Perfil" INTEGER NOT NULL
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "Sku" (
+          "Id" TEXT NOT NULL CONSTRAINT "PK_Sku" PRIMARY KEY,
+          "ProdutoId" TEXT NOT NULL,
+          "Numeracao" TEXT NOT NULL,
+          "SaldoAtual" INTEGER NOT NULL,
+          "Ativo" INTEGER NOT NULL,
+          CONSTRAINT "chk_sku_saldo_nao_negativo" CHECK (SaldoAtual >= 0),
+          CONSTRAINT "FK_Sku_Produto_ProdutoId" FOREIGN KEY ("ProdutoId") REFERENCES "Produto" ("Id") ON DELETE RESTRICT
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "Movimentacao" (
+          "Id" TEXT NOT NULL CONSTRAINT "PK_Movimentacao" PRIMARY KEY,
+          "SkuId" TEXT NOT NULL,
+          "Tipo" INTEGER NOT NULL,
+          "Quantidade" INTEGER NOT NULL,
+          "UsuarioId" TEXT NOT NULL,
+          "CriadoEm" TEXT NOT NULL,
+          "Motivo" TEXT NULL,
+          CONSTRAINT "chk_movimentacao_quantidade_positiva" CHECK (Quantidade > 0),
+          CONSTRAINT "FK_Movimentacao_Sku_SkuId" FOREIGN KEY ("SkuId") REFERENCES "Sku" ("Id") ON DELETE RESTRICT,
+          CONSTRAINT "FK_Movimentacao_Usuario_UsuarioId" FOREIGN KEY ("UsuarioId") REFERENCES "Usuario" ("Id") ON DELETE RESTRICT
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "Ruptura" (
+          "Id" TEXT NOT NULL CONSTRAINT "PK_Ruptura" PRIMARY KEY,
+          "SkuId" TEXT NOT NULL,
+          "UsuarioId" TEXT NOT NULL,
+          "CriadoEm" TEXT NOT NULL,
+          CONSTRAINT "FK_Ruptura_Sku_SkuId" FOREIGN KEY ("SkuId") REFERENCES "Sku" ("Id") ON DELETE RESTRICT,
+          CONSTRAINT "FK_Ruptura_Usuario_UsuarioId" FOREIGN KEY ("UsuarioId") REFERENCES "Usuario" ("Id") ON DELETE RESTRICT
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_Movimentacao_SkuId" ON "Movimentacao" ("SkuId");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_Movimentacao_UsuarioId" ON "Movimentacao" ("UsuarioId");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_Ruptura_SkuId" ON "Ruptura" ("SkuId");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_Ruptura_UsuarioId" ON "Ruptura" ("UsuarioId");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE UNIQUE INDEX "IX_Sku_ProdutoId_Numeracao" ON "Sku" ("ProdutoId", "Numeracao");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE UNIQUE INDEX "IX_Usuario_Email" ON "Usuario" ("Email");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+      VALUES ('20260817120442_InitialSquadSchema', '10.0.11');
+info: Microsoft.EntityFrameworkCore.Migrations[20402]
+      Applying migration '20260901000759_AddEnumDomainConstraints'.
+Applying migration '20260901000759_AddEnumDomainConstraints'.
+warn: Microsoft.EntityFrameworkCore.Migrations[20410]
+      The migration operation 'PRAGMA foreign_keys = 0;
+      ' from migration 'AddEnumDomainConstraints' cannot be executed in a transaction. If the app is terminated or an unrecoverable error occurs while this operation is being executed then the migration will be left in a partially applied state and would need to be reverted manually before it can be applied again. Create a separate migration that contains just this operation.
+The migration operation 'PRAGMA foreign_keys = 0;
+' from migration 'AddEnumDomainConstraints' cannot be executed in a transaction. If the app is terminated or an unrecoverable error occurs while this operation is being executed then the migration will be left in a partially applied state and would need to be reverted manually before it can be applied again. Create a separate migration that contains just this operation.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "ef_temp_Usuario" (
+          "Id" TEXT NOT NULL CONSTRAINT "PK_Usuario" PRIMARY KEY,
+          "Email" TEXT NOT NULL,
+          "Nome" TEXT NOT NULL,
+          "Perfil" INTEGER NOT NULL,
+          "SenhaHash" TEXT NOT NULL,
+          CONSTRAINT "chk_usuario_perfil" CHECK (Perfil IN (0, 1))
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      INSERT INTO "ef_temp_Usuario" ("Id", "Email", "Nome", "Perfil", "SenhaHash")
+      SELECT "Id", "Email", "Nome", "Perfil", "SenhaHash"
+      FROM "Usuario";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "ef_temp_Movimentacao" (
+          "Id" TEXT NOT NULL CONSTRAINT "PK_Movimentacao" PRIMARY KEY,
+          "CriadoEm" TEXT NOT NULL,
+          "Motivo" TEXT NULL,
+          "Quantidade" INTEGER NOT NULL,
+          "SkuId" TEXT NOT NULL,
+          "Tipo" INTEGER NOT NULL,
+          "UsuarioId" TEXT NOT NULL,
+          CONSTRAINT "chk_movimentacao_quantidade_positiva" CHECK (Quantidade > 0),
+          CONSTRAINT "chk_movimentacao_tipo" CHECK (Tipo IN (0, 1, 2)),
+          CONSTRAINT "FK_Movimentacao_Sku_SkuId" FOREIGN KEY ("SkuId") REFERENCES "Sku" ("Id") ON DELETE RESTRICT,
+          CONSTRAINT "FK_Movimentacao_Usuario_UsuarioId" FOREIGN KEY ("UsuarioId") REFERENCES "Usuario" ("Id") ON DELETE RESTRICT
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      INSERT INTO "ef_temp_Movimentacao" ("Id", "CriadoEm", "Motivo", "Quantidade", "SkuId", "Tipo", "UsuarioId")
+      SELECT "Id", "CriadoEm", "Motivo", "Quantidade", "SkuId", "Tipo", "UsuarioId"
+      FROM "Movimentacao";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      PRAGMA foreign_keys = 0;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      DROP TABLE "Usuario";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      ALTER TABLE "ef_temp_Usuario" RENAME TO "Usuario";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      DROP TABLE "Movimentacao";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      ALTER TABLE "ef_temp_Movimentacao" RENAME TO "Movimentacao";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      PRAGMA foreign_keys = 1;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE UNIQUE INDEX "IX_Usuario_Email" ON "Usuario" ("Email");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_Movimentacao_SkuId" ON "Movimentacao" ("SkuId");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_Movimentacao_UsuarioId" ON "Movimentacao" ("UsuarioId");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+      VALUES ('20260901000759_AddEnumDomainConstraints', '10.0.11');
+info: Microsoft.EntityFrameworkCore.Migrations[20402]
+      Applying migration '20261009181737_AddAtendimentoAuditavel'.
+Applying migration '20261009181737_AddAtendimentoAuditavel'.
+warn: Microsoft.EntityFrameworkCore.Migrations[20410]
+      The migration operation 'PRAGMA foreign_keys = 0;
+      ' from migration 'AddAtendimentoAuditavel' cannot be executed in a transaction. If the app is terminated or an unrecoverable error occurs while this operation is being executed then the migration will be left in a partially applied state and would need to be reverted manually before it can be applied again. Create a separate migration that contains just this operation.
+The migration operation 'PRAGMA foreign_keys = 0;
+' from migration 'AddAtendimentoAuditavel' cannot be executed in a transaction. If the app is terminated or an unrecoverable error occurs while this operation is being executed then the migration will be left in a partially applied state and would need to be reverted manually before it can be applied again. Create a separate migration that contains just this operation.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      ALTER TABLE "Ruptura" ADD "AtendimentoId" TEXT NULL;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      ALTER TABLE "Movimentacao" ADD "AtendimentoId" TEXT NULL;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "Atendimento" (
+          "Id" TEXT NOT NULL CONSTRAINT "PK_Atendimento" PRIMARY KEY,
+          "UsuarioId" TEXT NOT NULL,
+          "ProdutoId" TEXT NOT NULL,
+          "SkuId" TEXT NULL,
+          "Status" INTEGER NOT NULL,
+          "Resultado" INTEGER NULL,
+          "SaldoConsultado" INTEGER NULL,
+          "CriadoEm" TEXT NOT NULL,
+          "ConcluidoEm" TEXT NULL,
+          CONSTRAINT "chk_atendimento_conclusao" CHECK ((Status = 0 AND Resultado IS NULL AND ConcluidoEm IS NULL) OR (Status = 1 AND Resultado IS NOT NULL AND ConcluidoEm IS NOT NULL)),
+          CONSTRAINT "chk_atendimento_resultado" CHECK (Resultado IS NULL OR Resultado IN (0, 1, 2)),
+          CONSTRAINT "chk_atendimento_saldo" CHECK (SaldoConsultado IS NULL OR SaldoConsultado >= 0),
+          CONSTRAINT "chk_atendimento_sku_resultado" CHECK (Resultado IS NULL OR Resultado = 2 OR SkuId IS NOT NULL),
+          CONSTRAINT "chk_atendimento_status" CHECK (Status IN (0, 1)),
+          CONSTRAINT "FK_Atendimento_Produto_ProdutoId" FOREIGN KEY ("ProdutoId") REFERENCES "Produto" ("Id") ON DELETE RESTRICT,
+          CONSTRAINT "FK_Atendimento_Sku_SkuId" FOREIGN KEY ("SkuId") REFERENCES "Sku" ("Id") ON DELETE RESTRICT,
+          CONSTRAINT "FK_Atendimento_Usuario_UsuarioId" FOREIGN KEY ("UsuarioId") REFERENCES "Usuario" ("Id") ON DELETE RESTRICT
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE UNIQUE INDEX "IX_Ruptura_AtendimentoId" ON "Ruptura" ("AtendimentoId");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE UNIQUE INDEX "IX_Movimentacao_AtendimentoId" ON "Movimentacao" ("AtendimentoId");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_Atendimento_ProdutoId" ON "Atendimento" ("ProdutoId");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_Atendimento_SkuId" ON "Atendimento" ("SkuId");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_Atendimento_UsuarioId_Status_CriadoEm" ON "Atendimento" ("UsuarioId", "Status", "CriadoEm");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "ef_temp_Movimentacao" (
+          "Id" TEXT NOT NULL CONSTRAINT "PK_Movimentacao" PRIMARY KEY,
+          "AtendimentoId" TEXT NULL,
+          "CriadoEm" TEXT NOT NULL,
+          "Motivo" TEXT NULL,
+          "Quantidade" INTEGER NOT NULL,
+          "SkuId" TEXT NOT NULL,
+          "Tipo" INTEGER NOT NULL,
+          "UsuarioId" TEXT NOT NULL,
+          CONSTRAINT "chk_movimentacao_quantidade_positiva" CHECK (Quantidade > 0),
+          CONSTRAINT "chk_movimentacao_tipo" CHECK (Tipo IN (0, 1, 2)),
+          CONSTRAINT "FK_Movimentacao_Atendimento_AtendimentoId" FOREIGN KEY ("AtendimentoId") REFERENCES "Atendimento" ("Id") ON DELETE RESTRICT,
+          CONSTRAINT "FK_Movimentacao_Sku_SkuId" FOREIGN KEY ("SkuId") REFERENCES "Sku" ("Id") ON DELETE RESTRICT,
+          CONSTRAINT "FK_Movimentacao_Usuario_UsuarioId" FOREIGN KEY ("UsuarioId") REFERENCES "Usuario" ("Id") ON DELETE RESTRICT
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      INSERT INTO "ef_temp_Movimentacao" ("Id", "AtendimentoId", "CriadoEm", "Motivo", "Quantidade", "SkuId", "Tipo", "UsuarioId")
+      SELECT "Id", "AtendimentoId", "CriadoEm", "Motivo", "Quantidade", "SkuId", "Tipo", "UsuarioId"
+      FROM "Movimentacao";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "ef_temp_Ruptura" (
+          "Id" TEXT NOT NULL CONSTRAINT "PK_Ruptura" PRIMARY KEY,
+          "AtendimentoId" TEXT NULL,
+          "CriadoEm" TEXT NOT NULL,
+          "SkuId" TEXT NOT NULL,
+          "UsuarioId" TEXT NOT NULL,
+          CONSTRAINT "FK_Ruptura_Atendimento_AtendimentoId" FOREIGN KEY ("AtendimentoId") REFERENCES "Atendimento" ("Id") ON DELETE RESTRICT,
+          CONSTRAINT "FK_Ruptura_Sku_SkuId" FOREIGN KEY ("SkuId") REFERENCES "Sku" ("Id") ON DELETE RESTRICT,
+          CONSTRAINT "FK_Ruptura_Usuario_UsuarioId" FOREIGN KEY ("UsuarioId") REFERENCES "Usuario" ("Id") ON DELETE RESTRICT
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      INSERT INTO "ef_temp_Ruptura" ("Id", "AtendimentoId", "CriadoEm", "SkuId", "UsuarioId")
+      SELECT "Id", "AtendimentoId", "CriadoEm", "SkuId", "UsuarioId"
+      FROM "Ruptura";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      PRAGMA foreign_keys = 0;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      DROP TABLE "Movimentacao";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      ALTER TABLE "ef_temp_Movimentacao" RENAME TO "Movimentacao";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      DROP TABLE "Ruptura";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      ALTER TABLE "ef_temp_Ruptura" RENAME TO "Ruptura";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      PRAGMA foreign_keys = 1;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE UNIQUE INDEX "IX_Movimentacao_AtendimentoId" ON "Movimentacao" ("AtendimentoId");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_Movimentacao_SkuId" ON "Movimentacao" ("SkuId");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_Movimentacao_UsuarioId" ON "Movimentacao" ("UsuarioId");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE UNIQUE INDEX "IX_Ruptura_AtendimentoId" ON "Ruptura" ("AtendimentoId");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_Ruptura_SkuId" ON "Ruptura" ("SkuId");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_Ruptura_UsuarioId" ON "Ruptura" ("UsuarioId");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+      VALUES ('20261009181737_AddAtendimentoAuditavel', '10.0.11');
+Applying migration '20261009200729_AddEntradaFiscalEImagemProduto'.
+info: Microsoft.EntityFrameworkCore.Migrations[20402]
+      Applying migration '20261009200729_AddEntradaFiscalEImagemProduto'.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      ALTER TABLE "Produto" ADD "ImagemUrl" TEXT NULL;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "EntradaFiscal" (
+          "Id" TEXT NOT NULL CONSTRAINT "PK_EntradaFiscal" PRIMARY KEY,
+          "ChaveAcesso" TEXT NOT NULL,
+          "Numero" TEXT NOT NULL,
+          "CnpjFornecedor" TEXT NOT NULL,
+          "FornecedorNome" TEXT NOT NULL,
+          "Status" INTEGER NOT NULL,
+          "CriadoEm" TEXT NOT NULL,
+          "ConfirmadoEm" TEXT NULL,
+          "UsuarioId" TEXT NOT NULL,
+          CONSTRAINT "FK_EntradaFiscal_Usuario_UsuarioId" FOREIGN KEY ("UsuarioId") REFERENCES "Usuario" ("Id") ON DELETE RESTRICT
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "VinculoProdutoFornecedor" (
+          "Id" TEXT NOT NULL CONSTRAINT "PK_VinculoProdutoFornecedor" PRIMARY KEY,
+          "CnpjFornecedor" TEXT NOT NULL,
+          "CodigoFornecedor" TEXT NOT NULL,
+          "SkuId" TEXT NOT NULL,
+          CONSTRAINT "FK_VinculoProdutoFornecedor_Sku_SkuId" FOREIGN KEY ("SkuId") REFERENCES "Sku" ("Id") ON DELETE RESTRICT
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE "ItemEntradaFiscal" (
+          "Id" TEXT NOT NULL CONSTRAINT "PK_ItemEntradaFiscal" PRIMARY KEY,
+          "EntradaFiscalId" TEXT NOT NULL,
+          "NumeroItem" INTEGER NOT NULL,
+          "CodigoFornecedor" TEXT NOT NULL,
+          "Gtin" TEXT NULL,
+          "Descricao" TEXT NOT NULL,
+          "Quantidade" INTEGER NOT NULL,
+          "ValorUnitario" TEXT NOT NULL,
+          "ProdutoId" TEXT NULL,
+          "SkuId" TEXT NULL,
+          CONSTRAINT "FK_ItemEntradaFiscal_EntradaFiscal_EntradaFiscalId" FOREIGN KEY ("EntradaFiscalId") REFERENCES "EntradaFiscal" ("Id") ON DELETE CASCADE,
+          CONSTRAINT "FK_ItemEntradaFiscal_Produto_ProdutoId" FOREIGN KEY ("ProdutoId") REFERENCES "Produto" ("Id") ON DELETE RESTRICT,
+          CONSTRAINT "FK_ItemEntradaFiscal_Sku_SkuId" FOREIGN KEY ("SkuId") REFERENCES "Sku" ("Id") ON DELETE RESTRICT
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE UNIQUE INDEX "IX_EntradaFiscal_ChaveAcesso" ON "EntradaFiscal" ("ChaveAcesso");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_EntradaFiscal_UsuarioId" ON "EntradaFiscal" ("UsuarioId");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_ItemEntradaFiscal_EntradaFiscalId" ON "ItemEntradaFiscal" ("EntradaFiscalId");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_ItemEntradaFiscal_ProdutoId" ON "ItemEntradaFiscal" ("ProdutoId");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_ItemEntradaFiscal_SkuId" ON "ItemEntradaFiscal" ("SkuId");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE UNIQUE INDEX "IX_VinculoProdutoFornecedor_CnpjFornecedor_CodigoFornecedor" ON "VinculoProdutoFornecedor" ("CnpjFornecedor", "CodigoFornecedor");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX "IX_VinculoProdutoFornecedor_SkuId" ON "VinculoProdutoFornecedor" ("SkuId");
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+      VALUES ('20261009200729_AddEntradaFiscalEImagemProduto', '10.0.11');
+info: Microsoft.EntityFrameworkCore.Migrations[20402]
+      Applying migration '20261026220326_AddSkuUltimaAtualizacaoSaldo'.
+Applying migration '20261026220326_AddSkuUltimaAtualizacaoSaldo'.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      ALTER TABLE "Sku" ADD "UltimaAtualizacaoSaldoEm" TEXT NULL;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+      VALUES ('20261026220326_AddSkuUltimaAtualizacaoSaldo', '10.0.11');
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      DELETE FROM "__EFMigrationsLock";
+Done.

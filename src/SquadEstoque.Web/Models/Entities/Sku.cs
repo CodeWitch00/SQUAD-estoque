@@ -19,6 +19,9 @@ public class Sku
     [Range(0, int.MaxValue)]
     public int SaldoAtual { get; set; } = 0;
 
+    // UTC; null indica que ainda não há alteração de saldo registrada.
+    public DateTime? UltimaAtualizacaoSaldoEm { get; set; }
+
     public bool Ativo { get; set; } = true;
 
     public ICollection<Movimentacao> Movimentacoes { get; set; } = new List<Movimentacao>();

@@ -70,6 +70,81 @@ public sealed class RupturasControllerTests
         Assert.Empty(context.ChangeTracker.Entries());
     }
 
+    [Theory]
+    [InlineData("Bota", "Marca Z", "Preto", "40", "Tenis", "Marca A", "Azul", "37")]
+    [InlineData("Bota", "Marca A", "Preto", "40", "Bota", "Marca Z", "Azul", "37")]
+    [InlineData("Bota", "Marca A", "Azul", "40", "Bota", "Marca A", "Preto", "37")]
+    [InlineData("Bota", "Marca A", "Azul", "37", "Bota", "Marca A", "Azul", "40")]
+    public async Task Index_desempata_frequencia_e_ultima_data_por_produto_marca_cor_e_numeracao(
+        string nomePrimeiro, string marcaPrimeiro, string corPrimeiro, string numeroPrimeiro,
+        string nomeSegundo, string marcaSegundo, string corSegundo, string numeroSegundo)
+    {
+        using var factory = new SquadEstoqueWebApplicationFactory();
+        using var scope = factory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
+        var vendedorId = await context.Usuario
+            .Where(usuario => usuario.Email == "vendedor@squad.com")
+            .Select(usuario => usuario.Id)
+            .SingleAsync();
+
+        var primeiroProduto = new Produto
+        {
+            Id = Guid.NewGuid(), Nome = nomePrimeiro, Marca = marcaPrimeiro,
+            Cor = corPrimeiro, Categoria = "Calçado"
+        };
+        var segundoProduto = nomePrimeiro == nomeSegundo && marcaPrimeiro == marcaSegundo
+            && corPrimeiro == corSegundo
+            ? primeiroProduto
+            : new Produto
+            {
+                Id = Guid.NewGuid(), Nome = nomeSegundo, Marca = marcaSegundo,
+                Cor = corSegundo, Categoria = "Calçado"
+            };
+
+        // IDs e inclusão em ordem oposta à esperada evitam depender da ordem do agrupamento.
+        var primeiroSku = new Sku
+        {
+            Id = Guid.Parse("22222222-2222-2222-2222-222222222222"),
+            Produto = primeiroProduto, Numeracao = numeroPrimeiro, SaldoAtual = 5
+        };
+        var segundoSku = new Sku
+        {
+            Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
+            Produto = segundoProduto, Numeracao = numeroSegundo, SaldoAtual = 0
+        };
+        context.Sku.AddRange(segundoSku, primeiroSku);
+
+        var ultimaData = new DateTime(2026, 10, 20, 12, 0, 0, DateTimeKind.Utc);
+        context.Ruptura.AddRange(
+            NovaRuptura(segundoSku.Id, vendedorId, ultimaData.AddDays(-1)),
+            NovaRuptura(segundoSku.Id, vendedorId, ultimaData),
+            NovaRuptura(primeiroSku.Id, vendedorId, ultimaData.AddDays(-2)),
+            NovaRuptura(primeiroSku.Id, vendedorId, ultimaData));
+        await context.SaveChangesAsync();
+        context.ChangeTracker.Clear();
+
+        var esperado = new[]
+        {
+            (nomePrimeiro, marcaPrimeiro, corPrimeiro, numeroPrimeiro),
+            (nomeSegundo, marcaSegundo, corSegundo, numeroSegundo)
+        };
+        for (var consulta = 0; consulta < 2; consulta++)
+        {
+            var resultado = Assert.IsType<ViewResult>(
+                await new RupturasController(context).Index(CancellationToken.None));
+            var historico = Assert.IsType<RupturasIndexViewModel>(resultado.Model).Rupturas;
+
+            Assert.Equal(esperado, historico.Select(item =>
+                (item.Produto, item.Marca, item.Cor, item.Numeracao)).ToArray());
+            Assert.All(historico, item =>
+            {
+                Assert.Equal(2, item.QuantidadeOcorrencias);
+                Assert.Equal(ultimaData, item.UltimaOcorrencia);
+            });
+            Assert.Empty(context.ChangeTracker.Entries());
+        }
+    }
+
     [Fact]
     public async Task Index_sem_rupturas_retorna_historico_vazio_mesmo_com_saldos_zerados()
     {

@@ -149,7 +149,7 @@ public sealed class DesistiuHttpTests
         produto.Skus.Add(new Sku
         {
             Id = Guid.NewGuid(), ProdutoId = produto.Id, Numeracao = "38",
-            SaldoAtual = saldo, Ativo = true
+            SaldoAtual = saldo, Ativo = true, UltimaAtualizacaoSaldoEm = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
         });
         context.Produto.Add(produto);
         await context.SaveChangesAsync();
@@ -179,18 +179,19 @@ public sealed class DesistiuHttpTests
         return WebUtility.HtmlDecode(match.Groups[1].Value);
     }
 
-    private static async Task<(Dictionary<Guid, int> Saldos, Guid[] Movimentacoes, Guid[] Rupturas)> SnapshotAsync(
+    private static async Task<(Dictionary<Guid, (int Saldo, DateTime? Atualizacao)> Saldos, Guid[] Movimentacoes, Guid[] Rupturas)> SnapshotAsync(
         SquadEstoqueWebApplicationFactory factory)
     {
         using var scope = factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
-        return (await context.Sku.AsNoTracking().ToDictionaryAsync(s => s.Id, s => s.SaldoAtual),
+        var skus = await context.Sku.AsNoTracking().ToListAsync();
+        return (skus.ToDictionary(s => s.Id, s => (s.SaldoAtual, s.UltimaAtualizacaoSaldoEm)),
             await context.Movimentacao.OrderBy(m => m.Id).Select(m => m.Id).ToArrayAsync(),
             await context.Ruptura.OrderBy(r => r.Id).Select(r => r.Id).ToArrayAsync());
     }
 
     private static async Task AssertUnchangedAsync(SquadEstoqueWebApplicationFactory factory,
-        (Dictionary<Guid, int> Saldos, Guid[] Movimentacoes, Guid[] Rupturas) before)
+        (Dictionary<Guid, (int Saldo, DateTime? Atualizacao)> Saldos, Guid[] Movimentacoes, Guid[] Rupturas) before)
     {
         var after = await SnapshotAsync(factory);
         Assert.Equal(before.Saldos.OrderBy(s => s.Key), after.Saldos.OrderBy(s => s.Key));

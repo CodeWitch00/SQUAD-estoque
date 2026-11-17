@@ -1501,6 +1501,24 @@ body {
   white-space: nowrap;
 }
 
+.sku-last-update {
+  color: #475569;
+  font-size: .875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.saldos-zerados-sku {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-bottom: .5rem;
+}
+
+.saldos-zerados-sku:last-child {
+  margin-bottom: 0;
+}
+
 .product-details-status {
   min-height: 28px;
   padding: 4px 10px;
@@ -1600,7 +1618,7 @@ body {
 }
 
 .batch-entry-table {
-  min-width: 640px;
+  min-width: 780px;
   margin-bottom: 0;
 }
 
@@ -1653,7 +1671,7 @@ body {
   }
 
   .batch-entry-table {
-    min-width: 600px;
+    min-width: 740px;
   }
 
   .batch-entry-table th,
@@ -2102,6 +2120,13 @@ body {
   font-size: 1.0625rem;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
+}
+
+.consulta-grade-atualizacao {
+  color: #475569;
+  font-size: .8125rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .consulta-grade-estado {
@@ -2947,3 +2972,12 @@ body {
     font-size: var(--squad-admin-badge);
   }
 }
+
+/* Visões de consulta do lojista: textos completos também em telas estreitas. */
+.report-page { min-width: 0; overflow-wrap: anywhere; }
+.report-page .admin-page-heading > div,
+.report-page .card-body { min-width: 0; }
+.report-page .saldos-zerados-sku { align-items: baseline; gap: .5rem .75rem; }
+.report-page .saldos-zerados-sku .badge { max-width: 100%; font-size: .875rem; }
+.report-page .saldos-zerados-sku .sku-last-update { flex: 1 1 12rem; min-width: 0; }
+.report-page a:focus-visible { outline: 3px solid #172b4d; outline-offset: 4px; }

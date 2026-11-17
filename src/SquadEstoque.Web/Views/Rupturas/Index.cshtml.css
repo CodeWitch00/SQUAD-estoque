@@ -1,9 +1,9 @@
-.rupture-table-shell { border: 1px solid #dce3eb; border-radius: 12px; overflow: hidden; background: #fff; }
+.rupture-table-shell { border: 1px solid #dce3eb; border-radius: 12px; overflow: clip; background: #fff; }
 .rupture-table th, .rupture-table td { padding: 1rem; vertical-align: middle; overflow-wrap: anywhere; }
 .rupture-table thead th { background: #f1f5f9; color: #24364b; }
 .rupture-table tbody tr:last-child > * { border-bottom: 0; }
 .rupture-explanation { line-height: 1.6; }
-@media (max-width: 575.98px) {
+@media (max-width: 767.98px) {
     .rupture-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
     .rupture-table, .rupture-table tbody, .rupture-table tr { display: block; width: 100%; }
     .rupture-table tr { padding: .75rem 1rem; border-bottom: 1px solid #dce3eb; }
@@ -12,4 +12,19 @@
     .rupture-table tbody th > span { grid-column: 2; }
     .rupture-table tbody th > span + span { margin-top: -.5rem; }
     .rupture-table tbody tr > *::before { content: attr(data-label); font-weight: 600; color: #24364b; }
+}
+
+@media (max-width: 359.98px) {
+    .rupture-table tbody tr > * { grid-template-columns: minmax(0, 1fr); gap: .25rem; }
+    .rupture-table tbody th > span { grid-column: 1; }
+    .rupture-table tbody th > span + span { margin-top: 0; }
+}
+
+.rupture-table th, .rupture-table td { white-space: normal; }
+@media (min-width: 768px) {
+    .rupture-table { table-layout: fixed; width: 100%; }
+    .rupture-table thead th:first-child { width: 44%; }
+    .rupture-table thead th:nth-child(2),
+    .rupture-table thead th:nth-child(3) { width: 16%; }
+    .rupture-table thead th:last-child { width: 24%; }
 }

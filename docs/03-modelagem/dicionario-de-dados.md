@@ -1,12 +1,17 @@
 # Dicionário de Dados
 
+> **Registro histórico:** este dicionário cobre as cinco tabelas do modelo
+> inicial. O [modelo vigente](README.md) inclui outras quatro tabelas e as
+> alterações posteriores das entidades originais.
+
 # SQUAD - Sistema de Controle de Estoque para Varejo de Calçados
 
 ---
 
 # 1. Objetivo
 
-Este documento descreve detalhadamente todas as estruturas de dados persistidas no banco PostgreSQL do sistema SQUAD.
+Este documento descreve as estruturas iniciais de dados do SQLite do sistema
+SQUAD, antes das migrations de atendimento e entrada fiscal.
 
 Seu objetivo é servir como referência para:
 
