@@ -62,6 +62,7 @@ ProductionConfiguration.Validate(app.Configuration, app.Environment);
 
 if (!app.Environment.IsEnvironment("Testing"))
 {
+    SqliteStorage.Prepare(app.Configuration, app.Environment.ContentRootPath);
     using var scope = app.Services.CreateScope();
     var services = scope.ServiceProvider;
 

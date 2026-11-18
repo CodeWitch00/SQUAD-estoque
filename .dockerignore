@@ -26,6 +26,7 @@
 **/*.[sS][qQ][lL][iI][tT][eE]-*
 **/*.[sS][qQ][lL][iI][tT][eE]3
 **/*.[sS][qQ][lL][iI][tT][eE]3-*
+**/*.sqlite*
 **/data/
 **/App_Data/
 **/backups/
