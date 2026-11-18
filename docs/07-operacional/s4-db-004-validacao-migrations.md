@@ -576,7 +576,7 @@ Execução local em 18/11/2026 (evidência: `restore-drill.txt`):
 | Atualização do ambiente compartilhado | BLOQUEADO | Depende de janela, congelamento e autorização (seções 10 e 14) |
 | Verificação pós-atualização (compartilhado) | BLOQUEADO | Depende da etapa anterior |
 | Fluxos essenciais (compartilhado) | BLOQUEADO | Depende da etapa anterior |
-| CI/PR | EM ANDAMENTO | PR com resultados será aberto; status do workflow a conferir no GitHub |
+| CI/PR | APROVADO | [PR #113](https://github.com/CodeWitch00/SQUAD-estoque/pull/113) aberto na branch `test/s4-db-004-evidencias-validacao`; `build-and-test`, `frontend-tests` e `sqlite-volume` concluídos com sucesso; `deploy-azure` ignorado pelo fluxo do PR |
 
 Status possíveis: `NÃO EXECUTADO`, `IMPLEMENTADO (execução pendente)`, `APROVADO`, `FALHOU`, `BLOQUEADO`.
 
@@ -595,7 +595,7 @@ Status possíveis: `NÃO EXECUTADO`, `IMPLEMENTADO (execução pendente)`, `APRO
 - [x] Resposta de `/health` (`fluxos-copia.log`).
 - [x] Fluxos essenciais (`fluxos-copia.log`).
 - [x] Resultado do teste de restauração (`restore-drill.txt`).
-- [ ] Link do PR e do cartão (PR a ser aberto nesta entrega).
+- [x] Link do PR: https://github.com/CodeWitch00/SQUAD-estoque/pull/113 (cartão S4-DB-004; revisão e vínculo no Trello ainda pendentes).
 - [ ] Evidências do ambiente compartilhado (BLOQUEADO: janela/acesso).
 
 Nenhum arquivo `.db`, `.db-wal`, `.db-shm`, `.sqlite` ou `.sqlite3` deve ser
