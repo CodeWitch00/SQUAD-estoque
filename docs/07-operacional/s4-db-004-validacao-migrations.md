@@ -1,20 +1,25 @@
 # S4-DB-004 — Validação das migrations do estoque
 
-> **Status:** PLANEJADO — NÃO EXECUTADO
+> **Status:** EXECUTADO LOCALMENTE — ambiente compartilhado BLOQUEADO (sem acesso/janela)
 >
 > **Cartão:** S4-DB-004
 >
-> **Ambiente-alvo:** `<preencher: App Service asp-squad-estoque-free / outro>`
+> **Ambiente-alvo:** App Service compartilhado do SQUAD Estoque (Azure)
 >
-> **Responsável pela execução:** `<preencher>`
+> **Ambiente executado:** Windows 11 + WSL Ubuntu 26.04, .NET SDK 10.0.404, EF Core 10.0.11, SQLite 3.46.1
 >
 > **Data do planejamento:** 12/11/2026
 >
-> **Última atualização:** `<preencher>`
+> **Data da execução local:** 18/11/2026 (UTC)
+>
+> **Última atualização:** 18/11/2026
 
-Este documento é um roteiro. Ele deve ser preenchido **somente após a execução
-real**. Enquanto uma etapa não for executada, manter o status `NÃO EXECUTADO`.
-Uma validação planejada não pode ser descrita como concluída.
+Este documento era um roteiro e foi preenchido com os resultados da execução
+real. As etapas executáveis sem acesso ao Azure foram concluídas e possuem
+evidência versionada em `docs/09-testing/evidencias/s4-db-004/`. As etapas que
+dependem de janela, acesso SSH/Kudu e congelamento da massa compartilhada
+permanecem explicitamente como `BLOQUEADO` — nenhuma delas foi simulada ou
+declarada como concluída.
 
 ---
 
@@ -91,6 +96,24 @@ correção em cartão separado, conforme `CONTRIBUTING.md`.
 
 A versão realmente implantada deve ser confirmada no banco; não presumir que o
 ambiente já está na última migration.
+
+### 3.1 Ambiente da execução local (ensaio)
+
+| Item | Valor |
+| --- | --- |
+| Sistema operacional | Windows 11 + WSL Ubuntu 26.04.1 LTS |
+| SDK .NET | 10.0.404 |
+| EF Core CLI (`dotnet-ef`) | 10.0.11 (manifest versionado em `.config/dotnet-tools.json`) |
+| SQLite CLI (WSL) | 3.46.1 2024-08-13 |
+| Banco de partida do ensaio | Cópia sintética representativa, criada com as próprias migrations até `20261009200729_AddEntradaFiscalEImagemProduto` |
+| Migration de partida | `20261009200729_AddEntradaFiscalEImagemProduto` (4 de 6) |
+| Migrations pendentes no ensaio | `20261026220326_AddSkuUltimaAtualizacaoSaldo` e `20261029210004_AddConsultaIndexes` |
+| Modo da aplicação | `ASPNETCORE_ENVIRONMENT=Production`, `Demo__SeedUsers=false` |
+| Porta do ensaio | `http://127.0.0.1:5199` |
+
+> O ensaio usa massa sintética porque não há acesso ao banco compartilhado.
+> Isso valida o **caminho de atualização**, o backup, a verificação e a
+> restauração, mas **não substitui** a execução no ambiente compartilhado.
 
 ---
 
@@ -248,20 +271,28 @@ Registrar no mínimo:
 - presença de tabelas `ef_temp_*`;
 - conteúdo de `__EFMigrationsHistory`.
 
+Valores medidos no ensaio local (massa sintética com 4 migrations de partida):
+
 | Métrica | Antes | Depois | Igual? |
-| --- | --- | --- | --- |
-| `Usuario` | `<preencher>` | `<preencher>` | `<sim/não>` |
-| `Produto` | `<preencher>` | `<preencher>` | `<sim/não>` |
-| `Sku` | `<preencher>` | `<preencher>` | `<sim/não>` |
-| `Movimentacao` | `<preencher>` | `<preencher>` | `<sim/não>` |
-| `Ruptura` | `<preencher>` | `<preencher>` | `<sim/não>` |
-| `Atendimento` | `<preencher>` | `<preencher>` | `<sim/não>` |
-| `EntradaFiscal` | `<preencher>` | `<preencher>` | `<sim/não>` |
-| `ItemEntradaFiscal` | `<preencher>` | `<preencher>` | `<sim/não>` |
-| `VinculoProdutoFornecedor` | `<preencher>` | `<preencher>` | `<sim/não>` |
-| Soma de `Sku.SaldoAtual` | `<preencher>` | `<preencher>` | `<sim/não>` |
-| `integrity_check` | `<preencher>` | `<preencher>` | `<sim/não>` |
-| `foreign_key_check` | `<preencher>` | `<preencher>` | `<sim/não>` |
+| --- | ---: | ---: | --- |
+| `Usuario` | 1 | 1 | Sim |
+| `Produto` | 1 | 1 | Sim |
+| `Sku` | 2 | 2 | Sim |
+| `Movimentacao` | 1 | 1 | Sim |
+| `Ruptura` | 1 | 1 | Sim |
+| `Atendimento` | 1 | 1 | Sim |
+| `EntradaFiscal` | 1 | 1 | Sim |
+| `ItemEntradaFiscal` | 1 | 1 | Sim |
+| `VinculoProdutoFornecedor` | 1 | 1 | Sim |
+| Soma de `Sku.SaldoAtual` | 8 | 8 | Sim |
+| `integrity_check` | `ok` | `ok` | Sim |
+| `foreign_key_check` | sem linhas | sem linhas | Sim |
+
+Evidências: `baseline.txt`, `copia-antes.txt` e `pos-atualizacao.txt` em
+`docs/09-testing/evidencias/s4-db-004/`. As colunas acrescentadas
+(`Sku.UltimaAtualizacaoSaldoEm`, `Produto.ImagemUrl`,
+`Movimentacao.AtendimentoId`, `Ruptura.AtendimentoId`) permanecem `NULL` nos
+registros antigos, e os quatro índices esperados estão presentes após a upgrade.
 
 ---
 
@@ -297,6 +328,28 @@ sintética para provar o caminho de atualização.
 
 > Não apagar a cópia nem o backup. Se o ensaio falhar, ela será necessária para
 > diagnosticar o problema.
+
+### 9.1 Resultado do ensaio executado
+
+1. Banco de partida criado com `dotnet ef database update
+   20261009200729_AddEntradaFiscalEImagemProduto` e populado com dados legados
+   (`baseline-migrate.log`, `baseline.txt`).
+2. Backup gerado pelo script versionado:
+   `Estoque-20261118-231629.db`, 176128 bytes,
+   SHA-256 `b2147d04a2965db8758331444ad1104c315d23ecfdf302dfc6e9687e5f937561`,
+   `integrity_check=ok` (`backup.log`).
+3. Cópia do backup em `Estoque-copia2.db` (nenhum arquivo SQLite foi excluído).
+4. Aplicação iniciada em Production contra a cópia; o startup aplicou exatamente
+   as duas migrations pendentes e liberou o lock (`app-copia2.log`).
+5. `/health` respondeu `200 Healthy`; `/`, `/Account/Login`, `/Produtos`,
+   `/Movimentacoes`, `/Rupturas`, `/EntradasFiscais`, `/Atendimentos`,
+   `/Estoque/Consulta` e `/SaldosZerados` responderam HTTP 200
+   (`fluxos-copia.log`).
+6. Verificação pós-upgrade executada com o mesmo script somente leitura
+   (`pos-atualizacao.txt`); contagens, somas e amostras conferem com o baseline.
+
+**Resultado: APROVADO no ensaio local.** O ambiente compartilhado não foi
+alterado; a etapa 10 continua bloqueada.
 
 ---
 
@@ -490,14 +543,17 @@ curl -fsS https://<app-name>.azurewebsites.net/health
    `/health` e os fluxos de leitura.
 6. Registrar o resultado e o tempo gasto.
 
+Execução local em 18/11/2026 (evidência: `restore-drill.txt`):
+
 | Verificação | Resultado |
 | --- | --- |
-| Backup restaurado em cópia | `<preencher>` |
-| `integrity_check` | `<preencher>` |
-| `foreign_key_check` | `<preencher>` |
-| Contagens/somas iguais ao baseline | `<preencher>` |
-| `/health` na cópia | `<preencher>` |
-| Tempo de restauração | `<preencher>` |
+| Backup restaurado em cópia | APROVADO — `Estoque-restaurado.db` (destino temporário, nunca produção) |
+| `integrity_check` | `ok` |
+| `foreign_key_check` | sem linhas |
+| Contagens/somas iguais ao baseline | APROVADO — `diff` sem diferenças; 1\|1\|2\|8\|1\|1\|1\|1\|1\|1 |
+| Histórico de migrations do restaurado | 4 migrations (idêntico ao baseline) |
+| `/health` na cópia | Não executado neste drill; `/health` foi validado na cópia em ensaio (item 9.1) |
+| Tempo de restauração | 72 ms (cópia local de 176128 bytes) |
 
 ---
 
@@ -505,35 +561,42 @@ curl -fsS https://<app-name>.azurewebsites.net/health
 
 | Etapa | Status | Evidência |
 | --- | --- | --- |
-| Teste automatizado: banco vazio | `IMPLEMENTADO (execução local/CI pendente)` | `tests/SquadEstoque.Web.Tests/EstoqueMigrationsBancoVazioTests.cs` |
-| Teste automatizado: banco existente | `IMPLEMENTADO (execução local/CI pendente)` | `tests/SquadEstoque.Web.Tests/EstoqueMigrationsAtualizacaoTests.cs` |
-| Teste automatizado: falha sem perda | `IMPLEMENTADO (execução local/CI pendente)` | `tests/SquadEstoque.Web.Tests/EstoqueMigrationsAtualizacaoTests.cs` |
-| Backup do ambiente compartilhado | `NÃO EXECUTADO` | `<link>` |
-| Ensaio em cópia do backup | `NÃO EXECUTADO` | `<link>` |
-| Atualização do ambiente compartilhado | `NÃO EXECUTADO` | `<link>` |
-| Verificação pós-atualização | `NÃO EXECUTADO` | `<link>` |
-| Fluxos essenciais (ambiente compartilhado) | `NÃO EXECUTADO` | `<link>` |
-| Teste de restauração | `NÃO EXECUTADO` | `<link>` |
-| CI/PR | `NÃO EXECUTADO` | `<link>` |
+| Build (`Release`) | APROVADO | `build.log` — 0 avisos, 0 erros |
+| Suíte completa | APROVADO | `test.log` e `migrations.trx` — 348 aprovados, 0 falhas, 1 ignorado (349) |
+| Teste automatizado: banco vazio | APROVADO | `migrations.trx` — 1 teste aprovado |
+| Teste automatizado: banco existente | APROVADO | `migrations.trx` — 5 versões de partida aprovadas |
+| Teste automatizado: falha sem perda | APROVADO | `migrations.trx` — 1 teste aprovado |
+| Diagnóstico de migrations no repositório | APROVADO | `ef-migrations-list.log` (6 migrations) e `ef-pending-model-changes.log` (sem alterações pendentes) |
+| Backup antes da atualização (ensaio) | APROVADO | `backup.log` — SHA-256 e `integrity_check=ok` |
+| Ensaio em cópia do backup | APROVADO | `app-copia2.log`, `baseline.txt`, `pos-atualizacao.txt`, `fluxos-copia.log` |
+| Verificação pós-atualização (ensaio) | APROVADO | `pos-atualizacao.txt` — contagens/somas iguais, índices presentes, sem `ef_temp_*` |
+| Fluxos essenciais (ensaio) | APROVADO | `fluxos-copia.log` — `/health` 200 Healthy e rotas respondendo |
+| Teste de restauração | APROVADO | `restore-drill.txt` — restauração idêntica ao baseline em 72 ms |
+| Backup do ambiente compartilhado | BLOQUEADO | Sem `az` CLI/acesso SSH ao App Service neste ambiente |
+| Atualização do ambiente compartilhado | BLOQUEADO | Depende de janela, congelamento e autorização (seções 10 e 14) |
+| Verificação pós-atualização (compartilhado) | BLOQUEADO | Depende da etapa anterior |
+| Fluxos essenciais (compartilhado) | BLOQUEADO | Depende da etapa anterior |
+| CI/PR | EM ANDAMENTO | PR com resultados será aberto; status do workflow a conferir no GitHub |
 
 Status possíveis: `NÃO EXECUTADO`, `IMPLEMENTADO (execução pendente)`, `APROVADO`, `FALHOU`, `BLOQUEADO`.
 
-> **Nota:** os cenários automatizados usam a cadeia real de migrations em SQLite de arquivo (sem `EnsureCreated`), cobrem inicialização do zero, atualização a partir de versões anteriores com preservação de snapshot (produtos, SKUs, saldos e históricos), idempotência, constraints e falha de migration sem perda dos dados legados. A validação operacional no ambiente compartilhado (backup prévio, ensaio em cópia real, atualização e fluxos em produção) permanece dependente de janela/acesso e deve ser registrada com evidências quando executada.
+> **Nota:** os cenários automatizados usam a cadeia real de migrations em SQLite de arquivo (sem `EnsureCreated`), cobrem inicialização do zero, atualização a partir de versões anteriores com preservação de snapshot (produtos, SKUs, saldos e históricos), idempotência, constraints e falha de migration sem perda dos dados legados. Todos os 7 cenários foram executados com sucesso na suíte completa. O ensaio operacional foi realizado localmente em cópia do backup, incluindo restauração. A validação no **ambiente compartilhado** (backup do banco real, congelamento, deploy, atualização e fluxos em produção) continua dependente de janela/acesso e **não foi executada**; nenhuma evidência deste documento deve ser lida como confirmação dessa etapa.
 
 ---
 
 ## 17. Anexos
 
-- [ ] Log de build/testes (`migrations.trx`).
-- [ ] Saída de `__EFMigrationsHistory`.
-- [ ] Backup: nome, tamanho, hash e caminho off-host.
-- [ ] Saída de `integrity_check` e `foreign_key_check`.
-- [ ] Baseline e pós-atualização.
-- [ ] Logs de deploy/migration.
-- [ ] Resposta de `/health`.
-- [ ] Capturas dos fluxos essenciais.
-- [ ] Resultado do teste de restauração.
-- [ ] Link do PR e do cartão.
+- [x] Log de build/testes (`build.log`, `test.log`, `migrations.trx`).
+- [x] Saída de `__EFMigrationsHistory` (`baseline.txt`, `pos-atualizacao.txt`).
+- [x] Backup: nome, tamanho, hash e integridade (`backup.log`). Caminho off-host não se aplica ao ensaio local.
+- [x] Saída de `integrity_check` e `foreign_key_check` (`pos-atualizacao.txt`, `restore-drill.txt`).
+- [x] Baseline e pós-atualização (`baseline.txt`, `pos-atualizacao.txt`).
+- [x] Logs de migration do ensaio (`app-copia2.log`).
+- [x] Resposta de `/health` (`fluxos-copia.log`).
+- [x] Fluxos essenciais (`fluxos-copia.log`).
+- [x] Resultado do teste de restauração (`restore-drill.txt`).
+- [ ] Link do PR e do cartão (PR a ser aberto nesta entrega).
+- [ ] Evidências do ambiente compartilhado (BLOQUEADO: janela/acesso).
 
 Nenhum arquivo `.db`, `.db-wal`, `.db-shm`, `.sqlite` ou `.sqlite3` deve ser
 versionado.
@@ -555,3 +618,18 @@ versionado.
 9. O cartão espera scripts operacionais ou apenas testes + documentação?
 10. Se houver defeito de migration, o cartão apenas registra o bloqueio ou já
     prevê a correção em cartão separado?
+
+### 18.1 Situação após a execução local
+
+| Pergunta | Situação |
+| --- | --- |
+| 1. Ambiente de produção | Confirmado como App Service compartilhado pelo `README.md` e `docs/07-operacional/azure.md`; não acessado nesta execução. |
+| 2. Migration aplicada hoje | Desconhecida no banco compartilhado; no ensaio foi usada a versão 4 de 6. Confirmar `__EFMigrationsHistory` antes de qualquer deploy. |
+| 3. Autorização para backup/deploy/restauração | Não confirmada; pré-condição para a etapa compartilhada. |
+| 4. Janela e congelamento | Não combinados; pré-condição para a etapa compartilhada. |
+| 5. Restaurar em cópia e rodar a aplicação | Respondido localmente: SIM, executado e aprovado (seções 9.1 e 15). |
+| 6. Exclusão de SQLite/tabelas `ef_temp_*` | Nenhum arquivo SQLite foi excluído; não havia `ef_temp_*` após a atualização. Limpeza restrita a logs temporários. |
+| 7. Fluxos obrigatórios | Saúde, login, consulta, listagens e histórico foram exerciseados no ensaio (item 9.1); confirmar a lista oficial para o compartilhado. |
+| 8. Registro fictício no compartilhado | Não executado; depende de autorização na janela. |
+| 9. Escopo do cartão | Scripts operacionais + testes + documentação, conforme revisão da revisora. |
+| 10. Defeito de migration | Nenhum defeito encontrado; se aparecer, registrar bloqueio e abrir cartão separado. |
