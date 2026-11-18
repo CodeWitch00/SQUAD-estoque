@@ -10,14 +10,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: 7c46c99c6102a20d0d4c1d0cbe8f02393c9d8500
+          ref: 13ac55e6a1365506ac867691e55e2b4e4b55bc4e
           fetch-depth: 2
       - name: Export baseline and filtered contexts
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/before" "$RUNNER_TEMP/after" evidence
-          git archive HEAD^ | tar -x -C "$RUNNER_TEMP/before"
+          git archive HEAD^2 | tar -x -C "$RUNNER_TEMP/before"
           git archive HEAD | tar -x -C "$RUNNER_TEMP/after"
           git rev-parse HEAD | tee evidence/validated-commit.txt
           docker version > evidence/docker-version.txt
