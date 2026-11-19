@@ -1,0 +1,28 @@
+name: QA da imagem Docker
+on:
+  push:
+    branches: [dev/emmy]
+    paths:
+      - '.github/workflows/qa-imagem.yml'
+      - 'scripts/qa-imagem.sh'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  imagem:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validar build e execução em Production
+        shell: bash
+        run: bash scripts/qa-imagem.sh 2>&1 | tee qa-imagem.log
+      - name: Anexar log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-imagem
+          path: qa-imagem.log
+          if-no-files-found: error
