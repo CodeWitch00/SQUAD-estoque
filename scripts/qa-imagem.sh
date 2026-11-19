@@ -29,14 +29,34 @@ docker image inspect --format 'Tag={{index .RepoTags 0}} ID={{.Id}} Plataforma={
 
 stage=inspecao
 inspection=0
-docker run --rm --network none --entrypoint sh "$image" -ec '
-  test -z "$(find /app -type f \( -iname "*.db" -o -iname "*.db-*" -o -iname "*.sqlite*" \) -print -quit)"
-  test -z "$(find /app -type f \( -iname ".env*" -o -iname "secrets.json" -o -iname "*.pem" -o -iname "*.key" -o -iname "*.pfx" -o -iname "*.p12" -o -iname "key-*.xml" \) -print -quit)"
-  ! grep -Eiq "\"(password|senha|token|clientsecret|apikey)\"[[:space:]]*:[[:space:]]*\"[^\"]+\"|password[[:space:]]*=" /app/appsettings*.json
-' && echo 'OK imagem sem arquivos SQLite ou de segredo em /app e sem valores sensíveis nos appsettings examinados' || {
-  echo 'FALHA inspeção de arquivos ou appsettings da imagem'
+if docker run --rm --network none --entrypoint sh "$image" -ec '
+  databases=$(find /app -type f \( -iname "*.db" -o -iname "*.db-*" -o -iname "*.sqlite" -o -iname "*.sqlite-*" -o -iname "*.sqlite3" -o -iname "*.sqlite3-*" \) -print -quit)
+  secrets=$(find /app -type f \( -iname ".env*" -o -iname "secrets.json" -o -iname "*.pem" -o -iname "*.key" -o -iname "*.pfx" -o -iname "*.p12" -o -iname "key-*.xml" \) -print -quit)
+  result=0
+  if [ -n "$databases" ]; then
+    echo "FALHA arquivo de banco encontrado na imagem"
+    result=1
+  else
+    echo "OK busca de arquivos SQLite em /app"
+  fi
+  if [ -n "$secrets" ]; then
+    echo "FALHA arquivo de segredo encontrado na imagem"
+    result=1
+  else
+    echo "OK busca de arquivos de segredo em /app"
+  fi
+  if grep -Eiq "\"(password|senha|token|clientsecret|apikey)\"[[:space:]]*:[[:space:]]*\"[^\"]+\"|password[[:space:]]*=" /app/appsettings*.json; then
+    echo "FALHA configuração sensível em appsettings"
+    result=1
+  else
+    echo "OK busca de credenciais nos appsettings"
+  fi
+  exit "$result"
+'; then
+  echo 'OK inspeção de arquivos e configuração da imagem'
+else
   inspection=1
-}
+fi
 docker image inspect --format '{{range .Config.Env}}{{println .}}{{end}}' "$image" > "$temp/image-env"
 if grep -Eiq '^[^=]*(password|senha|token|secret|api_?key|connectionstrings)[^=]*=' "$temp/image-env"; then
   echo 'FALHA variável de configuração sensível na imagem'
