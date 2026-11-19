@@ -1,0 +1,8 @@
+# Override temporario usado apenas para criar os usuarios demonstrativos
+# pelo fluxo normal de inicializacao da aplicacao. Fora do repositorio.
+services:
+  squad-estoque:
+    environment:
+      AllowedHosts: "localhost;127.0.0.1"
+      ASPNETCORE_ENVIRONMENT: "Development"
+      Demo__SeedUsers: "true"

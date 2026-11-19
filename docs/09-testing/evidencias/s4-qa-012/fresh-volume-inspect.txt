@@ -1,0 +1,16 @@
+﻿[
+    {
+        "CreatedAt": "2026-11-19T17:21:35Z",
+        "Driver": "local",
+        "Labels": {
+            "com.docker.compose.config-hash": "9c6518b950963221af7ddc411397b9c9a45713ea0cc38de574a3957306a64c94",
+            "com.docker.compose.project": "squad-estoque-fresh",
+            "com.docker.compose.version": "5.7.0",
+            "com.docker.compose.volume": "squad-estoque-data-fresh"
+        },
+        "Mountpoint": "/var/lib/docker/volumes/squad-estoque-data-fresh/_data",
+        "Name": "squad-estoque-data-fresh",
+        "Options": null,
+        "Scope": "local"
+    }
+]

@@ -1,0 +1,38 @@
+﻿squad-estoque  | info: Microsoft.EntityFrameworkCore.Migrations[20411]
+squad-estoque  |       Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+squad-estoque  | info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+squad-estoque  |       Executed DbCommand (14ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+squad-estoque  |       SELECT COUNT(*) FROM "sqlite_master" WHERE "name" = '__EFMigrationsLock' AND "type" = 'table';
+squad-estoque  | info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+squad-estoque  |       Executed DbCommand (24ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+squad-estoque  |       INSERT OR IGNORE INTO "__EFMigrationsLock"("Id", "Timestamp") VALUES(1, '2026-11-19 17:50:08.8884149+00:00');
+squad-estoque  |       SELECT changes();
+squad-estoque  | info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+squad-estoque  |       Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+squad-estoque  |       CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
+squad-estoque  |           "MigrationId" TEXT NOT NULL CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY,
+squad-estoque  |           "ProductVersion" TEXT NOT NULL
+squad-estoque  |       );
+squad-estoque  | info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+squad-estoque  |       Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+squad-estoque  |       SELECT COUNT(*) FROM "sqlite_master" WHERE "name" = '__EFMigrationsHistory' AND "type" = 'table';
+squad-estoque  | info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+squad-estoque  |       Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+squad-estoque  |       SELECT "MigrationId", "ProductVersion"
+squad-estoque  |       FROM "__EFMigrationsHistory"
+squad-estoque  |       ORDER BY "MigrationId";
+squad-estoque  | info: Microsoft.EntityFrameworkCore.Migrations[20405]
+squad-estoque  |       No migrations were applied. The database is already up to date.
+squad-estoque  | info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+squad-estoque  |       Executed DbCommand (25ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+squad-estoque  |       DELETE FROM "__EFMigrationsLock";
+squad-estoque  | info: Microsoft.Hosting.Lifetime[14]
+squad-estoque  |       Now listening on: http://[::]:8080
+squad-estoque  | info: Microsoft.Hosting.Lifetime[0]
+squad-estoque  |       Application started. Press Ctrl+C to shut down.
+squad-estoque  | info: Microsoft.Hosting.Lifetime[0]
+squad-estoque  |       Hosting environment: Production
+squad-estoque  | info: Microsoft.Hosting.Lifetime[0]
+squad-estoque  |       Content root path: /app
+squad-estoque  | warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]
+squad-estoque  |       Failed to determine the https port for redirect.

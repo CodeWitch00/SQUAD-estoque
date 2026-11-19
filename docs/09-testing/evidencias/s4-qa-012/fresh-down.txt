@@ -1,0 +1,12 @@
+﻿docker :  Container squad-estoque-fresh Stopping 
+No linha:1 caractere:1
++ docker compose -p squad-estoque-fresh -f "C:\Users\nicol\OneDrive\Doc ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( Container squad-estoque-fresh Stopping :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ Container squad-estoque-fresh Stopped 
+ Container squad-estoque-fresh Removing 
+ Container squad-estoque-fresh Removed 
+ Network squad-estoque-fresh_default Removing 
+ Network squad-estoque-fresh_default Removed 

@@ -1,0 +1,4 @@
+﻿ProdutoMarcador|1
+MovMarcador|2
+RupMarcador|1
+SaldoNum40|8

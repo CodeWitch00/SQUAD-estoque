@@ -1,0 +1,7 @@
+﻿docker :  Container squad-estoque Running 
+No linha:1 caractere:508
++ ... me-rm.txt"; docker compose -f "C:\Users\nicol\OneDrive\Documentos\Pro ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( Container squad-estoque Running :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

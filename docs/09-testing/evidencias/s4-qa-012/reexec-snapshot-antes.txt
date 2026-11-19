@@ -1,0 +1,29 @@
+﻿integrity_check
+---------------
+ok             
+---USUARIOS---
+Id                                    Nome            Email               Perfil
+------------------------------------  --------------  ------------------  ------
+D838185E-7A03-4410-9BEF-E71D68781349  Vendedor Teste  vendedor@squad.com  0     
+E24F424F-7400-4808-9FFD-CCBD82BEC3EE  Lojista Teste   lojista@squad.com   1     
+---PRODUTOS---
+Id                                    Nome                         Marca       Categoria     Cor        Ativo
+------------------------------------  ---------------------------  ----------  ------------  ---------  -----
+514BBCC8-1A3B-4F19-B59A-5B62BB71E7B0  QA-PERSIST-20261119-S4QA012  QA-S4QA012  Persistencia  TesteAzul  1    
+---SKUS---
+Id                                    ProdutoId                             ProdutoNome                  Numeracao  SaldoAtual  UltimaAtualizacaoSaldoEm     Ativo
+------------------------------------  ------------------------------------  ---------------------------  ---------  ----------  ---------------------------  -----
+2596EB02-0D95-4FF3-874E-51F6FC243B96  514BBCC8-1A3B-4F19-B59A-5B62BB71E7B0  QA-PERSIST-20261119-S4QA012  40         8           2026-11-19 17:17:41.6231843  1    
+---MOVIMENTACOES---
+Id                                    SkuId                                 ProdutoNome                  Numeracao  Tipo  Quantidade  CriadoEm                     Motivo                               UsuarioId                           
+------------------------------------  ------------------------------------  ---------------------------  ---------  ----  ----------  ---------------------------  -----------------------------------  ------------------------------------
+A5B88489-F024-4EAD-AB69-A1A64D537207  2596EB02-0D95-4FF3-874E-51F6FC243B96  QA-PERSIST-20261119-S4QA012  40         0     3           2026-11-19 17:17:41.6231895  QA-PERSIST entrada extra 2026-11-19  E24F424F-7400-4808-9FFD-CCBD82BEC3EE
+FE61CB9F-E936-4B36-A4DF-7BBB852A252C  2596EB02-0D95-4FF3-874E-51F6FC243B96  QA-PERSIST-20261119-S4QA012  40         0     5           2026-11-19 17:16:58.0482904  Saldo inicial no cadastro da grade   E24F424F-7400-4808-9FFD-CCBD82BEC3EE
+---RUPTURAS---
+Id                                    SkuId                                 ProdutoNome                  Numeracao  UsuarioId                             CriadoEm                     AtendimentoId                       
+------------------------------------  ------------------------------------  ---------------------------  ---------  ------------------------------------  ---------------------------  ------------------------------------
+DE08D9D8-1DB8-4DC7-A4A6-F78E7721EF11  2596EB02-0D95-4FF3-874E-51F6FC243B96  QA-PERSIST-20261119-S4QA012  40         D838185E-7A03-4410-9BEF-E71D68781349  2026-11-19 17:18:21.7396937  7B01E1C1-5974-4B12-B05D-E5AA610E5DF3
+---ATENDIMENTOS---
+Id                                    UsuarioId                             ProdutoId                             ProdutoNome                  SkuId                                 Status  Resultado  CriadoEm                    ConcluidoEm                
+------------------------------------  ------------------------------------  ------------------------------------  ---------------------------  ------------------------------------  ------  ---------  --------------------------  ---------------------------
+7B01E1C1-5974-4B12-B05D-E5AA610E5DF3  D838185E-7A03-4410-9BEF-E71D68781349  514BBCC8-1A3B-4F19-B59A-5B62BB71E7B0  QA-PERSIST-20261119-S4QA012  2596EB02-0D95-4FF3-874E-51F6FC243B96  1       1          2026-11-19 17:18:21.685946  2026-11-19 17:18:21.7398747

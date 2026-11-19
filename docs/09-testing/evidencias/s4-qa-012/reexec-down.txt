@@ -1,0 +1,6 @@
+﻿ Container squad-estoque Stopping 
+ Container squad-estoque Stopped 
+ Container squad-estoque Removing 
+ Container squad-estoque Removed 
+ Network squad-estoque_default Removing 
+ Network squad-estoque_default Removed 
