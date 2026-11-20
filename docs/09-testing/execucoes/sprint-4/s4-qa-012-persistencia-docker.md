@@ -4,7 +4,7 @@
 - **Sprint/Reunião/Prazo:** Sprint 4 | Reunião-alvo 18/11/2026 | Prazo 30/11/2026 23:59 (America/Sao_Paulo)
 - **Área:** QA e banco de dados
 - **Data de execução:** 19/11/2026
-- **Tipo de validação:** validação operacional, **sem alteração do repositório** `SQUAD-estoque`
+- **Tipo de validação:** validação operacional, sem alteração do código da aplicação; este PR versiona o relatório e as evidências
 - **Evidências brutas:** `docs/09-testing/evidencias/s4-qa-012/`, incluindo a reexecução ao vivo com prefixo `reexec-` (seção 7)
 
 ## 1. Objetivo
@@ -25,7 +25,7 @@ Comprovar que os dados do sistema permanecem após **parar, remover e recriar** 
 | Porta / health | `http://localhost:8080` → `GET /health` = `Healthy` |
 | Política de restart | `unless-stopped` (substituída ao remover/recriar via Compose) |
 
-**Nota operacional (sem alteração do repo):** a aplicação em `Production` exige `AllowedHosts` explícito (sem curingas). Para viabilizar a execução local controlada sem editar arquivos versionados, foi usado um override Compose **temporário e externo** (`docs/09-testing/evidencias/s4-qa-012/compose.runtime.yaml`) definindo apenas `AllowedHosts=localhost;127.0.0.1`. Nenhum segredo, connection string ou arquivo versionado foi exposto/alterado. Para a criação inicial dos usuários demonstrativos pelo fluxo normal de inicialização (`Demo__SeedUsers` em banco vazio), utilizou-se um override externo transitório (`compose.seed.yaml`) que foi substituído antes da coleta final; credenciais demonstrativas não são registradas neste relatório.
+**Nota operacional:** a aplicação em `Production` exige `AllowedHosts` explícito (sem curingas). Para a execução local controlada, os overrides `compose.runtime.yaml` e `compose.seed.yaml` foram usados temporariamente e estão versionados neste diretório como apoio à reprodução. O primeiro define `AllowedHosts=localhost;127.0.0.1`; o segundo habilita `Demo__SeedUsers` para criar os usuários demonstrativos em banco vazio e não deve ser usado fora desse cenário local. Nenhum segredo ou connection string foi registrado.
 
 ## 3. Dados identificáveis criados (fluxos normais da aplicação)
 
@@ -46,7 +46,7 @@ Dados criados via interface/fluxos HTTP da aplicação (login, cadastro de produ
 
 ## 4. Execução e comandos (sanitizados)
 
-Todos os comandos foram executados a partir de `SQUAD-estoque/` (raiz do compose), exceto os indicados. Arquivos de override referenciados residem em `../docs/09-testing/evidencias/s4-qa-012/` (fora do repositório).
+Todos os comandos foram executados a partir da raiz `SQUAD-estoque/`. Os overrides Compose usados estão versionados em `docs/09-testing/evidencias/s4-qa-012/`.
 
 ### 4.1 Pré-checks e estado inicial
 ```powershell
@@ -61,13 +61,13 @@ docker volume ls
 - Login LOJISTA → `POST /Produtos/Create` (produto `QA-PERSIST-20261119-S4QA012`) → `POST /Produtos/AdicionarNumeracoes/{produtoId}` (numeração 40, quantidade 5, saldo inicial).
 - Login LOJISTA → `POST /Movimentacoes/Entrada` (SKU acima, quantidade 3, motivo identificável) — entrada extra para histórico.
 - Login VENDEDOR → `POST /Estoque/RegistrarNaoTinha` (SKU/produto acima) — geração de ruptura/atendimento.
-- Snapshot do banco (somente leitura, sem `SenhaHash`): `sqlite3` via container `alpine:3.22` montando `squad-estoque-data:/data` → `docs/09-testing/evidencias/s4-qa-012/snapshot-antes.txt`; `PRAGMA integrity_check = ok`.
+- Snapshot do banco (somente leitura, sem `SenhaHash`): `sqlite3` via container `alpine:3.22` montando `squad-estoque-data:/data` → `docs/09-testing/evidencias/s4-qa-012/reexec-snapshot-antes.txt`; `PRAGMA integrity_check = ok`.
 
 ### 4.3 Parar e remover o container (sem remover o volume)
 ```powershell
-docker compose -f compose.yaml -f ..\S4-QA-012-evidencias\compose.runtime.yaml down
+docker compose -f compose.yaml -f docs/09-testing/evidencias/s4-qa-012/compose.runtime.yaml down
 # (sem -v / --volumes)
-docker compose -f compose.yaml -f ..\S4-QA-012-evidencias\compose.runtime.yaml ps -a
+docker compose -f compose.yaml -f docs/09-testing/evidencias/s4-qa-012/compose.runtime.yaml ps -a
 docker volume inspect squad-estoque-data
 # Conferência do conteúdo do volume com container removido:
 docker run --rm -v squad-estoque-data:/data:ro alpine:3.22 sh -c "ls -la /data"
@@ -77,20 +77,20 @@ docker run --rm -v squad-estoque-data:/data:ro alpine:3.22 sh -c "ls -la /data"
 
 ### 4.4 Recriar o serviço e conferir
 ```powershell
-docker compose -f compose.yaml -f ..\S4-QA-012-evidencias\compose.runtime.yaml up -d
+docker compose -f compose.yaml -f docs/09-testing/evidencias/s4-qa-012/compose.runtime.yaml up -d
 curl http://localhost:8080/health   # -> Healthy
-# Snapshot pós-recriação (mesmas consultas): docs/09-testing/evidencias/s4-qa-012/snapshot-depois.txt
+# Snapshot pós-recriação (mesmas consultas): docs/09-testing/evidencias/s4-qa-012/reexec-snapshot-depois.txt
 # Comparação: diff antes x depois -> NO_DIFF
 ```
 
 ### 4.5 Prova de volume novo (banco independente)
 ```powershell
 # Projeto isolado + volume nomeado distinto (squad-estoque-data-fresh), porta 8081
-docker compose -p squad-estoque-fresh -f compose.yaml -f ..\S4-QA-012-evidencias\compose.fresh.yaml up -d
+docker compose -p squad-estoque-fresh -f compose.yaml -f docs/09-testing/evidencias/s4-qa-012/compose.fresh.yaml up -d
 curl http://localhost:8081/health   # -> Healthy (serviço principal 8080 permaneceu Healthy)
 # Consulta no volume fresh: integrity_check=ok, Usuarios=0, Produtos=0, Skus=0,
 # Movimentacoes=0, Rupturas=0, ProdutoMarcador=0, tabelas/schema presentes.
-docker compose -p squad-estoque-fresh -f compose.yaml -f ..\S4-QA-012-evidencias\compose.fresh.yaml down
+docker compose -p squad-estoque-fresh -f compose.yaml -f docs/09-testing/evidencias/s4-qa-012/compose.fresh.yaml down
 docker volume rm squad-estoque-data-fresh
 ```
 
@@ -98,32 +98,32 @@ docker volume rm squad-estoque-data-fresh
 
 | Critério do cartão | Evidência | Resultado |
 |---|---|---|
-| Dados identificáveis criados pelos fluxos normais | Seção 3; `snapshot-antes.txt` | **OK** — usuários, produto, SKU/saldo, 2 movimentações, 1 ruptura, 1 atendimento |
-| Parar e remover container **sem** remover volume | `compose-down.txt`, `compose-ps-after-down.txt` (vazio) | **OK** — container/rede removidos, `down` sem `-v` |
-| Volume preservado após remoção do container | `volume-inspect-after-down.txt`, `volume-ls-after-down.txt`, `volume-check-after-down.txt` | **OK** — volume `squad-estoque-data` existente com `Estoque.db` + `keys/`; marcadores presentes (1/2/1, saldo 8) |
-| Recriar serviço e conferir dados preservados | `compose-up-recreate.txt`, `health-depois.txt`, `snapshot-depois.txt`, `diff-antes-depois.txt`, `logs-after-recreate.txt` | **OK** — `/health Healthy`; **`NO_DIFF`** entre antes e depois; `PRAGMA integrity_check=ok`; usuários, produto, saldo e históricos íntegros |
-| Volume novo inicia banco independente | `fresh-up2.txt`, `fresh-db-check.txt`, `fresh-volume-inspect.txt`, `fresh-down.txt`, `fresh-volume-rm.txt` | **OK** — volume `squad-estoque-data-fresh` com schema/migrations e **sem** marcadores nem dados do volume original; removido após a prova |
+| Dados identificáveis criados pelos fluxos normais | Seção 3; `reexec-snapshot-antes.txt` | **OK** — usuários, produto, SKU/saldo, 2 movimentações, 1 ruptura, 1 atendimento |
+| Parar e remover container **sem** remover volume | `reexec-down.txt`, `reexec-ps-after-down.txt` (vazio) | **OK** — container/rede removidos, `down` sem `-v` |
+| Volume preservado após remoção do container | `reexec-volume-inspect-after-down.txt`, `reexec-volumes-final.txt`, `reexec-volume-check-after-down.txt` | **OK** — volume `squad-estoque-data` existente com `Estoque.db` + `keys/`; marcadores presentes (1/2/1, saldo 8) |
+| Recriar serviço e conferir dados preservados | `reexec-up.txt`, `reexec-health-depois.txt`, `reexec-snapshot-depois.txt`, `reexec-diff.txt`, `reexec-logs-after-recreate.txt` | **OK** — `/health Healthy`; **`NO_DIFF`** entre antes e depois; `PRAGMA integrity_check=ok`; usuários, produto, saldo e históricos íntegros |
+| Volume novo inicia banco independente | `reexec-fresh-up.txt`, `reexec-fresh-db-check.txt`, `reexec-fresh-volume-inspect.txt`, `reexec-fresh-down.txt`, `reexec-fresh-volume-rm.txt` | **OK** — volume `squad-estoque-data-fresh` com schema/migrations e **sem** marcadores nem dados do volume original; removido após a prova |
 | Comandos sem segredos | Este relatório e arquivos em `docs/09-testing/evidencias/s4-qa-012/` | **OK** — sem senhas, hashes, tokens ou `.env` expostos |
 
-**Comparação antes × depois:** `docs/09-testing/evidencias/s4-qa-012/diff-antes-depois.txt` → `NO_DIFF` (usuários, produtos, SKUs/saldos, movimentações, rupturas e atendimentos idênticos após recriação).
+**Comparação antes × depois:** `docs/09-testing/evidencias/s4-qa-012/reexec-diff.txt` → `NO_DIFF` (usuários, produtos, SKUs/saldos, movimentações, rupturas e atendimentos idênticos após recriação).
 
 ## 6. Estado final
 
 - Serviço `squad-estoque` **em execução** e saudável em `http://localhost:8080` (`/health = Healthy`), utilizando o volume original `squad-estoque-data` com os dados preservados.
 - Volume de prova `squad-estoque-data-fresh` removido (limpeza concluída). Volumes remanescentes do projeto: `squad-estoque-data`.
-- **Nenhum arquivo do repositório `SQUAD-estoque` foi alterado por esta validação** (alterações preexistentes de outros cartões permanecem intocadas). Artefatos desta atividade estão fora do repositório (`S4-QA-012-persistencia-docker.md` e pasta `docs/09-testing/evidencias/s4-qa-012/`).
+- A execução não alterou o código da aplicação. O relatório e as evidências desta atividade estão versionados neste PR em `docs/09-testing/execucoes/sprint-4/` e `docs/09-testing/evidencias/s4-qa-012/`.
 
 ## 7. Reexecução ao vivo (verificação independente)
 
-Para confirmar que as evidências refletem o comportamento real do ambiente, o ciclo completo foi **reexecutado** em 19/11/2026 com o Docker Desktop em execução (engine `29.9.3`), a partir de `SQUAD-estoque/`, com os mesmos overrides externos (`compose.runtime.yaml` e `compose.fresh.yaml`). Nenhum arquivo versionado do repositório foi alterado por esta reexecução.
+Para confirmar que as evidências refletem o comportamento real do ambiente, o ciclo completo foi **reexecutado** em 19/11/2026 com o Docker Desktop em execução (engine `29.9.3`), a partir de `SQUAD-estoque/`, com os mesmos overrides Compose versionados (`compose.runtime.yaml` e `compose.fresh.yaml`). Nenhum arquivo de código da aplicação foi alterado por esta reexecução.
 
 ### 7.1 Antes / parada / volume preservado
 
 ```powershell
-docker compose -f compose.yaml -f ..\S4-QA-012-evidencias\compose.runtime.yaml ps -a
+docker compose -f compose.yaml -f docs/09-testing/evidencias/s4-qa-012/compose.runtime.yaml ps -a
 curl http://localhost:8080/health                                             # Healthy
-docker compose -f compose.yaml -f ..\S4-QA-012-evidencias\compose.runtime.yaml down   # sem -v
-docker compose -f compose.yaml -f ..\S4-QA-012-evidencias\compose.runtime.yaml ps -a  # vazio
+docker compose -f compose.yaml -f docs/09-testing/evidencias/s4-qa-012/compose.runtime.yaml down   # sem -v
+docker compose -f compose.yaml -f docs/09-testing/evidencias/s4-qa-012/compose.runtime.yaml ps -a  # vazio
 docker volume inspect squad-estoque-data                                      # volume preservado
 # Consulta somente leitura no volume com o container removido
 # (alpine:3.22 + sqlite3, copia de Estoque.db/-wal/-shm para /tmp):
@@ -135,7 +135,7 @@ Evidências: `reexec-ps-antes.txt`, `reexec-health-antes.txt`, `reexec-down.txt`
 ### 7.2 Recriação e conferência
 
 ```powershell
-docker compose -f compose.yaml -f ..\S4-QA-012-evidencias\compose.runtime.yaml up -d
+docker compose -f compose.yaml -f docs/09-testing/evidencias/s4-qa-012/compose.runtime.yaml up -d
 curl http://localhost:8080/health                                             # Healthy
 # snapshot pos-recriacao com a mesma consulta e comparacao com o snapshot anterior
 ```
@@ -145,11 +145,11 @@ Evidências: `reexec-up.txt`, `reexec-health-depois.txt`, `reexec-ps-depois.txt`
 ### 7.3 Volume novo (banco independente)
 
 ```powershell
-docker compose -p squad-estoque-fresh -f compose.yaml -f ..\S4-QA-012-evidencias\compose.fresh.yaml up -d
+docker compose -p squad-estoque-fresh -f compose.yaml -f docs/09-testing/evidencias/s4-qa-012/compose.fresh.yaml up -d
 curl http://localhost:8081/health                                             # Healthy (8080 permanece Healthy)
 # SQLite no volume squad-estoque-data-fresh: integrity_check=ok, 9 tabelas de dominio/migrations,
 #   Usuarios=0, Produtos=0, Skus=0, Movimentacoes=0, Rupturas=0, ProdutoMarcador=0
-docker compose -p squad-estoque-fresh -f compose.yaml -f ..\S4-QA-012-evidencias\compose.fresh.yaml down
+docker compose -p squad-estoque-fresh -f compose.yaml -f docs/09-testing/evidencias/s4-qa-012/compose.fresh.yaml down
 docker volume rm squad-estoque-data-fresh
 ```
 

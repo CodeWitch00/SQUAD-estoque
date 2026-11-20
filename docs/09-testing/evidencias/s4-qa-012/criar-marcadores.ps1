@@ -18,9 +18,14 @@ function Login([string]$email, [string]$senha) {
   return $s
 }
 
-# Credenciais demonstrativas do seed local (nao registradas no relatorio)
-$lojEmail = 'lojista@squad.com'; $lojSenha = '123'
-$venEmail = 'vendedor@squad.com'; $venSenha = '123'
+# Informe credenciais demonstrativas locais por variaveis de ambiente; nao as grave neste arquivo.
+$lojEmail = $env:S4QA_LOJISTA_EMAIL
+$lojSenha = $env:S4QA_LOJISTA_SENHA
+$venEmail = $env:S4QA_VENDEDOR_EMAIL
+$venSenha = $env:S4QA_VENDEDOR_SENHA
+if (-not $lojEmail -or -not $lojSenha -or -not $venEmail -or -not $venSenha) {
+  throw 'Defina S4QA_LOJISTA_EMAIL, S4QA_LOJISTA_SENHA, S4QA_VENDEDOR_EMAIL e S4QA_VENDEDOR_SENHA no ambiente.'
+}
 
 # 1) Login LOJISTA e criar produto
 $ls = Login $lojEmail $lojSenha
