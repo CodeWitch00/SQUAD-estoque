@@ -312,7 +312,6 @@ public sealed class AuthenticationAuthorizationTests : IClassFixture<SquadEstoqu
         Assert.Equal(HttpStatusCode.OK, produtosResponse.StatusCode);
     }
 
-    [Theory]
     [Fact]
     public async Task Lojista_saida_form_persists_quantity_and_authenticated_user()
     {
@@ -337,7 +336,7 @@ public sealed class AuthenticationAuthorizationTests : IClassFixture<SquadEstoqu
             await context.SaveChangesAsync();
             skuId = sku.Id;
             produtoId = produto.Id;
-            usuarioId = await context.Usuario.Where(u => u.Email == email).Select(u => u.Id).SingleAsync();
+            usuarioId = await context.Usuario.Where(u => u.Email == "lojista@squad.com").Select(u => u.Id).SingleAsync();
         }
         var page = await client.GetAsync($"/Movimentacoes/Saida?skuId={skuId}");
         page.EnsureSuccessStatusCode();
