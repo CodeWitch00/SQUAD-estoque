@@ -49,7 +49,7 @@ Os IDs abaixo seguem o SRS vigente (`RF-01` a `RF-30`, `RNF-01` a `RNF-07`, `RN-
 
 | Caso | Requisitos / casos de uso rastreados | Cobertura | Observação |
 |---|---|---|---|
-| QA-01 | `RNF-05` | Aprovado | HTTPS e HSTS confirmados no build publicado |
+| QA-01 | `RNF-05` | Parcial | HTTPS, `/health = 200 Healthy` e HSTS confirmados; redirecionamento HTTP do servidor não foi verificado (307 foi upgrade interno HSTS no Chromium) |
 | QA-02 | `RF-01`, `RF-02`, `UC-01` | Aprovado | Redirecionamento com `ReturnUrl` |
 | QA-03 | `RF-01`, `UC-01` | Aprovado | Mensagem de credencial inválida exibida |
 | QA-04 | `RF-02`, `UC-01` | Aprovado | Destino pós-login do `LOJISTA` |
@@ -81,7 +81,7 @@ Os IDs abaixo seguem o SRS vigente (`RF-01` a `RF-30`, `RNF-01` a `RNF-07`, `RN-
 
 | ID | Caso / requisito | Resultado esperado | Resultado obtido | Status | Evidência |
 |---|---|---|---|---|---|
-| QA-01 | Health check e HTTPS | `/health` responde `Healthy`; HTTP redireciona para HTTPS; HSTS presente | `GET /health` → 200, corpo `Healthy`; `http://.../health` → 307 para HTTPS; `strict-transport-security: max-age=2592000`; `server: Kestrel` | **Aprovado** | `../../evidencias/s4-qa-019/02-evidencias-http-e-dom.md` §1 |
+| QA-01 | Health check e HTTPS | `/health` responde `Healthy`; HTTP redireciona para HTTPS; HSTS presente | `GET https://.../health` → 200, corpo `Healthy`, HSTS presente; navegação HTTP no Chromium → `307 Internal Redirect` com motivo HSTS, sem resposta HTTP do servidor capturada | **Parcial**; HTTPS/HSTS passaram, redirecionamento do servidor não verificado | `../../evidencias/s4-qa-019/02-evidencias-http-e-dom.md` §1 |
 | QA-02 | Acesso anônimo a rota protegida | Redirecionar para login com `ReturnUrl` | `/Produtos` → `/Account/Login?ReturnUrl=%2FProdutos` | **Aprovado** | §2 |
 | QA-03 | Login inválido | Permanecer no login e exibir mensagem de erro | Permaneceu em `/Account/Login`; alerta `E-mail ou senha inválidos.` | **Aprovado** | §2 |
 | QA-04 | Login LOJISTA | Destino pós-login da área administrativa | Redirecionou para `/Produtos` | **Aprovado** | §3 |
@@ -107,7 +107,7 @@ Os IDs abaixo seguem o SRS vigente (`RF-01` a `RF-30`, `RNF-01` a `RNF-07`, `RN-
 | QA-24 | Desempenho/P95 e cold start | Medição documentada | Não executado neste cartão; fora do escopo da validação funcional final | **Não executado** | §12 |
 | QA-25 | Aceite formal | Conferência de outro integrante e registro de aceite | Pendente; apenas este relatório foi produzido | **Bloqueado** | §12 e `S4-P2-13` |
 
-**Consolidado:** 20 casos aprovados, 3 bloqueados por limitação de ambiente/processo e 2 não executados. Nenhum caso funcional foi reprovado nesta rodada.
+**Consolidado corrigido:** 19 casos aprovados, 1 parcial (QA-01), 3 bloqueados por limitação de ambiente/processo e 2 não executados. Nenhum caso funcional foi reprovado nesta rodada; a verificação do redirecionamento do servidor permanece pendente.
 
 ## 5. Defeitos conhecidos e pendências
 
@@ -125,7 +125,7 @@ Não foi identificado nenhum novo defeito funcional bloqueante nesta execução.
 
 ## 6. Parecer final
 
-**Parecer: APTO para apresentação acadêmica, COM RESSALVAS.**
+**Parecer: APTO para apresentação acadêmica, COM RESSALVAS.** O redirecionamento HTTP emitido pelo servidor não está confirmado nesta execução.
 
 **Não apto para aceite formal neste momento.**
 
@@ -133,8 +133,8 @@ Justificativa objetiva:
 
 1. Os fluxos críticos priorizados — autenticação, autorização por perfil, cadastro de produto/grade, entrada, saída, ajuste, consulta, venda, ruptura, desistência, saldos zerados, histórico de movimentações, rupturas e atendimentos — foram executados no ambiente publicado e produziram os efeitos esperados, com persistência observável pela aplicação.
 2. A correção de `DEF-S3QA030-01`, que antes bloqueava o cadastro da grade oficial, está presente no build publicado e foi validada sem workaround.
-3. O ambiente respondeu por HTTPS, com health check `Healthy`, redirecionamento HTTP→HTTPS e HSTS.
-4. As ressalvas são de processo e cobertura: não há conferência de outro integrante, não foi possível anexar capturas, não houve acesso direto ao banco, não foram validados dispositivo físico/P95 e permanecem pendências operacionais `S4-BE-003` e `S4-DB-004`.
+3. O ambiente respondeu por HTTPS, com health check `Healthy` e HSTS. O redirecionamento HTTP→HTTPS observado no Chromium foi interno ao navegador; a resposta do servidor para HTTP ainda precisa de confirmação.
+4. As ressalvas são de processo e cobertura: não há conferência de outro integrante, não foi possível anexar capturas, não houve acesso direto ao banco, não foram validados dispositivo físico/P95, o redirecionamento HTTP do servidor está pendente e permanecem as pendências operacionais `S4-BE-003` e `S4-DB-004`.
 5. A conferência de par é condição necessária para converter este resultado em aceite formal, conforme `S4-P2-13`.
 
 Para a apresentação acadêmica, o sistema pode ser demonstrado com o produto controlado descrito neste relatório. Para aceite formal, o parecer só deve ser revertido após a conferência documentada no checklist `../../evidencias/s4-qa-019/05-checklist-conferencia-par.md`.
@@ -150,4 +150,4 @@ Para a apresentação acadêmica, o sistema pode ser demonstrado com o produto c
 | `../../evidencias/s4-qa-019/04-limitacoes.md` | Limitações da sessão e escopo não coberto |
 | `../../evidencias/s4-qa-019/05-checklist-conferencia-par.md` | Checklist de aceite da atividade e conferência de outro integrante |
 
-Todos os arquivos estão na raiz do workspace `C:\Users\nicol\OneDrive\Documentos\Projeto Padrão`, fora do repositório `SQUAD-estoque`.
+Os artefatos, originalmente coletados fora do repositório, estão versionados nos caminhos listados neste inventário pelo PR #117.
