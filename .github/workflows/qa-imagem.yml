@@ -1,10 +1,13 @@
 name: QA da imagem Docker
 on:
-  push:
-    branches: [dev/emmy]
+  pull_request:
     paths:
+      - '.dockerignore'
       - '.github/workflows/qa-imagem.yml'
+      - 'Dockerfile'
+      - 'compose.yaml'
       - 'scripts/qa-imagem.sh'
+      - 'src/SquadEstoque.Web/**'
   workflow_dispatch:
 permissions:
   contents: read

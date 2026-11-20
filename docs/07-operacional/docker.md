@@ -29,11 +29,27 @@ externa, provisionamento de permissões e validação automatizada do container.
 
 ## Construir e iniciar
 
-Na raiz do repositório:
+Na raiz do repositório, com o Docker em execução:
 
 ```bash
 docker compose up --build -d
 ```
+
+Esse único comando constrói a imagem quando necessário, cria o volume nomeado
+`squad-estoque-data` e inicia o serviço em modo destacado.
+
+Se precisar sobrescrever uma configuração local sem versioná-la, copie
+`.env.compose.example` para `.env.compose` e passe o arquivo explicitamente ao
+Compose:
+
+```bash
+docker compose --env-file .env.compose up --build -d
+```
+
+O `--env-file` fornece valores para a interpolação `${VARIAVEL:-padrao}` do
+`compose.yaml`. Sem essa opção, o Compose usa o `.env` padrão e os valores
+predefinidos no próprio arquivo Compose. `.env.compose` é ignorado pelo Git; não
+coloque segredos reais em arquivos versionados.
 
 A aplicação fica disponível em:
 
@@ -102,3 +118,8 @@ Uma plataforma futura precisa fornecer:
 Se a plataforma não oferecer volume persistente, ela não é adequada para este
 SQLite. Nesse caso, a equipe precisará escolher outra hospedagem ou aprovar uma
 mudança de banco antes da publicação.
+
+## Evidências do cartão S4-OPS-009
+
+Os comandos executados, as saídas obtidas e o teste de persistência do volume
+estão registrados em [evidencia-s4-ops-009.md](evidencia-s4-ops-009.md).

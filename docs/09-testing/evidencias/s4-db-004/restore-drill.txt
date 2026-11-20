@@ -1,0 +1,18 @@
+=== Teste de restauracao (drill) em copia — S4-DB-004 ===
+Data/Hora UTC: 2026-11-18T23:23:28Z
+Backup restaurado: <workspace-temp>/s4-db-004-evidence/backups/Estoque-20261118-231629.db
+Destino (copia, nunca producao): <workspace-temp>/s4-db-004-evidence/Estoque-restaurado.db
+Tempo de copia/restore: 72 ms
+
+--- integrity_check ---
+ok
+--- foreign_key_check (nenhuma linha = OK) ---
+--- historico de migrations (deve ser o do baseline: 4) ---
+20260817120442_InitialSquadSchema|10.0.11
+20260901000759_AddEnumDomainConstraints|10.0.11
+20261009181737_AddAtendimentoAuditavel|10.0.11
+20261009200729_AddEntradaFiscalEImagemProduto|10.0.11
+--- contagens/soma (deve bater com o baseline: 1|1|2|8|1|1|1|1|1|1) ---
+1|1|2|8|1|1|1|1|1|1
+--- diff entre verificacao do baseline e do restaurado (sem diferencas = OK) ---
+SEM DIFERENCAS
