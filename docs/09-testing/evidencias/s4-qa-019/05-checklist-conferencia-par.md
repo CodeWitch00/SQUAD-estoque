@@ -28,19 +28,20 @@ Este checklist substitui a versão anterior, que cobria apenas a conferência en
 | C-04 | Perfis `LOJISTA` e `VENDEDOR` validados | Relatório QA-04 a QA-08 | ☑ Atendido |
 | C-05 | Interface validada no build publicado | Relatório QA-10 + evidências §4 | ☑ Atendido, com ressalva de captura |
 | C-06 | Banco de dados verificado quanto à persistência | Relatório QA-11 a QA-19; evidências §5–§10 | ☑ Atendido por inferência funcional; ⚠ sem acesso direto |
-| C-07 | Segurança validada | Relatório QA-01, QA-02, QA-03, QA-07, QA-08, QA-20 | ☑ Atendido |
-| C-08 | Operação validada | Relatório QA-01 e pendências `S4-BE-003`, `S4-DB-004` | ☑ Atendido com pendências registradas |
+| C-07 | Segurança validada | Relatório QA-01, QA-02, QA-03, QA-07, QA-08, QA-20 | ⚠ Parcial; QA-01 confirmou HTTPS/HSTS, mas não capturou o redirecionamento HTTP emitido pelo servidor |
+| C-08 | Operação validada | Relatório QA-01 e pendências `S4-BE-003`, `S4-DB-004` | ⚠ Parcial; redirecionamento HTTP do servidor ainda precisa de medição |
 | C-09 | Contas controladas e nenhum dado real afetado | `01-massa-controlada.md` | ☑ Atendido |
 | C-10 | Nenhum defeito corrigido neste cartão | Histórico de mudanças: nenhum commit | ☑ Atendido |
 | C-11 | Defeitos vinculados a cartões ou impedimentos registrados | `03-defeitos-impedimentos.md` | ☑ Atendido |
 | C-12 | Conferência de outro integrante antes do resultado final | Seção 5 deste checklist | ☐ Pendente |
 | C-13 | Entregáveis completos: relatório, evidências, defeitos e parecer | Inventário no relatório §7 | ☑ Atendido |
 | C-14 | Parecer objetivo apto/não apto | Relatório §6 | ☑ Atendido |
-| C-15 | Branch `N/A`; validação sem alteração do repositório | `git status` da branch atual | ☑ Atendido — nenhum arquivo do repositório foi alterado |
+| C-15 | A sessão manual de validação não alterou código ou arquivos do repositório | Relatório §2; este PR versiona posteriormente somente os artefatos documentais | ☑ Atendido — a execução manual e a publicação posterior do relatório são etapas distintas |
 
 ## 3. Conferência funcional pelo par
 
-- [ ] Confirmar que `/health` responde `Healthy` por HTTPS e que HTTP redireciona para HTTPS com HSTS.
+- [ ] Confirmar `/health = 200 Healthy` e HSTS por HTTPS.
+- [ ] Confirmar o redirecionamento emitido pelo servidor sem cache HSTS, por exemplo com `curl -sS -D - -o /dev/null --max-redirs 0 http://<host>/health`; registrar o status HTTP e o cabeçalho `Location`.
 - [ ] Confirmar que `/Produtos` anônimo redireciona para `/Account/Login?ReturnUrl=%2FProdutos`.
 - [ ] Confirmar login inválido com mensagem `E-mail ou senha inválidos.`
 - [ ] Confirmar destinos pós-login: `LOJISTA` → `/Produtos`; `VENDEDOR` → `/Estoque/Consulta`.
@@ -71,23 +72,18 @@ Este checklist substitui a versão anterior, que cobria apenas a conferência en
 - [ ] `S4-P2-13`: registrar o aceite formal somente após esta conferência.
 - [ ] Reconhecer ausência de capturas de tela, de acesso direto ao banco, de aparelho físico e de medição de P95/cold start.
 
-## 6. Pré-checklist para um eventual PR
+## 6. Publicação do pacote documental
 
-Este item **não foi executado**; ele registra as condições que deverão ser satisfeitas se o cartão for posteriormente publicado em um pull request.
+A sessão de validação manual ocorreu sem alteração do código ou do repositório. Os relatórios e evidências foram versionados posteriormente neste PR, em uma branch documental baseada na `main`.
 
-- [ ] Decisão formal sobre a restrição original “Branch: N/A — sem alteração do repositório”.
-- [ ] Usar worktree isolado a partir de `origin/main`, nunca a branch suja `ops/s4-ops-009-integrante`.
-- [ ] Copiar somente os artefatos `S4-QA-019-*` para:
-  - `../../execucoes/sprint-4/s4-qa-019-validacao-final-producao.md`
-  - `./` (pasta `s4-qa-019/`)
-- [ ] Ajustar os links relativos das evidências após a mudança de pasta.
-- [ ] Não incluir os 15 arquivos modificados/untracked já existentes na branch do usuário.
-- [ ] Não incluir código, correção de defeitos, senhas, cookies ou tokens.
-- [ ] Conferir `git status` e `git diff --stat` antes do commit.
-- [ ] Commit atômico, push e `gh pr create` com base em `main`.
-- [ ] Não fazer merge automático; aguardar revisão.
+- [x] Relatório e cinco arquivos de evidência publicados somente como Markdown.
+- [x] PR #117 direcionado à `main`; nenhum arquivo de aplicação ou correção de defeito foi incluído.
+- [x] A validação pré-PR registrou `git apply --check`, conferência de referências Markdown, varredura de secrets e `git diff --cached --check` aprovados.
+- [x] O CI do PR [#553](https://github.com/CodeWitch00/SQUAD-estoque/actions/runs/44790045621) passou: 352 testes aprovados, 0 falhas e 1 ignorado (353 no total). O deploy Azure foi ignorado.
+- [ ] Reexecutar QA-01 com cliente sem cache HSTS e registrar a resposta HTTP original do servidor.
+- [ ] Aguardar a conferência de outro integrante e registrar o resultado na seção 7.
 
-A prova documental dessa prontidão é mantida fora do repositório, na raiz do workspace.
+A contagem de 341 aprovados e 1 ignorado mencionada na validação pré-PR corresponde a outra execução, na base de código anterior. O run #553 é o resultado reproduzível do CI para este PR; os totais não devem ser somados nem tratados como uma única execução.
 
 ## 7. Registro final do par
 
