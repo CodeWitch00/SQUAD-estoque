@@ -502,10 +502,10 @@ public class MovimentacoesController : Controller
     }
 
     // ==========================================
-    // 3. SAÍDA DE ESTOQUE (LOJISTA E VENDEDOR)
+    // 3. SAÍDA ADMINISTRATIVA (EXCLUSIVA DO LOJISTA)
     // ==========================================
     [HttpGet]
-    [Authorize(Roles = "LOJISTA,VENDEDOR")]
+    [Authorize(Roles = "LOJISTA")]
     public async Task<IActionResult> Saida(Guid? skuId)
     {
         var viewModel = new MovimentacaoCreateViewModel
@@ -540,7 +540,7 @@ public class MovimentacoesController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [Authorize(Roles = "LOJISTA,VENDEDOR")]
+    [Authorize(Roles = "LOJISTA")]
     public async Task<IActionResult> Saida(MovimentacaoCreateViewModel model)
     {
         var usuarioId = GetAuthenticatedUserId();

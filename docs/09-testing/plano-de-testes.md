@@ -306,7 +306,7 @@ Legenda:
 |---|---|---|---|---|
 | CT-AUT-01 | RF-01, UC-01 | Anônimo envia `GET /Account/Login` | `200 OK`; formulário com e-mail, senha, `POST` e antiforgery | Existente |
 | CT-AUT-02 | RF-01, RF-02 | Login `lojista@squad.com` / `123`; abrir `/Produtos` | Cookie autenticado como `LOJISTA`; Produtos responde `200` | Existente |
-| CT-AUT-03 | RF-01, RF-02 | Login `vendedor@squad.com` / `123`; abrir `/Movimentacoes/Saida` | Cookie autenticado como `VENDEDOR`; Saída responde `200` | Existente |
+| CT-AUT-03 | RF-01, RF-02 | Login `vendedor@squad.com` / `123`; abrir `/Estoque/Consulta` | Cookie autenticado como `VENDEDOR`; consulta operacional responde `200` | Existente |
 | CT-AUT-04 | RF-01, UC-01 | E-mail inexistente e senha incorreta | Login recusado; mensagem genérica; rota protegida continua pedindo login | Parcial: falta afirmar mensagem e limpeza da senha |
 | CT-AUT-05 | RF-01, UC-01 | E-mail cadastrado e senha incorreta | Mesmo erro genérico, sem revelar se o e-mail existe; sem autenticação | Planejado |
 | CT-AUT-06 | RF-01, UC-01 | E-mail e senha vazios | Erros de obrigatoriedade; nenhum cookie autenticado | Planejado |
@@ -315,7 +315,7 @@ Legenda:
 | CT-AUT-09 | RF-02 | Anônimo abre `/Produtos` | `302` para Login com `ReturnUrl`; nenhum conteúdo protegido | Existente |
 | CT-AUT-10 | RF-02 | Anônimo abre `/Movimentacoes` | `302` para Login com `ReturnUrl` | Existente |
 | CT-AUT-11 | RF-02 | Lojista abre Produtos, Movimentações e Ajuste | Todas respondem `200` | Parcial: falta Ajuste |
-| CT-AUT-12 | RF-02 | Vendedor abre `/Movimentacoes/Saida` | `200 OK` | Existente |
+| CT-AUT-12 | RF-02 | Vendedor envia `GET` e `POST /Movimentacoes/Saida` | `302` para Acesso Negado; saída administrativa não executa nem altera estoque | Existente |
 | CT-AUT-13 | RF-02 | Vendedor abre `/Produtos` diretamente | `302` para Acesso Negado; nenhum dado retornado | Existente |
 | CT-AUT-14 | RF-02, RN-04 | Vendedor envia `GET /Movimentacoes/Ajuste` | Acesso negado; formulário não retornado | Planejado prioritário |
 | CT-AUT-15 | RF-02, RN-04 | Vendedor envia `POST /Movimentacoes/Ajuste` válido | Acesso negado; saldo e histórico inalterados | Planejado prioritário |

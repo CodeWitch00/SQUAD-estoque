@@ -125,14 +125,30 @@ public sealed class AuthenticationAuthorizationTests : IClassFixture<SquadEstoqu
     }
 
     [Fact]
-    public async Task Vendedor_can_access_saida()
+    public async Task Vendedor_cannot_access_administrative_saida()
     {
         using var client = CreateClient();
         await LoginAsync(client, "vendedor@squad.com");
 
-        var response = await client.GetAsync("/Movimentacoes/Saida");
+        const string deniedLocation = "/Account/AccessDenied?ReturnUrl=%2FMovimentacoes%2FSaida";
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var getResponse = await client.GetAsync("/Movimentacoes/Saida");
+        Assert.Equal(HttpStatusCode.Found, getResponse.StatusCode);
+        Assert.Equal(deniedLocation, getResponse.Headers.Location?.PathAndQuery);
+
+        var consulta = await client.GetAsync("/Estoque/Consulta");
+        consulta.EnsureSuccessStatusCode();
+        var token = ExtractAntiforgeryToken(await consulta.Content.ReadAsStringAsync());
+        using var form = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["__RequestVerificationToken"] = token,
+            ["Quantidade"] = "2",
+            ["Motivo"] = "Tentativa de saída administrativa"
+        });
+
+        var postResponse = await client.PostAsync("/Movimentacoes/Saida", form);
+        Assert.Equal(HttpStatusCode.Found, postResponse.StatusCode);
+        Assert.Equal(deniedLocation, postResponse.Headers.Location?.PathAndQuery);
     }
 
     [Fact]
@@ -297,12 +313,11 @@ public sealed class AuthenticationAuthorizationTests : IClassFixture<SquadEstoqu
     }
 
     [Theory]
-    [InlineData("lojista@squad.com")]
-    [InlineData("vendedor@squad.com")]
-    public async Task Existing_saida_form_persists_quantity_and_authenticated_user(string email)
+    [Fact]
+    public async Task Lojista_saida_form_persists_quantity_and_authenticated_user()
     {
         using var client = CreateClient();
-        await LoginAsync(client, email);
+        await LoginAsync(client, "lojista@squad.com");
         Guid skuId;
         Guid produtoId;
         Guid usuarioId;
@@ -334,8 +349,7 @@ public sealed class AuthenticationAuthorizationTests : IClassFixture<SquadEstoqu
         });
         var response = await client.PostAsync("/Movimentacoes/Saida", form);
         Assert.Equal(HttpStatusCode.Found, response.StatusCode);
-        Assert.Equal(email == "lojista@squad.com" ? $"/Produtos/Details/{produtoId}" : "/",
-            response.Headers.Location?.OriginalString);
+        Assert.Equal($"/Produtos/Details/{produtoId}", response.Headers.Location?.OriginalString);
         using var verificationScope = _factory.Services.CreateScope();
         var verification = verificationScope.ServiceProvider.GetRequiredService<EstoqueContext>();
         Assert.Equal(3, (await verification.Sku.FindAsync(skuId))!.SaldoAtual);

@@ -6,18 +6,12 @@ Esta pasta concentra o inventário de interface e os protótipos navegacionais d
 
 | Fluxo | Protótipo | Situação no sistema |
 | --- | --- | --- |
-| Produtos | [Protótipo do lojista](prototipos/prototipo-lojista.html) | Implementado |
-| Grade | [Protótipo do lojista](prototipos/prototipo-lojista.html) | Parcialmente implementado: disponível ao lojista; fluxo do vendedor e última atualização pendentes |
-| Entrada | [Protótipo do lojista](prototipos/prototipo-lojista.html) | Implementado |
-| Saída administrativa | [Protótipo do lojista](prototipos/prototipo-lojista.html) | Implementado; permissão atual requer correção |
-| Ajuste | [Protótipo do lojista](prototipos/prototipo-lojista.html) | Implementado |
-| Movimentações | [Protótipo do lojista](prototipos/prototipo-lojista.html) | Implementado |
-| Início do lojista | [Protótipo do lojista](prototipos/prototipo-lojista.html) | Planejado |
-| Saldos zerados | [Protótipo do lojista](prototipos/prototipo-lojista.html) | Implementado em `/SaldosZerados` |
-| Rupturas | [Protótipo do lojista](prototipos/prototipo-lojista.html) | Planejado para Sprint 3 |
-| Início e consulta do vendedor | [Protótipo do vendedor](prototipos/prototipo-vendedor.html) | Planejado no módulo operacional do vendedor |
-| Grade do vendedor | [Protótipo do vendedor](prototipos/prototipo-vendedor.html) | Planejado no módulo operacional do vendedor |
-| Vendeu / Não tinha / Desistiu | [Protótipo do vendedor](prototipos/prototipo-vendedor.html) | Planejado no módulo operacional do vendedor |
+| Produtos e grade do lojista | [Protótipo do lojista](prototipos/prototipo-lojista.html) | Implementados em Produtos; cadastro e manutenção disponíveis ao LOJISTA. |
+| Consulta e grade do vendedor | [Protótipo do vendedor](prototipos/prototipo-vendedor.html) | Implementadas em `/Estoque/Consulta`, incluindo busca, numerações, saldos e estados de disponibilidade. |
+| Entrada, saída administrativa e ajuste | [Protótipo do lojista](prototipos/prototipo-lojista.html) | Implementados para LOJISTA; a saída administrativa não é uma ação do VENDEDOR. |
+| Venda, ruptura e desistência | [Protótipo do vendedor](prototipos/prototipo-vendedor.html) | Implementados pelos resultados Vendeu, Não tinha e Desistiu no fluxo de atendimento. |
+| Saldos zerados e histórico de rupturas | [Protótipo do lojista](prototipos/prototipo-lojista.html) | Implementados em `/SaldosZerados` e `/Rupturas`. |
+| Início dos perfis | Protótipos de cada perfil | Após o login, VENDEDOR segue para `/Estoque/Consulta` e LOJISTA para `/Produtos`; não há dashboard separado. |
 
 ## Artefatos
 
