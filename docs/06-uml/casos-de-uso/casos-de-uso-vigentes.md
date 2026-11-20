@@ -2,8 +2,9 @@
 
 O diagrama mostra as operações disponíveis na interface atual. O `LOJISTA`
 gerencia catálogo e estoque; o `VENDEDOR` executa a consulta e o atendimento.
-Ambos podem usar a saída manual de estoque. Não existe cadastro público de
-usuários nem tela de gestão de contas nesta versão.
+A saída manual de estoque é exclusiva do `LOJISTA`; o `VENDEDOR` registra
+vendas pelo fluxo de atendimento. Não existe cadastro público de usuários nem
+tela de gestão de contas nesta versão.
 
 ```mermaid
 flowchart LR
@@ -35,7 +36,6 @@ flowchart LR
     V --> VENDA
     V --> RUPTURA
     V --> DESISTIU
-    V --> SAIDA
 
     L --> LOGIN
     L --> LOGOUT
