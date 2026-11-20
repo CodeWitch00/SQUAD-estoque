@@ -80,7 +80,7 @@ public sealed class AjusteAuthorizationHttpTests
         var (skuId, _) = await SeedMovementAsync(factory);
 
         // Token da propria sessao: uma falha de antiforgery nao deve mascarar a autorizacao.
-        var token = await GetTokenAsync(client, email is null ? "/Account/Login" : "/Movimentacoes/Saida");
+        var token = await GetTokenAsync(client, email is null ? "/Account/Login" : "/Estoque/Consulta");
         var before = await ReadStateAsync(factory);
         var requestPath = method == "GET" ? $"{Route}?skuId={skuId}" : Route;
         using var request = new HttpRequestMessage(new HttpMethod(method), requestPath);
@@ -176,7 +176,12 @@ public sealed class AjusteAuthorizationHttpTests
         });
         using var response = await client.PostAsync("/Account/Login", form);
         Assert.Equal(HttpStatusCode.Found, response.StatusCode);
-        using var authenticatedPage = await client.GetAsync("/Movimentacoes/Saida");
+        var expectedDestination = email == "vendedor@squad.com"
+            ? "/Estoque/Consulta"
+            : "/Produtos";
+        Assert.Equal(expectedDestination, response.Headers.Location?.OriginalString);
+
+        using var authenticatedPage = await client.GetAsync(expectedDestination);
         Assert.Equal(HttpStatusCode.OK, authenticatedPage.StatusCode);
     }
 
