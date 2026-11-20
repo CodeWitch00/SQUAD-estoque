@@ -65,3 +65,6 @@ src/SquadEstoque.Web/wwwroot/uploads/
 src/SquadEstoque.Web/Properties/
 src/SquadEstoque.Web/README.md
 src/SquadEstoque.Web/mise.toml
+
+# S4-OPS-015: arquivos de segredos em qualquer profundidade.
+**/secrets/

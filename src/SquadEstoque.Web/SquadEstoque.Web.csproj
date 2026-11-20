@@ -5,6 +5,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Git ignore alone does not protect dotnet publish or Docker COPY. -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);**/.env;**/.env.*;**/appsettings.*.local.json;**/appsettings.Secrets.json;**/*.pfx;**/*.p12;**/*.pem;**/*.key;**/secrets/**;**/keys/**</DefaultItemExcludes>
   </PropertyGroup>
 
   <ItemGroup>

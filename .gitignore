@@ -39,6 +39,14 @@ publish/
 ## User secrets & local configuration files
 appsettings.*.local.json
 appsettings.Secrets.json
+.env
+.env.*
+*.pfx
+*.p12
+*.pem
+*.key
+secrets/
+keys/
 
 ## Operating System & Temporary files
 .DS_Store
