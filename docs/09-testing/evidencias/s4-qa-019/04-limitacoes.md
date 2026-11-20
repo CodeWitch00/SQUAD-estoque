@@ -2,6 +2,7 @@
 
 | Limitação | Detalhe | Efeito no parecer |
 |---|---|---|
+| Redirecionamento HTTP→HTTPS | O Chromium mostrou `307 Internal Redirect` com `Non-Authoritative-Reason: HSTS` depois da consulta HTTPS; não houve captura da resposta HTTP do servidor | HTTPS, health check e HSTS foram confirmados; redirecionamento emitido pelo servidor permanece não verificado e precisa de medição com cliente sem cache HSTS |
 | Capturas de tela | `browser.screenshot` falhou com `Screenshot needs a visible tab. Call browser.tabs.focus and keep its desktop window visible.` | Evidência textual/HTTP/DOM substitui a visual; não impede a validação funcional, mas reduz a rastreabilidade visual |
 | Banco de dados | Sem acesso a SQLite do App Service, Kudu ou Azure CLI | Persistência foi comprovada pelas telas `/Produtos/Details`, `/Movimentacoes`, `/Rupturas`, `/Atendimentos` e `/SaldosZerados`; não houve consulta SQL direta |
 | Ambiente | Azure compartilhado de homologação/demonstração foi usado como “produção” de referência | Não havia produção autônoma autorizada para escrita; toda a escrita foi em produto fictício |
@@ -11,7 +12,7 @@
 | Credenciais | Contas demonstrativas compartilhadas continuam ativas | Pendência `S4-BE-003` |
 | Migrações | Não foi possível validar migrations no Azure | Pendência `S4-DB-004` |
 | Defeitos antigos | `DEF-S3QA030-02` e `DEF-S3QA030-03` não foram reproduzidos de forma dedicada | Permanecem como ressalvas conhecidas de baixa severidade |
-| Alteração de repositório | Nenhuma. Todos os artefatos ficaram na raiz do workspace | Atende à regra do cartão |
+| Alteração durante a sessão manual | Nenhuma alteração de código/repositório foi feita durante a execução no navegador. O PR #117 versiona posteriormente o pacote documental | Mantém separado o ato de validar do ato posterior de publicar o relatório |
 
 ## Escopo não coberto neste cartão
 
