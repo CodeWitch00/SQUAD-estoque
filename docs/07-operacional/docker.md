@@ -24,6 +24,9 @@ container /app
 Recriar ou atualizar o container preserva o volume. Excluir o volume remove o
 banco e as chaves.
 
+Consulte [caminho e permissões do SQLite](sqlite-volume.md) para configuração
+externa, provisionamento de permissões e validação automatizada do container.
+
 ## Construir e iniciar
 
 ### Contexto de build — S4-OPS-008

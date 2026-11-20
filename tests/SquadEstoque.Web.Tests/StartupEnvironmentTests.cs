@@ -23,7 +23,7 @@ public sealed class StartupEnvironmentTests
     {
         var tempDir = Path.Combine(Path.GetTempPath(), $"s4-be-003-{Guid.NewGuid():N}");
         Directory.CreateDirectory(tempDir);
-        var dbPath = Path.Combine(tempDir, "Estoque.db");
+        var dbPath = Path.Combine(tempDir, "nested", "Estoque.db");
 
         try
         {
@@ -48,6 +48,23 @@ public sealed class StartupEnvironmentTests
         {
             Directory.Delete(tempDir, recursive: true);
         }
+    }
+
+    [Fact]
+    public void Production_recusa_volume_indisponivel_antes_de_servir_requisicoes()
+    {
+        var root = Path.Combine(Path.GetTempPath(), $"storage-startup-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(root);
+        var blocked = Path.Combine(root, "bloqueado");
+        File.WriteAllText(blocked, "preservar");
+        try
+        {
+            using var factory = new StartupFactory("Production", Path.Combine(blocked, "Estoque.db"), false);
+            var error = Assert.Throws<InvalidOperationException>(() => factory.CreateClient());
+            Assert.Contains("Armazenamento SQLite indisponivel", error.Message);
+            Assert.Equal("preservar", File.ReadAllText(blocked));
+        }
+        finally { Directory.Delete(root, true); }
     }
 
     [Fact]
