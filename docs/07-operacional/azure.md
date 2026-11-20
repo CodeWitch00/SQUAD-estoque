@@ -49,6 +49,58 @@ removidos automaticamente;
 revise-os separadamente antes de usar o ambiente fora da demonstração. Para um
 banco novo, siga o [primeiro acesso do LOJISTA](primeiro-acesso-lojista.md).
 
+## HTTPS e proxy confiável (S4-OPS-016)
+
+No portal do App Service, mantenha **HTTPS Only** habilitado e use o
+certificado gerenciado pelo Azure para o endereço padrão `azurewebsites.net`.
+Se houver domínio próprio, associe um certificado válido e gerenciado a esse
+domínio antes de divulgar a URL.
+
+Na implantação desta versão, configure os IPs imediatos dos proxies confiáveis:
+
+```text
+ReverseProxy__KnownProxies__0=<IP do proxy que se conecta ao Kestrel>
+ASPNETCORE_HTTPS_PORT=443
+```
+
+Confirme os IPs com a hospedagem. Adicione entradas numeradas para cada
+proxy confirmado e atualize-as se a topologia mudar. O Azure App Service
+dispõe de endereços que variam por implantação, portanto use o endereço do
+par imediato observado na aplicação, conferido com a topologia do ambiente.
+Preserve o cabeçalho `Host` da URL pública no proxy e substitua
+`X-Forwarded-Proto` pelo protocolo observado na borda. Mantenha
+`ASPNETCORE_FORWARDEDHEADERS_ENABLED` ausente ou como `false`.
+A aplicação processa o protocolo do último salto cadastrado antes do
+redirecionamento e do HSTS. As rotas protegidas usam o host público
+permitido por `AllowedHosts`.
+
+Após a publicação, faça estes testes e guarde os códigos de resposta e os
+cabeçalhos de redirecionamento, omitindo valores de cookies:
+
+1. Acesse `http://<host>/health`. Confirme um redirecionamento para a
+   mesma rota em HTTPS e a resposta final `200 Healthy`, com validação TLS.
+2. Acesse `https://<host>/Produtos` em uma sessão anônima. Confirme
+   `Strict-Transport-Security` e o redirecionamento para o login em HTTPS
+   no mesmo domínio, com `ReturnUrl=%2FProdutos`.
+3. Entre com um usuário de teste LOJISTA. Confirme o retorno a
+   `/Produtos`, o status `200` e os atributos `Secure` e `HttpOnly` do
+   cookie de autenticação nas ferramentas do navegador.
+
+### Registro da validação pública
+
+O corpo do PR #116 relata uma verificação manual da versão publicada no Azure
+com os seguintes resultados:
+
+- certificado TLS válido no endereço público;
+- um redirecionamento de HTTP para HTTPS;
+- endpoint `/health` respondendo com status 200 após o redirecionamento;
+- desafio de login acessível pela URL pública.
+
+O relato não informa data e hora da execução, URL testada, commit publicado,
+códigos completos de cada etapa ou saída bruta. Portanto, este registro
+preserva o resultado reportado no PR; não substitui evidência reproduzível da
+execução. Valores de cookies não devem ser incluídos em evidências futuras.
+
 ## Publicação automatizada
 
 O workflow `.github/workflows/dotnet.yml` executa build e os testes antes de

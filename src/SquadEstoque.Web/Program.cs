@@ -1,9 +1,11 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
+using System.Net;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SquadEstoque.Web.Data;
@@ -41,6 +43,9 @@ builder.Services.AddDbContext<EstoqueContext>(options =>
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
+        options.Cookie.SecurePolicy = builder.Environment.IsProduction()
+            ? CookieSecurePolicy.Always
+            : CookieSecurePolicy.SameAsRequest;
         options.LoginPath = "/Account/Login";
         options.AccessDeniedPath = "/Account/AccessDenied";
         options.ExpireTimeSpan = TimeSpan.FromHours(12);
@@ -59,6 +64,31 @@ if (builder.Environment.IsDevelopment())
 var app = builder.Build();
 
 ProductionConfiguration.Validate(app.Configuration, app.Environment);
+
+// O modo automatico do host aceita cabecalhos de qualquer origem.
+if (app.Configuration.GetValue<bool>("ForwardedHeaders_Enabled"))
+{
+    throw new InvalidOperationException("Desative ASPNETCORE_FORWARDEDHEADERS_ENABLED e configure ReverseProxy__KnownProxies.");
+}
+
+var forwardedHeaders = new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedProto,
+    ForwardLimit = 1
+};
+forwardedHeaders.KnownProxies.Clear();
+forwardedHeaders.KnownIPNetworks.Clear();
+foreach (var proxy in app.Configuration.GetSection("ReverseProxy:KnownProxies").GetChildren())
+{
+    if (!IPAddress.TryParse(proxy.Value, out var address) ||
+        address.Equals(IPAddress.Any) || address.Equals(IPAddress.IPv6Any) ||
+        address.Equals(IPAddress.Any.MapToIPv6()))
+    {
+        throw new InvalidOperationException("ReverseProxy__KnownProxies deve listar enderecos IP explicitos.");
+    }
+
+    forwardedHeaders.KnownProxies.Add(address);
+}
 
 if (!app.Environment.IsEnvironment("Testing"))
 {
@@ -138,12 +168,19 @@ if (!app.Environment.IsEnvironment("Testing"))
     }
 }
 
-// Configure the HTTP request pipeline.
+if (forwardedHeaders.KnownProxies.Count > 0)
+{
+    app.UseForwardedHeaders(forwardedHeaders);
+}
+
 if (!app.Environment.IsDevelopment() && !app.Environment.IsEnvironment("Testing"))
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    if (app.Environment.IsProduction())
+    {
+        app.UseHsts();
+    }
+
     app.UseHttpsRedirection();
 }
 
