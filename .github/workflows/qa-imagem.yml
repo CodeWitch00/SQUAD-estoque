@@ -1,0 +1,31 @@
+name: QA da imagem Docker
+on:
+  pull_request:
+    paths:
+      - '.dockerignore'
+      - '.github/workflows/qa-imagem.yml'
+      - 'Dockerfile'
+      - 'compose.yaml'
+      - 'scripts/qa-imagem.sh'
+      - 'src/SquadEstoque.Web/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  imagem:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validar build e execução em Production
+        shell: bash
+        run: bash scripts/qa-imagem.sh 2>&1 | tee qa-imagem.log
+      - name: Anexar log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-imagem
+          path: qa-imagem.log
+          if-no-files-found: error

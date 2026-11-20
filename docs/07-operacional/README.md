@@ -19,6 +19,7 @@ preparação, implementação, testes, Git e Pull Request está somente no
 | Publicar e validar o ambiente compartilhado | [azure.md](azure.md) |
 | Consultar evidências do cartão S2-BE-007 | [s2-be-007-evidencias.md](s2-be-007-evidencias.md) |
 | Consultar evidências do cartão S2-BE-008 | [s2-be-008-evidencias.md](s2-be-008-evidencias.md) |
+| Consultar evidências da imagem Docker em Production (S4-QA-011) | [evidencia-s4-qa-011.md](evidencia-s4-qa-011.md) |
 
 ## Limites
 
