@@ -39,10 +39,17 @@ Esse único comando constrói a imagem quando necessário, cria o volume nomeado
 `squad-estoque-data` e inicia o serviço em modo destacado.
 
 Se precisar sobrescrever uma configuração local sem versioná-la, copie
-`.env.compose.example` para `.env.compose` antes de subir o container. O Compose
-carrega esse arquivo de forma opcional; ele é ignorado pelo Git e serve apenas
-para valores de ambiente. Não coloque segredos reais em nenhum arquivo
-versionado.
+`.env.compose.example` para `.env.compose` e passe o arquivo explicitamente ao
+Compose:
+
+```bash
+docker compose --env-file .env.compose up --build -d
+```
+
+O `--env-file` fornece valores para a interpolação `${VARIAVEL:-padrao}` do
+`compose.yaml`. Sem essa opção, o Compose usa o `.env` padrão e os valores
+predefinidos no próprio arquivo Compose. `.env.compose` é ignorado pelo Git; não
+coloque segredos reais em arquivos versionados.
 
 A aplicação fica disponível em:
 

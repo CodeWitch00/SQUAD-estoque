@@ -31,7 +31,7 @@ na branch antiga.
 
 | Arquivo | Alteração |
 | --- | --- |
-| `compose.yaml` | `env_file` opcional `.env.compose`, mantendo serviço único, `restart: unless-stopped`, `Production`, porta `8080:8080` e volume nomeado em `/app/data`. |
+| `compose.yaml` | Serviço único, `restart: unless-stopped`, `Production`, porta `8080:8080` e volume nomeado em `/app/data`; configurações locais podem ser passadas por `docker compose --env-file .env.compose`. |
 | `.env.compose.example` | Modelo comentado de variáveis locais; nenhum segredo versionado. |
 | `.gitignore` | Ignora `.env` e `.env.*`, com exceção explícita de `.env.compose.example`. |
 | `docs/07-operacional/docker.md` | Inicialização por um comando, uso do arquivo local opcional e link para esta evidência. |
@@ -73,10 +73,13 @@ volumes:
     name: squad-estoque-data
 ```
 
-Com um `.env.compose` local contendo apenas `AllowedHosts=localhost;127.0.0.1;[::1]`,
-`docker compose config` também terminou com `exit=0`, confirmando que o arquivo
-opcional é carregado sem ser necessário. O arquivo temporário foi removido ao
-final do teste; ele é ignorado pelo Git.
+Com um `.env.compose` local, valide usando
+`docker compose --env-file .env.compose config`; esse arquivo participa da
+interpolação dos valores `${VARIAVEL:-padrao}` definidos em `compose.yaml`.
+Para iniciar com essas configurações, use
+`docker compose --env-file .env.compose up --build -d`. Sem `--env-file`,
+continuam valendo os defaults definidos em `compose.yaml`. O arquivo local é
+ignorado pelo Git.
 
 ### Isolamento da execução local
 

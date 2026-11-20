@@ -12,9 +12,6 @@ services:
     restart: unless-stopped
     ports:
       - "8080:8080"
-    env_file:
-      - path: .env.compose
-        required: false
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       AllowedHosts: "${AllowedHosts:-localhost;127.0.0.1;[::1]}"
