@@ -79,7 +79,8 @@ A sessão de validação manual ocorreu sem alteração do código ou do reposit
 - [x] Relatório e cinco arquivos de evidência publicados somente como Markdown.
 - [x] PR #117 direcionado à `main`; nenhum arquivo de aplicação ou correção de defeito foi incluído.
 - [x] A validação pré-PR registrou `git apply --check`, conferência de referências Markdown, varredura de secrets e `git diff --cached --check` aprovados.
-- [x] O CI do PR [#553](https://github.com/CodeWitch00/SQUAD-estoque/actions/runs/44790045621) passou: 352 testes aprovados, 0 falhas e 1 ignorado (353 no total). O deploy Azure foi ignorado.
+- [x] CI inicial [#553](https://github.com/CodeWitch00/SQUAD-estoque/actions/runs/44790045621): 352 aprovados, 0 falhas e 1 ignorado (353 no total).
+- [x] CI do head documental corrigido [#582](https://github.com/CodeWitch00/SQUAD-estoque/actions/runs/44826877978): 364 aprovados, 0 falhas e 1 ignorado (365 no total); deploy Azure ignorado. Este é o resultado automatizado mais recente desta revisão.
 - [ ] Reexecutar QA-01 com cliente sem cache HSTS e registrar a resposta HTTP original do servidor.
 - [ ] Aguardar a conferência de outro integrante e registrar o resultado na seção 7.
 
