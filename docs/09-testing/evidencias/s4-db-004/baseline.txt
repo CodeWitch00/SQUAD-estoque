@@ -1,6 +1,6 @@
 secao
 ---------------------------------------------
-=== 1. HistÃ³rico de migrations ===
+=== 1. Historico de migrations ===
 MigrationId                                    ProductVersion
 ---------------------------------------------  --------------------
 20260817120442_InitialSquadSchema              10.0.11
@@ -15,7 +15,7 @@ integrity_check
 ok
 secao
 ---------------------------------------------
-=== 3. ViolaÃ§Ãµes de foreign key ===
+=== 3. Violacoes de foreign key ===
 secao
 ---------------------------------------------
 === 4. Tabelas existentes ===
@@ -54,10 +54,10 @@ skus                                           soma_saldo            minimo     
 2                                              8                     3                     5
 secao
 ---------------------------------------------
-=== 7. Ãndices esperados ===
+=== 7. Indices esperados ===
 secao
 ---------------------------------------------
-=== 8. Tabelas temporÃ¡rias de migration ===
+=== 8. Tabelas temporarias de migration ===
 secao
 ---------------------------------------------
 === 9. Lock de migration ===

@@ -35,6 +35,8 @@ Nao registre valores reais de connection strings, tokens ou senhas em commits ou
 | `Logging__LogLevel__Default` | Nivel de log, conforme a operacao |
 
 O caminho de dados SQLite e definido em `Data Source` da connection string.
+O startup cria diretorios ausentes e valida leitura/escrita antes das migrations;
+veja [caminho e permissoes do SQLite](sqlite-volume.md).
 Nenhum banco e escolhido implicitamente em Production. A configuracao e validada
 antes de criar diretorios, abrir o banco ou executar migrations. Erros identificam
 apenas a chave e a regra violada, sem imprimir o valor recebido.

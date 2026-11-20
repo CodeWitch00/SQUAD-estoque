@@ -1,4 +1,4 @@
-backup=/mnt/c/Users/nicol/AppData/Local/Temp/s4-db-004-evidence/backups/Estoque-20261118-231629.db
+backup=<workspace-temp>/s4-db-004-evidence/backups/Estoque-20261118-231629.db
 bytes=176128
 sha256=b2147d04a2965db8758331444ad1104c315d23ecfdf302dfc6e9687e5f937561
 integrity_check=ok

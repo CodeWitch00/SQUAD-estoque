@@ -39,6 +39,9 @@ publish/
 ## User secrets & local configuration files
 appsettings.*.local.json
 appsettings.Secrets.json
+.env
+.env.*
+!.env.compose.example
 
 ## Operating System & Temporary files
 .DS_Store

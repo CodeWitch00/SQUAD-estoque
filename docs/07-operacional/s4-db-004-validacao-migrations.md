@@ -148,7 +148,7 @@ ambiente já está na última migration.
 | Logs de migration | `az webapp log tail` / download | `deploy.log` |
 | Health check | `curl -fsS .../health` | `health.txt` |
 | Fluxos essenciais | Capturas de tela/respostas HTTP | `fluxos/` |
-| Testes automatizados | `dotnet test` com logger TRX | `migrations.trx` |
+| Testes automatizados | `dotnet test` | `test.log` (resumo textual); CI do PR #113 |
 | Restauração testada | Saída do drill em cópia | `restore-drill.txt` |
 
 Não versionar arquivos `.db`, `.db-wal`, `.db-shm`, `.sqlite` ou `.sqlite3`.
@@ -562,10 +562,10 @@ Execução local em 18/11/2026 (evidência: `restore-drill.txt`):
 | Etapa | Status | Evidência |
 | --- | --- | --- |
 | Build (`Release`) | APROVADO | `build.log` — 0 avisos, 0 erros |
-| Suíte completa | APROVADO | `test.log` e `migrations.trx` — 348 aprovados, 0 falhas, 1 ignorado (349) |
-| Teste automatizado: banco vazio | APROVADO | `migrations.trx` — 1 teste aprovado |
-| Teste automatizado: banco existente | APROVADO | `migrations.trx` — 5 versões de partida aprovadas |
-| Teste automatizado: falha sem perda | APROVADO | `migrations.trx` — 1 teste aprovado |
+| Suíte completa | APROVADO | `test.log` e CI do PR #113, run #539 — 348 aprovados, 0 falhas, 1 ignorado (349) |
+| Teste automatizado: banco vazio | APROVADO | `EstoqueMigrationsBancoVazioTests` — incluído na suíte aprovada no CI |
+| Teste automatizado: banco existente | APROVADO | `EstoqueMigrationsAtualizacaoTests` — 5 versões de partida, incluídas na suíte aprovada no CI |
+| Teste automatizado: falha sem perda | APROVADO | `EstoqueMigrationsAtualizacaoTests` — incluído na suíte aprovada no CI |
 | Diagnóstico de migrations no repositório | APROVADO | `ef-migrations-list.log` (6 migrations) e `ef-pending-model-changes.log` (sem alterações pendentes) |
 | Backup antes da atualização (ensaio) | APROVADO | `backup.log` — SHA-256 e `integrity_check=ok` |
 | Ensaio em cópia do backup | APROVADO | `app-copia2.log`, `baseline.txt`, `pos-atualizacao.txt`, `fluxos-copia.log` |
@@ -586,7 +586,7 @@ Status possíveis: `NÃO EXECUTADO`, `IMPLEMENTADO (execução pendente)`, `APRO
 
 ## 17. Anexos
 
-- [x] Log de build/testes (`build.log`, `test.log`, `migrations.trx`).
+- [x] Logs de build e do resultado agregado dos testes (`build.log`, `test.log`). O TRX bruto gerado localmente não é versionado porque contém metadados da máquina.
 - [x] Saída de `__EFMigrationsHistory` (`baseline.txt`, `pos-atualizacao.txt`).
 - [x] Backup: nome, tamanho, hash e integridade (`backup.log`). Caminho off-host não se aplica ao ensaio local.
 - [x] Saída de `integrity_check` e `foreign_key_check` (`pos-atualizacao.txt`, `restore-drill.txt`).

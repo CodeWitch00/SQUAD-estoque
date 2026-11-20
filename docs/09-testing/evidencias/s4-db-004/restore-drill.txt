@@ -1,7 +1,7 @@
 === Teste de restauracao (drill) em copia — S4-DB-004 ===
 Data/Hora UTC: 2026-11-18T23:23:28Z
-Backup restaurado: /mnt/c/Users/nicol/AppData/Local/Temp/s4-db-004-evidence/backups/Estoque-20261118-231629.db
-Destino (copia, nunca producao): /mnt/c/Users/nicol/AppData/Local/Temp/s4-db-004-evidence/Estoque-restaurado.db
+Backup restaurado: <workspace-temp>/s4-db-004-evidence/backups/Estoque-20261118-231629.db
+Destino (copia, nunca producao): <workspace-temp>/s4-db-004-evidence/Estoque-restaurado.db
 Tempo de copia/restore: 72 ms
 
 --- integrity_check ---

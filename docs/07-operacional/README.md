@@ -8,6 +8,7 @@ preparação, implementação, testes, Git e Pull Request está somente no
 
 | Necessidade | Documento |
 | --- | --- |
+| Consultar as tarefas de VENDEDOR e LOJISTA | [Manual do usuário](manual-usuario.md) |
 | Configurar, iniciar, atualizar e diagnosticar | [runbook-producao.md](runbook-producao.md) |
 | Fazer backup consistente e restaurar SQLite em isolamento | [backup-restauracao-sqlite.md](backup-restauracao-sqlite.md) |
 | Evidenciar o teste local de recuperação | [validacao-backup-restauracao.md](validacao-backup-restauracao.md) |
