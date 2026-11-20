@@ -86,6 +86,21 @@ cabeçalhos de redirecionamento, omitindo valores de cookies:
    `/Produtos`, o status `200` e os atributos `Secure` e `HttpOnly` do
    cookie de autenticação nas ferramentas do navegador.
 
+### Registro da validação pública
+
+O corpo do PR #116 relata uma verificação manual da versão publicada no Azure
+com os seguintes resultados:
+
+- certificado TLS válido no endereço público;
+- um redirecionamento de HTTP para HTTPS;
+- endpoint `/health` respondendo com status 200 após o redirecionamento;
+- desafio de login acessível pela URL pública.
+
+O relato não informa data e hora da execução, URL testada, commit publicado,
+códigos completos de cada etapa ou saída bruta. Portanto, este registro
+preserva o resultado reportado no PR; não substitui evidência reproduzível da
+execução. Valores de cookies não devem ser incluídos em evidências futuras.
+
 ## Publicação automatizada
 
 O workflow `.github/workflows/dotnet.yml` executa build e os testes antes de
