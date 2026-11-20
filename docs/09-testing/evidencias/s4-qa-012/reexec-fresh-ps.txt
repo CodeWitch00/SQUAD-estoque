@@ -1,0 +1,2 @@
+﻿NAME                  IMAGE                 COMMAND                  SERVICE         CREATED         STATUS         PORTS
+squad-estoque-fresh   squad-estoque:local   "dotnet SquadEstoqueÔÇª"   squad-estoque   6 seconds ago   Up 5 seconds   0.0.0.0:8081->8080/tcp, [::]:8081->8080/tcp

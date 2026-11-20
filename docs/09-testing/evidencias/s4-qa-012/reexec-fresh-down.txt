@@ -1,0 +1,6 @@
+﻿ Container squad-estoque-fresh Stopping 
+ Container squad-estoque-fresh Stopped 
+ Container squad-estoque-fresh Removing 
+ Container squad-estoque-fresh Removed 
+ Network squad-estoque-fresh_default Removing 
+ Network squad-estoque-fresh_default Removed 

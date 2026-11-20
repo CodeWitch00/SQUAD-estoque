@@ -1,0 +1,6 @@
+# Override de execucao: apenas a configuracao obrigatoria de host,
+# fornecida fora do repositorio para nao alterar arquivos versionados.
+services:
+  squad-estoque:
+    environment:
+      AllowedHosts: "localhost;127.0.0.1"

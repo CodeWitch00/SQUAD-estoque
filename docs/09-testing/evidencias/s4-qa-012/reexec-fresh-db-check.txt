@@ -1,0 +1,9 @@
+﻿ok
+Usuarios|0
+Produtos|0
+Skus|0
+Movimentacoes|0
+Rupturas|0
+ProdutoMarcador|0
+TabelasDeDominio|9
+Tabelas:|Atendimento, EntradaFiscal, ItemEntradaFiscal, Movimentacao, Produto, Ruptura, Sku, Usuario, VinculoProdutoFornecedor
