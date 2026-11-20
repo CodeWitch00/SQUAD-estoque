@@ -16,16 +16,18 @@ cache-control: no-store, no-cache
 date: Thu, 19 Nov 2026 16:55:47 GMT
 ```
 
-Requisição HTTP:
+Navegação para HTTP observada no Chromium, depois da requisição HTTPS acima:
 
 ```text
-GET http://asp-squad-estoque-free-hgabd8asd5f4a9g9.northcentralus-01.azurewebsites.net/health
-Status: 307
-location: https://asp-squad-estoque-free-hgabd8asd5f4a9g9.northcentralus-01.azurewebsites.net/health
-non-authoritative-reason: HSTS
+URL informada: http://asp-squad-estoque-free-hgabd8asd5f4a9g9.northcentralus-01.azurewebsites.net/health
+DevTools: 307 Internal Redirect
+Location: https://asp-squad-estoque-free-hgabd8asd5f4a9g9.northcentralus-01.azurewebsites.net/health
+Non-Authoritative-Reason: HSTS
 ```
 
-A requisição HTTPS subsequente retornou 200 com `Healthy`.
+Como a sessão acessou HTTPS primeiro e recebeu `Strict-Transport-Security`, o Chromium aplicou HSTS ao navegar para HTTP. Esse `307` é um upgrade interno do navegador, não uma resposta HTTP capturada do App Service. A resposta/redirecionamento do servidor para uma requisição HTTP sem estado HSTS **não foi verificada** nesta execução.
+
+**Resultado corrigido de QA-01:** HTTPS, `/health = 200 Healthy` e o cabeçalho HSTS foram confirmados. O redirecionamento HTTP→HTTPS do servidor permanece não verificado e requer uma nova medição com cliente sem cache HSTS (por exemplo, `curl` sem seguir redirecionamentos).
 
 ## 2. Acesso anônimo, login inválido e logout — QA-02, QA-03, QA-09
 
