@@ -100,7 +100,7 @@ O sistema:
 
 | Código | Descrição | Prioridade |
 |--------|----------|-----------|
-| RF-13 | O sistema deve permitir que o vendedor busque um produto pelo nome do modelo, retornando resultado em até 10 segundos.| 🔴 Obrigatório |
+| RF-13 | O sistema deve permitir que o vendedor busque um produto pelo nome do modelo, apresentando os resultados em até 3 segundos, considerando a rede, conforme o RNF-02.| 🔴 Obrigatório |
 | RF-14 | O sistema deve exibir a grade completa do modelo consultado, mostrando todas as numerações com seu saldo atual.| 🔴 Obrigatório |
 | RF-15 | O sistema deve diferenciar visualmente três estados: Disponível (saldo > 1) / Último par (saldo = 1) / Indisponível (saldo = 0).| 🔴 Obrigatório |
 

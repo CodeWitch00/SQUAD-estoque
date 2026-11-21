@@ -132,7 +132,7 @@ tbody tr:hover{background:#f8fafb}
 
 <!-- ============ INÍCIO ============ -->
 <section id="inicio" class="screen active">
-<div class="sh"><div><h1>Início do lojista</h1><p class="desc">Resumo operacional.</p></div><span class="status pending">PROTÓTIPO · PENDENTE</span></div>
+<div class="sh"><div><h1>Resumo exploratório do lojista</h1><p class="desc">Esta tela não existe na aplicação; o login leva diretamente a Produtos.</p></div><span class="status ref">NÃO IMPLEMENTADO</span></div>
 
 <div class="grid3">
   <div class="metric"><b>12</b><span>Produtos cadastrados</span></div>
@@ -246,7 +246,7 @@ tbody tr:hover{background:#f8fafb}
         <tr><td>38</td><td class="mono">automático</td><td>0</td><td><span class="badge zero">Indisponível</span></td></tr>
       </tbody></table></div>
     </div>
-    <div class="planned"><b>PLANEJADO · RF-12:</b> exibir data/hora da última atualização de cada SKU. Esse campo foi retirado do fluxo atual para não sugerir uma função existente.</div>
+    <div class="note">A última atualização do saldo é exibida por SKU quando existe registro de atualização.</div>
   </div>
   <div class="state-panel" data-state="vazio" style="display:none"><div class="empty"><b>Produto sem numerações</b>Este produto foi cadastrado sem itens na grade.</div></div>
   <div class="state-panel" data-state="erro" style="display:none"><div class="alert error"><b>Erro de cadastro:</b> esta numeração já está vinculada ao produto.</div></div>
@@ -258,7 +258,7 @@ tbody tr:hover{background:#f8fafb}
 <!-- ============ ENTRADA ============ -->
 <section id="entrada" class="screen">
 <div class="sh"><div><h1>Entrada de estoque</h1><p class="desc">Uma operação pode registrar quantidade para várias numerações do mesmo produto.</p></div><span class="status ref">EXISTENTE · EVOLUÇÃO PROPOSTA</span></div>
-<div class="planned"><b>BASELINE + FLUXO-ALVO:</b> a entrada de um SKU já existe; esta proposta amplia a operação para múltiplas numerações do mesmo produto, de forma transacional.</div>
+<div class="note">A aplicação atual permite registrar entradas por SKU ou por lote de numerações. Este protótipo é apenas uma referência visual simplificada.</div>
 
 <div class="state-row" data-target="st-entrada">
   <button class="pill pill-active" onclick="st(this,'formulario')">Formulário</button>
@@ -384,7 +384,7 @@ tbody tr:hover{background:#f8fafb}
 
 <!-- ============ SALDOS ZERADOS ============ -->
 <section id="zero" class="screen">
-<div class="sh"><div><h1>Saldos zerados</h1><p class="desc">SKUs indisponíveis, agrupados por modelo.</p></div><span class="status pending">PROTÓTIPO · PENDENTE</span></div>
+<div class="sh"><div><h1>Saldos zerados</h1><p class="desc">SKUs indisponíveis, agrupados por modelo.</p></div><span class="status ref">PROTÓTIPO · REFERÊNCIA</span></div>
 
 <div class="state-row" data-target="st-zero">
   <button class="pill pill-active" onclick="st(this,'dados')">Com dados</button>
@@ -394,8 +394,8 @@ tbody tr:hover{background:#f8fafb}
 
 <div id="st-zero">
   <div class="state-panel" data-state="dados">
-    <section class="model-group"><div class="model-head"><h2>Runner Flex · Preto</h2><span class="badge zero">1 numeração</span></div><div class="table-scroll"><table><thead><tr><th>Numeração</th><th>SKU</th><th>Última atualização</th><th>Ação</th></tr></thead><tbody><tr><td>38</td><td class="mono">automático</td><td><span class="planned">PLANEJADO · RF-12</span></td><td><button type="button" class="btn" onclick="go('entrada')">Registrar entrada</button></td></tr></tbody></table></div></section>
-    <section class="model-group"><div class="model-head"><h2>Urban Street · Branco</h2><span class="badge zero">1 numeração</span></div><div class="table-scroll"><table><thead><tr><th>Numeração</th><th>SKU</th><th>Última atualização</th><th>Ação</th></tr></thead><tbody><tr><td>42</td><td class="mono">automático</td><td><span class="planned">PLANEJADO · RF-12</span></td><td><button type="button" class="btn" onclick="go('entrada')">Registrar entrada</button></td></tr></tbody></table></div></section>
+    <section class="model-group"><div class="model-head"><h2>Runner Flex · Preto</h2><span class="badge zero">1 numeração</span></div><div class="table-scroll"><table><thead><tr><th>Numeração</th><th>SKU</th><th>Última atualização</th><th>Ação</th></tr></thead><tbody><tr><td>38</td><td class="mono">automático</td><td>Sem registro</td><td><button type="button" class="btn" onclick="go('entrada')">Registrar entrada</button></td></tr></tbody></table></div></section>
+    <section class="model-group"><div class="model-head"><h2>Urban Street · Branco</h2><span class="badge zero">1 numeração</span></div><div class="table-scroll"><table><thead><tr><th>Numeração</th><th>SKU</th><th>Última atualização</th><th>Ação</th></tr></thead><tbody><tr><td>42</td><td class="mono">automático</td><td>Sem registro</td><td><button type="button" class="btn" onclick="go('entrada')">Registrar entrada</button></td></tr></tbody></table></div></section>
   </div>
   <div class="state-panel" data-state="vazio" style="display:none"><div class="empty"><b>Nenhum SKU com saldo zero</b>Todos os SKUs possuem saldo disponível.</div></div>
   <div class="state-panel" data-state="carregando" style="display:none"><div class="skeleton skeleton-row" style="width:100%"></div><div class="skeleton skeleton-row" style="width:70%"></div></div>
@@ -405,7 +405,7 @@ tbody tr:hover{background:#f8fafb}
 
 <!-- ============ RUPTURAS ============ -->
 <section id="rupt" class="screen">
-<div class="sh"><div><h1>Histórico de rupturas</h1><p class="desc">Demandas não atendidas, registradas por SKU.</p></div><span class="status pending">PROTÓTIPO · PENDENTE</span></div>
+<div class="sh"><div><h1>Histórico de rupturas</h1><p class="desc">Demandas não atendidas, registradas por SKU.</p></div><span class="status ref">PROTÓTIPO · REFERÊNCIA</span></div>
 
 <div class="toolbar"><input placeholder="Buscar produto ou numeração"><select><option>Todos os períodos</option></select><button class="btn">Filtrar</button></div>
 

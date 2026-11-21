@@ -2,7 +2,7 @@
 
 ## Delimitação
 
-Este recorte atualiza o trecho do protótipo entre a grade consultada e a próxima consulta. Ele parte do [protótipo do vendedor](prototipos/prototipo-vendedor.html) e do [mapa de navegação do MVP](mapa-navegacao-mvp.svg). É uma referência de interação: não cria Razor Pages, controllers, endpoints nem persistência.
+Este recorte registra o trecho entre a grade consultada e a próxima consulta. Ele parte do [protótipo do vendedor](prototipos/prototipo-vendedor.html) e do [inventário de telas e navegação vigente](inventario-telas-e-mapa-navegacao.md). É uma referência de interação; a implementação MVC é a fonte de verdade para rotas e persistência.
 
 ## Regra de contexto
 

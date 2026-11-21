@@ -91,7 +91,7 @@ Formato utilizado:
 
 ### US-08
 
-**Como** lojista  
+**Como** lojista
 **Quero** cadastrar produtos com nome, marca, categoria e cor  
 **Para** montar o catálogo base antes de lançar o estoque  
 
@@ -101,7 +101,7 @@ Formato utilizado:
 
 ### US-09
 
-**Como** lojista  
+**Como** lojista
 **Quero** cadastrar a grade de numerações  
 **Para** que o sistema gere os SKUs automaticamente  
 
@@ -111,7 +111,7 @@ Formato utilizado:
 
 ### US-10
 
-**Como** lojista  
+**Como** lojista
 **Quero** registrar entrada de estoque por numeração  
 **Para** inicializar e reabastecer o saldo dos SKUS
 
@@ -121,7 +121,7 @@ Formato utilizado:
 
 ### US-11
 
-**Como** lojista  
+**Como** lojista
 **Quero** realizar ajuste manual de saldo com justificativa  
 **Para** corrigir divergências do estoque físico  
 
@@ -131,7 +131,7 @@ Formato utilizado:
 
 ### US-12
 
-**Como** lojista  
+**Como** lojista
 **Quero** visualizar SKUs com saldo zero agrupados por modelo
 **Para** identificar necessidade de reposição  
 
@@ -141,7 +141,7 @@ Formato utilizado:
 
 ### US-13
 
-**Como** lojista  
+**Como** lojista
 **Quero** visualizar histórico de rupturas  
 **Para** tomar decisões de compra baseadas em demanda real  
 
@@ -153,11 +153,21 @@ Formato utilizado:
 
 **Como** lojista
 
-**Quero** importar o XML da NF-e, conferir seus itens e associar fotos aos modelos novos
+**Quero** importar o XML da NF-e, conferir seus itens e associar fotos opcionais aos modelos
 
 **Para** cadastrar a mercadoria recebida e atualizar o estoque sem digitar cada entrada separadamente
 
 **Prioridade:** Obrigatório
+
+---
+
+### US-15
+
+**Como** lojista
+**Quero** adicionar, trocar ou remover a foto de um modelo no cadastro ou na edição
+**Para** reconhecer o produto no catálogo e na consulta sem tornar a foto obrigatória
+
+**Prioridade:** Importante
 
 ---
 

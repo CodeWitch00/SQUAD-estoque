@@ -1,8 +1,10 @@
 # Inventário de telas e mapa de navegação do MVP
 
 **Escopo:** P1 : VENDEDOR e LOJISTA  
-**Fontes normativas:** [SRS](../02-requisitos/srs.md) (RF-01 a RF-25), [casos de uso](../02-requisitos/casos-de-uso.md) (UC-01 a UC-12) e [user stories](../02-requisitos/user-stories.md) (US-01 a US-13)
-**Mapa visual:** [mapa-navegacao-mvp.svg](mapa-navegacao-mvp.svg)
+**Fontes normativas:** [SRS](../02-requisitos/srs.md) (RF-01 a RF-30), [casos de uso](../02-requisitos/casos-de-uso.md) (UC-01 a UC-15) e [user stories](../02-requisitos/user-stories.md) (US-01 a US-15)
+
+Este inventário é o mapa de navegação vigente. Protótipos e capturas anteriores
+são referências visuais e não substituem as rotas e permissões abaixo.
 
 ## 1. Critério de classificação
 
@@ -10,7 +12,7 @@
 | --- | --- |
 | **Existente** | Há action GET e Razor View utilizável na baseline. Uma regra implementada apenas no domínio não torna a tela existente. |
 | **Pendente** | A interface é exigida por RF, UC ou US, mas não há action/view correspondente. |
-| **Legado fora do fluxo** | Há rota ou view no repositório, mas ela não pertence aos fluxos RF-01 a RF-25, UC-01 a UC-12 ou US-01 a US-13. |
+| **Legado fora do fluxo** | Há rota ou view no repositório, mas ela não pertence aos fluxos normativos vigentes. |
 | **Apoio técnico** | Estado de interface necessário a segurança/erro, sem constituir funcionalidade de negócio independente. |
 
 “Vendeu”, “Não tinha” e “Desistiu” são inventariados como estados de interação da grade, e não como páginas administrativas independentes. Podem ser modal, confirmação ou feedback na própria grade, desde que mantenham os destinos e efeitos descritos abaixo.
@@ -26,17 +28,19 @@
 | VEN-04 | Resultado “Vendeu” | `POST /Estoque/Vender` | VENDEDOR | **Existente** | Registra a venda de um par para o SKU do atendimento, atualiza saldo e informa sucesso ou conflito de saldo. RF-10, RF-11, RF-16, RF-17, RF-20; UC-04; US-04, US-07. |
 | VEN-05 | Resultado “Não tinha” | `POST /Estoque/RegistrarNaoTinha` | VENDEDOR | **Existente** | Registra ruptura explícita para o SKU do atendimento sem alterar saldo. RF-16, RF-18, RF-20; UC-05; US-05, US-07. |
 | VEN-06 | Resultado “Desistiu” | `POST /Estoque/Desistiu` | VENDEDOR | **Existente** | Encerra o atendimento sem venda, ruptura ou movimentação e permite nova consulta. RF-16, RF-19, RF-20; UC-06; US-06, US-07. |
-| LOJ-01 | Início do lojista | `/Produtos` | LOJISTA | **Existente** | Destino após login e ponto de entrada para as áreas administrativas disponíveis. RF-02; UC-01; US-08 a US-13. |
+| LOJ-01 | Início do lojista | `/Produtos` | LOJISTA | **Existente** | Destino após login e ponto de entrada para as áreas administrativas disponíveis; não há dashboard separado. RF-02; UC-01; US-08 a US-15. |
 | LOJ-02 | Produtos | `/Produtos` | LOJISTA | **Existente** | Lista catálogo e grades; origina cadastro, detalhe e edição. Apoia RF-05 a RF-09; UC-07, UC-08; US-08, US-09. |
-| LOJ-03 | Novo produto e grade | `/Produtos/Create` | LOJISTA | **Existente** | Cadastra nome, marca, categoria, cor e numerações; gera SKUs com saldo zero e rejeita numeração repetida no formulário. RF-05, RF-06, RF-07, RF-08 e apoio a RF-09; UC-07, UC-08; US-08, US-09. |
+| LOJ-03 | Novo produto e grade | `/Produtos/Create` | LOJISTA | **Existente** | Cadastra identificação, foto opcional e numerações; gera SKUs e saldos iniciais e rejeita duplicidade. RF-05 a RF-09, RF-30; UC-07, UC-08, UC-15; US-08, US-09, US-15. |
 | LOJ-04 | Detalhe do produto/grade | `/Produtos/Details/{id}` | LOJISTA | **Existente** | Exibe a grade do produto e origina entrada, saída administrativa e ajuste. Os estados do estoque e a consulta operacional do VENDEDOR são descritos em VEN-03. Apoia RF-14, RF-15, UC-08, UC-09, UC-10, US-09, US-10 e US-11. |
-| LOJ-05 | Editar produto | `/Produtos/Edit/{id}` | LOJISTA | **Existente** | Mantém nome, marca, categoria e cor. É manutenção já existente; não adiciona capacidade além do cadastro do produto do MVP. Apoio a RF-05 e US-08. |
-| LOJ-06 | Entrada de estoque | `/Movimentacoes/Entrada[?skuId=...]` | LOJISTA | **Existente** | Seleciona SKU e quantidade, atualiza saldo e registra movimentação. RF-09, RF-10; UC-09; US-10. |
+| LOJ-05 | Editar produto | `/Produtos/Edit/{id}` | LOJISTA | **Existente** | Edita identificação e permite trocar ou remover foto opcional; os SKUs existentes são preservados. RF-05, RF-30; UC-07, UC-15; US-08, US-15. |
+| LOJ-06 | Entrada de estoque | `/Movimentacoes/Entrada[?skuId=...]`, `/Movimentacoes/EntradaLote` | LOJISTA | **Existente** | Registra entrada por SKU ou lote, atualiza saldo e histórico. RF-09, RF-10; UC-09; US-10. |
 | LOJ-07 | Saída administrativa | `/Movimentacoes/Saida[?skuId=...]` | LOJISTA | **Existente** | Registra saída com quantidade informada e valida saldo. Não substitui “Vendeu”, ação operacional de um par ligada ao atendimento. RF-10, RF-11. |
 | LOJ-08 | Ajuste manual | `/Movimentacoes/Ajuste[?skuId=...]` | LOJISTA | **Existente** | Define novo saldo, exige motivo e registra ajuste imutável. RF-10, RF-11, RF-23; UC-10; US-11. |
 | LOJ-09 | Histórico de movimentações | `/Movimentacoes` | LOJISTA | **Existente** | Lista data/hora, produto, numeração, tipo, quantidade, responsável e motivo; sem editar/excluir. RF-10; apoio ao controle de estoque. |
 | LOJ-10 | Saldos zerados | `/SaldosZerados` | LOJISTA | **Existente** | Lista somente SKUs com saldo zero, agrupados por modelo. RF-21; UC-11; US-12. |
 | LOJ-11 | Histórico de rupturas | `/Rupturas` | LOJISTA | **Existente** | Agrupa ocorrências “Não tinha” por modelo e numeração. RF-22; UC-12; US-13. |
+| LOJ-12 | Atendimentos | `/Atendimentos` | LOJISTA | **Existente** | Consulta atendimentos pendentes e concluídos, responsáveis, resultados e alertas. RF-25; UC-13. |
+| LOJ-13 | Entradas fiscais | `/EntradasFiscais`, `/EntradasFiscais/Importar`, `/EntradasFiscais/Conferir/{id}` | LOJISTA | **Existente** | Importa XML manualmente como rascunho, confere itens e confirma estoque de forma transacional. RF-26 a RF-29; UC-14; US-14. |
 
 ## 3. Origem, destino e permissão
 
@@ -71,6 +75,8 @@ Esta matriz descreve o fluxo-alvo. “Voltar” deve preservar a origem quando a
 | LOJ-09 | Nova entrada / saída / ajuste | LOJ-06 / LOJ-07 / LOJ-08 | LOJISTA | Existente |
 | LOJ-01 | Saldos zerados | LOJ-10 Saldos zerados | LOJISTA | Existente |
 | LOJ-01 | Rupturas | LOJ-11 Histórico de rupturas | LOJISTA | Existente |
+| LOJ-01 | Atendimentos | LOJ-12 Atendimentos | LOJISTA | Existente |
+| LOJ-02 / LOJ-03 | Importar NF-e | LOJ-13 Entradas fiscais | LOJISTA | Existente; atalho também disponível no cadastro de produto |
 | Qualquer tela autenticada | Sair | AUT-01 Login | VENDEDOR ou LOJISTA | Existente |
 | Rota sem permissão | Autorização negada | SUP-01 Acesso negado | Usuário autenticado sem papel exigido | Existente |
 
@@ -97,12 +103,15 @@ A matriz acima descreve os fluxos presentes na implementação atual:
 | --- | --- |
 | RF-01 a RF-04 / UC-01 / US-01 | AUT-01, redirecionamento a VEN-01 ou LOJ-01 e sessão autenticada. RF-04 é regra interna, validada sem tela própria. |
 | RF-05, RF-06, RF-07, RF-08 / UC-07, UC-08 / US-08, US-09 | LOJ-02, LOJ-03, LOJ-04. A geração e unicidade do SKU são efeitos do salvamento, não telas. |
-| RF-09, RF-10, RF-11, RF-12 / UC-09, UC-10 / US-10, US-11 | LOJ-04, LOJ-06, LOJ-07, LOJ-08, LOJ-09 e estados de erro; RF-12 está pendente e deve aparecer em VEN-03. |
+| RF-09, RF-10, RF-11, RF-12 / UC-09, UC-10 / US-10, US-11 | LOJ-04, LOJ-06, LOJ-07, LOJ-08, LOJ-09 e VEN-03; a última atualização aparece por SKU quando disponível. |
 | RF-13, RF-14, RF-15 / UC-02, UC-03 / US-02, US-03 | VEN-01, VEN-02 e VEN-03. |
-| RF-16 a RF-20, RF-24, RF-25 / UC-04, UC-05, UC-06 / US-04, US-05, US-06, US-07 | VEN-04, VEN-05, VEN-06, retorno não bloqueante a VEN-02 e manutenção auditável das pendências. |
+| RF-16 a RF-20, RF-24 / UC-04, UC-05, UC-06 / US-04, US-05, US-06, US-07 | VEN-04, VEN-05, VEN-06, retorno não bloqueante a VEN-02 e manutenção auditável das pendências. |
 | RF-21 / UC-11 / US-12 | LOJ-10. |
 | RF-22 / UC-12 / US-13 | LOJ-11. |
 | RF-23 / UC-10 / US-11 | LOJ-08 e retorno a LOJ-04. |
+| RF-25 / UC-13 | LOJ-12. |
+| RF-26 a RF-29 / UC-14 / US-14 | LOJ-13 e confirmação de estoque. |
+| RF-30 / UC-15 / US-15 | Foto opcional em LOJ-03, LOJ-05 e LOJ-13. |
 
 ## 7. Base para o plano de testes da P1
 

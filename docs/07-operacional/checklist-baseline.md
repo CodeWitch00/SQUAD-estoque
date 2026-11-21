@@ -2,6 +2,10 @@
 
 **Data da validação:** 17/08/2026
 
+> Registro histórico da baseline de agosto de 2026. As permissões observadas
+> abaixo não representam o estado atual: a autorização foi corrigida e deve ser
+> conferida no código, nos testes HTTP e nos registros de validação posteriores.
+
 ## Estrutura validada
 
 - Aplicação em `src/SquadEstoque.Web/`
@@ -37,7 +41,7 @@
 ## Observações
 
 - O arquivo local de banco `Estoque.db` é ignorado pelo Git
-- O teste manual completo dos fluxos ainda está pendente
+- Na data desta baseline, o teste manual completo dos fluxos ainda estava pendente.
 
 ## Checklist pendente
 

@@ -25,7 +25,7 @@ Este documento é um índice de resultados e evidências.
 - [Fluxo do vendedor](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/05-ux/prototipos/prototipo-vendedor.html)
 - [Fluxo do lojista](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/05-ux/prototipos/prototipo-lojista.html)
 - [Inventário de telas e mapa de navegação](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/05-ux/inventario-telas-e-mapa-navegacao.md)
-- [Mapa visual de navegação](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/05-ux/mapa-navegacao-mvp.svg)
+- O mapa SVG produzido na baseline da Sprint 1 foi removido após ficar desatualizado; consulte o [inventário vigente de telas e navegação](../05-ux/inventario-telas-e-mapa-navegacao.md).
 - [Decisões de interface](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/05-ux/decisoes/decisoes-de-interface.md)
 - [Evidências de UX](https://github.com/CodeWitch00/SQUAD-estoque/blob/main/docs/05-ux/evidencias/README.md)
 

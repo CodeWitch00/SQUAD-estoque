@@ -23,22 +23,22 @@ Repositório Github: https://github.com/CodeWitch00/SQUAD-estoque.git
 | Incremento MVC | Consulta operacional do vendedor implementada no fluxo `GET /Estoque/Consulta`, com busca, seleção de produto e grade visual por numeração. |
 | Perfis | Login redireciona `VENDEDOR` para consulta operacional e `LOJISTA` para área administrativa; menus são filtrados por perfil. |
 | Validação automatizada | `dotnet test tests/SquadEstoque.Web.Tests/SquadEstoque.Web.Tests.csproj`: 60 testes aprovados, 0 falhas, em 03/09/2026. |
-| CI | Workflow `.NET Build and Tests` versionado em [dotnet.yml](../../.github/workflows/dotnet.yml), com build, testes e cobertura mínima de 50%. A conferência do status remoto mais recente deve ser feita na página de Actions após cada push. |
+| CI | Workflow `.NET Build and Tests` versionado em [dotnet.yml](../../../../.github/workflows/dotnet.yml), com build, testes e cobertura mínima de 50%. A conferência do status remoto mais recente deve ser feita na página de Actions após cada push. |
 
 ## Evidências principais
 
 | Tipo | Evidência |
 |---|---|
-| Protótipo do login | [docs/05-ux/prototipos/login.html](../05-ux/prototipos/login.html) |
-| Protótipo do vendedor | [docs/05-ux/prototipos/vendedor/prototipo-vendedor.html](../05-ux/prototipos/vendedor/prototipo-vendedor.html) |
-| Protótipo do lojista | [docs/05-ux/prototipos/lojista/prototipo-lojista.html](../05-ux/prototipos/lojista/prototipo-lojista.html) |
+| Protótipo do login | [docs/05-ux/prototipos/login.html](../../../05-ux/prototipos/login.html) |
+| Protótipo do vendedor | [docs/05-ux/prototipos/vendedor/prototipo-vendedor.html](../../../05-ux/prototipos/prototipo-vendedor.html) |
+| Protótipo do lojista | [docs/05-ux/prototipos/lojista/prototipo-lojista.html](../../../05-ux/prototipos/prototipo-lojista.html) |
 | Acesso publicado dos protótipos | [GitHub Pages](https://codewitch00.github.io/SQUAD-estoque/) |
-| Inventário e mapa | [inventario-telas-e-mapa-navegacao.md](../05-ux/inventario-telas-e-mapa-navegacao.md), [mapa-navegacao-mvp.svg](../05-ux/mapa-navegacao-mvp.svg) |
-| Especificação mobile | [especificacao-componentes-mobile.md](../05-ux/especificacao-componentes-mobile.md) |
-| Plano de testes | [plano-de-testes.md](plano-de-testes.md) |
-| Testes de autenticação | [especificacao-testes-autenticacao.md](especificacao-testes-autenticacao.md), [AuthenticationAuthorizationTests.cs](../../tests/SquadEstoque.Web.Tests/AuthenticationAuthorizationTests.cs) |
-| Testes administrativos | [especificacao-teste-administrativo.md](especificacao-teste-administrativo.md), [AdministrativeHttpTests.cs](../../tests/SquadEstoque.Web.Tests/AdministrativeHttpTests.cs), [EstoqueDomainPersistenceTests.cs](../../tests/SquadEstoque.Web.Tests/EstoqueDomainPersistenceTests.cs) |
-| Testes do vendedor | [especificacao-testes-vendedor.md](especificacao-testes-vendedor.md), [ConsultaEstoqueTests.cs](../../tests/SquadEstoque.Web.Tests/ConsultaEstoqueTests.cs), [EstoqueControllerHttpTests.cs](../../tests/SquadEstoque.Web.Tests/EstoqueControllerHttpTests.cs), [ConsultaOperacionalHttpTests.cs](../../tests/SquadEstoque.Web.Tests/ConsultaOperacionalHttpTests.cs) |
+| Inventário e mapa | [inventário vigente](../../../05-ux/inventario-telas-e-mapa-navegacao.md); o SVG da baseline foi removido após ficar desatualizado |
+| Especificação mobile | [especificacao-componentes-mobile.md](../../../05-ux/especificacao-componentes-mobile.md) |
+| Plano de testes | [plano-de-testes.md](../../plano-de-testes.md) |
+| Testes de autenticação | [especificacao-testes-autenticacao.md](../../especificacoes/arquivo-historico/especificacao-testes-autenticacao.md), [AuthenticationAuthorizationTests.cs](../../../../tests/SquadEstoque.Web.Tests/AuthenticationAuthorizationTests.cs) |
+| Testes administrativos | [especificacao-teste-administrativo.md](../../especificacoes/arquivo-historico/especificacao-teste-administrativo.md), [AdministrativeHttpTests.cs](../../../../tests/SquadEstoque.Web.Tests/AdministrativeHttpTests.cs), [EstoqueDomainPersistenceTests.cs](../../../../tests/SquadEstoque.Web.Tests/EstoqueDomainPersistenceTests.cs) |
+| Testes do vendedor | [especificacao-testes-vendedor.md](../../especificacoes/arquivo-historico/especificacao-testes-vendedor.md), [ConsultaEstoqueTests.cs](../../../../tests/SquadEstoque.Web.Tests/ConsultaEstoqueTests.cs), [EstoqueControllerHttpTests.cs](../../../../tests/SquadEstoque.Web.Tests/EstoqueControllerHttpTests.cs), [ConsultaOperacionalHttpTests.cs](../../../../tests/SquadEstoque.Web.Tests/ConsultaOperacionalHttpTests.cs) |
 | Validação manual administrativa | [relatorio-homologacao-baseline-administrativa-2026-08-30.md](relatorio-homologacao-baseline-administrativa-2026-08-30.md) |
 | Validação manual da consulta | [validacao-consulta-vendedor-2026-08-31.md](validacao-consulta-vendedor-2026-08-31.md) |
 | Validação de navegação por perfil | [validacao-navegacao-por-perfil-2026-09-03.md](validacao-navegacao-por-perfil-2026-09-03.md) |
@@ -60,28 +60,28 @@ Repositório Github: https://github.com/CodeWitch00/SQUAD-estoque.git
 
 | Cartão | Responsável registrado | Resultado real | Evidência |
 |---|---|---|---|
-| S1-UX-001 | Rayana | Concluído. Inventário e mapa de navegação versionados. | [inventário](../05-ux/inventario-telas-e-mapa-navegacao.md), [mapa](../05-ux/mapa-navegacao-mvp.svg), PR #2 |
-| S1-UX-002 | pz69766-blip; revisão Rayana | Concluído. Protótipo navegável do vendedor revisado e atualizado. | [protótipo vendedor](../05-ux/prototipos/vendedor/prototipo-vendedor.html), commits `b35023b`, `a203217`, `19038bf`, `ce78f33` |
-| S1-UX-003 | Emmy; complemento Rayana | Concluído. Fluxo/protótipo administrativo do lojista disponível. | [protótipo lojista](../05-ux/prototipos/lojista/prototipo-lojista.html), PR #1, commits `7af0c2d`, `a365ff2` |
-| S1-QA-004 | Rayana | Concluído. Plano de testes estruturado versionado. | [plano de testes](plano-de-testes.md), commit `4417aad` |
-| S1-QA-005 | Rayana | Concluído. Casos de autenticação, sessão e perfis especificados. | [especificação de autenticação](especificacao-testes-autenticacao.md), commit `1ca0697` |
-| S1-QA-006 | Rayana; colaboração Emmy | Concluído. Casos administrativos especificados. | [especificação administrativa](especificacao-teste-administrativo.md), commits `73e9cc8`, `4244ce8`, `fbd95e1` |
-| S1-QA-007 | Felipe; evidência versionada por pz69766-blip/Rayana | Concluído como especificação. Casos do vendedor documentados; execução total depende dos endpoints futuros. | [especificação vendedor](especificacao-testes-vendedor.md), commits `1a43831`, `3566ba9` |
-| S1-QA-008 | Rayana | Concluído como especificação. Testes não funcionais definidos; execução de carga, HTTPS e mobile real permanece planejada. | [testes não funcionais](especificacao-testes-nao-funcionais.md), commit `5e48596` |
-| S1-UX-009 | Nicolas | Concluído. Diretrizes de identidade visual adicionadas. | [decisões de interface](../05-ux/decisoes/decisoes-de-interface.md), commit `8b33fff` |
-| S1-UX-010 | Emmy; revisão Rayana | Concluído. Componentes mobile de busca, resultados e grade especificados. | [especificação mobile](../05-ux/especificacao-componentes-mobile.md), commits `0a8425f`, `7f17175`, `f39b1b1` |
-| S1-DOC-011 | Felipe; evidência versionada por pz69766-blip | Concluído. Padrão de evidências registrado. | [README de evidências](../05-ux/evidencias/README.md), commit `ee84a1b` |
+| S1-UX-001 | Rayana | Concluído. Inventário e mapa de navegação versionados. | [inventário vigente](../../../05-ux/inventario-telas-e-mapa-navegacao.md), PR #2; o SVG original foi removido após ficar desatualizado |
+| S1-UX-002 | pz69766-blip; revisão Rayana | Concluído. Protótipo navegável do vendedor revisado e atualizado. | [protótipo vendedor](../../../05-ux/prototipos/prototipo-vendedor.html), commits `b35023b`, `a203217`, `19038bf`, `ce78f33` |
+| S1-UX-003 | Emmy; complemento Rayana | Concluído. Fluxo/protótipo administrativo do lojista disponível. | [protótipo lojista](../../../05-ux/prototipos/prototipo-lojista.html), PR #1, commits `7af0c2d`, `a365ff2` |
+| S1-QA-004 | Rayana | Concluído. Plano de testes estruturado versionado. | [plano de testes](../../plano-de-testes.md), commit `4417aad` |
+| S1-QA-005 | Rayana | Concluído. Casos de autenticação, sessão e perfis especificados. | [especificação de autenticação](../../especificacoes/arquivo-historico/especificacao-testes-autenticacao.md), commit `1ca0697` |
+| S1-QA-006 | Rayana; colaboração Emmy | Concluído. Casos administrativos especificados. | [especificação administrativa](../../especificacoes/arquivo-historico/especificacao-teste-administrativo.md), commits `73e9cc8`, `4244ce8`, `fbd95e1` |
+| S1-QA-007 | Felipe; evidência versionada por pz69766-blip/Rayana | Concluído como especificação. Casos do vendedor documentados; execução total depende dos endpoints futuros. | [especificação vendedor](../../especificacoes/arquivo-historico/especificacao-testes-vendedor.md), commits `1a43831`, `3566ba9` |
+| S1-QA-008 | Rayana | Concluído como especificação. Testes não funcionais definidos; execução de carga, HTTPS e mobile real permanece planejada. | [testes não funcionais](../../especificacoes/arquivo-historico/especificacao-testes-nao-funcionais.md), commit `5e48596` |
+| S1-UX-009 | Nicolas | Concluído. Diretrizes de identidade visual adicionadas. | [decisões de interface](../../../05-ux/decisoes/decisoes-de-interface.md), commit `8b33fff` |
+| S1-UX-010 | Emmy; revisão Rayana | Concluído. Componentes mobile de busca, resultados e grade especificados. | [especificação mobile](../../../05-ux/especificacao-componentes-mobile.md), commits `0a8425f`, `7f17175`, `f39b1b1` |
+| S1-DOC-011 | Felipe; evidência versionada por pz69766-blip | Concluído. Padrão de evidências registrado. | [README de evidências](../../../05-ux/evidencias/README.md), commit `ee84a1b` |
 | S1-QA-012 | Rayana | Concluído com impedimento registrado. Homologação administrativa executada; 13 cenários aprovados e 1 reprovado por autorização. | [relatório de homologação](relatorio-homologacao-baseline-administrativa-2026-08-30.md), [roteiro executado](roteiro-executado-baseline-administrativa-2026-08-30.md), commit `3566ba9` |
-| S1-BE-013 | Rayana | Concluído. ViewModel da consulta criado. | [ConsultaEstoqueViewModel.cs](../../src/SquadEstoque.Web/Models/ConsultaEstoqueViewModel.cs), commit `ec2c901` |
-| S1-BE-014 | Rayana | Concluído. Entrada protegida da consulta operacional criada. | [EstoqueController.cs](../../src/SquadEstoque.Web/Controllers/EstoqueController.cs), commits `61648a9`, `4b1164b` |
-| S1-BE-015 | Rayana | Concluído. Busca por produto ativo com termo mínimo e ordenação implementada. | [EstoqueController.cs](../../src/SquadEstoque.Web/Controllers/EstoqueController.cs), [ConsultaEstoqueTests.cs](../../tests/SquadEstoque.Web.Tests/ConsultaEstoqueTests.cs), commit `61648a9` |
-| S1-QA-016 | Rayana | Concluído. Autorização da consulta e perfis cobertos por testes. | [AuthenticationAuthorizationTests.cs](../../tests/SquadEstoque.Web.Tests/AuthenticationAuthorizationTests.cs), commit `61648a9` |
-| S1-QA-017 | Rayana | Concluído. Busca operacional coberta por testes de integração. | [ConsultaEstoqueTests.cs](../../tests/SquadEstoque.Web.Tests/ConsultaEstoqueTests.cs), [EstoqueControllerHttpTests.cs](../../tests/SquadEstoque.Web.Tests/EstoqueControllerHttpTests.cs), commit `61648a9` |
-| S1-FE-018 | Rayana | Concluído. Tela Razor de busca responsiva integrada. | [Consulta.cshtml](../../src/SquadEstoque.Web/Views/Estoque/Consulta.cshtml), [validação 31/08](validacao-consulta-vendedor-2026-08-31.md), commit `61648a9` |
-| S1-BE-019 | Emmy; ajuste Rayana | Concluído no fluxo atual da `main`. Produto selecionado carrega SKUs ativos, saldos e estado da grade dentro da consulta operacional. | [EstoqueController.cs](../../src/SquadEstoque.Web/Controllers/EstoqueController.cs), branch `feat/s1-be-019-emmy`, commits `2e09412`, `8fa2aa4` |
-| S1-FE-020 | Rayana | Concluído. Grade visual por numeração exibida com saldo e texto de estado, sem ações de venda/ruptura. | [Consulta.cshtml](../../src/SquadEstoque.Web/Views/Estoque/Consulta.cshtml), [site.css](../../src/SquadEstoque.Web/wwwroot/css/site.css), commits `5da7300`, `94a6780`, `5ed917c` |
-| S1-FE-021 | Rayana | Concluído. Navegação por perfil e entrada direta do vendedor implementadas. | [validação de navegação](validacao-navegacao-por-perfil-2026-09-03.md), [AccountController.cs](../../src/SquadEstoque.Web/Controllers/AccountController.cs), commit `4b1164b` |
-| S1-QA-022 | Emmy; fortalecimento Rayana | Concluído. Testes da grade operacional cobrem ordenação, estados visíveis, ausência de venda/ruptura e saldos inalterados. | [ConsultaOperacionalHttpTests.cs](../../tests/SquadEstoque.Web.Tests/ConsultaOperacionalHttpTests.cs), commits `e7ad14a`, `459a154` |
+| S1-BE-013 | Rayana | Concluído. ViewModel da consulta criado. | [ConsultaEstoqueViewModel.cs](../../../../src/SquadEstoque.Web/Models/ViewModels/ConsultaEstoqueViewModel.cs), commit `ec2c901` |
+| S1-BE-014 | Rayana | Concluído. Entrada protegida da consulta operacional criada. | [EstoqueController.cs](../../../../src/SquadEstoque.Web/Controllers/EstoqueController.cs), commits `61648a9`, `4b1164b` |
+| S1-BE-015 | Rayana | Concluído. Busca por produto ativo com termo mínimo e ordenação implementada. | [EstoqueController.cs](../../../../src/SquadEstoque.Web/Controllers/EstoqueController.cs), [ConsultaEstoqueTests.cs](../../../../tests/SquadEstoque.Web.Tests/ConsultaEstoqueTests.cs), commit `61648a9` |
+| S1-QA-016 | Rayana | Concluído. Autorização da consulta e perfis cobertos por testes. | [AuthenticationAuthorizationTests.cs](../../../../tests/SquadEstoque.Web.Tests/AuthenticationAuthorizationTests.cs), commit `61648a9` |
+| S1-QA-017 | Rayana | Concluído. Busca operacional coberta por testes de integração. | [ConsultaEstoqueTests.cs](../../../../tests/SquadEstoque.Web.Tests/ConsultaEstoqueTests.cs), [EstoqueControllerHttpTests.cs](../../../../tests/SquadEstoque.Web.Tests/EstoqueControllerHttpTests.cs), commit `61648a9` |
+| S1-FE-018 | Rayana | Concluído. Tela Razor de busca responsiva integrada. | [Consulta.cshtml](../../../../src/SquadEstoque.Web/Views/Estoque/Consulta.cshtml), [validação 31/08](validacao-consulta-vendedor-2026-08-31.md), commit `61648a9` |
+| S1-BE-019 | Emmy; ajuste Rayana | Concluído no fluxo atual da `main`. Produto selecionado carrega SKUs ativos, saldos e estado da grade dentro da consulta operacional. | [EstoqueController.cs](../../../../src/SquadEstoque.Web/Controllers/EstoqueController.cs), branch `feat/s1-be-019-emmy`, commits `2e09412`, `8fa2aa4` |
+| S1-FE-020 | Rayana | Concluído. Grade visual por numeração exibida com saldo e texto de estado, sem ações de venda/ruptura. | [Consulta.cshtml](../../../../src/SquadEstoque.Web/Views/Estoque/Consulta.cshtml), [site.css](../../../../src/SquadEstoque.Web/wwwroot/css/site.css), commits `5da7300`, `94a6780`, `5ed917c` |
+| S1-FE-021 | Rayana | Concluído. Navegação por perfil e entrada direta do vendedor implementadas. | [validação de navegação](validacao-navegacao-por-perfil-2026-09-03.md), [AccountController.cs](../../../../src/SquadEstoque.Web/Controllers/AccountController.cs), commit `4b1164b` |
+| S1-QA-022 | Emmy; fortalecimento Rayana | Concluído. Testes da grade operacional cobrem ordenação, estados visíveis, ausência de venda/ruptura e saldos inalterados. | [ConsultaOperacionalHttpTests.cs](../../../../tests/SquadEstoque.Web.Tests/ConsultaOperacionalHttpTests.cs), commits `e7ad14a`, `459a154` |
 | S1-QA-023 | Rayana | Parcial. Validação responsiva da busca registrada; conferência manual final da grade em navegador gráfico deve seguir para Sprint 2. | [validação consulta vendedor](validacao-consulta-vendedor-2026-08-31.md), testes automatizados em 03/09/2026 |
 | S1-DOC-024 | Rayana | Concluído por este relatório. Evidências da Sprint 1 consolidadas e pendências separadas. | Este arquivo, commit a gerar após revisão |
 

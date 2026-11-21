@@ -1,4 +1,4 @@
- # Casos de Uso - Sistema SQUAD
+# Casos de Uso - Sistema SQUAD
 
 **Foco**: comportamento do sistema
 
@@ -32,6 +32,9 @@ O sistema possui casos de uso distribuídos entre três atores:
 | UC-10 | Realizar ajuste manual de saldo | Lojista |
 | UC-11 | Visualizar saldos zerados | Lojista |
 | UC-12 | Visualizar histórico de rupturas | Lojista |
+| UC-13 | Consultar atendimentos | Lojista |
+| UC-14 | Importar e confirmar NF-e | Lojista |
+| UC-15 | Gerenciar foto do modelo | Lojista |
 | UC-S1 | Gerar SKU automaticamente | Sistema |
 | UC-S2 | Decrementar saldo do SKU | Sistema |
 | UC-S3 | Criar registro de ruptura | Sistema |
@@ -51,11 +54,11 @@ O sistema possui casos de uso distribuídos entre três atores:
 
 #### Fluxo Principal
 
-1. Usuário acessa o sistema via brawser
+1. Usuário acessa o sistema pelo navegador
 2. Sistema exibe login
 3. Usuário informa credenciais( e-mail e senha) e confirma
 4. Sistema valida credenciais no banco
-5. Sistema identifica o perfil: VENDEDOR ou LOGISTA
+5. Sistema identifica o perfil: VENDEDOR ou LOJISTA
 6. Sistema redireciona para tela inicial do perfil correspondente
 
 #### Fluxos Alternativos
@@ -176,7 +179,7 @@ Nenhuma movimentação realizada; vendedor disponível para nova consulta.
 
 ### UC-07 - Cadastrar produto
 
-**Ator:** Lojista  
+**Ator:** Lojista
 
 #### Fluxo Principal
 
@@ -192,7 +195,7 @@ Produto disponível para uso
 
 ### UC-08 - Cadastrar grade de numerações
 
-**Ator:** Lojista  
+**Ator:** Lojista
 
 #### Fluxo Principal
 
@@ -207,7 +210,7 @@ SKUs criados
 
 ### UC-09 - Registrar entrada de estoque
 
-**Ator:** Lojista  
+**Ator:** Lojista
 
 #### Fluxo Principal
 
@@ -248,7 +251,7 @@ Saldo corrigido; ajuste rastreável e imutável com motivo e responsável.
 
 ### UC-11 - Visualizar saldos zerados
 
-**Ator:** Lojista  
+**Ator:** Lojista
 
 #### Fluxo Principal
 
@@ -263,7 +266,7 @@ Lojista identifica rupturas potenciais
 
 ### UC-12 - Visualizar histórico de rupturas
 
-**Ator:** Lojista  
+**Ator:** Lojista
 
 #### Fluxo Principal
 
@@ -276,9 +279,71 @@ Base para decisão de compra
 
 ---
 
-## 4. Casos de Uso do Sistema (Automáticos)
+### UC-13 - Consultar atendimentos
+
+**Ator:** Lojista
+**Pré-condição:** Usuário autenticado como LOJISTA
+
+#### Fluxo Principal
+
+1. Lojista abre **Atendimentos**.
+2. Sistema lista atendimentos pendentes e concluídos, com vendedor, produto, numeração quando aplicável, saldo consultado, resultado, horários e alertas.
+3. Lojista revisa os registros sem alterar o atendimento ou o estoque.
+
+#### Pós-condição
+
+Nenhum dado operacional é alterado pela consulta.
 
 ---
+
+### UC-14 - Importar e confirmar NF-e
+
+**Ator:** Lojista
+**Pré-condição:** Usuário autenticado como LOJISTA; arquivo XML autorizado disponível
+
+#### Fluxo Principal
+
+1. Lojista inicia a importação manual do XML.
+2. Sistema valida e interpreta o arquivo e cria uma entrada fiscal em rascunho.
+3. Lojista confere cada item, associa produto e numeração e informa os dados faltantes.
+4. Lojista confirma a entrada.
+5. Sistema cria ou associa produtos e SKUs, atualiza saldos, registra movimentações e vínculos de fornecedor na mesma transação.
+
+#### Fluxos Alternativos
+
+- XML inválido ou chave já confirmada → sistema rejeita a importação sem alterar o estoque.
+- Conferência incompleta ou inválida → sistema mantém o rascunho e solicita correção.
+- Falha na confirmação → transação revertida; nenhum saldo parcial é aplicado.
+
+#### Pós-condição
+
+A entrada fica confirmada e o estoque e o histórico refletem os itens conferidos.
+
+---
+
+### UC-15 - Gerenciar foto do modelo
+
+**Ator:** Lojista
+**Pré-condição:** Cadastro, edição ou conferência de item fiscal
+
+#### Fluxo Principal
+
+1. Lojista escolhe uma imagem pela câmera ou galeria.
+2. Sistema valida formato e tamanho e associa a imagem ao modelo.
+3. Na edição, o lojista pode substituir ou remover a imagem.
+
+#### Fluxos Alternativos
+
+- Imagem inválida → sistema exibe erro e preserva os demais dados.
+- Imagem ausente → cadastro e conferência continuam permitidos.
+
+#### Pós-condição
+
+A foto opcional fica associada ao produto, não a uma numeração individual.
+
+---
+
+## 4. Casos de Uso do Sistema (Automáticos)
 
 ### UC-S1 - Gerar SKU automaticamente
 

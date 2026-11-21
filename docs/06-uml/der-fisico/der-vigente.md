@@ -101,5 +101,5 @@ Restrições centrais: `Sku(ProdutoId, Numeracao)` único, `SaldoAtual >= 0`,
 `EntradaFiscal.ChaveAcesso` única e
 `VinculoProdutoFornecedor(CnpjFornecedor, CodigoFornecedor)` único. O contexto
 também valida os estados de `Atendimento` por `CHECK` e define índices de
-consulta. O [DER anterior](DER-fisico.md) é um registro histórico de cinco
-tabelas.
+consulta. O [modelo físico acadêmico inicial](../../03-modelagem/modelo_fisico.md)
+é um registro histórico de cinco tabelas e não descreve o esquema atual.

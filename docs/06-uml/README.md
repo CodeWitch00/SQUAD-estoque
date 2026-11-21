@@ -18,16 +18,9 @@ Esses arquivos usam Mermaid e são renderizados diretamente pelo GitHub.
 
 ## Material histórico
 
-Os PNGs e o SVG preexistentes nesta pasta retratam o desenho inicial do MVP.
-Eles não incluem `Atendimento`, `EntradaFiscal`, `ItemEntradaFiscal` nem
-`VinculoProdutoFornecedor`. O antigo diagrama de sequência também usa uma rota,
-uma tabela e uma operação SQL que não correspondem à implementação atual. Use
-os diagramas vigentes acima para apresentar o sistema em operação. O
-[DER físico inicial](der-fisico/DER-fisico.md) registra o commit que foi
-auditado na época.
-
-Os nomes `DERconceitual-atualizado.png`, `DERlogico-atualizado.png` e
-`DER_fisico_SQUAD_final.svg` foram atribuídos antes das migrations posteriores;
-“atualizado” e “final” nesses nomes não significam vigente hoje. Os fluxos PNG
-de consulta, venda e ajuste também são representações simplificadas da versão
-inicial.
+Os diagramas rasterizados da modelagem inicial e os textos UML redundantes
+foram removidos desta pasta em 21/11/2026 porque não representam as entidades e
+fluxos atuais. A modelagem inicial de dados permanece em `03-modelagem/`,
+identificada como histórica para preservar a trilha acadêmica. O
+[modelo físico inicial](../03-modelagem/modelo_fisico.md) preserva a proposta
+acadêmica auditada na época; não deve ser usado como descrição do esquema atual.

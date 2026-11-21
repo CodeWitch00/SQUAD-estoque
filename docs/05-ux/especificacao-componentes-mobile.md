@@ -1001,4 +1001,4 @@ A tela `/Produtos/Details` pertence ao fluxo administrativo do lojista e não de
 
 - [Inventário de Telas e Mapa de Navegação](inventario-telas-e-mapa-navegacao.md) — telas, fluxos de navegação e comportamentos previstos para o módulo do vendedor.
 
-- [Mapa de Navegação MVP](mapa-navegacao-mvp.svg) — representação visual dos fluxos de navegação do MVP.
+- [Inventário de telas e navegação](inventario-telas-e-mapa-navegacao.md) — mapa vigente das rotas e fluxos por perfil.

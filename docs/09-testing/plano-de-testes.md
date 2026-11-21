@@ -12,6 +12,7 @@
 | Perfis | `LOJISTA` e `VENDEDOR` |
 | Responsáveis | Equipe de desenvolvimento e qualidade |
 | Fontes | SRS, casos de uso, domínio, arquitetura, UX e código implementado |
+| Revisão do conteúdo | 21/11/2026 — revisão das rotas e da cobertura automatizada da `main` |
 | Revisão do plano | A cada alteração de requisito, regra de negócio ou fluxo crítico |
 
 Este é o plano geral de qualidade do projeto e reúne também os casos de autenticação, sessão e perfis.
@@ -49,16 +50,19 @@ O plano procura responder:
 
 ### 4.1 Incluído
 
-- RF-01 a RF-23;
+- RF-01 a RF-30;
 - RNF-01 a RNF-07;
 - RN-01 a RN-07;
-- UC-01 a UC-12 e UC-S1 a UC-S5;
+- UC-01 a UC-15 e UC-S1 a UC-S5;
+- US-01 a US-15;
 - autenticação, sessão e autorização;
 - cadastro de Produto e grade de SKUs;
 - entrada, saída e ajuste de estoque;
 - consulta de estoque pelo vendedor;
 - venda, ruptura e desistência;
 - visões de saldo zerado e histórico de rupturas;
+- consulta de atendimentos e importação/conferência de NF-e;
+- fotos opcionais de produto;
 - persistência, concorrência, segurança, desempenho e usabilidade crítica;
 - regressão das rotas e comportamentos já implementados.
 
@@ -66,7 +70,7 @@ O plano procura responder:
 
 Conforme o SRS, não serão testados como funcionalidades do SQUAD:
 
-- emissão de nota fiscal;
+- emissão de nota fiscal (o módulo implementado somente importa XML de NF-e existente);
 - funções de PDV, financeiro ou ERP;
 - integração automática com sistemas externos;
 - operação multi-loja;
@@ -153,7 +157,7 @@ Os casos unitários estão no catálogo UT; os casos de integração, nos catál
 | Persistência isolada | EF Core + SQLite em memória | Adotado |
 | Hash de senha | BCrypt.Net | Adotado |
 | Visualização no VS Code | C# Dev Kit / Test Explorer | Indicado |
-| E2E em navegador | Playwright para .NET | Planejado quando os fluxos-alvo estiverem implementados |
+| Testes de frontend em Chromium | Playwright para Node.js com `node:test` | Adotado para testes de CSS e interações isoladas; não substitui E2E autenticado da aplicação |
 | Carga e P95 | k6 ou NBomber | Planejado |
 | Inspeção manual HTTP | DevTools do navegador | Adotado para validação complementar |
 | Integração contínua | GitHub Actions | Adotado |
@@ -287,16 +291,16 @@ Legenda:
 | UT-03 | RF-06, RF-08, RN-01 | Normalização/validação de numeração | numeração vazia, válida e repetida | Vazia é rejeitada; válida é aceita; repetição é encaminhada à proteção de unicidade | Planejado |
 | UT-04 | RF-09 | Quantidade de entrada | 0, negativa e positiva | Somente quantidade positiva é aceita | Planejado |
 | UT-05 | RF-11, RN-02 | Cálculo de saída | saldo 5; saídas 2, 5 e 6 | Resultados 3, 0 e rejeição, respectivamente | Planejado |
-| UT-06 | RF-15, UC-03 | Estado visual do SKU | saldos 0, 1 e 2 | `Indisponível`, `Último par` e `Disponível` | Dependente do módulo de consulta |
-| UT-07 | RF-13, UC-02 | Tamanho mínimo da busca | textos com 0, 1 e 2 caracteres | Busca só é habilitada com pelo menos 2 caracteres | Dependente do módulo de consulta |
-| UT-08 | RF-16 | Opções do resultado | estado após consulta válida | Apenas `Vendeu`, `Não tinha` e `Desistiu` são oferecidos | Dependente do módulo do vendedor |
-| UT-09 | RF-17, RN-02 | Venda de um par | saldos 2, 1 e 0 | Novos saldos 1, 0 e rejeição | Dependente do módulo do vendedor |
-| UT-10 | RF-19, RF-20 | Desistência | atendimento iniciado e ação `Desistiu` | Nenhuma mudança; nova consulta continua permitida | Dependente do módulo do vendedor |
+| UT-06 | RF-15, UC-03 | Estado visual do SKU | saldos 0, 1 e 2 | `Indisponível`, `Último par` e `Disponível` | Automatizado: `ConsultaEstoqueTests` e `ConsultaOperacionalHttpTests` |
+| UT-07 | RF-13, UC-02 | Tamanho mínimo da busca | textos com 0, 1 e 2 caracteres | Busca só é habilitada com pelo menos 2 caracteres | Automatizado: `ConsultaEstoqueTests`; busca dinâmica também tem testes frontend |
+| UT-08 | RF-16 | Opções do resultado | estado após consulta válida | Apenas `Vendeu`, `Não tinha` e `Desistiu` são oferecidos | Automatizado: testes HTTP e frontend do vendedor |
+| UT-09 | RF-17, RN-02 | Venda de um par | saldos 2, 1 e 0 | Novos saldos 1, 0 e rejeição | Automatizado: `VendaRapidaHttpTests`, `VendaTransacionalTests` e testes HTTP do controller |
+| UT-10 | RF-19, RF-20 | Desistência | atendimento iniciado e ação `Desistiu` | Nenhuma mudança; nova consulta continua permitida | Automatizado: `DesistiuHttpTests` e `AtendimentoAuditavelHttpTests` |
 | UT-11 | RF-23, UC-10 | Validação do motivo de ajuste | motivo vazio, espaços e texto válido | Vazios são rejeitados; texto válido é aceito | **Parcial:** existe rejeição de vazio no controller; ampliar cobertura do ViewModel |
 | UT-12 | RF-23, RN-02 | Cálculo do ajuste | saldo atual 2; novo saldo 6, 0 e valor negativo | Saldos finais 6 e 0; quantidades absolutas 4 e 2 no movimento AJUSTE, respectivamente; novo saldo negativo é rejeitado | Planejado |
-| UT-13 | RF-21, UC-11 | Filtro de saldo zerado | SKUs com saldos 0, 1 e 3 | Somente saldo 0 compõe o resultado | Dependente da visão do lojista |
-| UT-14 | RF-22, UC-12 | Agrupamento de rupturas | ocorrências repetidas por produto/SKU | Frequência correta por modelo e numeração | Dependente do relatório de rupturas |
-| UT-15 | RF-04, RNF-04 | Política de hash | hash bcrypt de custo 12 e hash de custo inferior | Custo 12 é aceito; custo inferior é reprovado | Planejado |
+| UT-13 | RF-21, UC-11 | Filtro de saldo zerado | SKUs com saldos 0, 1 e 3 | Somente saldo 0 compõe o resultado | Automatizado: `SaldosZeradosViewModelTests` e `SaldosZeradosConsultaTests` |
+| UT-14 | RF-22, UC-12 | Agrupamento de rupturas | ocorrências repetidas por produto/SKU | Frequência correta por modelo e numeração | Automatizado: `RupturasHistoricoHttpTests` e `RupturasControllerTests` |
+| UT-15 | RF-04, RNF-04 | Política de hash | usuário seed e senha válida/inválida | Hash bcrypt com custo 12; somente a senha correta valida | Automatizado: `Seeded_users_use_bcrypt_with_work_factor_12` |
 
 ## 10. Catálogo de testes do meio da pirâmide
 
@@ -304,30 +308,30 @@ Legenda:
 
 | ID | Requisitos | Cenário e entradas/ações | Resultado esperado | Situação |
 |---|---|---|---|---|
-| CT-AUT-01 | RF-01, UC-01 | Anônimo envia `GET /Account/Login` | `200 OK`; formulário com e-mail, senha, `POST` e antiforgery | Existente |
-| CT-AUT-02 | RF-01, RF-02 | Login `lojista@squad.com` / `123`; abrir `/Produtos` | Cookie autenticado como `LOJISTA`; Produtos responde `200` | Existente |
-| CT-AUT-03 | RF-01, RF-02 | Login `vendedor@squad.com` / `123`; abrir `/Estoque/Consulta` | Cookie autenticado como `VENDEDOR`; consulta operacional responde `200` | Existente |
-| CT-AUT-04 | RF-01, UC-01 | E-mail inexistente e senha incorreta | Login recusado; mensagem genérica; rota protegida continua pedindo login | Parcial: falta afirmar mensagem e limpeza da senha |
-| CT-AUT-05 | RF-01, UC-01 | E-mail cadastrado e senha incorreta | Mesmo erro genérico, sem revelar se o e-mail existe; sem autenticação | Planejado |
-| CT-AUT-06 | RF-01, UC-01 | E-mail e senha vazios | Erros de obrigatoriedade; nenhum cookie autenticado | Planejado |
-| CT-AUT-07 | RF-01 | Autenticado envia `GET /Account/Login` | Redirecionamento para a página inicial | Existente |
-| CT-AUT-08 | RF-01 | Lojista veio de `/Produtos` e autentica com `ReturnUrl` local | Redirecionamento para `/Produtos`; URL externa nunca é aceita | Planejado |
-| CT-AUT-09 | RF-02 | Anônimo abre `/Produtos` | `302` para Login com `ReturnUrl`; nenhum conteúdo protegido | Existente |
-| CT-AUT-10 | RF-02 | Anônimo abre `/Movimentacoes` | `302` para Login com `ReturnUrl` | Existente |
-| CT-AUT-11 | RF-02 | Lojista abre Produtos, Movimentações e Ajuste | Todas respondem `200` | Parcial: falta Ajuste |
-| CT-AUT-12 | RF-02 | Vendedor envia `GET` e `POST /Movimentacoes/Saida` | `302` para Acesso Negado; saída administrativa não executa nem altera estoque | Existente |
-| CT-AUT-13 | RF-02 | Vendedor abre `/Produtos` diretamente | `302` para Acesso Negado; nenhum dado retornado | Existente |
-| CT-AUT-14 | RF-02, RN-04 | Vendedor envia `GET /Movimentacoes/Ajuste` | Acesso negado; formulário não retornado | Planejado prioritário |
-| CT-AUT-15 | RF-02, RN-04 | Vendedor envia `POST /Movimentacoes/Ajuste` válido | Acesso negado; saldo e histórico inalterados | Planejado prioritário |
-| CT-AUT-16 | RF-03 | Vendedor faz requisições sucessivas no mesmo cliente | Sessão e perfil permanecem ativos, sem novo login | Planejado |
-| CT-AUT-17 | RF-03 | Lojista navega por três rotas no mesmo cliente | Sessão permanece autenticada e autorizada | Planejado |
-| CT-AUT-18 | RF-03 | Lojista faz logout e tenta reabrir Produtos | Logout redireciona ao Login; Produtos volta a exigir autenticação | Existente |
-| CT-AUT-19 | RF-03 | Avançar relógio controlado além da validade do cookie | Cookie expirado é recusado; rota redireciona ao Login | Planejado |
-| CT-AUT-20 | RF-04, RNF-04 | Ler `SenhaHash` persistido | Valor não é a senha em claro e possui formato bcrypt | Planejado prioritário |
-| CT-AUT-21 | RF-04, RNF-04 | Verificar algoritmo e custo do hash | Senha correta valida; custo é maior ou igual a 12 | Planejado prioritário |
-| CT-AUT-22 | RF-04 | Verificar senha incorreta contra o hash | Validação falsa; hash não é alterado | Planejado |
+| CT-AUT-01 | RF-01, UC-01 | Anônimo envia `GET /Account/Login` | `200 OK`; formulário com e-mail, senha, `POST` e antiforgery | Automatizado: `AuthenticationAuthorizationTests.Login_page_contains_expected_form` |
+| CT-AUT-02 | RF-01, RF-02 | Login válido como LOJISTA; abrir `/Produtos` | Cookie autenticado como `LOJISTA`; Produtos responde `200` | Automatizado: `AuthenticationAuthorizationTests.Lojista_can_login_and_access_produtos` |
+| CT-AUT-03 | RF-01, RF-02 | Login válido como VENDEDOR; abrir `/Estoque/Consulta` | Cookie autenticado como `VENDEDOR`; consulta operacional responde `200` | Automatizado: `AuthenticationAuthorizationTests.Vendedor_can_login` |
+| CT-AUT-04 | RF-01, UC-01 | E-mail inexistente e senha incorreta | Login recusado; mensagem genérica; rota protegida continua pedindo login | Automatizado: `AuthenticationAuthorizationTests` |
+| CT-AUT-05 | RF-01, UC-01 | E-mail cadastrado e senha incorreta | Mesmo erro genérico, sem revelar se o e-mail existe; sem autenticação | Automatizado: `AuthenticationAuthorizationTests` |
+| CT-AUT-06 | RF-01, UC-01 | E-mail e senha vazios | Erros de obrigatoriedade; nenhum cookie autenticado | Automatizado: testes de validação de login |
+| CT-AUT-07 | RF-01 | Autenticado envia `GET /Account/Login` | Redirecionamento para a página inicial correspondente ao perfil | Automatizado: `AuthenticationAuthorizationTests` |
+| CT-AUT-08 | RF-01 | Lojista veio de `/Produtos` e autentica com `ReturnUrl` local | Redirecionamento local seguro; URL externa nunca é aceita | Automatizado: `SecurityCoverageHttpTests` |
+| CT-AUT-09 | RF-02 | Anônimo abre `/Produtos` | Redirecionamento para Login; nenhum conteúdo protegido | Automatizado: `BasicRoutesTests` e `SecurityCoverageHttpTests` |
+| CT-AUT-10 | RF-02 | Anônimo abre `/Movimentacoes` | Redirecionamento para Login | Automatizado: `SecurityCoverageHttpTests` |
+| CT-AUT-11 | RF-02 | Lojista abre Produtos, Movimentações e Ajuste | Todas respondem `200` | Automatizado: `AuthenticationAuthorizationTests` e `AjusteAuthorizationHttpTests` |
+| CT-AUT-12 | RF-02 | Vendedor envia `GET` e `POST /Movimentacoes/Saida` | Acesso negado; saída administrativa não executa nem altera estoque | Automatizado: `AuthenticationAuthorizationTests`, `AdministrativeHttpTests` e `SecurityCoverageHttpTests` |
+| CT-AUT-13 | RF-02 | Vendedor abre `/Produtos` diretamente | Acesso negado; nenhum dado retornado | Automatizado: `AuthenticationAuthorizationTests` e `SecurityCoverageHttpTests` |
+| CT-AUT-14 | RF-02, RN-04 | Vendedor envia `GET /Movimentacoes/Ajuste` | Acesso negado; formulário não retornado | Automatizado: `AjusteAuthorizationHttpTests` e `SecurityCoverageHttpTests` |
+| CT-AUT-15 | RF-02, RN-04 | Vendedor envia `POST /Movimentacoes/Ajuste` válido | Acesso negado; saldo e histórico inalterados | Automatizado: `AjusteAuthorizationHttpTests` e `SecurityCoverageHttpTests` |
+| CT-AUT-16 | RF-03 | Vendedor faz requisições sucessivas no mesmo cliente | Sessão e perfil permanecem ativos, sem novo login | Automatizado: `AuthenticationAuthorizationTests` |
+| CT-AUT-17 | RF-03 | Lojista navega por três rotas no mesmo cliente | Sessão permanece autenticada e autorizada | Automatizado: `AuthenticationAuthorizationTests` e `SecurityCoverageHttpTests` |
+| CT-AUT-18 | RF-03 | Lojista faz logout e tenta reabrir Produtos | Logout remove o cookie do navegador; rota volta a exigir autenticação | Automatizado: `AuthenticationAuthorizationTests` e `SecurityCoverageHttpTests`; ticket copiado permanece válido até expirar |
+| CT-AUT-19 | RF-03 | Avançar relógio controlado além da validade do cookie | Cookie expirado é recusado; rota redireciona ao Login | Automatizado: `SecurityCoverageHttpTests` |
+| CT-AUT-20 | RF-04, RNF-04 | Ler `SenhaHash` persistido | Valor não é a senha em claro e possui formato bcrypt | Automatizado: `AuthenticationAuthorizationTests` |
+| CT-AUT-21 | RF-04, RNF-04 | Verificar algoritmo e custo do hash | Senha correta valida; custo é maior ou igual a 12 | Automatizado: `AuthenticationAuthorizationTests` |
+| CT-AUT-22 | RF-04 | Verificar senha incorreta contra o hash | Validação falsa; hash não é alterado | Automatizado: testes de credenciais em `AuthenticationAuthorizationTests` |
 
-O destino pós-login ainda possui uma divergência: o UC-01 exige uma tela inicial por perfil, enquanto a implementação e a baseline atuais redirecionam ambos os perfis para `/`. A rota esperada deve ser atualizada quando Produto/UX definir os destinos finais.
+Após login, a implementação direciona VENDEDOR para `/Estoque/Consulta` e LOJISTA para `/Produtos`. Esse comportamento está coberto em `AuthenticationAuthorizationTests`; não há dashboard separado.
 
 ### 10.2 Cadastro, grade e persistência
 
@@ -350,7 +354,7 @@ O destino pós-login ainda possui uma divergência: o UC-01 exige uma tela inici
 | IT-10 | RF-11, RN-02, UC-S4 | Saída suficiente | saldo 5; saída 2 | Saldo 3; uma movimentação `SAIDA` | **Existente:** `Saida_registers_movement_and_reduces_balance` |
 | IT-11 | RF-11, RN-02, UC-S4 | Saída insuficiente | saldo 1; saída 2 | Erro claro; saldo 1; nenhuma movimentação | **Existente:** `Saida_with_insufficient_balance_is_rejected_by_controller` |
 | IT-12 | RN-02 | Constraint de saldo | tentar persistir SKU com saldo -1 | Banco rejeita a gravação | **Existente:** `Sku_with_negative_balance_cannot_be_persisted` |
-| IT-13 | RF-12 | Última atualização | efetuar entrada ou saída com tempo controlado | Data/hora do SKU corresponde à operação e é exibida | Dependente da implementação completa de RF-12 |
+| IT-13 | RF-12 | Última atualização | efetuar entrada ou saída com tempo controlado | Data/hora do SKU corresponde à operação e é exibida | Automatizado: `ConsultaEstoqueTests`, `AdministrativeHttpTests` e `UltimaAtualizacaoSaldoHttpTests` |
 | IT-14 | RN-03 | Imutabilidade | GET/POST de edição e exclusão por LOJISTA, VENDEDOR e anônimo; PUT/PATCH/DELETE nas rotas de alteração por LOJISTA | Ações ausentes no MVC; HTTP 404 ou 405; campos preservados após cada tentativa; histórico disponível ao lojista | Automatizado: [MovimentacaoImutabilidadeHttpTests](../../tests/SquadEstoque.Web.Tests/MovimentacaoImutabilidadeHttpTests.cs) e [MovimentacaoSomenteLeituraHttpTests](../../tests/SquadEstoque.Web.Tests/MovimentacaoSomenteLeituraHttpTests.cs) |
 | IT-15 | RF-23, RN-04, UC-10 | Ajuste válido | saldo 2; novo saldo 6; motivo “Contagem física”; `LOJISTA` | Saldo 6; movimentação `AJUSTE`, diferença 4, motivo e responsável | **Parcial:** `Ajuste_registers_movement_and_updates_balance` |
 | IT-16 | RF-23, UC-10 | Ajuste sem motivo | saldo 2; novo saldo 6; motivo vazio | Rejeição; saldo 2; nenhuma movimentação | **Existente:** `Ajuste_without_reason_is_rejected_by_controller` |
@@ -363,17 +367,17 @@ Os casos detalhados, incluindo pré-condições, passos e resultados esperados, 
 
 | ID | Requisitos | Cenário | Entradas/ações | Resultado esperado | Situação |
 |---|---|---|---|---|---|
-| IT-19 | RF-13, UC-02 | Busca parcial | termo existente com pelo menos 2 caracteres | Produtos correspondentes retornados | Dependente do módulo do vendedor |
-| IT-20 | RF-13, UC-02 | Busca sem resultado | termo inexistente | Mensagem “Produto não encontrado”; lista vazia | Dependente |
-| IT-21 | RF-14, UC-03 | Grade completa | selecionar PRD-01 | Todas as numerações e respectivos saldos são exibidos | Dependente |
-| IT-22 | RF-15, UC-03 | Estados da grade | SKUs com saldo 0, 1 e 2 | Cada SKU recebe estado visual correto | Dependente |
-| IT-23 | RF-16 | Ações do atendimento | consulta válida | As três opções de resultado são exibidas | Dependente |
+| IT-19 | RF-13, UC-02 | Busca parcial | termo existente com pelo menos 2 caracteres | Produtos correspondentes retornados | Automatizado: `ConsultaEstoqueTests`; interação dinâmica também tem testes frontend isolados |
+| IT-20 | RF-13, UC-02 | Busca sem resultado | termo inexistente | Mensagem “Produto não encontrado”; lista vazia | Automatizado: `ConsultaEstoqueTests` |
+| IT-21 | RF-14, UC-03 | Grade completa | selecionar PRD-01 | Todas as numerações e respectivos saldos são exibidos | Automatizado: `ConsultaEstoqueTests` e `ConsultaOperacionalHttpTests` |
+| IT-22 | RF-15, UC-03 | Estados da grade | SKUs com saldo 0, 1 e 2 | Cada SKU recebe estado visual correto | Automatizado: `ConsultaEstoqueTests` e `ConsultaOperacionalHttpTests` |
+| IT-23 | RF-16 | Ações do atendimento | consulta válida | As três opções de resultado são exibidas | Automatizado: `ConsultaOperacionalHttpTests` |
 | IT-24 | RF-10, RF-17, UC-04, UC-S2, UC-S5 | Resultado `Vendeu` | SKU com saldo 5, 3, 2 ou 1; vendedor autenticado | Saldo reduz exatamente 1; uma saída vinculada ao SKU e ao vendedor; confirmação e grade atualizada | **Existente:** `Vendedor_sells_exactly_one_pair_without_changing_any_other_sku` e `Vendedor_can_post_venda_for_sku_and_records_authenticated_user` |
 | IT-25 | RF-17, RN-02, UC-S4 | Venda sem saldo | SKU saldo 0 | Rejeição; saldo 0; nenhuma movimentação ou ruptura | **Existente:** `Vendedor_cannot_sell_zero_stock_and_creates_no_movement`, `Vender_rejects_zero_balance_without_creating_movement_or_rupture` e `Venda_rapida_rejects_zero_balance_without_movement` |
 | IT-26 | RF-18, RN-05, RN-06, UC-05, UC-S3 | Resultado `Não tinha` | SKU válido; vendedor autenticado | Uma Ruptura com SKU, vendedor e data; saldo inalterado e nenhuma movimentação | **Existente:** `Registrar_nao_tinha_creates_rupture_without_changing_any_stock_or_movement` |
-| IT-27 | RN-06 | Ruptura sem SKU | `sku_id` ausente ou inválido | Rejeição; nenhuma Ruptura | Planejado/dependente do endpoint |
-| IT-28 | RF-19, UC-06 | Resultado `Desistiu` | atendimento iniciado | Nenhuma movimentação ou ruptura; retorno à busca | Dependente |
-| IT-29 | RF-20 | Nova consulta sem registrar resultado | abandonar resultado e iniciar nova busca | Nova busca permitida sem efeito no estoque | Dependente |
+| IT-27 | RN-06 | Ruptura sem SKU | `sku_id` ausente ou inválido | Rejeição; nenhuma Ruptura | Automatizado: `RupturaInvalidSkuHttpTests` |
+| IT-28 | RF-19, UC-06 | Resultado `Desistiu` | atendimento iniciado | Nenhuma movimentação ou ruptura; retorno à busca | Automatizado: `DesistiuHttpTests` e `AtendimentoAuditavelHttpTests` |
+| IT-29 | RF-20 | Nova consulta sem registrar resultado | abandonar resultado e iniciar nova busca | Nova busca permitida sem efeito no estoque | Automatizado: `ConsultaOperacionalHttpTests` e `AtendimentoAuditavelHttpTests` |
 
 ### 10.5 Visões do lojista
 
@@ -381,22 +385,30 @@ Os casos detalhados, incluindo pré-condições, passos e resultados esperados, 
 |---|---|---|---|---|---|
 | IT-30 | RF-21, UC-11 | Saldos zerados | Produtos com SKUs 0, 1 e 2 | Somente saldo 0 é listado, agrupado por modelo | Automatizado: [SaldosZeradosViewModelTests](../../tests/SquadEstoque.Web.Tests/SaldosZeradosViewModelTests.cs) e [SaldosZeradosAuthorizationHttpTests](../../tests/SquadEstoque.Web.Tests/SaldosZeradosAuthorizationHttpTests.cs) |
 | IT-31 | RF-21, RF-02 | Vendedor tenta abrir saldos zerados | Login `VENDEDOR`; URL direta | Acesso negado, sem dados de estoque | Automatizado: [SaldosZeradosAuthorizationHttpTests](../../tests/SquadEstoque.Web.Tests/SaldosZeradosAuthorizationHttpTests.cs) |
-| IT-32 | RF-22, UC-12 | Histórico de rupturas | Rupturas repetidas para diferentes SKUs | Modelo, numeração e frequência corretos | Dependente da visão |
-| IT-33 | RF-22, RF-02 | Vendedor tenta abrir histórico | Login `VENDEDOR`; URL direta | Acesso negado | Dependente da rota |
+| IT-32 | RF-22, UC-12 | Histórico de rupturas | Rupturas repetidas para diferentes SKUs | Modelo, numeração e frequência corretos | Automatizado: `RupturasHistoricoHttpTests` e `RupturasControllerTests` |
+| IT-33 | RF-22, RF-02 | Vendedor tenta abrir histórico | Login `VENDEDOR`; URL direta | Acesso negado | Automatizado: `SecurityCoverageHttpTests` |
+
+### 10.6 Atendimentos, entradas fiscais e fotos
+
+| ID | Requisitos | Cenário | Entradas/ações | Resultado esperado | Situação |
+|---|---|---|---|---|---|
+| IT-34 | RF-25, UC-13 | Consulta e autorização de atendimentos | LOJISTA abre a lista com pendências, conclusões e alertas; VENDEDOR tenta acesso direto | Dados auditáveis aparecem somente para LOJISTA; a consulta não altera estoque | Automatizado: `AtendimentoAuditavelHttpTests.Auditoria_e_exclusiva_do_lojista_e_exibe_alertas` |
+| IT-35 | RF-26 a RF-29, UC-14 | Importação, conferência e confirmação de NF-e | XML de teste válido; associar itens e confirmar | Rascunho não altera estoque; confirmação persiste produtos, SKUs, saldo, movimentações e vínculo; acesso exclusivo ao LOJISTA | Automatizado: `EntradaFiscalHttpTests` |
+| IT-36 | RF-30, UC-15 | Foto opcional do modelo | Upload válido/inválido, troca e remoção | Foto opcional associada ao produto; ausência não bloqueia cadastro/conferência | Cobertura automatizada não identificada; validar e automatizar em tarefa de testes própria |
 
 ## 11. Catálogo de testes do topo da pirâmide
 
-Executar em homologação com Playwright quando as jornadas estiverem estáveis.
+A regressão E2E manual em aplicação local foi executada em 02–07/11/2026. Os resultados estão no [relatório S3-QA-030](execucoes/sprint-3/s3-qa-030-regressao-e2e.md); a revisão independente e a homologação publicada permanecem pendentes.
 
 | ID | Jornada | Entradas principais | Resultado esperado | Requisitos | Situação |
 |---|---|---|---|---|---|
-| E2E-01 | Login e logout de lojista | credenciais válidas; acessar Produtos; sair | Home do perfil; área autorizada; após sair, rota protegida pede login | RF-01 a RF-03, UC-01 | Planejado |
-| E2E-02 | Cadastro até entrada inicial | lojista cria PRD-01, grade 37–40 e entrada | Produto e SKUs visíveis; saldos e movimentações corretos | RF-05 a RF-10, UC-07 a UC-09 | Planejado |
-| E2E-03 | Consulta e venda | vendedor busca PRD-01, escolhe SKU-02 e marca `Vendeu` | Grade aparece; saldo reduz em 1; confirmação visível | RF-13 a RF-17, UC-02 a UC-04 | Parcial: aprovado em navegador local; bloqueado no ambiente publicado conforme `DEF-VEN-MOB-01` |
-| E2E-04 | Consulta e ruptura | vendedor busca, escolhe SKU e marca `Não tinha` | Ruptura registrada; saldo não muda | RF-18, RN-05, RN-06, UC-05 | Dependente |
-| E2E-05 | Desistência e continuidade | vendedor consulta, desiste e inicia nova consulta | Nenhum efeito no estoque; uso continua sem bloqueio | RF-19, RF-20, UC-06 | Dependente |
-| E2E-06 | Ajuste administrativo | lojista ajusta SKU com motivo | Novo saldo e histórico rastreável; vendedor não acessa a função | RF-23, RN-04, UC-10 | Planejado |
-| E2E-07 | Decisão de reposição | lojista abre saldos zerados e rupturas | Agrupamentos e frequências correspondem à massa preparada | RF-21, RF-22, UC-11, UC-12 | Dependente |
+| E2E-01 | Login e logout de lojista | credenciais válidas; acessar Produtos; sair | Home do perfil; área autorizada; após sair, rota protegida pede login | RF-01 a RF-03, UC-01 | Executado: aprovado localmente em 02/11/2026; revisão independente e publicação pendentes |
+| E2E-02 | Cadastro até entrada inicial | lojista cria PRD-01, grade 37–40 e entrada | Produto e SKUs visíveis; saldos e movimentações corretos | RF-05 a RF-10, UC-07 a UC-09 | Executado: aprovado no reteste local de 07/11/2026; revisão independente e publicação pendentes |
+| E2E-03 | Consulta e venda | vendedor busca PRD-01, escolhe SKU-02 e marca `Vendeu` | Grade aparece; saldo reduz em 1; confirmação visível | RF-13 a RF-17, UC-02 a UC-04 | Executado: aprovado localmente em 02/11/2026; revisão independente e publicação pendentes |
+| E2E-04 | Consulta e ruptura | vendedor busca, escolhe SKU e marca `Não tinha` | Ruptura registrada; saldo não muda | RF-18, RN-05, RN-06, UC-05 | Executado: aprovado localmente em 02/11/2026; revisão independente e publicação pendentes |
+| E2E-05 | Desistência e continuidade | vendedor consulta, desiste e inicia nova consulta | Nenhum efeito no estoque; uso continua sem bloqueio | RF-19, RF-20, UC-06 | Executado: aprovado localmente em 02–03/11/2026; revisão independente e publicação pendentes |
+| E2E-06 | Ajuste administrativo | lojista ajusta SKU com motivo | Novo saldo e histórico rastreável; vendedor não acessa a função | RF-23, RN-04, UC-10 | Executado: aprovado localmente em 02/11/2026; revisão independente e publicação pendentes |
+| E2E-07 | Decisão de reposição | lojista abre saldos zerados e rupturas | Agrupamentos e frequências correspondem à massa preparada | RF-21, RF-22, UC-11, UC-12 | Executado: aprovado localmente em 02/11/2026; revisão independente e publicação pendentes |
 
 ## 12. Requisitos não funcionais
 
@@ -424,6 +436,9 @@ Para NFT-02, documentar volume de dados, número de usuários virtuais, duraçã
 | RF-16 a RF-20 | UT-08 a UT-10, IT-23 a IT-29, E2E-03 a E2E-05 |
 | RF-21 e RF-22 | UT-13, UT-14, IT-30 a IT-33, E2E-07 |
 | RF-23 | UT-11, UT-12, IT-15 a IT-17, E2E-06 |
+| RF-25 | IT-34, E2E-01 |
+| RF-26 a RF-29 | IT-35, E2E-02 |
+| RF-30 | IT-36 (cobertura automatizada pendente) |
 | RNF-01 a RNF-07 | NFT-01 a NFT-07 |
 | RN-01 | UT-03, IT-04 a IT-06 |
 | RN-02 | UT-05, UT-09, UT-12, IT-11, IT-12, IT-17, IT-18, IT-25 |
@@ -448,13 +463,24 @@ Para NFT-02, documentar volume de dados, número de usuários virtuais, duraçã
 | UC-10 — Ajustar saldo | UT-11, UT-12, IT-15 a IT-17, E2E-06 |
 | UC-11 — Visualizar saldos zerados | UT-13, IT-30, IT-31, E2E-07 |
 | UC-12 — Visualizar rupturas | UT-14, IT-32, IT-33, E2E-07 |
+| UC-13 — Consultar atendimentos | IT-34, E2E-01 |
+| UC-14 — Importar e confirmar NF-e | IT-35, E2E-02 |
+| UC-15 — Gerenciar foto do modelo | IT-36 |
 | UC-S1 — Gerar SKU | UT-03, IT-04 a IT-06 |
 | UC-S2 — Decrementar saldo | UT-05, UT-09, IT-18, IT-24, IT-25 |
 | UC-S3 — Criar ruptura | IT-26, IT-27, E2E-04 |
 | UC-S4 — Rejeitar saída inválida | UT-05, IT-11, IT-12, IT-25 |
 | UC-S5 — Registrar movimentação | IT-07, IT-09, IT-10, IT-15 |
 
-### 13.2 Evidência de execução
+### 13.2 Cobertura de requisitos incorporados após a modelagem inicial
+
+| ID | Requisito | Cenário e evidência | Situação |
+|---|---|---|---|
+| IT-34 | RF-25, UC-13 | Listar atendimentos pendentes/concluídos e alertas; autorização exclusiva do LOJISTA | Automatizado: `AtendimentoAuditavelHttpTests.Auditoria_e_exclusiva_do_lojista_e_exibe_alertas` |
+| IT-35 | RF-26 a RF-29, UC-14 | Importar XML, manter rascunho e confirmar produtos, SKUs, estoque, movimentação e vínculo | Automatizado: `EntradaFiscalHttpTests.Xml_cria_rascunho_e_confirmacao_cadastra_produto_sku_movimento_e_vinculo`; autorização também coberta nessa classe |
+| IT-36 | RF-30, UC-15 | Upload, substituição e remoção da foto opcional do modelo | Cobertura automatizada não identificada; validar a interface e manter como lacuna de teste |
+
+### 13.3 Evidência de execução
 
 Este plano não mantém resultados por commit nem contagens de testes. O estado executável está em [`tests/`](../../tests/), e o resultado de cada revisão está nos checks do Pull Request e no [GitHub Actions](https://github.com/CodeWitch00/SQUAD-estoque/actions). Validações que dependem de percepção visual, dispositivo ou ambiente publicado ficam no [registro consolidado](homologacoes/registro-validacoes-manuais.md).
 
@@ -470,6 +496,9 @@ Este plano não mantém resultados por commit nem contagens de testes. O estado 
 | [EstoqueControllerHttpTests.cs](../../tests/SquadEstoque.Web.Tests/EstoqueControllerHttpTests.cs) | venda, ruptura, autorização, antiforgery e renderização |
 | [EstoqueDomainPersistenceTests.cs](../../tests/SquadEstoque.Web.Tests/EstoqueDomainPersistenceTests.cs) | persistência, estoque, movimentações, concorrência e rollback |
 | [VendaRapidaHttpTests.cs](../../tests/SquadEstoque.Web.Tests/VendaRapidaHttpTests.cs) | venda de uma unidade e movimentação rastreável |
+| [AtendimentoAuditavelHttpTests.cs](../../tests/SquadEstoque.Web.Tests/AtendimentoAuditavelHttpTests.cs) | pendências, retomada, conclusão e auditoria de atendimentos |
+| [EntradaFiscalHttpTests.cs](../../tests/SquadEstoque.Web.Tests/EntradaFiscalHttpTests.cs) | importação, rascunho, confirmação de NF-e e autorização |
+| [SecurityCoverageHttpTests.cs](../../tests/SquadEstoque.Web.Tests/SecurityCoverageHttpTests.cs) | autorização HTTP, CSRF, cookies, expiração e returnUrl |
 | [`tests/frontend/`](../../tests/frontend/) | comportamento de interface isolado e regressões frontend |
 
 As classes podem crescer ou ser reorganizadas sem exigir atualização de contagens neste plano. Novos domínios só precisam ser citados aqui quando alterarem a estratégia ou a cobertura obrigatória.
@@ -488,8 +517,9 @@ Ordem recomendada para reduzir risco atual:
 2. autorização de escrita do ajuste para `VENDEDOR`;
 3. hash bcrypt persistido e custo (NFT-04);
 4. auditoria completa das movimentações (IT-09);
-5. testes do módulo do vendedor à medida que cada fatia for implementada;
-6. E2E somente após estabilizar as jornadas.
+5. teste automatizado de upload, substituição e remoção de foto opcional (RF-30);
+6. revisão independente da regressão E2E local e homologação na implantação publicada;
+7. E2E adicional após mudanças em jornadas críticas.
 
 ## 16. Execução
 

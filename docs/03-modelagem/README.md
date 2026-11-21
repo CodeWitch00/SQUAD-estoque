@@ -36,4 +36,3 @@ Permanecem para rastreabilidade, mas não descrevem o esquema completo vigente:
 - [Modelo lógico](modelo_logico.md)
 - [Modelo físico e SQL proposto](modelo_fisico.md)
 - [Dicionário de dados inicial](dicionario-de-dados.md)
-- [DER físico auditado na época](../06-uml/der-fisico/DER-fisico.md)

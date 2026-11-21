@@ -1,6 +1,6 @@
 # Manual do usuário — SQUAD Estoque
 
-> Este manual descreve os caminhos visíveis na implementação indicada acima. Antes de usar o PDF como manual final, confira cada passo na versão publicada e substitua as capturas históricas por capturas dessa versão, com dados fictícios.
+> Este manual descreve os caminhos visíveis na implementação atual. Antes de usá-lo como manual final, confira cada passo na versão publicada e substitua as capturas históricas por capturas dessa versão, com dados fictícios.
 
 ## Sumário
 
@@ -12,7 +12,7 @@
 
 ## 1. Acesso e perfis
 
-1. Abra o endereço do sistema fornecido pela equipe. Na tela **Bem-vindo**, informe seu e-mail e sua senha. Marque **Lembrar-me** somente em dispositivo de uso pessoal.
+1. Abra o endereço do sistema fornecido pela equipe. Na tela **Bem-vindo**, informe seu e-mail e sua senha. Marque **Lembrar de mim** somente em dispositivo de uso pessoal.
 2. Selecione **Entrar**. O VENDEDOR chega à consulta de estoque; o LOJISTA chega ao catálogo de produtos.
 3. Ao terminar, selecione **Sair** no cabeçalho. Em celular, abra o menu pelo botão **Alternar navegação** se necessário.
 
@@ -29,7 +29,7 @@ Um **SKU** identifica um produto e uma numeração. O saldo mostrado é desse pa
 
 ### Encontrar o modelo
 
-1. Na tela **Qual modelo o cliente procura?**, digite ao menos dois caracteres do nome e selecione **Buscar**.
+1. Na tela **Qual modelo o cliente procura?**, toque no campo de busca e digite ao menos dois caracteres do nome. Após uma breve pausa, os resultados aparecem automaticamente; não é necessário acionar o botão de busca.
 2. Escolha o modelo nos resultados. Confira nome, marca e cor. Na grade, selecione a numeração pedida pelo cliente.
 3. Leia o saldo da numeração: **Último par**, quantidade em pares ou **Sem estoque**. A tela também mostra a data da última atualização, quando registrada.
 
@@ -94,6 +94,4 @@ Confira o saldo atualizado nos detalhes e o registro em **Movimentações**. Se 
 
 ## 5. Conferência antes do aceite
 
-Este arquivo foi preparado a partir do código do commit indicado. Para fechar a S4-DOC-020, uma pessoa que não escreveu o manual deve executar os passos dos dois perfis na versão publicada, conferir as mensagens e substituir as imagens históricas por capturas atuais com dados fictícios. Registre nome, data, endereço ou ambiente, versão publicada, navegador, resultado de cada fluxo e correções feitas. Gere novamente o PDF e anexe-o diretamente ao cartão Trello.
-
-**Divergência registrada:** a saída administrativa aparece no menu do LOJISTA, mas a rota de Saída no código também aceita o papel VENDEDOR. Este manual apresenta o fluxo de atendimento do vendedor e não orienta o uso dessa rota administrativa. A equipe deve decidir e corrigir a permissão em tarefa própria.
+Antes de distribuir este manual como versão final, uma pessoa que não o escreveu deve executar os passos dos dois perfis na versão publicada, conferir as mensagens e substituir as imagens históricas por capturas atuais com dados fictícios. Registre nome, data, ambiente, versão publicada, navegador, resultado de cada fluxo e correções feitas. Gere novamente o PDF e anexe-o diretamente ao cartão Trello.

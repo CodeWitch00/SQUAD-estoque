@@ -11,12 +11,13 @@ Esta pasta concentra o inventário de interface e os protótipos navegacionais d
 | Entrada, saída administrativa e ajuste | [Protótipo do lojista](prototipos/prototipo-lojista.html) | Implementados para LOJISTA; a saída administrativa não é uma ação do VENDEDOR. |
 | Venda, ruptura e desistência | [Protótipo do vendedor](prototipos/prototipo-vendedor.html) | Implementados pelos resultados Vendeu, Não tinha e Desistiu no fluxo de atendimento. |
 | Saldos zerados e histórico de rupturas | [Protótipo do lojista](prototipos/prototipo-lojista.html) | Implementados em `/SaldosZerados` e `/Rupturas`. |
+| Atendimentos auditáveis | — | Implementados em `/Atendimentos`, com pendências, conclusões e alertas. |
+| Entrada fiscal e fotos de produto | — | Importação XML, conferência e confirmação em `/EntradasFiscais`; fotos opcionais no cadastro, edição e conferência. |
 | Início dos perfis | Protótipos de cada perfil | Após o login, VENDEDOR segue para `/Estoque/Consulta` e LOJISTA para `/Produtos`; não há dashboard separado. |
 
 ## Artefatos
 
-- [Inventário de telas e navegação](inventario-telas-e-mapa-navegacao.md): origem, destino, permissão, status e rastreabilidade RF/UC/US.
-- [Mapa visual consolidado](mapa-navegacao-mvp.svg): fluxo-alvo por perfil.
+- [Inventário de telas e navegação](inventario-telas-e-mapa-navegacao.md): mapa vigente de rotas, permissões e rastreabilidade RF/UC/US.
 - [Especificação dos componentes mobile](especificacao-componentes-mobile.md): fonte oficial dos componentes da busca e da grade do vendedor.
 - [Fluxo do atendimento do vendedor - S2-UX-001](s2-ux-001-fluxo-atendimento-vendedor.md): estados e transições entre a grade e a nova consulta.
 - [Protótipos](prototipos/README.md): interfaces navegáveis separadas por perfil.
@@ -25,10 +26,8 @@ Esta pasta concentra o inventário de interface e os protótipos navegacionais d
 - [Decisões de interface](decisoes/decisoes-de-interface.md): limites e decisões usados nos protótipos.
 - [Evidências](evidencias/README.md): protocolo e estado das capturas exigidas no cartão.
 
-## Convenções
+## Protótipos e implementação
 
-- Verde: tela existente na baseline.
-- Laranja tracejado: tela ou estado pendente.
-- Cinza: legado fora do fluxo do MVP.
-- Os HTMLs representam a interface proposta para implementação, mas não substituem os requisitos e as especificações.
-- Nenhuma funcionalidade além de RF-01 a RF-25, UC-01 a UC-12 e US-01 a US-13 deve ser adicionada aos protótipos.
+- Os HTMLs são protótipos navegáveis de referência visual, não espelhos da interface Razor atual. Estados e telas podem divergir da aplicação.
+- Para rotas, permissões e status vigentes, use o inventário e o código; para regras, use o SRS e os casos de uso.
+- O escopo normativo vigente vai até RF-30, UC-15 e US-15. Não inferir que uma capacidade esteja pendente apenas por sua ausência em um protótipo.

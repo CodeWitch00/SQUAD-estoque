@@ -168,7 +168,7 @@ ambiente executa o deploy.
 | Variável `AZURE_CD_ENABLED` | `true`, conferida em 10/11/2026 |
 | `Demo__SeedUsers` | Removida do App Service em 10/11/2026; confirmar novamente no Portal se a configuração mudar |
 | HTTPS e `/health` após o deploy | Aprovados pelo passo `Check application health` do workflow acima |
-| Login dos dois perfis | Pendente de validação registrada |
+| Login dos dois perfis no App Service | Pendente; login de ambos foi validado em ambiente local, mas isso não comprova o ambiente publicado |
 | Persistência após reinício | Aprovada em 24/09/2026; ver [registro](validacao-persistencia-azure.md) |
 | Persistência após nova publicação | Pendente |
 | Backup consistente baixado em 24/09/2026 | Cópia registrada; procedimento local com fixture foi aprovado em 15/11/2026; restauração da cópia real do Azure continua pendente |
