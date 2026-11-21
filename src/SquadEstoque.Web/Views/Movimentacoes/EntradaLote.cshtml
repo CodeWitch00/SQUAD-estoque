@@ -27,8 +27,8 @@
                 </div>
             </div>
 
-            <div class="batch-entry-table-shell" tabindex="0" role="region" aria-label="Numerações e quantidades recebidas">
-                <table class="table batch-entry-table">
+            <div class="batch-entry-table-shell admin-mobile-cards" tabindex="0" role="region" aria-label="Numerações e quantidades recebidas">
+                <table class="table batch-entry-table admin-mobile-cards-table">
                     <thead>
                         <tr>
                             <th scope="col">Numeração</th>
@@ -41,12 +41,12 @@
                         @for (var index = 0; index < Model.Itens.Count; index++)
                         {
                             <tr>
-                                <td>
+                                <td data-label="Numeração">
                                     <input type="hidden" asp-for="Itens[index].SkuId" />
                                     <span class="batch-entry-size">@Model.Itens[index].Numeracao</span>
                                 </td>
-                                <td>@Model.Itens[index].SaldoAtual par(es)</td>
-                                <td class="sku-last-update">
+                                <td data-label="Saldo atual">@Model.Itens[index].SaldoAtual par(es)</td>
+                                <td class="sku-last-update" data-label="Última atualização">
                                     @if (Model.Itens[index].UltimaAtualizacaoSaldoEm is DateTime atualizacaoUtc)
                                     {
                                         var atualizacaoLocal = atualizacaoUtc.ToLocalTime();
@@ -57,7 +57,7 @@
                                         <span>Atualização não registrada</span>
                                     }
                                 </td>
-                                <td>
+                                <td data-label="Quantidade recebida">
                                     <label asp-for="Itens[index].QuantidadeRecebida" class="visually-hidden">Quantidade recebida para a numeração @Model.Itens[index].Numeracao</label>
                                     <input asp-for="Itens[index].QuantidadeRecebida" type="number" min="0" class="form-control batch-entry-quantity" aria-label="Quantidade recebida para a numeração @Model.Itens[index].Numeracao" />
                                     <span asp-validation-for="Itens[index].QuantidadeRecebida" class="movement-validation"></span>

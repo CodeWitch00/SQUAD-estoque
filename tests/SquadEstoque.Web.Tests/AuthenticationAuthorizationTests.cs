@@ -100,7 +100,8 @@ public sealed class AuthenticationAuthorizationTests : IClassFixture<SquadEstoqu
         Assert.Contains("src=\"/images/logo-squad-header.png\"", html);
         Assert.DoesNotContain("Vendedor Teste", html);
         Assert.Contains(">VENDEDOR</span>", html);
-        Assert.Contains("aria-controls=\"squad-navigation\"", html);
+        Assert.DoesNotContain("aria-controls=\"squad-admin-navigation\"", html);
+        Assert.DoesNotContain("class=\"squad-sidebar", html);
         Assert.Contains("action=\"/Account/Logout\"", html);
     }
 
@@ -120,8 +121,37 @@ public sealed class AuthenticationAuthorizationTests : IClassFixture<SquadEstoqu
         Assert.Contains("src=\"/images/logo-squad-header.png\"", html);
         Assert.DoesNotContain("Lojista Teste", html);
         Assert.Contains(">LOJISTA</span>", html);
-        Assert.Contains("aria-controls=\"squad-navigation\"", html);
+        Assert.Contains("aria-controls=\"squad-admin-navigation\"", html);
+        Assert.Contains("class=\"squad-sidebar", html);
         Assert.Contains("action=\"/Account/Logout\"", html);
+    }
+
+    [Fact]
+    public async Task Lojista_sidebar_links_render_and_reach_their_pages()
+    {
+        using var client = CreateClient();
+        await LoginAsync(client, "lojista@squad.com");
+
+        foreach (var route in new[] { "/Produtos", "/Movimentacoes", "/SaldosZerados", "/Rupturas", "/Atendimentos", "/Produtos" })
+        {
+            var response = await client.GetAsync(route);
+            var html = WebUtility.HtmlDecode(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Contains($"href=\"{route}\"", html);
+            Assert.Matches($"<a(?=[^>]*class=\"nav-link active\")(?=[^>]*href=\"{route}\")(?=[^>]*aria-current=\"page\")[^>]*>", html);
+            Assert.DoesNotContain("data-bs-dismiss=\"offcanvas\">", html);
+            Assert.Contains("src=\"/images/logo-squad-header.png\"", html);
+            Assert.Contains("href=\"/css/site.css", html);
+        }
+
+        var cssResponse = await client.GetAsync("/css/site.css");
+        Assert.Equal(HttpStatusCode.OK, cssResponse.StatusCode);
+        Assert.Contains("--bs-offcanvas-bg: var(--squad-navy)", await cssResponse.Content.ReadAsStringAsync());
+
+        var logoResponse = await client.GetAsync("/images/logo-squad-header.png");
+        Assert.Equal(HttpStatusCode.OK, logoResponse.StatusCode);
+        Assert.Equal("image/png", logoResponse.Content.Headers.ContentType?.MediaType);
     }
 
     [Fact]

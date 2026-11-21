@@ -1,0 +1,33 @@
+@{
+    var controllerAtual = ViewContext.RouteData.Values["controller"]?.ToString();
+}
+
+<nav class="squad-admin-nav" aria-label="Navegação administrativa">
+    <ul class="nav flex-column">
+        <li class="nav-item">
+            <a class="nav-link @(controllerAtual == "Produtos" ? "active" : string.Empty)"
+               asp-controller="Produtos" asp-action="Index"
+               aria-current="@(controllerAtual == "Produtos" ? "page" : null)">Produtos</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(controllerAtual == "Movimentacoes" ? "active" : string.Empty)"
+               asp-controller="Movimentacoes" asp-action="Index"
+               aria-current="@(controllerAtual == "Movimentacoes" ? "page" : null)">Movimentações</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(controllerAtual == "SaldosZerados" ? "active" : string.Empty)"
+               asp-controller="SaldosZerados" asp-action="Index"
+               aria-current="@(controllerAtual == "SaldosZerados" ? "page" : null)">Saldos zerados</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(controllerAtual == "Rupturas" ? "active" : string.Empty)"
+               asp-controller="Rupturas" asp-action="Index"
+               aria-current="@(controllerAtual == "Rupturas" ? "page" : null)">Histórico de rupturas</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(controllerAtual == "Atendimentos" ? "active" : string.Empty)"
+               asp-controller="Atendimentos" asp-action="Index"
+               aria-current="@(controllerAtual == "Atendimentos" ? "page" : null)">Atendimentos</a>
+        </li>
+    </ul>
+</nav>

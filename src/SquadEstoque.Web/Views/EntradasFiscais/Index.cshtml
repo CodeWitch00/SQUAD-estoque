@@ -23,18 +23,18 @@
 }
 else
 {
-    <div class="table-responsive">
-        <table class="table align-middle">
-            <thead><tr><th>NF-e</th><th>Fornecedor</th><th>Itens</th><th>Status</th><th></th></tr></thead>
+    <div class="table-responsive admin-mobile-cards" tabindex="0" role="region" aria-label="Entradas por NF-e">
+        <table class="table align-middle admin-mobile-cards-table">
+            <thead><tr><th scope="col">NF-e</th><th scope="col">Fornecedor</th><th scope="col">Itens</th><th scope="col">Status</th><th scope="col"><span class="visually-hidden">Ações</span></th></tr></thead>
             <tbody>
             @foreach (var entrada in Model)
             {
                 <tr>
-                    <td><strong>@entrada.Numero</strong><br /><small class="text-muted">@entrada.CriadoEm.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</small></td>
-                    <td>@entrada.FornecedorNome<br /><small class="text-muted">@entrada.CnpjFornecedor</small></td>
-                    <td>@entrada.Itens.Count</td>
-                    <td><span class="badge @(entrada.Status == StatusEntradaFiscal.CONFIRMADA ? "text-bg-success" : "text-bg-warning")">@entrada.Status</span></td>
-                    <td class="text-end">
+                    <td data-label="NF-e"><strong>@entrada.Numero</strong><br /><small class="text-muted">@entrada.CriadoEm.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</small></td>
+                    <td data-label="Fornecedor">@entrada.FornecedorNome<br /><small class="text-muted">@entrada.CnpjFornecedor</small></td>
+                    <td data-label="Itens">@entrada.Itens.Count</td>
+                    <td data-label="Status"><span class="badge @(entrada.Status == StatusEntradaFiscal.CONFIRMADA ? "text-bg-success" : "text-bg-warning")">@entrada.Status</span></td>
+                    <td data-label="Ações" class="text-end">
                         <a class="btn btn-sm btn-outline-primary" asp-action="Conferir" asp-route-id="@entrada.Id">
                             @(entrada.Status == StatusEntradaFiscal.RASCUNHO ? "Continuar" : "Ver")
                         </a>

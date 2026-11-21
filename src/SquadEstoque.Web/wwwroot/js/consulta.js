@@ -14,6 +14,23 @@
             resultadosArea.innerHTML = `<p class="consulta-sem-resultados" role="status">${mensagem}</p>`;
         };
 
+        const atualizarCarregamento = (ativo) => {
+            resultadosArea.setAttribute('aria-busy', String(ativo));
+            const existente = resultadosArea.querySelector('.consulta-busca-carregando');
+            if (!ativo) {
+                existente?.remove();
+                return;
+            }
+            if (!existente) {
+                const indicador = document.createElement('p');
+                indicador.className = 'consulta-busca-carregando';
+                indicador.setAttribute('role', 'status');
+                indicador.setAttribute('aria-live', 'polite');
+                indicador.textContent = 'Consultando modelos…';
+                resultadosArea.prepend(indicador);
+            }
+        };
+
         const buscarResultados = async () => {
             const termo = campoBusca.value.trim();
             if (termo.length < 2) return;
@@ -24,7 +41,7 @@
             const url = new URL(formularioBusca.action || window.location.href, window.location.href);
             url.searchParams.delete('produtoId');
             url.searchParams.set('termo', termo);
-            resultadosArea.setAttribute('aria-busy', 'true');
+            atualizarCarregamento(true);
 
             try {
                 const response = await fetch(url, {
@@ -47,7 +64,7 @@
                 if (erro.name === 'AbortError' || sequenciaAtual !== sequenciaBusca) return;
                 mostrarMensagemBusca('Não foi possível atualizar os resultados. Tente novamente.');
             } finally {
-                if (sequenciaAtual === sequenciaBusca) resultadosArea.removeAttribute('aria-busy');
+                if (sequenciaAtual === sequenciaBusca) atualizarCarregamento(false);
             }
         };
 
@@ -55,10 +72,11 @@
             window.clearTimeout(temporizador);
             controlador?.abort();
             sequenciaBusca++;
+            atualizarCarregamento(false);
             const termo = campoBusca.value.trim();
 
             if (termo.length === 0) {
-                resultadosArea.replaceChildren();
+                resultadosArea.innerHTML = '<p class="consulta-busca-ajuda" role="status">Digite pelo menos 2 caracteres para buscar.</p>';
                 return;
             }
             if (termo.length < 2) {
@@ -87,6 +105,7 @@
     const feedback = document.querySelector('#consulta-acao-feedback');
     const painelAtendimento = document.querySelector('.consulta-atendimento-acoes');
     const fecharPainel = document.querySelector('.consulta-painel-fechar');
+    const reabrirAcoes = document.querySelector('.consulta-reabrir-acoes');
     const botoes = document.querySelectorAll('.consulta-acao[data-resultado]');
     let atendimentoAtualId = document.querySelector('[data-atendimento-id]')?.dataset.atendimentoId || '';
     if (grade && atendimentoAtualId && window.location.origin !== 'null' &&
@@ -157,6 +176,8 @@
         }
         const painelVisivel = Boolean(radio) && !painelDispensado;
         painelAtendimento?.classList.toggle('consulta-atendimento-acoes--visivel', painelVisivel);
+        painelAtendimento?.classList.toggle('consulta-atendimento-acoes--dispensado', Boolean(radio) && painelDispensado);
+        if (reabrirAcoes) reabrirAcoes.hidden = !radio || !painelDispensado;
         document.body.classList.toggle('consulta-painel-mobile-aberto', painelVisivel);
         if (painelVisivel) window.requestAnimationFrame(atualizarEspacoPainel);
         feedback.hidden = true;
@@ -174,7 +195,7 @@
         card.classList.add(`consulta-grade-item--${classe}`);
         card.querySelector('.consulta-grade-saldo').textContent = quantidade;
         const status = card.querySelector('.consulta-grade-estado');
-        status.textContent = `Status: ${estado}`;
+        status.textContent = estado;
         card.querySelector('.consulta-grade-card-conteudo')
             .setAttribute('aria-label', `Nº ${radio.dataset.numeracao}, ${saldo} ${saldo === 1 ? 'par' : 'pares'}, ${estado}`);
     };
@@ -232,8 +253,8 @@
                 feedback.hidden = false;
             } else if (selecaoSalva) {
                 feedback.textContent = atendimentoJaExistia
-                    ? `Atendimento atualizado para o nº ${radio.dataset.numeracao}.`
-                    : `Atendimento salvo para o nº ${radio.dataset.numeracao}. Pode buscar o par.`;
+                    ? `Atendimento pendente atualizado para o nº ${radio.dataset.numeracao}.`
+                    : `Atendimento pendente para o nº ${radio.dataset.numeracao}. Pode buscar o par.`;
                 feedback.hidden = false;
             }
         }
@@ -249,10 +270,13 @@
 
     fecharPainel?.addEventListener('click', () => {
         painelDispensado = true;
-        painelAtendimento.classList.remove('consulta-atendimento-acoes--visivel');
-        document.body.classList.remove('consulta-painel-mobile-aberto');
-        document.body.style.removeProperty('--consulta-painel-mobile-altura');
+        atualizarSelecao();
         grade.querySelector('input[name="skuSelecionado"]:checked')?.focus({ preventScroll: true });
+    });
+
+    reabrirAcoes?.addEventListener('click', () => {
+        painelDispensado = false;
+        atualizarSelecao();
     });
 
     const buscarGradeAtualizada = async (manterSelecao = false) => {

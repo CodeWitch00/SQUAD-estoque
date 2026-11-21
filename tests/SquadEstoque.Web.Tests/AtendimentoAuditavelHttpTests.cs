@@ -86,6 +86,54 @@ public sealed class AtendimentoAuditavelHttpTests
     }
 
     [Fact]
+    public async Task Retomar_e_concluir_atendimento_atualiza_pendencias_sem_duplicar()
+    {
+        using var factory = new SquadEstoqueWebApplicationFactory();
+        using var client = CreateClient(factory);
+        await LoginAsync(client, "vendedor@squad.com");
+        var produto = await ProdutoAsync(factory);
+        var sku = produto.Skus.Single(s => s.SaldoAtual == 2);
+        using var grade = await client.GetAsync($"/Estoque/Consulta?termo={Uri.EscapeDataString(produto.Nome)}&produtoId={produto.Id}");
+        var atendimentoId = await SelecionarSkuAsync(client, grade, sku.Id);
+
+        using var buscaPendente = await client.GetAsync("/Estoque/Consulta");
+        var htmlPendente = WebUtility.HtmlDecode(await buscaPendente.Content.ReadAsStringAsync());
+        Assert.Contains("1 atendimentos pendentes", htmlPendente);
+        Assert.Contains($"atendimentoId={atendimentoId}", htmlPendente);
+
+        using var retomada = await client.GetAsync($"/Estoque/Consulta?atendimentoId={atendimentoId}");
+        using var selecao = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["atendimentoId"] = atendimentoId.ToString(),
+            ["skuId"] = sku.Id.ToString(),
+            ["__RequestVerificationToken"] = await TokenAsync(retomada)
+        });
+        using var respostaSelecao = await client.PostAsync("/Estoque/SelecionarSku", selecao);
+        Assert.Equal(HttpStatusCode.OK, respostaSelecao.StatusCode);
+        var dadosSelecao = await respostaSelecao.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal(atendimentoId, dadosSelecao.GetProperty("atendimentoId").GetGuid());
+
+        using var buscaRetomada = await client.GetAsync("/Estoque/Consulta");
+        var htmlRetomada = WebUtility.HtmlDecode(await buscaRetomada.Content.ReadAsStringAsync());
+        Assert.Contains("1 atendimentos pendentes", htmlRetomada);
+
+        using var encerramento = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["atendimentoId"] = atendimentoId.ToString(),
+            ["__RequestVerificationToken"] = await TokenAsync(retomada)
+        });
+        using var respostaEncerramento = await client.PostAsync("/Estoque/RegistrarDesistiu", encerramento);
+        Assert.Equal(HttpStatusCode.OK, respostaEncerramento.StatusCode);
+
+        using var buscaFinal = await client.GetAsync("/Estoque/Consulta");
+        var htmlFinal = WebUtility.HtmlDecode(await buscaFinal.Content.ReadAsStringAsync());
+        Assert.DoesNotContain("Atendimentos pendentes", htmlFinal);
+        using var scope = factory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<EstoqueContext>();
+        Assert.Single(await context.Atendimento.AsNoTracking().ToListAsync());
+    }
+
+    [Fact]
     public async Task Selecionar_numeracao_indisponivel_nao_a_associa_a_pendencia()
     {
         using var factory = new SquadEstoqueWebApplicationFactory();

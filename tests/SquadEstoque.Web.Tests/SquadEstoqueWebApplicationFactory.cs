@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,7 @@ namespace SquadEstoque.Web.Tests;
 public sealed class SquadEstoqueWebApplicationFactory : WebApplicationFactory<Program>
 {
     private readonly SqliteConnection _estoqueConnection = new("Data Source=:memory:");
+    public TimeProvider? AuthenticationClock { get; set; }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -22,6 +24,11 @@ public sealed class SquadEstoqueWebApplicationFactory : WebApplicationFactory<Pr
 
         builder.ConfigureServices(services =>
         {
+            if (AuthenticationClock is not null)
+                services.PostConfigure<CookieAuthenticationOptions>(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    options => options.TimeProvider = AuthenticationClock);
+
             services.AddDataProtection()
                 .UseEphemeralDataProtectionProvider();
 

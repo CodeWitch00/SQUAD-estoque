@@ -34,11 +34,10 @@ function markup() {
 
     return `
         <div class="seller-layout">
-            <nav class="squad-navbar"><div class="squad-navbar-inner">
-                <a class="squad-brand" href="#">SQUAD</a>
-                <button class="squad-toggler" type="button">Menu</button>
-                <div class="squad-session"><span class="squad-role">VENDEDOR</span><button class="squad-logout">Sair</button></div>
-            </div></nav>
+            <header class="seller-header"><div class="seller-header-inner">
+                <a class="seller-brand" href="#"><img src="/logo.png" alt="SQUAD Estoque"></a>
+                <div class="seller-session"><span class="squad-role">VENDEDOR</span><button class="squad-logout">Sair</button></div>
+            </div></header>
             <main class="seller-main">
                 <div class="consulta-vendedor">
                     <section class="consulta-grade">
@@ -58,7 +57,7 @@ function markup() {
         </div>`;
 }
 
-for (const [width, height] of [[360, 800], [390, 844], [430, 932], [1280, 800]]) {
+for (const [width, height] of [[320, 740], [360, 800], [390, 844], [430, 932], [768, 1024], [1024, 768], [1440, 900]]) {
     test(`seller layout remains usable at ${width}x${height}`, async (t) => {
         const page = await browser.newPage({ viewport: { width, height } });
         t.after(() => page.close());

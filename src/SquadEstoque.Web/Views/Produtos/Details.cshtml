@@ -38,8 +38,8 @@
         }
     </div>
 
-    <div class="table-responsive product-details-table-shell" tabindex="0" role="region" aria-label="Grade de numerações e saldos">
-        <table class="table align-middle product-details-table">
+    <div class="table-responsive product-details-table-shell admin-mobile-cards" tabindex="0" role="region" aria-label="Grade de numerações e saldos">
+        <table class="table align-middle product-details-table admin-mobile-cards-table">
             <thead>
                     <tr>
                         <th scope="col">Numeração</th>
@@ -53,9 +53,9 @@
                 @foreach (var sku in Model.Skus.OrderBy(s => s.Numeracao))
                 {
                     <tr>
-                        <td class="product-details-size">@sku.Numeracao</td>
-                        <td class="product-details-balance">@sku.SaldoAtual par(es)</td>
-                        <td class="sku-last-update">
+                        <td class="product-details-size" data-label="Numeração">@sku.Numeracao</td>
+                        <td class="product-details-balance" data-label="Saldo atual">@sku.SaldoAtual par(es)</td>
+                        <td class="sku-last-update" data-label="Última atualização">
                             @if (sku.UltimaAtualizacaoSaldoEm.HasValue)
                             {
                                 var atualizacaoLocal = sku.UltimaAtualizacaoSaldoEm.Value.ToLocalTime();
@@ -66,7 +66,7 @@
                                 <span>Atualização não registrada</span>
                             }
                         </td>
-                        <td>
+                        <td data-label="Estado">
                             @if (sku.SaldoAtual > 1)
                             {
                                 <span class="badge product-details-status product-details-status--available">Disponível</span>
@@ -80,17 +80,13 @@
                                 <span class="badge product-details-status product-details-status--empty">Indisponível</span>
                             }
                         </td>
-                        <td>
+                        <td data-label="Ações de estoque">
                             <div class="admin-row-actions product-details-actions">
                                 @if (User.IsInRole("LOJISTA"))
                                 {
                                     <a asp-controller="Movimentacoes" asp-action="Entrada" asp-route-skuId="@sku.Id" class="btn btn-sm product-details-action product-details-action--entry">Entrada</a>
                                     <a asp-controller="Movimentacoes" asp-action="Saida" asp-route-skuId="@sku.Id" class="btn btn-sm product-details-action product-details-action--exit">Saída</a>
                                     <a asp-controller="Movimentacoes" asp-action="Ajuste" asp-route-skuId="@sku.Id" class="btn btn-sm product-details-action product-details-action--adjust">Ajuste</a>
-                                }
-                                else if (User.IsInRole("VENDEDOR"))
-                                {
-                                    <a asp-controller="Movimentacoes" asp-action="Saida" asp-route-skuId="@sku.Id" class="btn btn-sm product-details-action product-details-action--exit">Saída</a>
                                 }
                             </div>
                         </td>

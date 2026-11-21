@@ -4,7 +4,6 @@
     var autenticado = User.Identity?.IsAuthenticated == true;
     var inicioController = vendedor ? "Estoque" : lojista ? "Produtos" : "Account";
     var inicioAction = vendedor ? "Consulta" : lojista ? "Index" : "Login";
-    var controllerAtual = ViewContext.RouteData.Values["controller"]?.ToString();
 }
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -17,73 +16,73 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/SquadEstoque.Web.styles.css" asp-append-version="true" />
 </head>
-<body class="@(vendedor ? "seller-layout" : "admin-layout")">
-    <header>
-        <nav class="navbar navbar-expand-lg squad-navbar" aria-label="Navegação principal">
-            <div class="container-fluid squad-navbar-inner">
-                <a class="navbar-brand squad-brand" asp-controller="@inicioController" asp-action="@inicioAction" aria-label="SQUAD Estoque: início">
-                    <img src="~/images/logo-squad-header.png" alt="" width="128" height="96" />
-                </a>
-                @if (autenticado)
-                {
-                    <button class="navbar-toggler squad-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#squad-navigation"
-                            aria-controls="squad-navigation" aria-expanded="false" aria-label="Alternar navegação">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                }
-                <div id="squad-navigation" class="@(autenticado ? "collapse navbar-collapse" : "navbar-collapse")">
-                    <ul class="navbar-nav me-auto squad-links">
-                        @if (lojista)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link @(controllerAtual == "Rupturas" ? "active" : "")" asp-controller="Rupturas" asp-action="Index"
-                                   aria-current="@(controllerAtual == "Rupturas" ? "page" : null)">Histórico de rupturas</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link @(controllerAtual == "Produtos" ? "active" : "")" asp-controller="Produtos" asp-action="Index"
-                                   aria-current="@(controllerAtual == "Produtos" ? "page" : null)">Produtos</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link @(controllerAtual == "Movimentacoes" ? "active" : "")" asp-controller="Movimentacoes" asp-action="Index"
-                                   aria-current="@(controllerAtual == "Movimentacoes" ? "page" : null)">Movimentações</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link @(controllerAtual == "SaldosZerados" ? "active" : "")" asp-controller="SaldosZerados" asp-action="Index"
-                                   aria-current="@(controllerAtual == "SaldosZerados" ? "page" : null)">Saldos zerados</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link @(controllerAtual == "Atendimentos" ? "active" : "")" asp-controller="Atendimentos" asp-action="Index"
-                                   aria-current="@(controllerAtual == "Atendimentos" ? "page" : null)">Atendimentos</a>
-                            </li>
-                        }
-                    </ul>
-                    <div class="squad-session">
-                        @if (autenticado)
-                        {
-                            <span class="squad-role">@(vendedor ? "VENDEDOR" : lojista ? "LOJISTA" : "USUÁRIO")</span>
-                            <form asp-controller="Account" asp-action="Logout" method="post">
-                                <button type="submit" class="squad-logout">Sair</button>
-                            </form>
-                        }
-                        else
-                        {
-                            <a class="squad-login" asp-controller="Account" asp-action="Login">Entrar</a>
-                        }
+<body class="@(vendedor ? "seller-layout" : lojista ? "admin-layout" : "public-layout")">
+    @if (lojista)
+    {
+        <div class="admin-shell">
+            <aside class="offcanvas offcanvas-lg offcanvas-start squad-sidebar" tabindex="-1" id="squad-admin-navigation"
+                   aria-label="Navegação do lojista" data-bs-backdrop="true">
+                <div class="offcanvas-header squad-sidebar-header">
+                    <a class="squad-sidebar-brand" asp-controller="Produtos" asp-action="Index" aria-label="SQUAD Estoque: produtos">
+                        <img src="~/images/logo-squad-header.png" alt="SQUAD Controle de Estoque" width="176" height="132" />
+                    </a>
+                    <button type="button" class="btn-close btn-close-white d-lg-none" data-bs-dismiss="offcanvas"
+                            aria-label="Fechar navegação"></button>
+                </div>
+                <div class="offcanvas-body squad-sidebar-body">
+                    <partial name="_AdminNavigation" />
+                    <div class="squad-sidebar-session">
+                        <span class="squad-role">LOJISTA</span>
+                        <form asp-controller="Account" asp-action="Logout" method="post">
+                            <button type="submit" class="squad-sidebar-logout">Sair da conta</button>
+                        </form>
                     </div>
                 </div>
+            </aside>
+
+            <div class="admin-column">
+                <header class="admin-mobile-header">
+                    <button class="admin-menu-toggle" type="button" data-bs-toggle="offcanvas" data-bs-target="#squad-admin-navigation"
+                            aria-controls="squad-admin-navigation" aria-label="Abrir menu administrativo">
+                        <span aria-hidden="true">☰</span>
+                        <span>Menu</span>
+                    </button>
+                    <a class="admin-mobile-brand" asp-controller="Produtos" asp-action="Index" aria-label="SQUAD Estoque: produtos">
+                        <img src="~/images/logo-squad-header.png" alt="SQUAD" width="96" height="72" />
+                    </a>
+                </header>
+                <main role="main" class="admin-main admin-content">
+                    @RenderBody()
+                </main>
+                <footer class="admin-footer"><div class="admin-footer-inner">&copy; 2026 - SQUAD Estoque</div></footer>
             </div>
-        </nav>
-    </header>
-    <div class="@(vendedor ? "seller-main" : "admin-main")">
-        <main role="main" class="pb-3 @(vendedor ? "" : "admin-content")">
-            @RenderBody()
-        </main>
-    </div>
-    @if (!vendedor)
+        </div>
+    }
+    else
     {
-        <footer class="admin-footer">
-            <div class="admin-footer-inner">&copy; 2026 - SQUAD Estoque</div>
-        </footer>
+        <header class="seller-header">
+            <div class="seller-header-inner">
+                <a class="seller-brand" asp-controller="@inicioController" asp-action="@inicioAction" aria-label="SQUAD Estoque: início">
+                    <img src="~/images/logo-squad-header.png" alt="SQUAD Estoque" width="112" height="84" />
+                </a>
+                <div class="seller-session">
+                    @if (autenticado)
+                    {
+                        <span class="squad-role">VENDEDOR</span>
+                        <form asp-controller="Account" asp-action="Logout" method="post">
+                            <button type="submit" class="squad-logout">Sair</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a class="squad-login" asp-controller="Account" asp-action="Login">Entrar</a>
+                    }
+                </div>
+            </div>
+        </header>
+        <div class="seller-main">
+            <main role="main" class="pb-3">@RenderBody()</main>
+        </div>
     }
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
