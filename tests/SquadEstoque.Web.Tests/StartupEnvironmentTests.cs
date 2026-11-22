@@ -13,6 +13,36 @@ namespace SquadEstoque.Web.Tests;
 public sealed class StartupEnvironmentTests
 {
     [Theory]
+    [InlineData("Development", false)]
+    [InlineData("Production", true)]
+    public async Task Antiforgery_cookie_is_secure_only_in_production(string ambiente, bool secureExpected)
+    {
+        var tempDir = Path.Combine(Path.GetTempPath(), $"antiforgery-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(tempDir);
+        try
+        {
+            using var factory = new StartupFactory(ambiente, Path.Combine(tempDir, "Estoque.db"), false);
+            using var client = factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                BaseAddress = new Uri(secureExpected ? "https://localhost" : "http://localhost"),
+                AllowAutoRedirect = false
+            });
+            using var response = await client.GetAsync("/Account/Login");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var cookie = Assert.Single(response.Headers.GetValues("Set-Cookie"),
+                value => value.StartsWith(".AspNetCore.Antiforgery.", StringComparison.Ordinal));
+            var attributes = cookie.Split(';', StringSplitOptions.TrimEntries);
+            Assert.Contains("httponly", attributes, StringComparer.OrdinalIgnoreCase);
+            Assert.Contains("samesite=strict", attributes, StringComparer.OrdinalIgnoreCase);
+            Assert.Equal(secureExpected, attributes.Contains("secure", StringComparer.OrdinalIgnoreCase));
+        }
+        finally
+        {
+            Directory.Delete(tempDir, recursive: true);
+        }
+    }
+
+    [Theory]
     [InlineData("Development", true, 2)]
     [InlineData("Development", false, 0)]
     [InlineData("Production", true, 0)]

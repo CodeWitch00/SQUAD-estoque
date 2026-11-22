@@ -58,6 +58,12 @@ public sealed class HttpsProxyTests(HttpsProxyTests.ProductionFactory factory)
 
         using var loginPage = await client.GetAsync(challenge.Headers.Location);
         Assert.Equal(HttpStatusCode.OK, loginPage.StatusCode);
+        var antiforgeryCookie = Assert.Single(loginPage.Headers.GetValues("Set-Cookie"),
+            value => value.StartsWith(".AspNetCore.Antiforgery.", StringComparison.Ordinal));
+        var antiforgeryAttributes = antiforgeryCookie.Split(';', StringSplitOptions.TrimEntries);
+        Assert.Contains("secure", antiforgeryAttributes, StringComparer.OrdinalIgnoreCase);
+        Assert.Contains("httponly", antiforgeryAttributes, StringComparer.OrdinalIgnoreCase);
+        Assert.Contains("samesite=strict", antiforgeryAttributes, StringComparer.OrdinalIgnoreCase);
         var html = await loginPage.Content.ReadAsStringAsync();
         var token = Regex.Match(html, "name=\"__RequestVerificationToken\"[^>]*value=\"([^\"]+)\"").Groups[1].Value;
         Assert.NotEmpty(token);

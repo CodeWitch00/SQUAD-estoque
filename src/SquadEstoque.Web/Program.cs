@@ -39,6 +39,12 @@ builder.Services.AddOptions<Microsoft.AspNetCore.DataProtection.KeyManagement.Ke
 builder.Services.AddDbContext<EstoqueContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("EstoqueContext") ?? throw new InvalidOperationException("Connection string 'EstoqueContext' not found.")));
 
+if (builder.Environment.IsProduction())
+{
+    builder.Services.AddAntiforgery(options =>
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always);
+}
+
 // Configuração de autenticação por Cookie
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
