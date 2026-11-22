@@ -110,6 +110,7 @@ As regras centrais são:
 | Telas e experiência               | [docs/05-ux](docs/05-ux/)                                                |
 | Diagramas                          | [docs/06-uml](docs/06-uml/)                                              |
 | Docker, baseline e operação      | [docs/07-operacional/README.md](docs/07-operacional/README.md)           |
+| Manual técnico de operação | [Docker, publicação e recuperação](docs/07-operacional/manual-tecnico.md) |
 | Estratégia e execução de testes | [docs/09-testing/plano-de-testes.md](docs/09-testing/plano-de-testes.md) |
 | Planejamento público              | [docs/10-planejamento](docs/10-planejamento/)                            |
 | Pipeline de CI                     | [.github/workflows/dotnet.yml](.github/workflows/dotnet.yml)             |

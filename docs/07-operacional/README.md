@@ -8,6 +8,8 @@ preparação, implementação, testes, Git e Pull Request está somente no
 
 | Necessidade | Documento |
 | --- | --- |
+| Construir, configurar, publicar, operar e recuperar | [Manual técnico consolidado](manual-tecnico.md) |
+| Conferir validações e pendências do manual técnico | [Evidência S4-DOC-021](evidencia-s4-doc-021.md) |
 | Consultar as tarefas de VENDEDOR e LOJISTA | [Manual do usuário](manual-usuario.md) |
 | Configurar, iniciar, atualizar e diagnosticar | [runbook-producao.md](runbook-producao.md) |
 | Fazer backup consistente e restaurar SQLite em isolamento | [backup-restauracao-sqlite.md](backup-restauracao-sqlite.md) |
