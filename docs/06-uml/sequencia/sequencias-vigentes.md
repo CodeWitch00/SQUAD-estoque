@@ -1,78 +1,33 @@
-# Sequências vigentes — venda e ajuste
+# Diagrama de sequência vigente — venda de um par
 
-As requisições usam as rotas MVC atuais, cookie autenticado e validação
-antiforgery. O SQLite é acessado pelo Entity Framework Core; não há tabela
-`Estoque` nem `SELECT ... FOR UPDATE`.
+![Sequência da venda bem-sucedida](sequencia-venda.svg)
 
-## Venda rápida de um par
+Esta é a única figura de sequência vigente para o Capítulo 5 da monografia.
+O [SVG](sequencia-venda.svg) apresenta o cenário de venda bem-sucedida e a
+[fonte Mermaid editável](sequencia-venda.mmd) permite regenerá-lo. A figura foi
+preparada para inserção em A4 retrato com largura de até 16 cm.
 
-```mermaid
-sequenceDiagram
-    actor V as VENDEDOR
-    participant UI as Tela de consulta
-    participant EC as EstoqueController
-    participant S as SaidaEstoque
-    participant DB as EstoqueContext / SQLite
+O VENDEDOR confirma `Vendeu` na interface web, que envia `POST /Estoque/Vender`
+ao `EstoqueController`. O controller valida o SKU e obtém o atendimento
+pendente. Quando é necessário criar uma nova pendência, ela pode ser salva
+**antes** do início da transação de saída; o bloco `opt` representa apenas essa
+possibilidade.
 
-    V->>UI: Seleciona SKU com saldo e confirma Vendeu
-    UI->>EC: POST /Estoque/Vender (skuId, produtoId, atendimentoId)
-    EC->>DB: Confere SKU ativo e atendimento do vendedor
-    EC->>S: RegistrarVendaRapidaAsync
-    S->>DB: BeginTransaction
-    S->>DB: UPDATE Sku com SaldoAtual >= 1
-    alt Uma linha atualizada
-        S->>DB: Adiciona Movimentacao SAIDA e conclui Atendimento
-        S->>DB: SaveChanges e Commit
-        S-->>EC: Venda registrada e saldo atual
-        EC-->>UI: HTTP 200
-        UI-->>V: Confirma venda
-    else Saldo insuficiente ou conflito
-        S-->>EC: Erro; sem commit da venda
-        EC-->>UI: HTTP 400 ou 409
-        UI-->>V: Informa falha sem venda duplicada
-    end
-```
+`SaidaEstoque.RegistrarVendaRapidaAsync` inicia a transação, revalida o
+atendimento pendente e executa a atualização condicional do saldo. No caminho
+de sucesso, prepara a movimentação `SAIDA`, marca o atendimento como concluído
+com resultado `VENDEU`, chama `SaveChangesAsync` e confirma a transação com
+`CommitAsync`. O controller devolve o saldo persistido, e a interface atualiza
+a grade e confirma a venda.
 
-A condição `SaldoAtual >= 1` é aplicada no próprio `UPDATE`, dentro da
-transação. A movimentação e a conclusão do atendimento só são confirmadas com
-o commit. Veja [`EstoqueController.Vender`](../../../src/SquadEstoque.Web/Controllers/EstoqueController.cs)
-e [`SaidaEstoque`](../../../src/SquadEstoque.Web/Data/SaidaEstoque.cs).
+Os caminhos de atendimento inválido, saldo insuficiente e conflito de
+concorrência não são desenhados nesta figura. O código trata esses resultados
+sem confirmar a saída. Uma pendência criada antes da transação pode permanecer
+registrada mesmo quando a venda não é concluída; a figura não atribui essa
+criação à transação de saída.
 
-## Ajuste de saldo apurado
-
-```mermaid
-sequenceDiagram
-    actor L as LOJISTA
-    participant UI as Formulario de ajuste
-    participant MC as MovimentacoesController
-    participant DB as EstoqueContext / SQLite
-
-    L->>UI: Informa SKU, novo saldo apurado e motivo
-    UI->>MC: POST /Movimentacoes/Ajuste
-    Note over UI,MC: Cookie LOJISTA e antiforgery exigidos
-    MC->>MC: Valida campos e saldo nao negativo
-    alt Dados invalidos
-        MC-->>UI: Erros de validacao; sem escrita
-    else Dados validos
-        MC->>DB: BeginTransaction e carrega Sku
-        alt SKU ausente ou saldo inalterado
-            MC->>DB: Rollback
-            MC-->>UI: Erro; saldo preservado
-        else Novo saldo diferente
-            MC->>DB: SaldoAtual = NovoSaldoApurado
-            MC->>DB: Adiciona Movimentacao AJUSTE com abs(novo - anterior)
-            MC->>DB: SaveChanges
-            alt Gravacao concluida
-                MC->>DB: Commit
-                MC-->>UI: Redireciona para detalhes do produto
-            else Falha de gravacao
-                MC->>DB: Rollback
-                MC-->>UI: Erro; saldo preservado
-            end
-        end
-    end
-```
-
-O ajuste substitui o saldo pelo valor apurado; a movimentação guarda a
-diferença absoluta e o motivo. O controller exige `LOJISTA` nas ações GET e
-POST. Veja [`MovimentacoesController.Ajuste`](../../../src/SquadEstoque.Web/Controllers/MovimentacoesController.cs).
+Fontes: [`EstoqueController.Vender`](../../../src/SquadEstoque.Web/Controllers/EstoqueController.cs),
+[`SaidaEstoque`](../../../src/SquadEstoque.Web/Data/SaidaEstoque.cs),
+[`EstoqueContext`](../../../src/SquadEstoque.Web/Data/EstoqueContext.cs),
+[`consulta.js`](../../../src/SquadEstoque.Web/wwwroot/js/consulta.js) e
+[SRS, RN-02 e RN-07 a RN-09](../../02-requisitos/srs.md).

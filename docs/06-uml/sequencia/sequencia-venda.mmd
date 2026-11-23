@@ -1,0 +1,34 @@
+---
+config:
+  theme: neutral
+  themeCSS: ".messageText, .loopText, .labelText { font-size: 22px !important; } .actor-box { font-size: 20px !important; }"
+  sequence:
+    actorMargin: 8
+    messageMargin: 8
+    mirrorActors: false
+    useMaxWidth: false
+---
+sequenceDiagram
+    actor V as VENDEDOR
+    participant UI as Interface web
+    participant C as Estoque<br/>Controller
+    participant S as Saida<br/>Estoque
+    participant DB as EstoqueContext<br/>SQLite
+
+    V->>UI: Confirma venda
+    UI->>C: POST Vender
+    C->>DB: Valida SKU ativo
+    C->>DB: Obtém pendência
+    opt Novo atendimento
+        C->>DB: SaveChanges (nova pendência)
+    end
+    C->>S: RegistrarVendaRapidaAsync
+    S->>DB: BeginTransaction
+    S->>DB: Revalida pendência
+    S->>DB: UPDATE -1 se saldo >= 1
+    S->>DB: SAIDA + conclui atendimento
+    S->>DB: SaveChanges
+    S->>DB: Commit
+    S-->>C: Saldo atualizado
+    C-->>UI: 200 + saldoAtual
+    UI-->>V: Confirma venda
