@@ -1,62 +1,29 @@
-# Casos de uso vigentes
+# Diagrama UML de casos de uso vigente
 
-O diagrama mostra as operações disponíveis na interface atual. O `LOJISTA`
-gerencia catálogo e estoque; o `VENDEDOR` executa a consulta e o atendimento.
-A saída manual de estoque é exclusiva do `LOJISTA`; o `VENDEDOR` registra
-vendas pelo fluxo de atendimento. Não existe cadastro público de usuários nem
-tela de gestão de contas nesta versão.
+![Casos de uso do SQUAD Estoque](casos-de-uso-vigentes.svg)
 
-```mermaid
-flowchart LR
-    V["VENDEDOR"]
-    L["LOJISTA"]
+Figura única para o Capítulo 5 da monografia. O [SVG](casos-de-uso-vigentes.svg)
+mede 16 × 20,9 cm e pode ser inserido em página A4 retrato. O
+[arquivo-fonte editável](casos-de-uso-vigentes.py) gera a figura com Python 3,
+sem dependências externas. As associações representam ações acessíveis aos
+atores; não representam a ordem temporal de execução.
 
-    subgraph APP["SQUAD Estoque - interface web"]
-        LOGIN(["Entrar com e-mail e senha"])
-        LOGOUT(["Sair"])
-        CONSULTA(["Buscar produto e consultar grade"])
-        ATENDER(["Selecionar SKU e retomar pendencias"])
-        VENDA(["Registrar Vendeu"])
-        RUPTURA(["Registrar Nao tinha"])
-        DESISTIU(["Registrar Desistiu"])
-        SAIDA(["Registrar saida manual"])
-        PRODUTO(["Cadastrar e editar produto e grade"])
-        ENTRADA(["Registrar entrada de estoque"])
-        AJUSTE(["Ajustar saldo com motivo"])
-        NFE(["Importar e confirmar NF-e"])
-        SALDOS(["Consultar saldos zerados"])
-        HISTORICO(["Consultar rupturas e movimentacoes"])
-        AUDITORIA(["Consultar atendimentos"])
-    end
+O `VENDEDOR` busca produtos, consulta a grade, seleciona SKU, retoma pendências
+e registra `Vendeu`, `Não tinha` ou `Desistiu`. O `LOJISTA` mantém produtos,
+grades e imagens; registra entradas, saídas manuais e ajustes; importa e
+confirma NF-e; consulta saldos zerados e os históricos de rupturas,
+movimentações e atendimentos. Ambos podem entrar e encerrar a sessão.
 
-    V --> LOGIN
-    V --> LOGOUT
-    V --> CONSULTA
-    V --> ATENDER
-    V --> VENDA
-    V --> RUPTURA
-    V --> DESISTIU
+Geração automática de SKU, atualização de saldo e criação de movimentação ou
+ruptura são comportamentos internos dos casos representados, não atores
+externos. A figura não usa `include` ou `extend`, pois essas relações não são
+necessárias para expressar as interações selecionadas. O primeiro `LOJISTA` de
+um banco vazio é criado por operador via `--bootstrap-lojista` em `Production`,
+conforme o [procedimento operacional](../../07-operacional/primeiro-acesso-lojista.md);
+não há cadastro público de usuários.
 
-    L --> LOGIN
-    L --> LOGOUT
-    L --> SAIDA
-    L --> PRODUTO
-    L --> ENTRADA
-    L --> AJUSTE
-    L --> NFE
-    L --> SALDOS
-    L --> HISTORICO
-    L --> AUDITORIA
-```
-
-O primeiro `LOJISTA` de um banco vazio é criado por um operador com o comando
-`--bootstrap-lojista`, somente em `Production`, conforme o
-[procedimento operacional](../../07-operacional/primeiro-acesso-lojista.md).
-Isso não é um formulário público. As permissões são verificadas no servidor
-pelos controllers, além da navegação exibida ao usuário.
-
-Fontes: [requisitos](../../02-requisitos/srs.md),
-[`EstoqueController`](../../../src/SquadEstoque.Web/Controllers/EstoqueController.cs),
-[`MovimentacoesController`](../../../src/SquadEstoque.Web/Controllers/MovimentacoesController.cs),
-[`EntradasFiscaisController`](../../../src/SquadEstoque.Web/Controllers/EntradasFiscaisController.cs)
-e [`AtendimentosController`](../../../src/SquadEstoque.Web/Controllers/AtendimentosController.cs).
+Fontes de verificação: [SRS](../../02-requisitos/srs.md),
+[casos de uso textuais](../../02-requisitos/casos-de-uso.md),
+[controllers](../../../src/SquadEstoque.Web/Controllers/),
+[views](../../../src/SquadEstoque.Web/Views/) e
+[validação funcional publicada](../../09-testing/execucoes/sprint-4/s4-qa-019-validacao-final-producao.md).
