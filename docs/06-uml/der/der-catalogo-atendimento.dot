@@ -1,0 +1,81 @@
+digraph DerCatalogoAtendimento {
+  graph [rankdir=TB, bgcolor=white, pad=0.08, margin=0,
+         nodesep=0.75, ranksep=0.85, splines=polyline, outputorder=edgesfirst];
+  node [shape=plain, fontname="Arial"];
+  edge [dir=none, style=dashed, color="#34465b", fontcolor="#172434",
+        fontname="Arial", fontsize=8, labeldistance=2.1];
+
+  Produto [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" COLOR="#34465b">
+    <TR><TD COLSPAN="3" BGCOLOR="#eef2f5"><B>Produto</B></TD></TR>
+    <TR><TD>TEXT</TD><TD ALIGN="LEFT">Id</TD><TD>PK</TD></TR>
+    <TR><TD>TEXT</TD><TD ALIGN="LEFT">Nome</TD><TD></TD></TR>
+    <TR><TD>TEXT</TD><TD ALIGN="LEFT">Marca</TD><TD></TD></TR>
+    <TR><TD>TEXT</TD><TD ALIGN="LEFT">Categoria</TD><TD></TD></TR>
+    <TR><TD>TEXT</TD><TD ALIGN="LEFT">Cor</TD><TD></TD></TR>
+    <TR><TD>INTEGER</TD><TD ALIGN="LEFT">Ativo</TD><TD></TD></TR>
+  </TABLE>>];
+  Usuario [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" COLOR="#34465b">
+    <TR><TD COLSPAN="3" BGCOLOR="#eef2f5"><B>Usuario</B></TD></TR>
+    <TR><TD>TEXT</TD><TD ALIGN="LEFT">Id</TD><TD>PK</TD></TR>
+    <TR><TD>TEXT</TD><TD ALIGN="LEFT">Email</TD><TD></TD></TR>
+    <TR><TD>INTEGER</TD><TD ALIGN="LEFT">Perfil</TD><TD></TD></TR>
+  </TABLE>>];
+  Sku [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" COLOR="#34465b">
+    <TR><TD COLSPAN="3" BGCOLOR="#eef2f5"><B>Sku</B></TD></TR>
+    <TR><TD>TEXT</TD><TD ALIGN="LEFT">Id</TD><TD>PK</TD></TR>
+    <TR><TD>TEXT</TD><TD ALIGN="LEFT">ProdutoId</TD><TD>FK</TD></TR>
+    <TR><TD>TEXT</TD><TD ALIGN="LEFT">Numeracao</TD><TD></TD></TR>
+    <TR><TD>INTEGER</TD><TD ALIGN="LEFT">SaldoAtual</TD><TD></TD></TR>
+    <TR><TD>TEXT</TD><TD ALIGN="LEFT">UltimaAtualizacaoSaldoEm</TD><TD></TD></TR>
+  </TABLE>>];
+  Atendimento [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" COLOR="#34465b">
+    <TR><TD COLSPAN="3" BGCOLOR="#eef2f5"><B>Atendimento</B></TD></TR>
+    <TR><TD>TEXT</TD><TD ALIGN="LEFT">Id</TD><TD>PK</TD></TR>
+    <TR><TD>TEXT</TD><TD ALIGN="LEFT">UsuarioId</TD><TD>FK</TD></TR>
+    <TR><TD>TEXT</TD><TD ALIGN="LEFT">ProdutoId</TD><TD>FK</TD></TR>
+    <TR><TD>TEXT</TD><TD ALIGN="LEFT">SkuId</TD><TD>FK</TD></TR>
+    <TR><TD>INTEGER</TD><TD ALIGN="LEFT">Status</TD><TD></TD></TR>
+    <TR><TD>INTEGER</TD><TD ALIGN="LEFT">Resultado</TD><TD></TD></TR>
+    <TR><TD>INTEGER</TD><TD ALIGN="LEFT">SaldoConsultado</TD><TD></TD></TR>
+  </TABLE>>];
+  Movimentacao [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" COLOR="#34465b">
+    <TR><TD COLSPAN="3" BGCOLOR="#eef2f5"><B>Movimentacao</B></TD></TR>
+    <TR><TD>TEXT</TD><TD ALIGN="LEFT">Id</TD><TD>PK</TD></TR>
+    <TR><TD>TEXT</TD><TD ALIGN="LEFT">SkuId</TD><TD>FK</TD></TR>
+    <TR><TD>TEXT</TD><TD ALIGN="LEFT">UsuarioId</TD><TD>FK</TD></TR>
+    <TR><TD>TEXT</TD><TD ALIGN="LEFT">AtendimentoId</TD><TD>FK</TD></TR>
+    <TR><TD>INTEGER</TD><TD ALIGN="LEFT">Tipo</TD><TD></TD></TR>
+    <TR><TD>INTEGER</TD><TD ALIGN="LEFT">Quantidade</TD><TD></TD></TR>
+    <TR><TD>TEXT</TD><TD ALIGN="LEFT">CriadoEm</TD><TD></TD></TR>
+  </TABLE>>];
+  Ruptura [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" COLOR="#34465b">
+    <TR><TD COLSPAN="3" BGCOLOR="#eef2f5"><B>Ruptura</B></TD></TR>
+    <TR><TD>TEXT</TD><TD ALIGN="LEFT">Id</TD><TD>PK</TD></TR>
+    <TR><TD>TEXT</TD><TD ALIGN="LEFT">SkuId</TD><TD>FK</TD></TR>
+    <TR><TD>TEXT</TD><TD ALIGN="LEFT">UsuarioId</TD><TD>FK</TD></TR>
+    <TR><TD>TEXT</TD><TD ALIGN="LEFT">AtendimentoId</TD><TD>FK</TD></TR>
+    <TR><TD>TEXT</TD><TD ALIGN="LEFT">CriadoEm</TD><TD></TD></TR>
+  </TABLE>>];
+
+  { rank=same; Produto; Usuario; }
+  { rank=same; Sku; Atendimento; }
+  { rank=same; Movimentacao; Ruptura; }
+  Produto -> Usuario [style=invis, weight=100];
+  Sku -> Atendimento [style=invis, weight=100];
+  Movimentacao -> Ruptura [style=invis, weight=100];
+  Produto -> Sku [style=invis, weight=100];
+  Usuario -> Atendimento [style=invis, weight=100];
+  Sku -> Movimentacao [style=invis, weight=100];
+  Atendimento -> Ruptura [style=invis, weight=100];
+
+  Produto -> Sku [taillabel="1", headlabel="0..N", constraint=false];
+  Produto -> Atendimento [taillabel="1", headlabel="0..N", constraint=false];
+  Sku -> Atendimento [taillabel="0..1", headlabel="0..N", constraint=false];
+  Sku -> Movimentacao [taillabel="1", headlabel="0..N", constraint=false];
+  Sku -> Ruptura [taillabel="1", headlabel="0..N", constraint=false];
+  Atendimento -> Movimentacao [taillabel="0..1", headlabel="0..1", constraint=false];
+  Atendimento -> Ruptura [taillabel="0..1", headlabel="0..1", constraint=false];
+  Usuario -> Atendimento [taillabel="1", headlabel="0..N", constraint=false];
+  Usuario -> Movimentacao [taillabel="1", headlabel="0..N", constraint=false];
+  Usuario -> Ruptura [taillabel="1", headlabel="0..N", constraint=false];
+}

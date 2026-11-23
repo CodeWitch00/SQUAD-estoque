@@ -20,7 +20,6 @@ def actor(x,y,name):
     add(f'<circle cx="{x}" cy="{y-25}" r="8" fill="white" stroke="#263b52" stroke-width="1.35"/>')
     line([(x,y-17),(x,y+12)]); line([(x-12,y-8),(x+12,y-8)])
     line([(x,y+12),(x-11,y+29)]); line([(x,y+12),(x+11,y+29)])
-    add(f'<rect x="{x-42}" y="{y+32}" width="84" height="20" fill="white"/>')
     label(x,y+47,name,11.7,'bold')
 
 # Fronteira e atores. As linhas de associação não indicam fluxo temporal.
@@ -28,36 +27,43 @@ add('<rect x="78" y="18" width="449" height="754" fill="white" stroke="#405369" 
 label(302,40,'SQUAD Estoque',12.8,'bold')
 
 # Casos compartilhados e associações a ambos os atores.
+line([(74,80),(74,540)])
+line([(530,80),(530,730)])
+line([(48,395),(74,395)])
+line([(530,395),(557,395)])
 for y,txt in [(80,'Realizar login'),(137,'Encerrar sessão')]:
-    line([(48,395),(67,395),(67,y),(214,y)])
-    line([(557,395),(537,395),(537,y),(391,y)])
+    line([(74,y),(214,y)])
+    line([(391,y),(530,y)])
     oval(302.5,y,88,txt)
 
 vendor = [
-    (238,['Buscar produto e','consultar grade']),
-    (301,['Selecionar SKU e','retomar pendência']),
-    (364,'Registrar Vendeu'),
-    (427,'Registrar Não tinha'),
-    (490,'Registrar Desistiu'),
+    (220,['Buscar produto e','consultar grade']),
+    (284,'Selecionar SKU'),
+    (348,['Retomar atendimento','pendente']),
+    (412,'Registrar Vendeu'),
+    (476,'Registrar Não tinha'),
+    (540,'Registrar Desistiu'),
 ]
 lojista = [
-    (206,['Cadastrar/editar produto','e grade']),
-    (262,'Gerenciar foto do modelo'),
-    (318,'Registrar entrada'),
-    (374,'Registrar saída manual'),
+    (180,'Gerenciar produtos'),
+    (230,['Cadastrar/ampliar','grade']),
+    (280,'Gerenciar foto'),
+    (330,'Registrar entrada'),
+    (380,'Registrar saída manual'),
     (430,'Ajustar saldo com motivo'),
-    (486,'Importar/confirmar NF-e'),
-    (542,'Consultar saldos zerados'),
-    (598,'Consultar rupturas'),
-    (654,'Consultar movimentações'),
-    (710,'Consultar atendimentos'),
+    (480,'Importar XML de NF-e'),
+    (530,['Confirmar entrada','fiscal']),
+    (580,'Consultar saldos zerados'),
+    (630,'Consultar rupturas'),
+    (680,'Consultar movimentações'),
+    (730,'Consultar atendimentos'),
 ]
 for y,txt in vendor:
-    line([(48,395),(88,y),(111,y)])
-    oval(199,y,88,txt)
+    line([(74,y),(99,y)])
+    oval(191,y,92,txt)
 for y,txt in lojista:
-    line([(557,395),(518,y),(500,y)])
-    oval(406,y,94,txt)
+    line([(515,y),(530,y)])
+    oval(414,y,101,txt)
 actor(35,395,'VENDEDOR'); actor(570,395,'LOJISTA')
 
 svg = f'<svg xmlns="http://www.w3.org/2000/svg" width="160mm" height="209mm" viewBox="0 0 {W} {H}" role="img" aria-label="Diagrama UML de casos de uso do SQUAD Estoque com os atores Vendedor e Lojista"><rect width="{W}" height="{H}" fill="white"/>' + ''.join(shapes) + '</svg>'

@@ -1,34 +1,62 @@
+---
+config:
+  theme: base
+  themeVariables:
+    background: "#ffffff"
+    primaryColor: "#ffffff"
+    primaryTextColor: "#172434"
+    primaryBorderColor: "#34465b"
+    lineColor: "#34465b"
+    fontFamily: "Arial"
+  er:
+    layoutDirection: TB
+    nodeSpacing: 44
+    rankSpacing: 55
+    diagramPadding: 10
+---
 erDiagram
-    Usuario ||--o{ EntradaFiscal : importa
-    EntradaFiscal ||--o{ ItemEntradaFiscal : contem
-    Produto o|--o{ ItemEntradaFiscal : associado
-    Sku o|--o{ ItemEntradaFiscal : associado
-    Sku ||--o{ VinculoProdutoFornecedor : mapeado
+    Usuario ||..o{ EntradaFiscal : importa
+    EntradaFiscal ||..o{ ItemEntradaFiscal : contem
+    Produto o|..o{ ItemEntradaFiscal : associado
+    Sku o|..o{ ItemEntradaFiscal : associado
+    Sku ||..o{ VinculoProdutoFornecedor : mapeado
 
     Usuario {
         TEXT Id PK
-        TEXT Email UK
+        TEXT Email
+        INTEGER Perfil
     }
     EntradaFiscal {
         TEXT Id PK
         TEXT UsuarioId FK
-        TEXT ChaveAcesso UK
+        TEXT ChaveAcesso
+        INTEGER Status
     }
     ItemEntradaFiscal {
         TEXT Id PK
         TEXT EntradaFiscalId FK
         TEXT ProdutoId FK
         TEXT SkuId FK
+        INTEGER Quantidade
     }
     Produto {
         TEXT Id PK
         TEXT Nome
+        TEXT Marca
+        TEXT Categoria
+        TEXT Cor
+        INTEGER Ativo
     }
     Sku {
         TEXT Id PK
         TEXT ProdutoId FK
+        TEXT Numeracao
+        INTEGER SaldoAtual
+        TEXT UltimaAtualizacaoSaldoEm
     }
     VinculoProdutoFornecedor {
         TEXT Id PK
         TEXT SkuId FK
+        TEXT CnpjFornecedor
+        TEXT CodigoFornecedor
     }

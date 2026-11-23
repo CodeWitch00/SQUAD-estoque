@@ -1,52 +1,73 @@
 ---
 config:
+  theme: base
+  themeVariables:
+    background: "#ffffff"
+    primaryColor: "#ffffff"
+    primaryTextColor: "#172434"
+    primaryBorderColor: "#34465b"
+    lineColor: "#34465b"
+    fontFamily: "Arial"
   er:
     layoutDirection: TB
-    nodeSpacing: 90
-    rankSpacing: 90
-    diagramPadding: 12
+    nodeSpacing: 48
+    rankSpacing: 55
+    diagramPadding: 10
 ---
 erDiagram
-    Produto ||--o{ Sku : possui
-    Produto ||--o{ Atendimento : consultado
-    Sku o|--o{ Atendimento : selecionado
-    Sku ||--o{ Movimentacao : movimentado
-    Sku ||--o{ Ruptura : demandado
-    Atendimento o|--o| Movimentacao : venda
-    Atendimento o|--o| Ruptura : demanda
-    Usuario ||--o{ Atendimento : conduz
-    Usuario ||--o{ Movimentacao : registra
-    Usuario ||--o{ Ruptura : registra
+    Produto ||..o{ Sku : possui
+    Produto ||..o{ Atendimento : consultado
+    Sku o|..o{ Atendimento : selecionado
+    Sku ||..o{ Movimentacao : movimentado
+    Sku ||..o{ Ruptura : demandado
+    Atendimento o|..o| Movimentacao : venda
+    Atendimento o|..o| Ruptura : demanda
+    Usuario ||..o{ Atendimento : conduz
+    Usuario ||..o{ Movimentacao : registra
+    Usuario ||..o{ Ruptura : registra
 
     Produto {
         TEXT Id PK
         TEXT Nome
+        TEXT Marca
+        TEXT Categoria
+        TEXT Cor
+        INTEGER Ativo
     }
     Sku {
         TEXT Id PK
         TEXT ProdutoId FK
         TEXT Numeracao
         INTEGER SaldoAtual
+        TEXT UltimaAtualizacaoSaldoEm
     }
     Usuario {
         TEXT Id PK
-        TEXT Email UK
+        TEXT Email
+        INTEGER Perfil
     }
     Atendimento {
         TEXT Id PK
         TEXT UsuarioId FK
         TEXT ProdutoId FK
         TEXT SkuId FK
+        INTEGER Status
+        INTEGER Resultado
+        INTEGER SaldoConsultado
     }
     Movimentacao {
         TEXT Id PK
         TEXT SkuId FK
         TEXT UsuarioId FK
         TEXT AtendimentoId FK
+        INTEGER Tipo
+        INTEGER Quantidade
+        TEXT CriadoEm
     }
     Ruptura {
         TEXT Id PK
         TEXT SkuId FK
         TEXT UsuarioId FK
         TEXT AtendimentoId FK
+        TEXT CriadoEm
     }

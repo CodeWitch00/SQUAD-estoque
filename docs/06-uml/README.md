@@ -6,15 +6,22 @@ Os diagramas abaixo resumem a implementação atual em ASP.NET Core MVC e SQLite
 O código e as migrations continuam sendo a fonte de verdade para detalhes de
 rotas, colunas e restrições.
 
+**Commit da implementação conferida:** `26f042289596a3785a4624e4ed9a82d2888c0175`.
+As figuras acadêmicas de classes e DER são divididas em duas visões
+complementares e selecionam atributos relevantes para caber em A4 retrato.
+
 | Assunto | Diagrama |
 | --- | --- |
-| Tabelas, chaves e relacionamentos | [DER vigente](der-fisico/der-vigente.md) |
+| Tabelas, chaves e relacionamentos | [DER vigente](der/der-vigente.md) |
 | Entidades C# principais | [Classes vigentes](classe/diagrama-classe-vigente.md) |
 | Atores e operações disponíveis | [Casos de uso vigentes](casos-de-uso/casos-de-uso-vigentes.md) |
 | Consulta, atendimento, ajuste, NF-e e primeiro acesso | [Fluxos vigentes](fluxos/fluxos-vigentes.md) |
-| Venda e ajuste com transações | [Sequências vigentes](sequencia/sequencias-vigentes.md) |
+| Venda bem-sucedida | [Sequência vigente](sequencia/sequencias-vigentes.md) |
 
-Esses arquivos usam Mermaid e são renderizados diretamente pelo GitHub.
+Os diagramas de classes, DER fiscal e sequência têm fontes Mermaid. O DER de
+catálogo usa Graphviz DOT como fonte da figura compacta, com Mermaid de
+referência estrutural. O diagrama de casos de uso usa fonte Python 3. Os SVGs
+e PNGs estão disponíveis nos respectivos diretórios.
 
 ## Material histórico
 

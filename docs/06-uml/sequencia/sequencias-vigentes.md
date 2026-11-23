@@ -5,7 +5,10 @@
 Esta é a única figura de sequência vigente para o Capítulo 5 da monografia.
 O [SVG](sequencia-venda.svg) apresenta o cenário de venda bem-sucedida e a
 [fonte Mermaid editável](sequencia-venda.mmd) permite regenerá-lo. A figura foi
-preparada para inserção em A4 retrato com largura de até 16 cm.
+preparada para inserção em A4 retrato com largura de até 16 cm. O
+[PNG](sequencia-venda.png) tem 1890 × 1638 px.
+
+**Commit da implementação conferida:** `26f042289596a3785a4624e4ed9a82d2888c0175`.
 
 O VENDEDOR confirma `Vendeu` na interface web, que envia `POST /Estoque/Vender`
 ao `EstoqueController`. O controller valida o SKU e obtém o atendimento
