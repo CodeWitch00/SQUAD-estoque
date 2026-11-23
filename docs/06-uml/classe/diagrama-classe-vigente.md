@@ -1,88 +1,23 @@
 # Diagrama de classes vigente
 
-Resumo das nove entidades C# persistidas. Os atributos listados são os que
-explicam os vínculos e regras; consulte os [models](../../../src/SquadEstoque.Web/Models/Entities/)
-para a definição completa.
+O diagrama de classes do SQUAD Estoque é apresentado na monografia em duas
+visões complementares para manter legíveis os atributos C#, as associações e
+suas multiplicidades em página A4. As duas figuras representam as nove classes
+de domínio persistidas e as quinze associações do modelo vigente.
 
-```mermaid
-classDiagram
-    class Usuario {
-        +Guid Id
-        +string Email
-        +string SenhaHash
-        +PerfilUsuario Perfil
-    }
-    class Produto {
-        +Guid Id
-        +string Nome
-        +string ImagemUrl
-        +bool Ativo
-    }
-    class Sku {
-        +Guid Id
-        +Guid ProdutoId
-        +string Numeracao
-        +int SaldoAtual
-        +DateTime? UltimaAtualizacaoSaldoEm
-    }
-    class Movimentacao {
-        +Guid Id
-        +Guid SkuId
-        +Guid UsuarioId
-        +TipoMovimentacao Tipo
-        +int Quantidade
-    }
-    class Ruptura {
-        +Guid Id
-        +Guid SkuId
-        +Guid UsuarioId
-    }
-    class Atendimento {
-        +Guid Id
-        +Guid UsuarioId
-        +Guid ProdutoId
-        +Guid? SkuId
-        +StatusAtendimento Status
-        +ResultadoAtendimento? Resultado
-    }
-    class EntradaFiscal {
-        +Guid Id
-        +Guid UsuarioId
-        +string ChaveAcesso
-        +StatusEntradaFiscal Status
-    }
-    class ItemEntradaFiscal {
-        +Guid Id
-        +Guid EntradaFiscalId
-        +Guid? ProdutoId
-        +Guid? SkuId
-    }
-    class VinculoProdutoFornecedor {
-        +Guid Id
-        +string CnpjFornecedor
-        +string CodigoFornecedor
-        +Guid SkuId
-    }
+| Visão | Classes | Associações | Fonte editável | Figura vetorial |
+| --- | ---: | ---: | --- | --- |
+| Catálogo e atendimento | 6 | 10 | [Mermaid](classe-catalogo-atendimento.mmd) | [SVG](classe-catalogo-atendimento.svg) |
+| Entrada fiscal | 6 | 5 | [Mermaid](classe-entrada-fiscal.mmd) | [SVG](classe-entrada-fiscal.svg) |
 
-    Produto "1" --> "0..*" Sku : possui
-    Usuario "1" --> "0..*" Atendimento : conduz
-    Usuario "1" --> "0..*" Movimentacao : registra
-    Usuario "1" --> "0..*" Ruptura : registra
-    Produto "1" --> "0..*" Atendimento : consultado
-    Sku "0..1" --> "0..*" Atendimento : selecionado
-    Sku "1" --> "0..*" Movimentacao : historico
-    Sku "1" --> "0..*" Ruptura : demanda
-    Atendimento "0..1" --> "0..1" Movimentacao : venda
-    Atendimento "0..1" --> "0..1" Ruptura : nao_tinha
-    Usuario "1" --> "0..*" EntradaFiscal : importa
-    EntradaFiscal "1" --> "0..*" ItemEntradaFiscal : contem
-    Produto "0..1" --> "0..*" ItemEntradaFiscal : associado
-    Sku "0..1" --> "0..*" ItemEntradaFiscal : associado
-    Sku "1" --> "0..*" VinculoProdutoFornecedor : referencia
-```
+`Usuario`, `Produto` e `Sku` aparecem nas duas visões para tornar cada figura
+compreensível de forma independente. Os atributos são uma seleção do modelo
+orientado a objetos: a visão de catálogo prioriza estado, resultado e coleções
+de navegação; a visão fiscal prioriza os vínculos e dados da importação. Os
+tipos exibidos são tipos C#, e as associações não usam setas de navegabilidade.
 
-`Sku.UltimaAtualizacaoSaldoEm`, `Produto.ImagemUrl`, `Atendimento.SkuId` e
-`Atendimento.Resultado`, `ItemEntradaFiscal.ProdutoId` e
-`ItemEntradaFiscal.SkuId` podem ser nulos. Os vínculos de `Movimentacao` e
-`Ruptura` com `Atendimento` também são opcionais. Os tipos CLR exibidos aqui
-não são tipos físicos do SQLite; veja o [DER vigente](../der-fisico/der-vigente.md).
+As chaves estrangeiras escalares omitidas da figura de catálogo permanecem
+nas [entidades C#](../../../src/SquadEstoque.Web/Models/Entities/). O esquema
+SQLite, suas colunas e restrições físicas estão documentados no
+[DER vigente](../der-fisico/der-vigente.md). Este diagrama de classes não deve
+ser interpretado como uma reprodução integral das tabelas do banco.

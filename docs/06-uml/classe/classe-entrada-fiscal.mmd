@@ -1,0 +1,56 @@
+---
+config:
+  theme: neutral
+  themeCSS: ".edgeTerminals span.edgeLabel { font-size: 16px !important; }"
+  class:
+    nodeSpacing: 18
+    rankSpacing: 8
+    padding: 7
+    dividerMargin: 3
+    diagramPadding: 4
+    hideEmptyMembersBox: true
+---
+classDiagram
+class Usuario {
++Guid Id
++string Email
++PerfilUsuario Perfil
+}
+class EntradaFiscal {
+    +Guid Id
+    +Guid UsuarioId
+    +string ChaveAcesso
+    +StatusEntradaFiscal Status
+    +DateTime CriadoEm
+    +DateTime? ConfirmadoEm
+    +ICollection~ItemEntradaFiscal~ Itens
+}
+class ItemEntradaFiscal {
+    +Guid Id
+    +Guid EntradaFiscalId
+    +Guid? ProdutoId
+    +Guid? SkuId
+    +int NumeroItem
+    +int Quantidade
+    +decimal ValorUnitario
+}
+class Produto {
+    +Guid Id
+    +string Nome
+}
+class Sku {
+    +Guid Id
+    +Guid ProdutoId
+    +string Numeracao
+}
+class VinculoProdutoFornecedor {
+    +Guid Id
+    +Guid SkuId
+    +string CnpjFornecedor
+    +string CodigoFornecedor
+}
+Usuario "1" -- "0..*" EntradaFiscal : importa
+EntradaFiscal "1" -- "0..*" ItemEntradaFiscal : contem
+ItemEntradaFiscal "0..*" -- "0..1" Produto : associado
+Sku "0..1" -- "0..*" ItemEntradaFiscal : associado
+Sku "1" -- "0..*" VinculoProdutoFornecedor : mapeado
