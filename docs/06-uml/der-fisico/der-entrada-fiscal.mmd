@@ -1,0 +1,34 @@
+erDiagram
+    Usuario ||--o{ EntradaFiscal : importa
+    EntradaFiscal ||--o{ ItemEntradaFiscal : contem
+    Produto o|--o{ ItemEntradaFiscal : associado
+    Sku o|--o{ ItemEntradaFiscal : associado
+    Sku ||--o{ VinculoProdutoFornecedor : mapeado
+
+    Usuario {
+        TEXT Id PK
+        TEXT Email UK
+    }
+    EntradaFiscal {
+        TEXT Id PK
+        TEXT UsuarioId FK
+        TEXT ChaveAcesso UK
+    }
+    ItemEntradaFiscal {
+        TEXT Id PK
+        TEXT EntradaFiscalId FK
+        TEXT ProdutoId FK
+        TEXT SkuId FK
+    }
+    Produto {
+        TEXT Id PK
+        TEXT Nome
+    }
+    Sku {
+        TEXT Id PK
+        TEXT ProdutoId FK
+    }
+    VinculoProdutoFornecedor {
+        TEXT Id PK
+        TEXT SkuId FK
+    }

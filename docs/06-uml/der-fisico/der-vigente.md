@@ -1,10 +1,34 @@
 # DER vigente — SQLite
 
-Este diagrama representa as nove entidades persistidas em 10/11/2026. Exibe as
+O diagrama integral abaixo representa as nove entidades persistidas em 10/11/2026. Exibe as
 colunas relevantes aos relacionamentos e regras principais, sem repetir o
 [`EstoqueContext`](../../../src/SquadEstoque.Web/Data/EstoqueContext.cs) e o
 [`ModelSnapshot`](../../../src/SquadEstoque.Web/Migrations/Estoque/EstoqueContextModelSnapshot.cs)
 inteiros. `TEXT` e `INTEGER` indicam as representações usadas no SQLite.
+
+## Visões para a documentação acadêmica
+
+Na monografia, o DER físico é apresentado em duas visões complementares para
+manter os campos e as cardinalidades legíveis em A4 retrato. A visão de
+**catálogo e atendimento** contém dez relacionamentos; a de **entrada fiscal**,
+cinco. `Usuario`, `Produto` e `Sku` aparecem nas duas figuras apenas para dar
+contexto aos vínculos. Juntas, elas representam as mesmas nove entidades e os
+quinze relacionamentos do diagrama integral, mantido abaixo como referência
+técnica.
+
+### Catálogo e atendimento
+
+![DER físico: catálogo e atendimento](der-catalogo-atendimento.svg)
+
+[Fonte Mermaid editável](der-catalogo-atendimento.mmd) · [SVG](der-catalogo-atendimento.svg)
+
+### Entrada fiscal
+
+![DER físico: entrada fiscal](der-entrada-fiscal.svg)
+
+[Fonte Mermaid editável](der-entrada-fiscal.mmd) · [SVG](der-entrada-fiscal.svg)
+
+## Visão integral do esquema
 
 ```mermaid
 erDiagram

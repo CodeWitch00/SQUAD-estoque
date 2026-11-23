@@ -1,0 +1,52 @@
+---
+config:
+  er:
+    layoutDirection: TB
+    nodeSpacing: 90
+    rankSpacing: 90
+    diagramPadding: 12
+---
+erDiagram
+    Produto ||--o{ Sku : possui
+    Produto ||--o{ Atendimento : consultado
+    Sku o|--o{ Atendimento : selecionado
+    Sku ||--o{ Movimentacao : movimentado
+    Sku ||--o{ Ruptura : demandado
+    Atendimento o|--o| Movimentacao : venda
+    Atendimento o|--o| Ruptura : demanda
+    Usuario ||--o{ Atendimento : conduz
+    Usuario ||--o{ Movimentacao : registra
+    Usuario ||--o{ Ruptura : registra
+
+    Produto {
+        TEXT Id PK
+        TEXT Nome
+    }
+    Sku {
+        TEXT Id PK
+        TEXT ProdutoId FK
+        TEXT Numeracao
+        INTEGER SaldoAtual
+    }
+    Usuario {
+        TEXT Id PK
+        TEXT Email UK
+    }
+    Atendimento {
+        TEXT Id PK
+        TEXT UsuarioId FK
+        TEXT ProdutoId FK
+        TEXT SkuId FK
+    }
+    Movimentacao {
+        TEXT Id PK
+        TEXT SkuId FK
+        TEXT UsuarioId FK
+        TEXT AtendimentoId FK
+    }
+    Ruptura {
+        TEXT Id PK
+        TEXT SkuId FK
+        TEXT UsuarioId FK
+        TEXT AtendimentoId FK
+    }
