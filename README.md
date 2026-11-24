@@ -1,6 +1,8 @@
-# SQUAD Estoque
+<h1 align="center">SQUAD Estoque</h1>
 
-<img src="src/SquadEstoque.Web/wwwroot/images/logo-squad.png" alt="Logo do SQUAD Estoque" width="320">
+<p align="center">
+  <img src="src/SquadEstoque.Web/wwwroot/images/logo-squad-header.png" alt="SQUAD Controle de Estoque" width="720">
+</p>
 
 Sistema web acadêmico para controle de estoque de uma loja de calçados. Reúne
 catálogo de produtos, grades de numeração, saldos por SKU, movimentações e
