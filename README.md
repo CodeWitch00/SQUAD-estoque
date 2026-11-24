@@ -1,5 +1,7 @@
 # SQUAD Estoque
 
+**Consulte rápido. Registre faltas. Decida melhor.**
+
 Sistema web acadêmico para controle de estoque de uma loja de calçados. Reúne
 catálogo de produtos, grades de numeração, saldos por SKU, movimentações e
 rupturas, com acessos distintos para `LOJISTA` e `VENDEDOR`.
